@@ -3,7 +3,7 @@ import { Outlet, RouteObject } from 'react-router-dom';
 import {
     DashboardCustomizeIcon,
     DevicesIcon,
-    SettingsIcon,
+    IntegrationInstructionsIcon,
 } from '@milesight/shared/src/components';
 import ErrorBoundaryComponent from './error-boundary';
 
@@ -83,26 +83,26 @@ const routes: RouteObjectType[] = [
         ],
     },
     {
-        path: '/setting',
+        path: '/integration',
         element: <Outlet />,
         ErrorBoundary,
         handle: {
             get title() {
-                return intl.get('common.label.setting');
+                return intl.get('common.label.integration');
             },
-            icon: <SettingsIcon fontSize="medium" />,
+            icon: <IntegrationInstructionsIcon fontSize="medium" />,
         },
         children: [
             {
                 index: true,
                 async lazy() {
-                    const { default: Component } = await import('@/pages/setting');
+                    const { default: Component } = await import('@/pages/integration');
                     return { Component };
                 },
                 ErrorBoundary,
             },
             {
-                path: 'integration/:integrationId',
+                path: 'detail/:integrationId',
                 handle: {
                     get title() {
                         return intl.get('common.label.integration');
@@ -110,7 +110,7 @@ const routes: RouteObjectType[] = [
                 },
                 async lazy() {
                     const { default: Component } = await import(
-                        '@/pages/setting/views/integration-detail'
+                        '@/pages/integration/views/integration-detail'
                     );
                     return { Component };
                 },

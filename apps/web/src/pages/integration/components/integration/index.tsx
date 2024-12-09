@@ -20,7 +20,7 @@ const Integration = () => {
         id: ApiKey,
         record: ObjectToCamelCase<IntegrationAPISchema['getList']['response'][number]>,
     ) => {
-        navigate(`/setting/integration/${id}`, { state: record });
+        navigate(`/integration/detail/${id}`, { state: record });
     };
 
     const { data: intList, loading } = useRequest(

@@ -67,10 +67,12 @@ const IntegrationDetail = () => {
 
                     if (basicInfo?.name) {
                         lastNav.path = undefined;
-                        newNavs.push({
-                            path: lastNav.path,
-                            title: basicInfo.name,
-                        });
+                        lastNav.title = basicInfo.name;
+
+                        // newNavs.push({
+                        //     path: lastNav.path,
+                        //     title: basicInfo.name,
+                        // });
                     }
 
                     return newNavs;
