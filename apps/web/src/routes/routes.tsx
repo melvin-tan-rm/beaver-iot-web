@@ -5,6 +5,7 @@ import {
     DevicesIcon,
     IntegrationInstructionsIcon,
 } from '@milesight/shared/src/components';
+import { PERMISSIONS } from '@/constants';
 import ErrorBoundaryComponent from './error-boundary';
 
 type RouteObjectType = RouteObject & {
@@ -24,6 +25,17 @@ type RouteObjectType = RouteObject & {
 
         /** 是否无需登录便可访问，默认 `false` (需要登录) */
         authFree?: boolean;
+
+        /**
+         * The page should be accessible based on satisfying one of the functions of the current route
+         * Then satisfying one of the permissions in the array enables the current routing access
+         */
+        permissions?: PERMISSIONS[];
+
+        /**
+         * Whether to hide in the menu bar
+         */
+        hideInMenuBar?: boolean;
     };
 
     /** 子路由 */
@@ -40,6 +52,7 @@ const routes: RouteObjectType[] = [
                 return intl.get('common.label.dashboard');
             },
             icon: <DashboardCustomizeIcon fontSize="medium" />,
+            permissions: [PERMISSIONS.DASHBOARD_VIEW],
         },
         async lazy() {
             const { default: Component } = await import('@/pages/dashboard');
@@ -56,6 +69,7 @@ const routes: RouteObjectType[] = [
                 return intl.get('common.label.device');
             },
             icon: <DevicesIcon fontSize="medium" />,
+            permissions: [PERMISSIONS.DEVICE_VIEW],
         },
         children: [
             {
@@ -73,6 +87,7 @@ const routes: RouteObjectType[] = [
                     get title() {
                         return intl.get('common.label.detail');
                     },
+                    permissions: [PERMISSIONS.DEVICE_VIEW],
                 },
                 async lazy() {
                     const { default: Component } = await import('@/pages/device/views/detail');
@@ -91,6 +106,7 @@ const routes: RouteObjectType[] = [
                 return intl.get('common.label.integration');
             },
             icon: <IntegrationInstructionsIcon fontSize="medium" />,
+            permissions: [PERMISSIONS.INTEGRATION_VIEW],
         },
         children: [
             {
@@ -107,6 +123,7 @@ const routes: RouteObjectType[] = [
                     get title() {
                         return intl.get('common.label.integration');
                     },
+                    permissions: [PERMISSIONS.INTEGRATION_VIEW],
                 },
                 async lazy() {
                     const { default: Component } = await import(
@@ -156,6 +173,18 @@ const routes: RouteObjectType[] = [
                 ErrorBoundary,
             },
         ],
+    },
+    {
+        path: '/403',
+        handle: {
+            title: '403',
+            hideInMenuBar: true,
+        },
+        async lazy() {
+            const { default: Component } = await import('@/pages/403');
+            return { Component };
+        },
+        ErrorBoundary,
     },
     {
         path: '*',

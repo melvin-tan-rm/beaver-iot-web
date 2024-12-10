@@ -12,12 +12,16 @@ import routes from '@/routes/routes';
 import { useUserStore } from '@/stores';
 import { globalAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import { Sidebar, RouteLoadingIndicator } from '@/components';
+import { useRoutePermission } from './hooks';
 
 function BasicLayout() {
     const { lang } = useI18n();
     const menus = useMemo(() => {
         return routes
-            .filter(route => route.path && route.handle?.layout !== 'blank')
+            .filter(
+                route =>
+                    route.path && route.handle?.layout !== 'blank' && !route.handle?.hideInMenuBar,
+            )
             .map(route => ({
                 name: route.handle?.title || '',
                 path: route.path || '',
@@ -62,6 +66,13 @@ function BasicLayout() {
             debounceWait: 300,
         },
     );
+
+    /**
+     * @description hooks
+     * Determine whether the user has permission to access the current page.
+     * No permission to jump directly to 403
+     */
+    useRoutePermission();
 
     return (
         <section className="ms-layout">
