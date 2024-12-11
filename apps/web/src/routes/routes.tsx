@@ -30,7 +30,7 @@ type RouteObjectType = RouteObject & {
          * The page should be accessible based on satisfying one of the functions of the current route
          * Then satisfying one of the permissions in the array enables the current routing access
          */
-        permissions?: PERMISSIONS[];
+        permissions?: PERMISSIONS | PERMISSIONS[];
 
         /**
          * Whether to hide in the menu bar
@@ -52,7 +52,7 @@ const routes: RouteObjectType[] = [
                 return intl.get('common.label.dashboard');
             },
             icon: <DashboardCustomizeIcon fontSize="medium" />,
-            permissions: [PERMISSIONS.DASHBOARD_VIEW],
+            permissions: PERMISSIONS.DASHBOARD_MODULE,
         },
         async lazy() {
             const { default: Component } = await import('@/pages/dashboard');
@@ -69,7 +69,7 @@ const routes: RouteObjectType[] = [
                 return intl.get('common.label.device');
             },
             icon: <DevicesIcon fontSize="medium" />,
-            permissions: [PERMISSIONS.DEVICE_VIEW],
+            permissions: PERMISSIONS.DEVICE_MODULE,
         },
         children: [
             {
@@ -87,7 +87,6 @@ const routes: RouteObjectType[] = [
                     get title() {
                         return intl.get('common.label.detail');
                     },
-                    permissions: [PERMISSIONS.DEVICE_VIEW],
                 },
                 async lazy() {
                     const { default: Component } = await import('@/pages/device/views/detail');
@@ -106,7 +105,7 @@ const routes: RouteObjectType[] = [
                 return intl.get('common.label.integration');
             },
             icon: <IntegrationInstructionsIcon fontSize="medium" />,
-            permissions: [PERMISSIONS.INTEGRATION_VIEW],
+            permissions: PERMISSIONS.INTEGRATION_MODULE,
         },
         children: [
             {
@@ -123,7 +122,6 @@ const routes: RouteObjectType[] = [
                     get title() {
                         return intl.get('common.label.integration');
                     },
-                    permissions: [PERMISSIONS.INTEGRATION_VIEW],
                 },
                 async lazy() {
                     const { default: Component } = await import(
