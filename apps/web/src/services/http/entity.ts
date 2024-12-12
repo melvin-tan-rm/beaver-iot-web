@@ -20,18 +20,6 @@ export interface EntityAPISchema extends APISchema {
         response: SearchResponseType<EntityData[]>;
     };
 
-    /** 获取实体数据 */
-    getDetail: {
-        request: {
-            id: ApiKey;
-        };
-        response: {
-            update_at: number;
-            // TODO: 待补充
-            value: unknown;
-        };
-    };
-
     /** 获取历史数据 */
     getHistory: {
         request: SearchRequestType & {
@@ -138,7 +126,6 @@ export interface EntityAPISchema extends APISchema {
 export default attachAPI<EntityAPISchema>(client, {
     apis: {
         getList: `POST ${API_PREFIX}/entity/search`,
-        getDetail: `GET ${API_PREFIX}/entity/:id/status`,
         getHistory: `POST ${API_PREFIX}/entity/history/search`,
         getAggregateHistory: `POST ${API_PREFIX}/entity/history/aggregate`,
         getMeta: `GET ${API_PREFIX}/entity/:id/meta`,
