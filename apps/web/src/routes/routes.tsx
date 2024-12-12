@@ -4,6 +4,7 @@ import {
     DashboardCustomizeIcon,
     DevicesIcon,
     IntegrationInstructionsIcon,
+    Person4Icon,
 } from '@milesight/shared/src/components';
 import { PERMISSIONS } from '@/constants';
 import ErrorBoundaryComponent from './error-boundary';
@@ -171,6 +172,21 @@ const routes: RouteObjectType[] = [
                 ErrorBoundary,
             },
         ],
+    },
+    {
+        path: '/user-role',
+        handle: {
+            get title() {
+                return intl.get('user.label.user_role');
+            },
+            icon: <Person4Icon fontSize="medium" />,
+            permissions: PERMISSIONS.USER_ROLE_MODULE,
+        },
+        async lazy() {
+            const { default: Component } = await import('@/pages/user-role');
+            return { Component };
+        },
+        ErrorBoundary,
     },
     {
         path: '/403',

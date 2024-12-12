@@ -1,0 +1,25 @@
+.user-role {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+
+    :global {
+        .@{prefix}-tab-content {
+            position: relative;
+            flex: 1;
+            padding: @padding-lg;
+            overflow: auto;
+
+            > div {
+                height: 100%;
+            }
+
+            .@{mui-prefix}CircularProgress-root {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+        }
+    }
+}

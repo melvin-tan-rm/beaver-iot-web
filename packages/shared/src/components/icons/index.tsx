@@ -71,6 +71,9 @@ export {
     Https as HttpsIcon,
     AdsClick as AdsClickIcon,
     IntegrationInstructions as IntegrationInstructionsIcon,
+    Person4 as Person4Icon,
+    PermIdentity as PermIdentityIcon,
+    MoreVert as MoreVertIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';

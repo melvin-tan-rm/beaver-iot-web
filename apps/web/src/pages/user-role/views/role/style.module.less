@@ -1,0 +1,54 @@
+.role-view {
+    display: flex;
+    height: 100%;
+    background-color: var(--main-background);
+
+    .aside {
+        width: 240px;
+        padding: @padding-lg;
+        border-right: @border-base;
+
+        .role-wrapper {
+            display: flex;
+            flex-direction: column;
+            margin: @margin-lg 0;
+
+            .item {
+                display: flex;
+                flex: 1;
+                align-items: center;
+                justify-content: space-between;
+                padding: @padding-xs @padding-sm;
+                margin-bottom: @margin-xxs;
+
+                .name-wrapper {
+                    display: flex;
+
+                    .name {
+                        margin-left: @margin-xs;
+                    }
+                }
+            }
+        }
+
+        .add-btn {
+            display: flex;
+
+            button {
+                flex: 1;
+            }
+        }
+    }
+
+    .main {
+        flex: 1;
+        padding: @padding-lg;
+    }
+
+    .empty {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+    }
+}
