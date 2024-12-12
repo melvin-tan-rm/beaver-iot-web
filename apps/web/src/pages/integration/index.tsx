@@ -5,7 +5,7 @@ import { Breadcrumbs, TabPanel } from '@/components';
 import { Integration } from './components';
 import './style.less';
 
-function Setting() {
+function IntegrationModule() {
     const { getIntlText } = useI18n();
     const [tab, setTab] = useState<ApiKey>('1');
 
@@ -16,7 +16,7 @@ function Setting() {
     return (
         <div className="ms-main">
             <Breadcrumbs />
-            <div className="ms-view ms-view-setting">
+            <div className="ms-view ms-view-integration">
                 <Tabs className="ms-tabs" value={tab} onChange={handleChange}>
                     <Tab
                         disableRipple
@@ -35,4 +35,4 @@ function Setting() {
     );
 }
 
-export default Setting;
+export default IntegrationModule;
