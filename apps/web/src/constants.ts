@@ -20,7 +20,8 @@ export enum PERMISSIONS {
     DEVICE_DELETE = 'device.delete',
 
     /**
-     *  custom entity module
+     * entity module
+     * custom entity module
      */
     ENTITY_MODULE = 'entity',
     ENTITY_CUSTOM_VIEW = 'entity_custom.view',
@@ -35,7 +36,7 @@ export enum PERMISSIONS {
     ENTITY_DATA_EXPORT = 'entity_data.export',
 
     /**
-     * user module
+     * user role module
      */
     USER_ROLE_MODULE = 'user_role',
 
