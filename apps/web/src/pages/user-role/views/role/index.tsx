@@ -1,15 +1,16 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { isEmpty } from 'lodash-es';
-import { Button, OutlinedInput, InputAdornment } from '@mui/material';
+import classNames from 'classnames';
+import { Button, OutlinedInput, InputAdornment, Typography } from '@mui/material';
 
-import {
-    AddIcon,
-    SearchIcon,
-    PermIdentityIcon,
-    MoreVertIcon,
-} from '@milesight/shared/src/components';
+import { AddIcon, SearchIcon, PermIdentityIcon } from '@milesight/shared/src/components';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Empty } from '@/components';
+import { type RoleType } from '@/services/http';
+
+import { MoreDropdown, AddModal } from './components';
+import { useRole } from './hooks';
+import { MODAL_TYPE } from './constants';
 
 import styles from './style.module.less';
 
@@ -18,32 +19,53 @@ import styles from './style.module.less';
  */
 const Role: React.FC = () => {
     const { getIntlText } = useI18n();
+    const {
+        roleData,
+        activeRole,
+        handleRoleClick,
+        handleAddRole,
+        handleSearch,
+        handleRoleOperate,
+        addModalVisible,
+        setAddModalVisible,
+        showAddModal,
+        modalTitles,
+        modalData,
+    } = useRole();
 
-    const [roleData, setRoleData] = useState<string[]>([]);
+    const roleItemCls = useCallback(
+        (currentItem: RoleType) => {
+            return classNames(styles.item, {
+                [styles.active]: currentItem.name === activeRole?.name,
+            });
+        },
+        [activeRole],
+    );
 
-    const handleAddRole = useCallback(() => {
-        setRoleData(['1']);
-    }, []);
-
-    const handleSearch = useCallback((value: string) => {
-        console.log('Search value:', value);
-    }, []);
-
-    const renderRoleItem = (item: any) => {
+    const renderRoleItem = (item: RoleType) => {
         return (
-            <div key={item.name} className={styles.item}>
+            <div
+                key={item.role_id}
+                className={roleItemCls(item)}
+                onClick={() => handleRoleClick(item)}
+            >
                 <div className={styles['name-wrapper']}>
-                    <PermIdentityIcon />
-                    <div className={styles.name}>Role 2</div>
+                    <div className={styles.icon}>
+                        <PermIdentityIcon />
+                    </div>
+
+                    <Typography variant="inherit" noWrap title={item.name}>
+                        {item.name}
+                    </Typography>
                 </div>
 
-                <MoreVertIcon />
+                <MoreDropdown onOperation={handleRoleOperate} />
             </div>
         );
     };
 
     const renderRole = () => {
-        if (isEmpty(roleData)) {
+        if (!Array.isArray(roleData) || isEmpty(roleData)) {
             return (
                 <div className={styles.empty}>
                     <Empty
@@ -52,9 +74,9 @@ const Role: React.FC = () => {
                             <Button
                                 variant="outlined"
                                 startIcon={<AddIcon />}
-                                onClick={handleAddRole}
+                                onClick={() => showAddModal(MODAL_TYPE.ADD)}
                             >
-                                {getIntlText('user.label.add_role_btn')}
+                                {getIntlText('user.label.add_role')}
                             </Button>
                         }
                     />
@@ -77,14 +99,16 @@ const Role: React.FC = () => {
                     />
 
                     <div className={styles['role-wrapper']}>
-                        {Array.from({ length: 8 })
-                            .map((item, index) => ({ name: String(item) + index }))
-                            .map(item => renderRoleItem(item))}
+                        {roleData.map(item => renderRoleItem(item))}
                     </div>
 
                     <div className={styles['add-btn']}>
-                        <Button variant="outlined" startIcon={<AddIcon />} onClick={handleAddRole}>
-                            Add
+                        <Button
+                            variant="outlined"
+                            startIcon={<AddIcon />}
+                            onClick={() => showAddModal(MODAL_TYPE.ADD)}
+                        >
+                            {getIntlText('common.label.add')}
                         </Button>
                     </div>
                 </div>
@@ -93,7 +117,19 @@ const Role: React.FC = () => {
         );
     };
 
-    return <div className={styles['role-view']}>{renderRole()}</div>;
+    return (
+        <div className={styles['role-view']}>
+            {renderRole()}
+
+            <AddModal
+                visible={addModalVisible}
+                onCancel={() => setAddModalVisible(false)}
+                onFormSubmit={handleAddRole}
+                data={modalData}
+                title={modalTitles}
+            />
+        </div>
+    );
 };
 
 export default Role;

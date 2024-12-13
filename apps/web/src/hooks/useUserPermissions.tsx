@@ -9,7 +9,11 @@ const useUserPermissions = () => {
      */
     const userInfo = {
         isSuperAdmin: false,
-        permissions: [PERMISSIONS.USER_ROLE_MODULE, PERMISSIONS.INTEGRATION_MODULE],
+        permissions: [
+            PERMISSIONS.USER_ROLE_MODULE,
+            PERMISSIONS.INTEGRATION_MODULE,
+            PERMISSIONS.DEVICE_MODULE,
+        ],
     };
 
     const hasPermission = (p: PERMISSIONS[] | PERMISSIONS) => {

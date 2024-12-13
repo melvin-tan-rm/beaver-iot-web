@@ -11,7 +11,9 @@
         .role-wrapper {
             display: flex;
             flex-direction: column;
+            max-height: calc(100% - 120px);
             margin: @margin-lg 0;
+            overflow: auto;
 
             .item {
                 display: flex;
@@ -20,12 +22,23 @@
                 justify-content: space-between;
                 padding: @padding-xs @padding-sm;
                 margin-bottom: @margin-xxs;
+                border-radius: @border-radius-base;
+
+                &:hover {
+                    background-color: var(--component-background-gray);
+                }
+
+                &.active {
+                    color: var(--text-color-main);
+                    background-color: var(--primary-color-1);
+                }
 
                 .name-wrapper {
                     display: flex;
+                    overflow: hidden;
 
-                    .name {
-                        margin-left: @margin-xs;
+                    .icon {
+                        margin-right: @margin-xs;
                     }
                 }
             }

@@ -3,5 +3,6 @@
     "user.label.tab_name_users": "Users",
     "user.label.tab_name_roles": "Roles",
     "user.message.not_data_roles_tip": "Not data, please add a role first.",
-    "user.label.add_role_btn": "Add role"
+    "user.label.add_role": "Add role",
+    "user.label.rename_role": "Rename role"
 }
