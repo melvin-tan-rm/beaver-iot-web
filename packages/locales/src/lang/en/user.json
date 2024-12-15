@@ -4,5 +4,8 @@
     "user.label.tab_name_roles": "Roles",
     "user.message.not_data_roles_tip": "Not data, please add a role first.",
     "user.label.add_role": "Add role",
-    "user.label.rename_role": "Rename role"
+    "user.label.rename_role": "Rename role",
+    "user.title.role_tab_members": "Members",
+    "user.title.role_tab_functions": "Functions",
+    "user.title.role_tab_resources": "Resources"
 }

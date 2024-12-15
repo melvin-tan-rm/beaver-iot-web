@@ -8,7 +8,7 @@ import { useI18n } from '@milesight/shared/src/hooks';
 import { Empty } from '@/components';
 import { type RoleType } from '@/services/http';
 
-import { MoreDropdown, AddModal } from './components';
+import { MoreDropdown, AddModal, RoleBody } from './components';
 import { useRole } from './hooks';
 import { MODAL_TYPE } from './constants';
 
@@ -112,7 +112,9 @@ const Role: React.FC = () => {
                         </Button>
                     </div>
                 </div>
-                <div className={styles.main}>main</div>
+                <div className={styles.main}>
+                    <RoleBody />
+                </div>
             </>
         );
     };
