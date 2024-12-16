@@ -30,6 +30,12 @@ export interface RoleUserType {
     user_email: string;
 }
 
+export interface RoleUndistributedUserType {
+    email: string;
+    nickname: string;
+    user_id: ApiKey;
+}
+
 export interface UserAPISchema extends APISchema {
     addUserMember: {
         request: {
@@ -53,6 +59,16 @@ export interface UserAPISchema extends APISchema {
         };
         response: SearchResponseType<RoleUserType[]>;
     };
+    /**
+     * Get undistributed users under the  role
+     */
+    getRoleUndistributedUsers: {
+        request: SearchRequestType & {
+            role_id: ApiKey;
+            keyword: string;
+        };
+        response: SearchResponseType<RoleUndistributedUserType[]>;
+    };
 }
 
 /**
@@ -63,5 +79,6 @@ export default attachAPI<UserAPISchema>(client, {
         addUserMember: `POST ${API_PREFIX}/user/members`,
         getAllRoles: `GET ${API_PREFIX}/user/roles`,
         getRoleAllUsers: `GET ${API_PREFIX}/user/roles/:role_id/members`,
+        getRoleUndistributedUsers: `GET ${API_PREFIX}/user/roles/:role_id/undistributed-users`,
     },
 });

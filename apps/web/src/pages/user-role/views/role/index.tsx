@@ -8,7 +8,7 @@ import { useI18n } from '@milesight/shared/src/hooks';
 import { Empty } from '@/components';
 import { type RoleType } from '@/services/http';
 
-import { MoreDropdown, AddModal, RoleBody } from './components';
+import { MoreDropdown, AddRoleModal, RoleBody } from './components';
 import { useRole } from './hooks';
 import { MODAL_TYPE } from './constants';
 
@@ -123,7 +123,7 @@ const Role: React.FC = () => {
         <div className={styles['role-view']}>
             {renderRole()}
 
-            <AddModal
+            <AddRoleModal
                 visible={addModalVisible}
                 onCancel={() => setAddModalVisible(false)}
                 onFormSubmit={handleAddRole}

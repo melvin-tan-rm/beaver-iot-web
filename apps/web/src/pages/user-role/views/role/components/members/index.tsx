@@ -8,6 +8,9 @@ import { toast, AddIcon, RemoveCircleOutlineIcon } from '@milesight/shared/src/c
 import { TablePro, useConfirm } from '@/components';
 import { userAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 
+import { AddMemberModal } from './components';
+import { useMembers } from './hooks';
+
 import { useColumns, type UseColumnsProps, type TableRowDataType } from './hooks';
 
 /**
@@ -112,6 +115,8 @@ const Members: React.FC = () => {
         });
     });
 
+    const { showAddModal, handleModalCancel, addModalVisible } = useMembers();
+
     // ---------- Table render bar ----------
     const toolbarRender = useMemo(() => {
         return (
@@ -120,7 +125,7 @@ const Members: React.FC = () => {
                     variant="contained"
                     sx={{ height: 36, textTransform: 'none' }}
                     startIcon={<AddIcon />}
-                    onClick={() => console.log('add user member')}
+                    onClick={showAddModal}
                 >
                     {getIntlText('common.label.add')}
                 </Button>
@@ -136,7 +141,7 @@ const Members: React.FC = () => {
                 </Button>
             </Stack>
         );
-    }, [getIntlText, handleRemoveConfirm, selectedIds]);
+    }, [getIntlText, handleRemoveConfirm, selectedIds, showAddModal]);
 
     const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useMemoizedFn(
         (type, record) => {
@@ -155,7 +160,7 @@ const Members: React.FC = () => {
     const columns = useColumns<TableRowDataType>({ onButtonClick: handleTableBtnClick });
 
     return (
-        <div>
+        <>
             <TablePro<TableRowDataType>
                 checkboxSelection
                 loading={loading}
@@ -172,7 +177,12 @@ const Members: React.FC = () => {
                 onSearch={setKeyword}
                 onRefreshButtonClick={getUserMembers}
             />
-        </div>
+            <AddMemberModal
+                visible={addModalVisible}
+                onCancel={handleModalCancel}
+                onOk={handleModalCancel}
+            />
+        </>
     );
 };
 

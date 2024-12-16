@@ -10,5 +10,6 @@
     "user.role.tab_title_resources": "Resources",
     "user.role.user_nickname": "User Name",
     "user.role.single_member_remove_tip": "Are you sure you to remove member: {0}?",
-    "user.role.bulk_member_remove_tip": "Are you sure to remove these {0} members in bulk?"
+    "user.role.bulk_member_remove_tip": "Are you sure to remove these {0} members in bulk?",
+    "user.role.add_user_member_modal_title": "Add Member"
 }

@@ -3,7 +3,7 @@ import { useMemoizedFn } from 'ahooks';
 import { Tabs, Tab } from '@mui/material';
 
 import { useI18n } from '@milesight/shared/src/hooks';
-import { TabPanel } from '@/components';
+import { TabPanel, TableTransfer } from '@/components';
 
 import { ROLE_MAIN_TABS } from '../../constants';
 import Members from '../members';
