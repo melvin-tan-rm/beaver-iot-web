@@ -4,7 +4,9 @@ import { Tabs, Tab } from '@mui/material';
 
 import { useI18n } from '@milesight/shared/src/hooks';
 import { TabPanel } from '@/components';
+
 import { ROLE_MAIN_TABS } from '../../constants';
+import Members from '../members';
 
 import styles from './style.module.less';
 
@@ -26,25 +28,25 @@ const RoleBody: React.FC = () => {
     const roleTabsOptions = useMemo(
         () => [
             {
-                label: getIntlText('user.title.role_tab_members'),
-                title: getIntlText('user.title.role_tab_members'),
+                label: getIntlText('user.role.tab_title_members'),
+                title: getIntlText('user.role.tab_title_members'),
                 value: ROLE_MAIN_TABS.MEMBERS,
-                content: 'members',
+                content: <Members />,
             },
             {
-                label: getIntlText('user.title.role_tab_functions'),
-                title: getIntlText('user.title.role_tab_functions'),
+                label: getIntlText('user.role.tab_title_functions'),
+                title: getIntlText('user.role.tab_title_functions'),
                 value: ROLE_MAIN_TABS.FUNCTIONS,
                 content: 'functions',
             },
             {
-                label: getIntlText('user.title.role_tab_resources'),
-                title: getIntlText('user.title.role_tab_resources'),
+                label: getIntlText('user.role.tab_title_resources'),
+                title: getIntlText('user.role.tab_title_resources'),
                 value: ROLE_MAIN_TABS.RESOURCES,
                 content: 'resources',
             },
         ],
-        [],
+        [getIntlText],
     );
 
     const renderTabs = () => {

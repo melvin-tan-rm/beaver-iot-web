@@ -74,6 +74,7 @@ export {
     Person4 as Person4Icon,
     PermIdentity as PermIdentityIcon,
     MoreVert as MoreVertIcon,
+    RemoveCircleOutline as RemoveCircleOutlineIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';

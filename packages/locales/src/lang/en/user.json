@@ -5,7 +5,10 @@
     "user.message.not_data_roles_tip": "Not data, please add a role first.",
     "user.label.add_role": "Add role",
     "user.label.rename_role": "Rename role",
-    "user.title.role_tab_members": "Members",
-    "user.title.role_tab_functions": "Functions",
-    "user.title.role_tab_resources": "Resources"
+    "user.role.tab_title_members": "Members",
+    "user.role.tab_title_functions": "Functions",
+    "user.role.tab_title_resources": "Resources",
+    "user.role.user_nickname": "User Name",
+    "user.role.single_member_remove_tip": "Are you sure you to remove member: {0}?",
+    "user.role.bulk_member_remove_tip": "Are you sure to remove these {0} members in bulk?"
 }

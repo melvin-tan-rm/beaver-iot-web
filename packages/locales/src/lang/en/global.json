@@ -153,5 +153,8 @@
     "valid.input.version": "The version number does not comply with the specification.",
     "valid.resp.at_least_one": "Please select at least one {1}.",
     "common.label.page_not_permission": "You do not have access rights, Please contact the administrator to deal with.",
-    "common.label.rename": "Rename"
+    "common.label.rename": "Rename",
+    "common.label.remove": "Remove",
+    "common.label.removal": "Removal",
+    "common.label.bulk_removal": "Bulk Removal"
 }
