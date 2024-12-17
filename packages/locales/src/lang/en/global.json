@@ -156,5 +156,10 @@
     "common.label.rename": "Rename",
     "common.label.remove": "Remove",
     "common.label.removal": "Removal",
-    "common.label.bulk_removal": "Bulk Removal"
+    "common.label.bulk_removal": "Bulk Removal",
+    "common.label.choices": "Choices",
+    "common.label.chosen": "Chosen",
+    "common.label.selected": "selected",
+    "common.label.sort_type_newest_to_oldest": "Newest to oldest",
+    "common.label.sort_type_oldest_to_newest": "Oldest to Newest"
 }

@@ -1,53 +1,50 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-import TablePro from '../../../table-pro';
+import { type GridValidRowModel } from '@mui/x-data-grid';
+import { useI18n } from '@milesight/shared/src/hooks';
 
-const mockData = Array.from({ length: 5 }).map<{
-    userId: ApiKey;
-    userNickname: string;
-    userEmail: string;
-}>((_, i) => ({
-    userId: i.toString(),
-    userNickname: `name ${i + 1}`,
-    userEmail: `email${i + 1}@gmail.com`,
-}));
+import TablePro, { type Props as TableProProps } from '../../../table-pro';
+import TableSort from '../table-sort';
+
+export interface TableLeftProps<T extends GridValidRowModel> {
+    leftRows: readonly T[];
+    leftCheckedIds: readonly ApiKey[];
+    setLeftCheckedIds: React.Dispatch<React.SetStateAction<readonly ApiKey[]>>;
+    tableProps: TableProProps<T>;
+}
 
 /**
  * Table left component
  */
 
-export const TableLeft: React.FC = () => {
-    const [keyword, setKeyword] = useState<string>('');
-    const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
-    const [selectedIds, setSelectedIds] = useState<readonly ApiKey[]>([]);
+const TableLeft = <T extends GridValidRowModel>(props: TableLeftProps<T>) => {
+    const { leftRows, leftCheckedIds, setLeftCheckedIds, tableProps } = props;
+
+    const { getIntlText } = useI18n();
+
+    const renderTopBar = () => {
+        return (
+            <div className="ms-table-transfer__statistics">
+                <div className="ms-table-transfer__statistics-title">
+                    {getIntlText('common.label.choices')}
+                </div>
+                <div className="ms-table-transfer__statistics-value">
+                    {leftCheckedIds.length}/{leftRows.length} {getIntlText('common.label.selected')}
+                </div>
+            </div>
+        );
+    };
 
     return (
-        <TablePro<any>
+        <TablePro<T>
+            {...tableProps}
             checkboxSelection
-            columns={[
-                {
-                    field: 'userNickname',
-                    headerName: 'User Name',
-                    flex: 1,
-                    ellipsis: true,
-                },
-                {
-                    field: 'userEmail',
-                    headerName: 'Email',
-                    flex: 1,
-                    align: 'center',
-                    headerAlign: 'center',
-                    ellipsis: true,
-                },
-            ]}
-            getRowId={row => row.userId}
-            rows={mockData}
-            rowCount={2}
-            paginationModel={paginationModel}
-            rowSelectionModel={selectedIds}
-            onPaginationModelChange={setPaginationModel}
-            onRowSelectionModelChange={setSelectedIds}
-            onSearch={setKeyword}
+            toolbarRender={renderTopBar()}
+            toolbarSort={<TableSort />}
+            rows={leftRows}
+            rowCount={leftRows?.length || 0}
+            rowSelectionModel={leftCheckedIds}
+            onRowSelectionModelChange={setLeftCheckedIds}
         />
     );
 };

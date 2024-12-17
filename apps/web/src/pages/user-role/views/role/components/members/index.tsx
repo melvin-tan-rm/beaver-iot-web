@@ -43,28 +43,21 @@ const Members: React.FC = () => {
 
             // if (error || !data || !isRequestSuccess(resp)) return;
 
+            const mockData = Array.from({ length: 12 }).map<{
+                userId: ApiKey;
+                roleId: ApiKey;
+                userNickname: string;
+                userEmail: string;
+            }>((_, i) => ({
+                userId: i.toString(),
+                roleId: i.toString(),
+                userNickname: `name ${i + 1}`,
+                userEmail: `email${i + 1}@gmail.com`,
+            }));
+
             return {
-                total: 2,
-                content: [
-                    {
-                        roleId: '1',
-                        userId: '1',
-                        userNickname: 'hello',
-                        userEmail: 'hello@gmail.com',
-                    },
-                    {
-                        roleId: '2',
-                        userId: '2',
-                        userNickname: 'world',
-                        userEmail: 'world@gmail.com',
-                    },
-                    {
-                        roleId: '3',
-                        userId: '3',
-                        userNickname: 'ok',
-                        userEmail: 'ok@gmail.com',
-                    },
-                ],
+                total: mockData.length,
+                content: mockData,
             };
         },
         {
@@ -170,7 +163,6 @@ const Members: React.FC = () => {
                 rowCount={userMembers?.total || 0}
                 paginationModel={paginationModel}
                 rowSelectionModel={selectedIds}
-                isRowSelectable={({ row }) => true}
                 toolbarRender={toolbarRender}
                 onPaginationModelChange={setPaginationModel}
                 onRowSelectionModelChange={setSelectedIds}

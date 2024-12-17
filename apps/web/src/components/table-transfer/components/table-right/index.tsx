@@ -1,53 +1,114 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
-import TablePro from '../../../table-pro';
+import { type GridValidRowModel } from '@mui/x-data-grid';
+import { useI18n } from '@milesight/shared/src/hooks';
 
-const mockData = Array.from({ length: 5 }).map<{
-    userId: ApiKey;
-    userNickname: string;
-    userEmail: string;
-}>((_, i) => ({
-    userId: i.toString(),
-    userNickname: `name ${i + 1 + 10}`,
-    userEmail: `email${i + 1 + 10}@gmail.com`,
-}));
+import TablePro, { type Props as TableProProps } from '../../../table-pro';
+import TableSort from '../table-sort';
+
+export interface TableRightProps<T extends GridValidRowModel> {
+    tableProps: TableProProps<T>;
+    rightRows: readonly T[];
+    rightCheckedIds: readonly ApiKey[];
+    setRightCheckedIds: React.Dispatch<React.SetStateAction<readonly ApiKey[]>>;
+    /**
+     * Methods for filtering selected data
+     */
+    selectedFilter?: (keyword: string, row: T) => boolean;
+    /**
+     * table default top bar sort field
+     */
+    sortField?: string;
+}
 
 /**
  * Table left component
  */
 
-export const TableRight: React.FC = () => {
+export const TableRight = <T extends GridValidRowModel>(props: TableRightProps<T>) => {
+    const {
+        tableProps,
+        rightRows,
+        rightCheckedIds,
+        setRightCheckedIds,
+        selectedFilter,
+        sortField = 'createdAt',
+    } = props;
+    const { columns, getRowId } = tableProps || {};
+
+    const { getIntlText } = useI18n();
+
     const [keyword, setKeyword] = useState<string>('');
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
-    const [selectedIds, setSelectedIds] = useState<readonly ApiKey[]>([]);
+    const [searchRows, setSearchRows] = useState<T[]>();
+    const [sort, setSort] = useState<SortType>();
+
+    /**
+     * filter selected data by keyword
+     */
+    useEffect(() => {
+        if (keyword) {
+            const filteredRows = rightRows.filter(row => selectedFilter?.(keyword, row) ?? true);
+            setSearchRows(filteredRows);
+        } else {
+            setSearchRows(undefined);
+        }
+    }, [keyword, rightRows, selectedFilter]);
+
+    /**
+     * return sorted rows
+     */
+    const sortedRightRows = useMemo(() => {
+        const originalRows = searchRows || rightRows;
+        const newRows = [...originalRows];
+
+        if (!sort || !sortField) {
+            return newRows;
+        }
+
+        if (sort === 'asc') {
+            return newRows.sort((a, b) => {
+                return a[sortField] - b[sortField];
+            });
+        }
+
+        return newRows.sort((a, b) => b[sortField] - a[sortField]);
+    }, [sort, sortField, rightRows, searchRows]);
+
+    const renderTopBar = () => {
+        return (
+            <div className="ms-table-transfer__statistics">
+                <div className="ms-table-transfer__statistics-title">
+                    {getIntlText('common.label.chosen')}
+                </div>
+                <div className="ms-table-transfer__statistics-value">
+                    {rightCheckedIds.length}/{rightRows.length}{' '}
+                    {getIntlText('common.label.selected')}
+                </div>
+            </div>
+        );
+    };
 
     return (
-        <TablePro<any>
+        <TablePro<T>
             checkboxSelection
-            columns={[
-                {
-                    field: 'userNickname',
-                    headerName: 'User Name',
-                    flex: 1,
-                    ellipsis: true,
-                },
-                {
-                    field: 'userEmail',
-                    headerName: 'Email',
-                    flex: 1,
-                    align: 'center',
-                    headerAlign: 'center',
-                    ellipsis: true,
-                },
-            ]}
-            getRowId={row => row.userId}
-            rows={mockData}
-            rowCount={2}
+            toolbarRender={renderTopBar()}
+            toolbarSort={<TableSort onOperation={setSort} />}
+            columns={columns}
+            getRowId={getRowId}
+            rows={sortedRightRows}
             paginationModel={paginationModel}
-            rowSelectionModel={selectedIds}
+            rowSelectionModel={rightCheckedIds}
             onPaginationModelChange={setPaginationModel}
-            onRowSelectionModelChange={setSelectedIds}
+            onRowSelectionModelChange={setRightCheckedIds}
             onSearch={setKeyword}
+            paginationMode="client"
+            onRefreshButtonClick={() =>
+                setPaginationModel({
+                    page: 0,
+                    pageSize: 10,
+                })
+            }
         />
     );
 };

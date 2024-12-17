@@ -1,6 +1,6 @@
 export { default as Sidebar } from './sidebar';
 export { default as Breadcrumbs } from './breadcrumbs';
-export { default as TablePro, type ColumnType } from './table-pro';
+export { default as TablePro, type ColumnType, type Props as TableProProps } from './table-pro';
 export { default as TabPanel } from './tab-panel';
 export { default as Descriptions, type Props as DescriptionsProps } from './descriptions';
 export { useConfirm, ConfirmProvider } from './confirm';

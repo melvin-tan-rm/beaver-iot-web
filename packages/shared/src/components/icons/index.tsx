@@ -75,6 +75,9 @@ export {
     PermIdentity as PermIdentityIcon,
     MoreVert as MoreVertIcon,
     RemoveCircleOutline as RemoveCircleOutlineIcon,
+    Sort as SortIcon,
+    North as NorthIcon,
+    South as SouthIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';
