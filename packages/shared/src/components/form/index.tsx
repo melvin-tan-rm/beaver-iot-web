@@ -1,5 +1,6 @@
 import React, { useEffect, forwardRef, useImperativeHandle, useRef } from 'react';
 import { useForm, Controller, FieldValues, type SubmitHandler } from 'react-hook-form';
+import { Grid, Box } from '@mui/material';
 import { isEqual } from 'lodash-es';
 import useFormItems from './useForm';
 import { UseFormItemsProps, FormItemsProps } from './typings';
@@ -87,16 +88,52 @@ const Forms = <T extends FieldValues>(props: formProps<T>, ref: any) => {
         );
     };
 
+    const renderChildrenForm = (item: FormItemsProps) => {
+        return (
+            <div style={item.style as any} className="form-box">
+                {item?.label ? <div className="form-box-label">{item?.label}</div> : null}
+                <Box sx={{ flexGrow: 1 }}>
+                    <Grid container>
+                        {item?.children?.map((subItem: FormItemsProps) => {
+                            if (subItem.customRender) {
+                                return subItem.customRender();
+                            }
+                            // const length = (item?.children?.length || 2) - 1;
+                            // const size: number = 6;
+                            return (
+                                <Grid xs={6}>
+                                    <div className="form-box-item">
+                                        <Controller<T>
+                                            key={subItem.name}
+                                            {...subItem}
+                                            control={control}
+                                        />
+                                    </div>
+                                </Grid>
+                            );
+                        })}
+                    </Grid>
+                </Box>
+            </div>
+        );
+    };
+
     return (
         // eslint-disable-next-line react/jsx-no-useless-fragment
-        <>
+        <div className="form-contain">
             {forms?.map((item: FormItemsProps, index: number) => {
                 if (item.multiple) {
                     return item.multipleIndex === 0 ? renderMulForm(index) : null;
                 }
+                if (item.children?.length) {
+                    return renderChildrenForm(item);
+                }
+                if (item.customRender) {
+                    return item.customRender();
+                }
                 return <Controller<T> key={item.name} {...item} control={control} />;
             })}
-        </>
+        </div>
     );
 };
 

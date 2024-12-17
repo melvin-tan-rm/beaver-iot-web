@@ -38,9 +38,11 @@ export interface EntityAPISchema extends APISchema {
             /** 实体 ID */
             entity_id: ApiKey;
             /** 开始时间戳，单位 ms */
-            start_timestamp: number;
+            start_timestamp?: number;
             /** 结束时间戳，单位 ms */
-            end_timestamp: number;
+            end_timestamp?: number;
+            page_size?: number;
+            page_number?: number;
         };
         response: SearchResponseType<EntityHistoryData[]>;
     };
@@ -130,6 +132,42 @@ export interface EntityAPISchema extends APISchema {
         };
         response: unknown;
     };
+
+    /** 删除实体 */
+    deleteEntities: {
+        request: {
+            entity_id_list: ApiKey[];
+        };
+        response: unknown;
+    };
+
+    /** 获取自定义实体列表 */
+    getCustomEntityList: {
+        request: SearchRequestType & {
+            /** 搜索关键字 */
+            keyword?: string;
+            /** 实体类型 */
+            entity_type?: EntitySchema['type'];
+            /** 实体值类型 */
+            entity_value_type?: EntityValueDataType[];
+            /** 实体属性（可读、可写、只读） */
+            entity_access_mod?: EntityAccessMode[];
+            /**
+             * 不包含子节点(在选择触发服务实体的时候，不能直接下发子实体/在更新属性实体时，不能只更新某个子实体)
+             */
+            exclude_children?: boolean;
+        };
+        response: SearchResponseType<EntityData[]>;
+    };
+
+    /** 编辑实体 */
+    editEntity: {
+        request: {
+            id: ApiKey;
+            entity_name: string;
+        };
+        response: unknown;
+    };
 }
 
 /**
@@ -147,5 +185,8 @@ export default attachAPI<EntityAPISchema>(client, {
         callService: `POST ${API_PREFIX}/entity/service/call`,
         getEntityStatus: `GET ${API_PREFIX}/entity/:id/status`,
         getChildrenEntity: `GET ${API_PREFIX}/entity/:id/children`,
+        deleteEntities: `POST ${API_PREFIX}/entity/batch-delete`,
+        getCustomEntityList: `POST ${API_PREFIX}/entity/search`,
+        editEntity: `POST ${API_PREFIX}/entity/:id`,
     },
 });

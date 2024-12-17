@@ -1,0 +1,33 @@
+.@{prefix}-view-entity {
+    position: relative;
+    padding: @padding-lg;
+
+    .@{prefix}-view__inner {
+        display: flex;
+        flex-direction: column;
+        padding: @padding-lg;
+    }
+}
+
+.entity {
+    &-add-menu-group-name {
+        font-weight: @font-weight-medium;
+        color: var(--text-color-secondary);
+    }
+
+    &-add-menu-item {
+        display: flex;
+        align-items: center;
+        font-weight: @font-weight-medium;
+
+        &-icon {
+            margin-right: @margin-sm;
+            font-size: 24px;
+            color: var(--text-color-secondary);
+        }
+    }
+
+    &-modal-button-group {
+        margin-bottom: @margin-xl;
+    }
+}

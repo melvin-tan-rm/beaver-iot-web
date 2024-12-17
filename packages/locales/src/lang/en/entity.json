@@ -1,0 +1,12 @@
+{
+    "entity.label.create_property": "Create Property",
+    "entity.label.create_entity_only": "Create Entity Only",
+    "entity.label.create_service": "Create Service",
+    "entity.label.create_entity_from_workflow": "Create from Workflow",
+    "entity.label.entity_type_of_access": "Type Of Access",
+    "entity.label.entity_maximum_value": "Maximum Value",
+    "entity.label.entity_minimum_value": "Minimum Value",
+    "entity.label.entity_maximum_length": "Maximum Length",
+    "entity.label.entity_minimum_length": "Minimum length",
+    "entity.label.entity_items": "Items"
+}
