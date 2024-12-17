@@ -45,6 +45,29 @@ export interface UserAPISchema extends APISchema {
         };
         response: void;
     };
+    addRole: {
+        request: {
+            name: string;
+            description?: string;
+        };
+        response: {
+            role_id: ApiKey;
+        };
+    };
+    editRole: {
+        request: {
+            roleId: ApiKey;
+            name: string;
+            description?: string;
+        };
+        response: void;
+    };
+    deleteRole: {
+        request: {
+            roleId: ApiKey;
+        };
+        response: void;
+    };
     getAllRoles: {
         request: void;
         response: RoleType[];
@@ -77,6 +100,9 @@ export interface UserAPISchema extends APISchema {
 export default attachAPI<UserAPISchema>(client, {
     apis: {
         addUserMember: `POST ${API_PREFIX}/user/members`,
+        addRole: `POST ${API_PREFIX}/user/roles`,
+        editRole: `PUT ${API_PREFIX}/user/roles/:roleId`,
+        deleteRole: `DELETE ${API_PREFIX}/user/roles/:roleId`,
         getAllRoles: `GET ${API_PREFIX}/user/roles`,
         getRoleAllUsers: `GET ${API_PREFIX}/user/roles/:role_id/members`,
         getRoleUndistributedUsers: `GET ${API_PREFIX}/user/roles/:role_id/undistributed-users`,
