@@ -2,21 +2,24 @@ import React, { useState } from 'react';
 import { type Dayjs } from 'dayjs';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { DatePicker, DatePickerProps } from '@mui/x-date-pickers/DatePicker';
+import { DateTimePicker, DateTimePickerProps } from '@mui/x-date-pickers/DateTimePicker';
 
 export type DateRangePickerValueType = {
     start?: Dayjs | null;
     end?: Dayjs | null;
 };
 
+type ViewsType = 'year' | 'month' | 'day' | 'hours' | 'minutes';
+
 interface DateRangePickerProps
-    extends Omit<DatePickerProps<Dayjs>, 'value' | 'label' | 'onChange'> {
+    extends Omit<DateTimePickerProps<Dayjs>, 'value' | 'label' | 'onChange' | 'views'> {
     value?: DateRangePickerValueType | null;
     label?: {
         start?: React.ReactNode;
         end?: React.ReactNode;
     };
     onChange?: (value: DateRangePickerValueType | null) => void;
+    views?: ViewsType[];
 }
 
 const DateRangePickerStyled = styled('div')(() => ({
@@ -30,7 +33,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ label, value, onChang
 
     return (
         <DateRangePickerStyled>
-            <DatePicker
+            <DateTimePicker
                 label={label?.start}
                 value={value?.start || startDate}
                 onChange={start => {
@@ -47,7 +50,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ label, value, onChang
                 {...props}
             />
             <Box sx={{ mx: 2 }}> — </Box>
-            <DatePicker
+            <DateTimePicker
                 label={label?.end}
                 value={value?.end || endDate}
                 onChange={end => {

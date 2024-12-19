@@ -1,18 +1,23 @@
 import { useEffect, useState, useRef } from 'react';
 import { ToggleButtonGroup, ToggleButton, Button } from '@mui/material';
+import { v4 } from 'uuid';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { UseFormItemsProps } from '@milesight/shared/src/components';
+import { ENTITY_AEECSS_MODE } from '@/constant';
+import { TableRowDataType } from '../../hooks/useColumns';
 
 interface FormProps {
     preFormValues: Record<string, any>;
     formValues: Record<string, any>;
     setPreFormValues: (data: Record<string, any>) => void;
+    defaultValues?: Record<string, any>;
+    data?: TableRowDataType | null;
 }
 
 type ModeType = 'value' | 'enum';
 
 const useForm = (props: FormProps) => {
-    const { preFormValues, formValues, setPreFormValues } = props;
+    const { preFormValues, formValues, setPreFormValues, defaultValues, data } = props;
     const { getIntlText } = useI18n();
     const [formItems, setFormItems] = useState<UseFormItemsProps[]>([]);
     const [mode, setMode] = useState<ModeType>('value');
@@ -22,8 +27,9 @@ const useForm = (props: FormProps) => {
     const initFormItems: UseFormItemsProps[] = [
         {
             label: getIntlText('device.label.param_entity_name'),
-            name: 'entityName',
+            name: 'name',
             type: 'TextField',
+            defaultValue: defaultValues?.name,
             rules: {
                 required: true,
                 maxLength: {
@@ -33,52 +39,77 @@ const useForm = (props: FormProps) => {
             },
         },
         {
+            label: getIntlText('common.label.key'),
+            name: 'identifier',
+            type: 'TextField',
+            defaultValue: defaultValues?.identifier || v4().replace(/-/g, ''),
+            rules: {
+                required: true,
+                maxLength: {
+                    value: 64,
+                    message: '',
+                },
+                pattern: {
+                    value: /^[a-zA-Z0-9_]+$/,
+                    message: 'Username can only contain letters, numbers, and underscores',
+                },
+            },
+        },
+        {
             label: getIntlText('entity.label.entity_type_of_access'),
-            name: 'entityAccessMod',
+            name: 'access_mod',
             type: 'Select',
+            defaultValue: defaultValues?.access_mod,
             rules: {
                 required: true,
             },
             props: {
+                disabled: !!defaultValues,
                 options: [
                     {
                         label: getIntlText('entity.label.entity_type_of_access_readonly'),
-                        value: 'r',
+                        value: ENTITY_AEECSS_MODE.R,
                     },
                     {
                         label: getIntlText('entity.label.entity_type_of_access_write'),
-                        value: 'w',
+                        value: ENTITY_AEECSS_MODE.W,
+                    },
+                    {
+                        label: getIntlText('entity.label.entity_type_of_access_read_and_write'),
+                        value: ENTITY_AEECSS_MODE.RW,
                     },
                 ],
             },
         },
         {
             label: getIntlText('common.label.data_type'),
-            name: 'entityValueType',
+            name: 'value_type',
             type: 'Select',
+            defaultValue: defaultValues?.value_type,
             rules: {
                 required: true,
             },
             props: {
+                disabled: !!defaultValues,
                 componentProps: {
                     fullWidth: true,
                 },
                 options: [
                     {
                         label: getIntlText('entity.label.entity_type_of_string'),
-                        value: 'string',
+                        value: 'STRING',
                     },
                     {
                         label: getIntlText('entity.label.entity_type_of_int'),
-                        value: 'int',
+                        value: 'LONG',
+                    },
+                    {
+                        label: getIntlText('entity.label.entity_type_of_float'),
+                        value: 'DOUBLE',
                     },
                     {
                         label: getIntlText('entity.label.entity_type_of_boolean'),
-                        value: 'boolean',
-                    },
-                    {
-                        label: getIntlText('entity.label.entity_type_of_enum'),
-                        value: 'enum',
+                        value: 'BOOLEAN',
                     },
                 ],
             },
@@ -102,8 +133,10 @@ const useForm = (props: FormProps) => {
                 className="entity-modal-button-group"
                 fullWidth
             >
-                <ToggleButton value="value">Set Value</ToggleButton>
-                <ToggleButton value="enum">Set Enumeration Items</ToggleButton>
+                <ToggleButton value="value">{getIntlText('entity.label.set_value')}</ToggleButton>
+                <ToggleButton value="enum">
+                    {getIntlText('entity.label.set_enumeration_items')}
+                </ToggleButton>
             </ToggleButtonGroup>
         );
     };
@@ -115,18 +148,28 @@ const useForm = (props: FormProps) => {
         const initAddFormItem: UseFormItemsProps[] = [
             {
                 label: getIntlText('common.label.key'),
-                name: `key_${childrenLength - 1}`,
+                name: `temp_key_${formValues.value_type}_${childrenLength}`,
                 type: 'TextField',
+                defaultValue:
+                    defaultValues?.[`temp_key_${formValues.value_type}_${childrenLength}`],
                 rules: {
                     required: true,
+                },
+                props: {
+                    disabled: !!defaultValues,
                 },
             },
             {
                 label: getIntlText('common.label.value'),
-                name: `value_${childrenLength - 1}`,
+                name: `temp_value_${formValues.value_type}_${childrenLength}`,
                 type: 'TextField',
+                defaultValue:
+                    defaultValues?.[`temp_value_${formValues.value_type}_${childrenLength}`],
                 rules: {
                     required: true,
+                },
+                props: {
+                    disabled: !!defaultValues,
                 },
             },
         ];
@@ -152,24 +195,34 @@ const useForm = (props: FormProps) => {
             return [
                 {
                     label:
-                        formValues.entityValueType === 'int'
-                            ? getIntlText('entity.label.entity_maximum_value')
-                            : getIntlText('entity.label.entity_maximum_length'),
-                    name: formValues.entityValueType === 'int' ? 'maxValue' : 'maxLength',
+                        formValues.value_type === 'LONG'
+                            ? getIntlText('entity.label.entity_minimum_value')
+                            : getIntlText('entity.label.entity_minimum_length'),
+                    name: formValues.value_type === 'LONG' ? 'min' : 'minLength',
                     type: 'TextField',
+                    defaultValue:
+                        defaultValues?.[formValues.value_type === 'LONG' ? 'min' : 'minLength'],
                     rules: {
                         required: true,
+                    },
+                    props: {
+                        disabled: !!defaultValues,
                     },
                 },
                 {
                     label:
-                        formValues.entityValueType === 'int'
-                            ? getIntlText('entity.label.entity_minimum_value')
-                            : getIntlText('entity.label.entity_minimum_length'),
-                    name: formValues.entityValueType === 'int' ? 'minValue' : 'minLength',
+                        formValues.value_type === 'LONG'
+                            ? getIntlText('entity.label.entity_maximum_value')
+                            : getIntlText('entity.label.entity_maximum_length'),
+                    name: formValues.value_type === 'LONG' ? 'max' : 'maxLength',
                     type: 'TextField',
+                    defaultValue:
+                        defaultValues?.[formValues.value_type === 'LONG' ? 'max' : 'maxLength'],
                     rules: {
                         required: true,
+                    },
+                    props: {
+                        disabled: !!defaultValues,
                     },
                 },
             ];
@@ -182,18 +235,26 @@ const useForm = (props: FormProps) => {
                 children: [
                     {
                         label: getIntlText('common.label.key'),
-                        name: 'key_1',
+                        name: `temp_${formValues.value_type}_key_1`,
                         type: 'TextField',
+                        defaultValue: defaultValues?.[`${formValues.value_type}_key_1`],
                         rules: {
                             required: true,
+                        },
+                        props: {
+                            disabled: !!defaultValues,
                         },
                     },
                     {
                         label: getIntlText('common.label.value'),
-                        name: 'value_1',
+                        name: `temp_${formValues.value_type}_value_1`,
                         type: 'TextField',
+                        defaultValue: defaultValues?.[`${formValues.value_type}_value_1`],
                         rules: {
                             required: true,
+                        },
+                        props: {
+                            disabled: !!defaultValues,
                         },
                     },
                     {
@@ -211,8 +272,8 @@ const useForm = (props: FormProps) => {
 
     const getFormItems = (type: string): any[] => {
         switch (type) {
-            case 'int':
-            case 'string':
+            case 'LONG':
+            case 'STRING':
                 return [
                     ...initFormItems,
                     {
@@ -224,30 +285,117 @@ const useForm = (props: FormProps) => {
                     },
                     ...renderModeToForm(),
                 ];
+            case 'DOUBLE':
+                return [
+                    ...initFormItems,
+                    {
+                        label: getIntlText('entity.label.entity_minimum_value'),
+                        name: 'min',
+                        type: 'TextField',
+                        defaultValue: defaultValues?.min,
+                        rules: {
+                            required: true,
+                        },
+                        props: {
+                            disabled: !!defaultValues,
+                        },
+                    },
+                    {
+                        label: getIntlText('entity.label.entity_maximum_value'),
+                        name: 'max',
+                        type: 'TextField',
+                        defaultValue: defaultValues?.max,
+                        rules: {
+                            required: true,
+                        },
+                        props: {
+                            disabled: !!defaultValues,
+                        },
+                    },
+                ];
+            case 'BOOLEAN':
+                return [
+                    ...initFormItems,
+                    {
+                        label: getIntlText('entity.label.entity_items'),
+                        name: '',
+                        type: '',
+                        children: [
+                            {
+                                label: getIntlText('common.label.key'),
+                                name: `temp_${formValues.value_type}_key_1`,
+                                type: 'TextField',
+                                defaultValue:
+                                    defaultValues?.[`temp_${formValues.value_type}_key_1`],
+                                props: {
+                                    disabled: true,
+                                },
+                            },
+                            {
+                                label: getIntlText('common.label.label'),
+                                name: `temp_${formValues.value_type}_value_1`,
+                                type: 'TextField',
+                                defaultValue:
+                                    defaultValues?.[`temp_${formValues.value_type}_value_1`],
+                                rules: {
+                                    required: true,
+                                },
+                                props: {
+                                    disabled: !!defaultValues,
+                                },
+                            },
+                            {
+                                label: getIntlText('common.label.key'),
+                                name: `temp_${formValues.value_type}_key_2`,
+                                type: 'TextField',
+                                defaultValue:
+                                    defaultValues?.[`temp_${formValues.value_type}_key_2`],
+                                props: {
+                                    disabled: true,
+                                },
+                            },
+                            {
+                                label: getIntlText('common.label.label'),
+                                name: `temp_${formValues.value_type}_value_2`,
+                                type: 'TextField',
+                                defaultValue:
+                                    defaultValues?.[`temp_${formValues.value_type}_value_2`],
+                                rules: {
+                                    required: true,
+                                },
+                                props: {
+                                    disabled: !!defaultValues,
+                                },
+                            },
+                        ],
+                    },
+                ];
             default:
                 return initFormItems;
         }
     };
 
     useEffect(() => {
-        if (
-            preFormValues.entityValueType !== formValues.entityValueType ||
-            !formValues.entityValueType
-        ) {
-            const newFormItem = getFormItems(formValues.entityValueType);
+        if (data && !defaultValues) {
+            return;
+        }
+        if (preFormValues.value_type !== formValues.value_type || !formValues.value_type) {
+            const newFormItem = getFormItems(formValues.value_type);
             setFormItems(newFormItem);
             setPreFormValues(formValues);
         }
-    }, [formValues]);
+    }, [formValues, data, defaultValues]);
 
     useEffect(() => {
-        const newFormItem = getFormItems(formValues.entityValueType);
+        if (data && !defaultValues) {
+            return;
+        }
+        const newFormItem = getFormItems(formValues.value_type);
         setFormItems(newFormItem);
-    }, [mode]);
+    }, [mode, data, defaultValues]);
 
     useEffect(() => {
         formItemsRef.current = [...formItems];
-        console.log(formItemsRef.current);
     }, [formItems]);
 
     return formItems;

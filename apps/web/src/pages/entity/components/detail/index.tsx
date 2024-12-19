@@ -136,6 +136,7 @@ export default (props: IProps) => {
                         label={{ start: 'Start date', end: 'End date' }}
                         onChange={changeFilter}
                         value={time}
+                        views={['year', 'month', 'day']}
                     />
                     <div className="entity-detail-filter-popover-footer">
                         <div className="entity-detail-filter-popover-footer-reset">

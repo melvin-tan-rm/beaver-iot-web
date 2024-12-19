@@ -16,6 +16,8 @@ export interface EntityAPISchema extends APISchema {
              * 不包含子节点(在选择触发服务实体的时候，不能直接下发子实体/在更新属性实体时，不能只更新某个子实体)
              */
             exclude_children?: boolean;
+            /** 是否是自定义实体 */
+            customized?: boolean;
         };
         response: SearchResponseType<EntityData[]>;
     };
@@ -136,28 +138,9 @@ export interface EntityAPISchema extends APISchema {
     /** 删除实体 */
     deleteEntities: {
         request: {
-            entity_id_list: ApiKey[];
+            entity_ids: ApiKey[];
         };
         response: unknown;
-    };
-
-    /** 获取自定义实体列表 */
-    getCustomEntityList: {
-        request: SearchRequestType & {
-            /** 搜索关键字 */
-            keyword?: string;
-            /** 实体类型 */
-            entity_type?: EntitySchema['type'];
-            /** 实体值类型 */
-            entity_value_type?: EntityValueDataType[];
-            /** 实体属性（可读、可写、只读） */
-            entity_access_mod?: EntityAccessMode[];
-            /**
-             * 不包含子节点(在选择触发服务实体的时候，不能直接下发子实体/在更新属性实体时，不能只更新某个子实体)
-             */
-            exclude_children?: boolean;
-        };
-        response: SearchResponseType<EntityData[]>;
     };
 
     /** 编辑实体 */
@@ -165,6 +148,31 @@ export interface EntityAPISchema extends APISchema {
         request: {
             id: ApiKey;
             entity_name: string;
+        };
+        response: unknown;
+    };
+
+    /** 创建实体 */
+    createCustomEntity: {
+        request: {
+            name: string;
+            access_mod: EntityAccessMode;
+            value_type: EntityValueDataType;
+            value_attribute: Record<string, any>;
+            type: EntityType;
+        };
+        response: unknown;
+    };
+
+    /** 编辑实体 */
+    editCustomEntity: {
+        request: {
+            name: string;
+            access_mod: EntityAccessMode;
+            value_type: EntityValueDataType;
+            value_attribute: Record<string, any>;
+            type: EntityType;
+            entityId: ApiKey;
         };
         response: unknown;
     };
@@ -185,8 +193,9 @@ export default attachAPI<EntityAPISchema>(client, {
         callService: `POST ${API_PREFIX}/entity/service/call`,
         getEntityStatus: `GET ${API_PREFIX}/entity/:id/status`,
         getChildrenEntity: `GET ${API_PREFIX}/entity/:id/children`,
-        deleteEntities: `POST ${API_PREFIX}/entity/batch-delete`,
-        getCustomEntityList: `POST ${API_PREFIX}/entity/search`,
+        deleteEntities: `POST ${API_PREFIX}/entity/delete`,
         editEntity: `POST ${API_PREFIX}/entity/:id`,
+        createCustomEntity: `POST ${API_PREFIX}/entity`,
+        editCustomEntity: `PUT ${API_PREFIX}/entity/:entityId`,
     },
 });

@@ -5,7 +5,7 @@ import { ListAltIcon, DeleteOutlineIcon } from '@milesight/shared/src/components
 import { Tooltip, type ColumnType } from '@/components';
 import { type EntityAPISchema } from '@/services/http';
 
-type OperationType = 'detail' | 'delete';
+type OperationType = 'edit' | 'delete';
 
 export type TableRowDataType = ObjectToCamelCase<
     EntityAPISchema['getList']['response']['content'][0]
@@ -39,7 +39,7 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 ellipsis: true,
             },
             {
-                field: 'entityId',
+                field: 'entityKey',
                 headerName: getIntlText('device.label.param_entity_id'),
                 flex: 1,
                 minWidth: 150,
@@ -71,12 +71,15 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 ellipsis: true,
             },
             {
-                field: 'createdAt',
+                field: 'entityCreatedAt',
                 headerName: getIntlText('common.label.create_time'),
                 flex: 1,
                 minWidth: 150,
                 ellipsis: true,
                 renderCell({ value }) {
+                    if (!value) {
+                        return;
+                    }
                     return getTimeFormat(value);
                 },
             },
@@ -95,7 +98,7 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                             <Tooltip title={getIntlText('common.label.detail')}>
                                 <IconButton
                                     sx={{ width: 30, height: 30 }}
-                                    onClick={() => onButtonClick('detail', row)}
+                                    onClick={() => onButtonClick('edit', row)}
                                 >
                                     <ListAltIcon sx={{ width: 20, height: 20 }} />
                                 </IconButton>

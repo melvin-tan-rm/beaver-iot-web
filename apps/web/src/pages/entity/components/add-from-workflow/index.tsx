@@ -6,11 +6,12 @@ import { TableRowDataType } from '../../hooks/useColumns';
 interface ConfigPluginProps {
     onCancel: () => void;
     onOk: (data: TableRowDataType) => void;
+    data?: TableRowDataType | null;
 }
 
 const AddEntity = (props: ConfigPluginProps) => {
     const { getIntlText } = useI18n();
-    const { onOk, onCancel } = props;
+    const { onOk, onCancel, data } = props;
     const formRef = useRef<any>();
 
     // Initial form configuration

@@ -16,7 +16,6 @@ import { entityAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/servi
 import { useColumns, type UseColumnsProps, type TableRowDataType } from '../../hooks';
 import AddModal from '../add-modal';
 import AddFromWorkflow from '../add-from-workflow';
-import Detail from '../detail';
 
 export default () => {
     const navigate = useNavigate();
@@ -47,10 +46,11 @@ export default () => {
         async () => {
             const { page, pageSize } = paginationModel;
             const [error, resp] = await awaitWrap(
-                entityAPI.getCustomEntityList({
+                entityAPI.getList({
                     keyword,
                     page_size: pageSize,
                     page_number: page + 1,
+                    customized: true,
                 }),
             );
             const data = getResponseData(resp);
@@ -79,7 +79,7 @@ export default () => {
                 },
                 onConfirm: async () => {
                     const [error, resp] = await awaitWrap(
-                        entityAPI.deleteEntities({ entity_id_list: idsToDelete }),
+                        entityAPI.deleteEntities({ entity_ids: idsToDelete }),
                     );
 
                     if (error || !isRequestSuccess(resp)) return;
@@ -93,12 +93,14 @@ export default () => {
         [confirm, getIntlText, getList, selectedIds],
     );
 
-    /** Details event related */
-    const handleDetail = (data: TableRowDataType) => {
-        setDetail(data);
+    /** Details/Add event related */
+    const handleAdd = (data?: TableRowDataType) => {
+        !!data && setDetail(data);
+        setModalOpen(true);
     };
 
-    const handleDetailClose = () => {
+    const handleAddClose = () => {
+        setModalOpen(false);
         setDetail(null);
     };
 
@@ -133,8 +135,8 @@ export default () => {
     const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useCallback(
         (type, record) => {
             switch (type) {
-                case 'detail': {
-                    handleDetail(record);
+                case 'edit': {
+                    handleAdd(record);
                     break;
                 }
                 case 'delete': {
@@ -183,23 +185,24 @@ export default () => {
             />
             {modalOpen && (
                 <AddModal
-                    onCancel={() => setModalOpen(false)}
+                    onCancel={handleAddClose}
                     onOk={() => {
                         getList();
-                        setModalOpen(false);
+                        handleAddClose();
                     }}
+                    data={detail}
                 />
             )}
-            {workflowModalOpen && (
+            {workflowModalOpen && !!detail && (
                 <AddFromWorkflow
                     onCancel={() => setWorkflowModalOpen(false)}
                     onOk={() => {
                         getList();
                         setWorkflowModalOpen(false);
                     }}
+                    data={detail}
                 />
             )}
-            {!!detail && <Detail onCancel={handleDetailClose} detail={detail} />}
             <Menu
                 id="add-menu"
                 anchorEl={anchorEl}

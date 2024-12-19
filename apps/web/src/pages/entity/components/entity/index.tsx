@@ -75,7 +75,7 @@ export default () => {
                 },
                 onConfirm: async () => {
                     const [error, resp] = await awaitWrap(
-                        entityAPI.deleteEntities({ entity_id_list: idsToDelete }),
+                        entityAPI.deleteEntities({ entity_ids: idsToDelete }),
                     );
 
                     if (error || !isRequestSuccess(resp)) return;

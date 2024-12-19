@@ -24,7 +24,7 @@ const Forms = <T extends FieldValues>(props: formProps<T>, ref: any) => {
     const forms: FormItemsProps[] = useFormItems({ formItems });
     const formValuesRef = useRef<T>();
 
-    // 监听所有表单字段的变化
+    // Listen to changes in all form fields
     const formValues = watch();
 
     useEffect(() => {
@@ -50,15 +50,31 @@ const Forms = <T extends FieldValues>(props: formProps<T>, ref: any) => {
             !!Object.keys(values)?.length
         ) {
             formValuesRef.current = { ...formValuesRef?.current, ...formValues };
-            // 表单值变更回调
+            // Form value change callback
             !!onChange && onChange({ ...formValuesRef?.current, ...formValues });
         }
     }, [formValues]);
 
     const onSubmit: SubmitHandler<T> = async (data: T) => {
-        const result = await trigger(); // 手动触发验证
+        const result = await trigger(); // Manually trigger validation
         if (result) {
-            onOk(data);
+            // To filter out fields that are not currently in the form.
+            const resultData: Record<string, any> = {};
+            const keys: string[] = [];
+            forms.forEach((item: FormItemsProps) => {
+                keys.push(item.name);
+                if (item?.children?.length) {
+                    item?.children?.forEach(subItem => {
+                        keys.push(subItem.name);
+                    });
+                }
+            });
+            Object.keys(data)?.forEach(key => {
+                if (keys.includes(key)) {
+                    resultData[key] = data[key];
+                }
+            });
+            onOk(resultData as T);
         } else {
             console.error('Validation failed');
         }
