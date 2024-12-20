@@ -108,22 +108,22 @@ const Forms = <T extends FieldValues>(props: formProps<T>, ref: any) => {
         return (
             <div style={item.style as any} className="form-box">
                 {item?.label ? <div className="form-box-label">{item?.label}</div> : null}
-                <Box sx={{ flexGrow: 1 }}>
+                <Box sx={{ flexGrow: 1 }} className="form-box-contain">
                     <Grid container>
                         {item?.children?.map((subItem: FormItemsProps) => {
-                            if (subItem.customRender) {
-                                return subItem.customRender();
-                            }
-                            // const length = (item?.children?.length || 2) - 1;
-                            // const size: number = 6;
+                            const size: number = subItem.col || (subItem.customRender ? 12 : 6);
                             return (
-                                <Grid xs={6}>
+                                <Grid xs={size}>
                                     <div className="form-box-item">
-                                        <Controller<T>
-                                            key={subItem.name}
-                                            {...subItem}
-                                            control={control}
-                                        />
+                                        {subItem.customRender ? (
+                                            subItem.customRender()
+                                        ) : (
+                                            <Controller<T>
+                                                key={subItem.name}
+                                                {...subItem}
+                                                control={control}
+                                            />
+                                        )}
                                     </div>
                                 </Grid>
                             );

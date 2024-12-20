@@ -39,6 +39,7 @@ export interface FormItemsProps {
     label?: string;
     defaultValue?: any;
     children?: FormItemsProps[]; // 一行多个子表单
+    col?: number; // 布局列数
 }
 
 export type UseFormItemsType = Omit<FormItemsProps, 'render'>;

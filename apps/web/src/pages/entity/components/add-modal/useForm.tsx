@@ -128,6 +128,7 @@ const useForm = (props: FormProps) => {
             <ToggleButtonGroup
                 size="small"
                 value={mode}
+                disabled={!!defaultValues}
                 exclusive
                 onChange={handleChangeMode}
                 className="entity-modal-button-group"
@@ -145,13 +146,13 @@ const useForm = (props: FormProps) => {
     const addFormItem = () => {
         const newFormItems = [...formItemsRef.current];
         const childrenLength = newFormItems?.[newFormItems.length - 1]?.children?.length || 0;
+        const length = (childrenLength - 1) / 2 + 1;
         const initAddFormItem: UseFormItemsProps[] = [
             {
                 label: getIntlText('common.label.key'),
-                name: `temp_key_${formValues.value_type}_${childrenLength}`,
+                name: `temp_${formValues.value_type}_key_${length}`,
                 type: 'TextField',
-                defaultValue:
-                    defaultValues?.[`temp_key_${formValues.value_type}_${childrenLength}`],
+                defaultValue: defaultValues?.[`temp_${formValues.value_type}_key_${length}`],
                 rules: {
                     required: true,
                 },
@@ -161,10 +162,9 @@ const useForm = (props: FormProps) => {
             },
             {
                 label: getIntlText('common.label.value'),
-                name: `temp_value_${formValues.value_type}_${childrenLength}`,
+                name: `temp_${formValues.value_type}_value_${length}`,
                 type: 'TextField',
-                defaultValue:
-                    defaultValues?.[`temp_value_${formValues.value_type}_${childrenLength}`],
+                defaultValue: defaultValues?.[`temp_${formValues.value_type}_value_${length}`],
                 rules: {
                     required: true,
                 },
@@ -183,7 +183,17 @@ const useForm = (props: FormProps) => {
 
     const addButton = () => {
         return (
-            <Button variant="outlined" fullWidth onClick={addFormItem}>
+            <Button
+                className="entity-modal-add-form-button"
+                variant="outlined"
+                fullWidth
+                onClick={addFormItem}
+                sx={{
+                    '&.MuiButton-root': {
+                        marginBottom: '24px',
+                    },
+                }}
+            >
                 {getIntlText('common.label.add')}
             </Button>
         );
@@ -227,7 +237,7 @@ const useForm = (props: FormProps) => {
                 },
             ];
         }
-        return [
+        const childrenForms: any[] = [
             {
                 label: getIntlText('entity.label.entity_items'),
                 name: '',
@@ -237,7 +247,7 @@ const useForm = (props: FormProps) => {
                         label: getIntlText('common.label.key'),
                         name: `temp_${formValues.value_type}_key_1`,
                         type: 'TextField',
-                        defaultValue: defaultValues?.[`${formValues.value_type}_key_1`],
+                        defaultValue: defaultValues?.[`temp_${formValues.value_type}_key_1`],
                         rules: {
                             required: true,
                         },
@@ -249,7 +259,7 @@ const useForm = (props: FormProps) => {
                         label: getIntlText('common.label.value'),
                         name: `temp_${formValues.value_type}_value_1`,
                         type: 'TextField',
-                        defaultValue: defaultValues?.[`${formValues.value_type}_value_1`],
+                        defaultValue: defaultValues?.[`temp_${formValues.value_type}_value_1`],
                         rules: {
                             required: true,
                         },
@@ -257,17 +267,53 @@ const useForm = (props: FormProps) => {
                             disabled: !!defaultValues,
                         },
                     },
-                    {
-                        label: '',
-                        name: '',
-                        type: '',
-                        customRender: () => {
-                            return addButton();
-                        },
-                    },
                 ],
             },
         ];
+        if (!defaultValues) {
+            childrenForms[0].children.push({
+                label: '',
+                name: '',
+                type: '',
+                customRender: () => {
+                    return addButton();
+                },
+            });
+        } else if (defaultValues && data?.entityValueAttribute?.enum) {
+            const curEnum = data?.entityValueAttribute?.enum;
+            Object.keys(curEnum).forEach((key: string, index: number) => {
+                if (index > 0) {
+                    const curForm = [
+                        {
+                            label: getIntlText('common.label.key'),
+                            name: `temp_${formValues.value_type}_key_${index + 1}`,
+                            type: 'TextField',
+                            defaultValue: key,
+                            rules: {
+                                required: true,
+                            },
+                            props: {
+                                disabled: !!defaultValues,
+                            },
+                        },
+                        {
+                            label: getIntlText('common.label.value'),
+                            name: `temp_${formValues.value_type}_value_${index + 1}`,
+                            type: 'TextField',
+                            defaultValue: curEnum[key],
+                            rules: {
+                                required: true,
+                            },
+                            props: {
+                                disabled: !!defaultValues,
+                            },
+                        },
+                    ];
+                    childrenForms[0].children.push(...curForm);
+                }
+            });
+        }
+        return childrenForms;
     };
 
     const getFormItems = (type: string): any[] => {
@@ -325,16 +371,25 @@ const useForm = (props: FormProps) => {
                                 label: getIntlText('common.label.key'),
                                 name: `temp_${formValues.value_type}_key_1`,
                                 type: 'TextField',
-                                defaultValue:
-                                    defaultValues?.[`temp_${formValues.value_type}_key_1`],
-                                props: {
-                                    disabled: true,
+                                col: 2,
+                                // defaultValue:
+                                //     defaultValues?.[`temp_${formValues.value_type}_key_1`] || true,
+                                // props: {
+                                //     disabled: true,
+                                // },
+                                customRender: () => {
+                                    return (
+                                        <div className="entity-add-modal-form-boolean-label">
+                                            True
+                                        </div>
+                                    );
                                 },
                             },
                             {
                                 label: getIntlText('common.label.label'),
                                 name: `temp_${formValues.value_type}_value_1`,
                                 type: 'TextField',
+                                col: 10,
                                 defaultValue:
                                     defaultValues?.[`temp_${formValues.value_type}_value_1`],
                                 rules: {
@@ -348,16 +403,25 @@ const useForm = (props: FormProps) => {
                                 label: getIntlText('common.label.key'),
                                 name: `temp_${formValues.value_type}_key_2`,
                                 type: 'TextField',
-                                defaultValue:
-                                    defaultValues?.[`temp_${formValues.value_type}_key_2`],
-                                props: {
-                                    disabled: true,
+                                col: 2,
+                                // defaultValue:
+                                //     defaultValues?.[`temp_${formValues.value_type}_key_2`] || false,
+                                // props: {
+                                //     disabled: true,
+                                // },
+                                customRender: () => {
+                                    return (
+                                        <div className="entity-add-modal-form-boolean-label">
+                                            False
+                                        </div>
+                                    );
                                 },
                             },
                             {
                                 label: getIntlText('common.label.label'),
                                 name: `temp_${formValues.value_type}_value_2`,
                                 type: 'TextField',
+                                col: 10,
                                 defaultValue:
                                     defaultValues?.[`temp_${formValues.value_type}_value_2`],
                                 rules: {
@@ -378,6 +442,9 @@ const useForm = (props: FormProps) => {
     useEffect(() => {
         if (data && !defaultValues) {
             return;
+        }
+        if (data?.entityValueAttribute?.enum) {
+            setMode('enum');
         }
         if (preFormValues.value_type !== formValues.value_type || !formValues.value_type) {
             const newFormItem = getFormItems(formValues.value_type);

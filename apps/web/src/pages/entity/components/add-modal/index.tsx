@@ -43,21 +43,22 @@ const AddEntity = (props: IProps) => {
     // Form submission
     const handleSubmit = async (values: Record<string, any>) => {
         const resultValues: Record<string, any> = { value_attribute: {} };
-        console.log(values);
         Object.keys(values).forEach((key: string) => {
             if (key.indexOf(`temp_${values.value_type}_key_`) > -1) {
                 if (!resultValues.value_attribute.enum) {
                     resultValues.value_attribute.enum = {};
                 }
-                const keyIndex = Number(key.replace(`temp_${values.value_type}_key_`, '')) || 1;
-                if (values.value_type === 'BOOLEAN') {
-                    const resultKey = keyIndex === 1;
-                    resultValues.value_attribute.enum[`${resultKey}`] =
-                        values[key.replace('key', 'value')];
-                } else {
-                    resultValues.value_attribute.enum[values[key]] =
-                        values[key.replace('key', 'value')];
+                resultValues.value_attribute.enum[values[key]] =
+                    values[key.replace('key', 'value')];
+            } else if (
+                key.indexOf(`temp_${values.value_type}_value_`) > -1 &&
+                values.value_type === 'BOOLEAN'
+            ) {
+                if (!resultValues.value_attribute.enum) {
+                    resultValues.value_attribute.enum = {};
                 }
+                const keyIndex = Number(key.replace(`temp_${values.value_type}_value_`, '')) || 1;
+                resultValues.value_attribute.enum[keyIndex === 1 ? 'true' : 'false'] = values[key];
             } else if (['min', 'max', 'minLength', 'maxLength'].includes(key)) {
                 resultValues.value_attribute[key] = values[key];
             } else if (key.indexOf(`temp_${values.value_type}_value_`) === -1) {
@@ -102,6 +103,10 @@ const AddEntity = (props: IProps) => {
             ) {
                 resultFormValues.minLength = data.entityValueAttribute.minLength;
                 resultFormValues.maxLength = data.entityValueAttribute.maxLength;
+            }
+            if (data?.entityKey) {
+                resultFormValues.identifier =
+                    data.entityKey.split('.')[data.entityKey.split('.').length - 1];
             }
             setFormValues(resultFormValues);
             setDefaultValues(resultFormValues);
