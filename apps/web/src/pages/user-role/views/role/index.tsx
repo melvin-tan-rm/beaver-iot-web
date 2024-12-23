@@ -3,7 +3,12 @@ import { isEmpty } from 'lodash-es';
 import classNames from 'classnames';
 import { Button, OutlinedInput, InputAdornment, Typography } from '@mui/material';
 
-import { AddIcon, SearchIcon, PermIdentityIcon } from '@milesight/shared/src/components';
+import {
+    AddIcon,
+    SearchIcon,
+    PermIdentityIcon,
+    LoadingWrapper,
+} from '@milesight/shared/src/components';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Empty } from '@/components';
 import { type RoleType } from '@/services/http';
@@ -31,6 +36,9 @@ const Role: React.FC = () => {
         showAddModal,
         modalTitles,
         modalData,
+        modalType,
+        handleEditRole,
+        loading,
     } = useRole();
 
     const roleItemCls = useCallback(
@@ -68,18 +76,22 @@ const Role: React.FC = () => {
         if (!Array.isArray(roleData) || isEmpty(roleData)) {
             return (
                 <div className={styles.empty}>
-                    <Empty
-                        text={getIntlText('user.message.not_data_roles_tip')}
-                        extra={
-                            <Button
-                                variant="outlined"
-                                startIcon={<AddIcon />}
-                                onClick={() => showAddModal(MODAL_TYPE.ADD)}
-                            >
-                                {getIntlText('user.label.add_role')}
-                            </Button>
-                        }
-                    />
+                    <LoadingWrapper loading={loading}>
+                        {!loading && (
+                            <Empty
+                                text={getIntlText('user.message.not_data_roles_tip')}
+                                extra={
+                                    <Button
+                                        variant="outlined"
+                                        startIcon={<AddIcon />}
+                                        onClick={() => showAddModal(MODAL_TYPE.ADD)}
+                                    >
+                                        {getIntlText('user.label.add_role')}
+                                    </Button>
+                                }
+                            />
+                        )}
+                    </LoadingWrapper>
                 </div>
             );
         }
@@ -126,7 +138,7 @@ const Role: React.FC = () => {
             <AddRoleModal
                 visible={addModalVisible}
                 onCancel={() => setAddModalVisible(false)}
-                onFormSubmit={handleAddRole}
+                onFormSubmit={modalType === MODAL_TYPE.ADD ? handleAddRole : handleEditRole}
                 data={modalData}
                 title={modalTitles}
             />

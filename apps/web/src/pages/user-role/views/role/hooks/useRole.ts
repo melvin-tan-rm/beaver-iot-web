@@ -1,10 +1,16 @@
 import { useState } from 'react';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useRequest } from 'ahooks';
 
 import { toast } from '@milesight/shared/src/components';
 import { useI18n } from '@milesight/shared/src/hooks';
 
-import { type RoleType } from '@/services/http';
+import {
+    type RoleType,
+    userAPI,
+    getResponseData,
+    awaitWrap,
+    isRequestSuccess,
+} from '@/services/http';
 import { ROLE_MORE_OPERATION } from '../components';
 import { MODAL_TYPE } from '../constants';
 
@@ -23,25 +29,70 @@ export function useRole() {
     const [addModalVisible, setAddModalVisible] = useState(false);
     const [modalTitles, setModalTitles] = useState(getIntlText('user.label.add_role'));
     const [modalData, setModalData] = useState<string>('');
+    const [modalType, setModalType] = useState<MODAL_TYPE>(MODAL_TYPE.ADD);
 
-    const handleAddRole = useMemoizedFn((name: string): Promise<void> => {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                setRoleData(
-                    Array.from({ length: 8 }).map((_, index) => ({
-                        role_id: index,
-                        name: `${name} ${index}`,
-                    })),
-                );
+    /**
+     * get all roles list data
+     */
+    const { loading } = useRequest(
+        async () => {
+            console.log('getAllRoles');
 
-                resolve();
-                setAddModalVisible(false);
-                toast.success('onSubmit');
-            }, 1000);
-        });
+            const [err, resp] = await awaitWrap(
+                userAPI.getAllRoles({
+                    page_number: 1,
+                    page_size: 999,
+                }),
+            );
+
+            if (err || !isRequestSuccess(resp)) {
+                return;
+            }
+
+            const list = getResponseData(resp);
+
+            console.log('roles list ? ', list);
+        },
+        {
+            refreshDeps: [],
+        },
+    );
+
+    const handleAddRole = useMemoizedFn(async (name: string): Promise<void> => {
+        const [err, resp] = await awaitWrap(
+            userAPI.addRole({
+                name,
+            }),
+        );
+
+        if (err || !isRequestSuccess(resp)) {
+            return;
+        }
+
+        setAddModalVisible(false);
+        toast.success(getIntlText('common.message.add_success'));
+    });
+
+    const handleEditRole = useMemoizedFn(async (name: string): Promise<void> => {
+        if (!activeRole) return;
+
+        const [err, resp] = await awaitWrap(
+            userAPI.editRole({
+                roleId: activeRole.role_id,
+                name,
+            }),
+        );
+
+        if (err || !isRequestSuccess(resp)) {
+            return;
+        }
+
+        setAddModalVisible(false);
+        toast.success(getIntlText('common.message.add_success'));
     });
 
     const showAddModal = useMemoizedFn((type: MODAL_TYPE) => {
+        setModalType(type);
         setModalTitles(
             type === MODAL_TYPE.ADD
                 ? getIntlText('user.label.add_role')
@@ -79,5 +130,8 @@ export function useRole() {
         showAddModal,
         modalTitles,
         modalData,
+        modalType,
+        handleEditRole,
+        loading: true,
     };
 }
