@@ -147,7 +147,7 @@ export interface EntityAPISchema extends APISchema {
     editEntity: {
         request: {
             id: ApiKey;
-            entity_name: string;
+            name: string;
         };
         response: unknown;
     };
@@ -176,6 +176,18 @@ export interface EntityAPISchema extends APISchema {
         };
         response: unknown;
     };
+
+    /** 导出实体历史数据 */
+    exportEntityHistory: {
+        request: {
+            ids: ApiKey[];
+            /** 开始时间戳，单位 ms */
+            start_timestamp?: number;
+            /** 结束时间戳，单位 ms */
+            end_timestamp?: number;
+        };
+        response: unknown;
+    };
 }
 
 /**
@@ -194,8 +206,9 @@ export default attachAPI<EntityAPISchema>(client, {
         getEntityStatus: `GET ${API_PREFIX}/entity/:id/status`,
         getChildrenEntity: `GET ${API_PREFIX}/entity/:id/children`,
         deleteEntities: `POST ${API_PREFIX}/entity/delete`,
-        editEntity: `POST ${API_PREFIX}/entity/:id`,
+        editEntity: `PUT ${API_PREFIX}/entity/:id`,
         createCustomEntity: `POST ${API_PREFIX}/entity`,
         editCustomEntity: `PUT ${API_PREFIX}/entity/:entityId`,
+        exportEntityHistory: `GET ${API_PREFIX}/entity/export`,
     },
 });

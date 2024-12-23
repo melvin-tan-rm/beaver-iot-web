@@ -3,16 +3,26 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Stack } from '@mui/material';
 import { useRequest } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
+import { objectToCamelCase, xhrDownload } from '@milesight/shared/src/utils/tools';
+import { getCurrentComponentLang } from '@milesight/shared/src/services/i18n';
+import { getAuthorizationToken } from '@milesight/shared/src/utils/request/utils';
 import { IosShareIcon, toast } from '@milesight/shared/src/components';
 import { TablePro, useConfirm } from '@/components';
-import { entityAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
+import { DateRangePickerValueType } from '@/components/date-range-picker';
+import {
+    entityAPI,
+    awaitWrap,
+    getResponseData,
+    isRequestSuccess,
+    API_PREFIX,
+} from '@/services/http';
 import useColumns, {
     type UseColumnsProps,
     type TableRowDataType,
 } from '../../hooks/useEntityColumns';
 import Detail from '../detail';
 import EditEntity from '../edit-entity';
+import ExportModal from '../export-modal';
 
 export default () => {
     const navigate = useNavigate();
@@ -21,19 +31,10 @@ export default () => {
     const [keyword, setKeyword] = useState<string>();
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const [selectedIds, setSelectedIds] = useState<readonly ApiKey[]>([]);
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [exportVisible, setExportVisible] = useState<boolean>(false);
     const [detail, setDetail] = useState<TableRowDataType | null>(null);
     const [detailVisible, setDetailVisible] = useState<boolean>(false);
     const [editVisible, setEditVisible] = useState<boolean>(false);
-    const open = Boolean(anchorEl);
-
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
 
     const {
         data: entityData,
@@ -61,33 +62,48 @@ export default () => {
         },
     );
 
-    const confirm = useConfirm();
-    const handleExportConfirm = useCallback(
-        (ids?: ApiKey[]) => {
-            const idsToDelete = ids || [...selectedIds];
+    const handleShowExport = () => {
+        if (!selectedIds?.length) {
+            toast.error(
+                getIntlText('valid.resp.at_least_one', { 1: getIntlText('common.label.entity') }),
+            );
+            return;
+        }
+        setExportVisible(true);
+    };
 
-            confirm({
-                title: getIntlText('common.label.delete'),
-                description: getIntlText('device.message.delete_tip'),
-                confirmButtonText: getIntlText('common.label.delete'),
-                confirmButtonProps: {
-                    color: 'error',
-                },
-                onConfirm: async () => {
-                    const [error, resp] = await awaitWrap(
-                        entityAPI.deleteEntities({ entity_ids: idsToDelete }),
-                    );
+    const handleCloseExport = () => {
+        setExportVisible(false);
+    };
 
-                    if (error || !isRequestSuccess(resp)) return;
-
-                    getList();
-                    setSelectedIds([]);
-                    toast.success(getIntlText('common.message.operation_success'));
-                },
-            });
-        },
-        [confirm, getIntlText, getList, selectedIds],
-    );
+    const handleExportConfirm = async (time: DateRangePickerValueType | null) => {
+        if (!selectedIds?.length) {
+            return;
+        }
+        let url = `${API_PREFIX}/entity/export?`;
+        selectedIds.forEach((id: ApiKey) => {
+            url += `&ids=${id}`;
+        });
+        if (time?.start) {
+            url += `&start_timestamp=${time?.start.valueOf()}`;
+        }
+        if (time?.end) {
+            url += `&end_timestamp=${(time?.end.valueOf() || 0) + 86399000}`;
+        }
+        xhrDownload({
+            assets: url,
+            fileName: 'entity.csv',
+            header: {
+                'Accept-Language': getCurrentComponentLang(),
+                Authorization: getAuthorizationToken(),
+            },
+        }).then(() => {
+            getList();
+            setSelectedIds([]);
+            handleCloseExport();
+            toast.success(getIntlText('common.message.operation_success'));
+        });
+    };
 
     /** Details event related */
     const handleDetail = (data: TableRowDataType) => {
@@ -113,7 +129,7 @@ export default () => {
 
     const handleEdit = async (name: string) => {
         const [error, resp] = await awaitWrap(
-            entityAPI.editEntity({ id: detail?.entityId || '', entity_name: name }),
+            entityAPI.editEntity({ name, id: detail?.entityId || '' }),
         );
 
         if (error || !isRequestSuccess(resp)) return;
@@ -130,11 +146,8 @@ export default () => {
                 <Button
                     variant="outlined"
                     sx={{ height: 36, textTransform: 'none' }}
-                    aria-controls={open ? 'add-menu' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? 'true' : undefined}
                     startIcon={<IosShareIcon />}
-                    onClick={handleClick}
+                    onClick={handleShowExport}
                 >
                     {getIntlText('common.label.export')}
                 </Button>
@@ -186,6 +199,9 @@ export default () => {
             {!!detailVisible && !!detail && <Detail onCancel={handleDetailClose} detail={detail} />}
             {!!editVisible && !!detail && (
                 <EditEntity onCancel={handleEditClose} onOk={handleEdit} data={detail} />
+            )}
+            {!!exportVisible && (
+                <ExportModal onCancel={handleCloseExport} onOk={handleExportConfirm} />
             )}
         </div>
     );

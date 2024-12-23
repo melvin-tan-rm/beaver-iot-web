@@ -76,6 +76,21 @@
     }
 
     &-detail {
+        &-contain {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        &-table {
+            flex: 1;
+            height: 0;
+
+            & .@{prefix}-table-pro {
+                height: calc(100vh - 300px);
+            }
+        }
+
         &-table-header {
             display: flex;
             align-items: center;

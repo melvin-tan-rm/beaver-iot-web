@@ -349,6 +349,10 @@ interface DownloadOptions {
      * @param percent 下载进度百分比
      */
     onProgress?: (percent: number) => void;
+    /**
+     * 自定义请求头
+     */
+    header?: Record<string, string>;
 }
 interface xhrDownloadResponse<T> {
     /**
@@ -376,6 +380,7 @@ export const xhrDownload = ({
     assets,
     fileName,
     onProgress,
+    header,
 }: DownloadOptions): xhrDownloadResponse<string> => {
     if (!assets) {
         throw new Error('assets is required');
@@ -390,6 +395,7 @@ export const xhrDownload = ({
         // 利用axios下载文件
         axios
             .request({
+                headers: header,
                 url: fileUrl,
                 method: 'GET',
                 responseType: 'blob',

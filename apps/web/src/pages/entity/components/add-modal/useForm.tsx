@@ -54,6 +54,9 @@ const useForm = (props: FormProps) => {
                     message: 'Username can only contain letters, numbers, and underscores',
                 },
             },
+            props: {
+                disabled: !!defaultValues,
+            },
         },
         {
             label: getIntlText('entity.label.entity_type_of_access'),

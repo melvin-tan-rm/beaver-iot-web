@@ -193,7 +193,7 @@ export default () => {
                     data={detail}
                 />
             )}
-            {workflowModalOpen && !!detail && (
+            {workflowModalOpen && (
                 <AddFromWorkflow
                     onCancel={() => setWorkflowModalOpen(false)}
                     onOk={() => {
