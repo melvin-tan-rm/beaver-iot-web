@@ -9,3 +9,4 @@ export { default as DateRangePicker } from './date-range-picker';
 export { default as RouteLoadingIndicator } from './route-loading-indicator';
 export { default as Empty } from './empty';
 export { default as TableTransfer } from './table-transfer';
+export { default as Transfer } from './transfer';
