@@ -11,5 +11,6 @@
     "user.role.user_nickname": "User Name",
     "user.role.single_member_remove_tip": "Are you sure you to remove member: {0}?",
     "user.role.bulk_member_remove_tip": "Are you sure to remove these {0} members in bulk?",
-    "user.role.add_user_member_modal_title": "Add Member"
+    "user.role.add_user_member_modal_title": "Add Member",
+    "user.role.delete_tip": "Deletion cannot be restored. Are you sure to delete role: {0}?"
 }

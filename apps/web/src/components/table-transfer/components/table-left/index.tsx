@@ -10,6 +10,10 @@ export interface TableLeftProps<T extends GridValidRowModel> {
     leftRows: readonly T[];
     leftCheckedIds: readonly ApiKey[];
     setLeftCheckedIds: React.Dispatch<React.SetStateAction<readonly ApiKey[]>>;
+    /**
+     * show time sort
+     */
+    showTimeSort?: boolean;
     tableProps: TableProProps<T>;
 }
 
@@ -18,7 +22,7 @@ export interface TableLeftProps<T extends GridValidRowModel> {
  */
 
 const TableLeft = <T extends GridValidRowModel>(props: TableLeftProps<T>) => {
-    const { leftRows, leftCheckedIds, setLeftCheckedIds, tableProps } = props;
+    const { leftRows, leftCheckedIds, setLeftCheckedIds, tableProps, showTimeSort } = props;
 
     const { getIntlText } = useI18n();
 
@@ -40,7 +44,7 @@ const TableLeft = <T extends GridValidRowModel>(props: TableLeftProps<T>) => {
             {...tableProps}
             checkboxSelection
             toolbarRender={renderTopBar()}
-            toolbarSort={<TableSort />}
+            toolbarSort={showTimeSort ? <TableSort /> : undefined}
             rows={leftRows}
             rowCount={leftRows?.length || 0}
             rowSelectionModel={leftCheckedIds}

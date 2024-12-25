@@ -19,6 +19,10 @@ export interface TableRightProps<T extends GridValidRowModel> {
      * table default top bar sort field
      */
     sortField?: string;
+    /**
+     * show time sort
+     */
+    showTimeSort?: boolean;
 }
 
 /**
@@ -33,6 +37,7 @@ export const TableRight = <T extends GridValidRowModel>(props: TableRightProps<T
         setRightCheckedIds,
         selectedFilter,
         sortField = 'createdAt',
+        showTimeSort,
     } = props;
     const { columns, getRowId } = tableProps || {};
 
@@ -93,7 +98,7 @@ export const TableRight = <T extends GridValidRowModel>(props: TableRightProps<T
         <TablePro<T>
             checkboxSelection
             toolbarRender={renderTopBar()}
-            toolbarSort={<TableSort onOperation={setSort} />}
+            toolbarSort={showTimeSort ? <TableSort onOperation={setSort} /> : undefined}
             columns={columns}
             getRowId={getRowId}
             rows={sortedRightRows}

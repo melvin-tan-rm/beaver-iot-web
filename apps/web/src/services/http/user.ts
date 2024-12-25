@@ -69,7 +69,9 @@ export interface UserAPISchema extends APISchema {
         response: void;
     };
     getAllRoles: {
-        request: SearchRequestType;
+        request: SearchRequestType & {
+            keyword?: string;
+        };
         response: SearchResponseType<RoleType[]>;
     };
     /**
@@ -104,7 +106,7 @@ export default attachAPI<UserAPISchema>(client, {
         editRole: `PUT ${API_PREFIX}/user/roles/:roleId`,
         deleteRole: `DELETE ${API_PREFIX}/user/roles/:roleId`,
         getAllRoles: `POST ${API_PREFIX}/user/roles/search`,
-        getRoleAllUsers: `GET ${API_PREFIX}/user/roles/:role_id/members`,
-        getRoleUndistributedUsers: `GET ${API_PREFIX}/user/roles/:role_id/undistributed-users`,
+        getRoleAllUsers: `POST ${API_PREFIX}/user/roles/:role_id/members`,
+        getRoleUndistributedUsers: `POST ${API_PREFIX}/user/roles/:role_id/undistributed-users`,
     },
 });

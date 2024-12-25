@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useI18n, useTime } from '@milesight/shared/src/hooks';
+import { useI18n } from '@milesight/shared/src/hooks';
 import { type ColumnType } from '@/components';
 import { type UserAPISchema } from '@/services/http';
 
@@ -9,7 +9,6 @@ export type TableRowDataType = ObjectToCamelCase<
 
 const useColumns = <T extends TableRowDataType>() => {
     const { getIntlText } = useI18n();
-    const { getTimeFormat } = useTime();
 
     const columns: ColumnType<T>[] = useMemo(() => {
         return [
@@ -29,18 +28,8 @@ const useColumns = <T extends TableRowDataType>() => {
                 minWidth: 150,
                 ellipsis: true,
             },
-            {
-                field: 'createdAt',
-                headerName: getIntlText('common.label.create_time'),
-                flex: 1,
-                minWidth: 150,
-                ellipsis: true,
-                renderCell({ value }) {
-                    return getTimeFormat(value);
-                },
-            },
         ];
-    }, [getIntlText, getTimeFormat]);
+    }, [getIntlText]);
 
     return columns;
 };

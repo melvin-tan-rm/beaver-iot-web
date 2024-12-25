@@ -7,6 +7,7 @@ import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
 import { toast, AddIcon, RemoveCircleOutlineIcon } from '@milesight/shared/src/components';
 import { TablePro, useConfirm } from '@/components';
 import { userAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
+import useUserRoleStore from '@/pages/user-role/store';
 
 import { AddMemberModal } from './components';
 import { useMembers } from './hooks';
@@ -18,6 +19,7 @@ import { useColumns, type UseColumnsProps, type TableRowDataType } from './hooks
  */
 const Members: React.FC = () => {
     const { getIntlText } = useI18n();
+    const { activeRole } = useUserRoleStore();
 
     // ---------- user member list ----------
     const [keyword, setKeyword] = useState<string>('');
@@ -30,39 +32,26 @@ const Members: React.FC = () => {
         run: getUserMembers,
     } = useRequest(
         async () => {
+            if (!activeRole) return;
+
             const { page, pageSize } = paginationModel;
-            // const [error, resp] = await awaitWrap(
-            //     userAPI.getRoleAllUsers({
-            //         keyword,
-            //         role_id: '123',
-            //         page_size: pageSize,
-            //         page_number: page + 1,
-            //     }),
-            // );
-            // const data = getResponseData(resp);
+            const [error, resp] = await awaitWrap(
+                userAPI.getRoleAllUsers({
+                    keyword,
+                    role_id: activeRole.roleId,
+                    page_size: pageSize,
+                    page_number: page + 1,
+                }),
+            );
+            const respData = getResponseData(resp);
 
-            // if (error || !data || !isRequestSuccess(resp)) return;
+            if (error || !respData || !isRequestSuccess(resp)) return;
 
-            const mockData = Array.from({ length: 12 }).map<{
-                userId: ApiKey;
-                roleId: ApiKey;
-                userNickname: string;
-                userEmail: string;
-            }>((_, i) => ({
-                userId: i.toString(),
-                roleId: i.toString(),
-                userNickname: `name ${i + 1}`,
-                userEmail: `email${i + 1}@gmail.com`,
-            }));
-
-            return {
-                total: mockData.length,
-                content: mockData,
-            };
+            return objectToCamelCase(respData);
         },
         {
             debounceWait: 300,
-            refreshDeps: [keyword, paginationModel],
+            refreshDeps: [keyword, paginationModel, activeRole],
         },
     );
 

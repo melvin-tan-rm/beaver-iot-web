@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { isEmpty } from 'lodash-es';
+import { isEmpty, isNil } from 'lodash-es';
 import classNames from 'classnames';
 import { Button, OutlinedInput, InputAdornment, Typography } from '@mui/material';
 
@@ -10,6 +10,7 @@ import {
     LoadingWrapper,
 } from '@milesight/shared/src/components';
 import { useI18n } from '@milesight/shared/src/hooks';
+
 import { Empty } from '@/components';
 import { type RoleType } from '@/services/http';
 
@@ -39,21 +40,22 @@ const Role: React.FC = () => {
         modalType,
         handleEditRole,
         loading,
+        searchKeyword,
     } = useRole();
 
     const roleItemCls = useCallback(
-        (currentItem: RoleType) => {
+        (currentItem: ObjectToCamelCase<RoleType>) => {
             return classNames(styles.item, {
-                [styles.active]: currentItem.name === activeRole?.name,
+                [styles.active]: currentItem.roleId === activeRole?.roleId,
             });
         },
         [activeRole],
     );
 
-    const renderRoleItem = (item: RoleType) => {
+    const renderRoleItem = (item: ObjectToCamelCase<RoleType>) => {
         return (
             <div
-                key={item.role_id}
+                key={item.roleId}
                 className={roleItemCls(item)}
                 onClick={() => handleRoleClick(item)}
             >
@@ -73,7 +75,7 @@ const Role: React.FC = () => {
     };
 
     const renderRole = () => {
-        if (!Array.isArray(roleData) || isEmpty(roleData)) {
+        if ((!Array.isArray(roleData) || isEmpty(roleData)) && isNil(searchKeyword)) {
             return (
                 <div className={styles.empty}>
                     <LoadingWrapper loading={loading}>
@@ -96,6 +98,20 @@ const Role: React.FC = () => {
             );
         }
 
+        const renderRoleList = () => {
+            if (!Array.isArray(roleData) || isEmpty(roleData) || loading) {
+                return (
+                    <LoadingWrapper loading={loading}>
+                        <div className={styles['empty-role']}>
+                            {!loading && <Empty text={getIntlText('common.label.empty')} />}
+                        </div>
+                    </LoadingWrapper>
+                );
+            }
+
+            return roleData.map(data => renderRoleItem(data));
+        };
+
         return (
             <>
                 <div className={styles.aside}>
@@ -110,9 +126,7 @@ const Role: React.FC = () => {
                         }
                     />
 
-                    <div className={styles['role-wrapper']}>
-                        {roleData.map(item => renderRoleItem(item))}
-                    </div>
+                    <div className={styles['role-container']}>{renderRoleList()}</div>
 
                     <div className={styles['add-btn']}>
                         <Button

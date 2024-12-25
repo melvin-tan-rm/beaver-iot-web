@@ -1,34 +1,14 @@
 import React, { useState } from 'react';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useRequest } from 'ahooks';
 
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Modal, type ModalProps } from '@milesight/shared/src/components';
+import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
+
+import { userAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
+import useUserRoleStore from '@/pages/user-role/store';
 import { TableTransfer } from '@/components';
-
 import { type TableRowDataType, useColumns } from './hooks';
-
-function getRandomTimeToday() {
-    const now = new Date();
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
-
-    const randomTime = new Date(
-        startOfDay.getTime() + Math.random() * (endOfDay.getTime() - startOfDay.getTime()),
-    );
-    return randomTime;
-}
-
-const mockData = Array.from({ length: 22 }).map<{
-    userId: ApiKey;
-    nickname: string;
-    email: string;
-    createdAt: number;
-}>((_, i) => ({
-    userId: i.toString(),
-    nickname: `name H ${i + 1}`,
-    email: `email${i + 1}@gmail.com`,
-    createdAt: getRandomTimeToday().getTime(),
-}));
 
 /**
  * add member modal
@@ -36,6 +16,7 @@ const mockData = Array.from({ length: 22 }).map<{
 const AddMemberModal: React.FC<ModalProps> = props => {
     const { visible, onOk, ...restProps } = props;
 
+    const { activeRole } = useUserRoleStore();
     const { getIntlText } = useI18n();
     const columns = useColumns();
 
@@ -43,12 +24,40 @@ const AddMemberModal: React.FC<ModalProps> = props => {
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const [chosenMember, setChosenMember] = useState<TableRowDataType[]>([]);
 
-    const handleOk = useMemoizedFn(() => {
-        onOk?.();
+    const { data: undistributedMembers, loading } = useRequest(
+        async () => {
+            if (!activeRole) return;
 
-        console.log('handleOk ? ', chosenMember);
+            const { page, pageSize } = paginationModel;
+            const [error, resp] = await awaitWrap(
+                userAPI.getRoleUndistributedUsers({
+                    keyword,
+                    role_id: activeRole.roleId,
+                    page_size: pageSize,
+                    page_number: page + 1,
+                }),
+            );
+            const respData = getResponseData(resp);
+
+            if (error || !respData || !isRequestSuccess(resp)) return;
+
+            return objectToCamelCase(respData);
+        },
+        {
+            debounceWait: 300,
+            refreshDeps: [keyword, paginationModel, activeRole],
+        },
+    );
+
+    const handleOk = useMemoizedFn(() => {
+        // onOk?.();
+
+        console.log('handleOk ? ', chosenMember, undistributedMembers);
     });
 
+    /**
+     * right table selected items filter method
+     */
     const handleSelectedFilter = useMemoizedFn((keyword, row: TableRowDataType) => {
         return (
             row.nickname?.toLowerCase()?.includes(keyword) ||
@@ -76,7 +85,7 @@ const AddMemberModal: React.FC<ModalProps> = props => {
                         selectedFilter={handleSelectedFilter}
                         sortField="createdAt"
                         tableProps={{
-                            rows: mockData,
+                            rows: undistributedMembers as any,
                             columns,
                             getRowId: row => row.userId,
                             paginationModel,

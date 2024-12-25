@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useMemoizedFn } from 'ahooks';
 import { isNil } from 'lodash-es';
 
@@ -23,23 +23,6 @@ const useTransfer = <T extends GridValidRowModel>(props?: UseTransferProps<T>) =
     const [rightCheckedIds, setRightCheckedIds] = useState<readonly ApiKey[]>([]);
 
     /**
-     * Getting data that is common to both arrays
-     */
-    const intersection = useMemoizedFn((a: readonly T[], b: readonly T[]) => {
-        return a.filter(item => {
-            if (getRowId) {
-                return b.some(target => getRowId(item) === getRowId(target));
-            }
-
-            if (!isNil(item?.id)) {
-                return b.some(target => item.id === target.id);
-            }
-
-            return false;
-        });
-    });
-
-    /**
      * Getting the data in the a array that does not exist in the b array
      */
     const notExisted = useMemoizedFn((a: readonly T[], b: readonly T[]) => {
@@ -57,11 +40,11 @@ const useTransfer = <T extends GridValidRowModel>(props?: UseTransferProps<T>) =
     });
 
     /**
-     * Union the data in the a array that does not exist in the b array
+     * update left data
      */
-    const union = useMemoizedFn((a: T[], b: T[]) => {
-        return [...a, ...notExisted(b, a)];
-    });
+    useEffect(() => {
+        setLeft(notExisted(rows || [], right));
+    }, [rows, notExisted, right]);
 
     /**
      * Getting left intersection
@@ -92,7 +75,6 @@ const useTransfer = <T extends GridValidRowModel>(props?: UseTransferProps<T>) =
         const newRight = right.concat(leftChecked);
 
         setRight(newRight);
-        setLeft(notExisted(left, leftChecked));
         setLeftCheckedIds([]);
 
         onChosen?.(newRight);
@@ -104,7 +86,6 @@ const useTransfer = <T extends GridValidRowModel>(props?: UseTransferProps<T>) =
     const handleCheckedLeft = useMemoizedFn(() => {
         const newRight = notExisted(right, rightChecked);
 
-        setLeft(left.concat(rightChecked));
         setRight(notExisted(right, rightChecked));
         setRightCheckedIds([]);
 
