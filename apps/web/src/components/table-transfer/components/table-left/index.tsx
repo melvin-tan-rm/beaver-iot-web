@@ -46,7 +46,6 @@ const TableLeft = <T extends GridValidRowModel>(props: TableLeftProps<T>) => {
             toolbarRender={renderTopBar()}
             toolbarSort={showTimeSort ? <TableSort /> : undefined}
             rows={leftRows}
-            rowCount={leftRows?.length || 0}
             rowSelectionModel={leftCheckedIds}
             onRowSelectionModelChange={setLeftCheckedIds}
         />

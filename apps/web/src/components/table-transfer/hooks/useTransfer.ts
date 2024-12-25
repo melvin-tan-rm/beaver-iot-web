@@ -7,14 +7,14 @@ import { type GridValidRowModel } from '@mui/x-data-grid';
 export interface UseTransferProps<T> {
     rows?: readonly T[];
     getRowId?: (row: T) => ApiKey;
-    onChosen: (values: T[]) => void;
+    onChange: (values: T[]) => void;
 }
 
 /**
  * transfer data hooks
  */
 const useTransfer = <T extends GridValidRowModel>(props?: UseTransferProps<T>) => {
-    const { rows = [], getRowId, onChosen } = props || {};
+    const { rows = [], getRowId, onChange } = props || {};
 
     const [checked, setChecked] = useState<T[]>([]);
     const [left, setLeft] = useState<readonly T[]>(rows);
@@ -77,7 +77,7 @@ const useTransfer = <T extends GridValidRowModel>(props?: UseTransferProps<T>) =
         setRight(newRight);
         setLeftCheckedIds([]);
 
-        onChosen?.(newRight);
+        onChange?.(newRight);
     });
 
     /**
@@ -89,7 +89,7 @@ const useTransfer = <T extends GridValidRowModel>(props?: UseTransferProps<T>) =
         setRight(notExisted(right, rightChecked));
         setRightCheckedIds([]);
 
-        onChosen?.(newRight);
+        onChange?.(newRight);
     });
 
     return {

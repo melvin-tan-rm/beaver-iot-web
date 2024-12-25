@@ -87,17 +87,29 @@ const Members: React.FC = () => {
             title: title(),
             description: description(),
             confirmButtonText: getIntlText('common.label.remove'),
-            onConfirm: () => {
-                console.log('remove users', idsToDelete);
+            onConfirm: async () => {
+                if (!activeRole) return;
+
+                const [err, resp] = await awaitWrap(
+                    userAPI.removeUsersFromRole({
+                        role_id: activeRole.roleId,
+                        user_ids: idsToDelete,
+                    }),
+                );
+
+                if (err || !isRequestSuccess(resp)) {
+                    return;
+                }
 
                 getUserMembers();
                 setSelectedIds([]);
-                toast.success('移除成功');
+                toast.success(getIntlText('common.message.remove_success'));
             },
         });
     });
 
-    const { showAddModal, handleModalCancel, addModalVisible } = useMembers();
+    const { showAddModal, handleModalCancel, addModalVisible, handleModalOk } =
+        useMembers(getUserMembers);
 
     // ---------- Table render bar ----------
     const toolbarRender = useMemo(() => {
@@ -161,7 +173,7 @@ const Members: React.FC = () => {
             <AddMemberModal
                 visible={addModalVisible}
                 onCancel={handleModalCancel}
-                onOk={handleModalCancel}
+                onOk={handleModalOk}
             />
         </>
     );

@@ -4,7 +4,7 @@ import { useMemoizedFn } from 'ahooks';
 /**
  * members operate hooks
  */
-const useMembers = () => {
+const useMembers = (getUserMembers?: () => void) => {
     // ---------- add new members ------------------------
     const [addModalVisible, setAddModalVisible] = useState(false);
 
@@ -17,9 +17,7 @@ const useMembers = () => {
     });
 
     const handleModalOk = useMemoizedFn(() => {
-        // TODO: add new members logic
-        console.log('add new members');
-
+        getUserMembers?.();
         setAddModalVisible(false);
     });
 
@@ -27,6 +25,7 @@ const useMembers = () => {
         addModalVisible,
         showAddModal,
         handleModalCancel,
+        handleModalOk,
     };
 };
 

@@ -3,10 +3,11 @@ import { useMemoizedFn } from 'ahooks';
 import { Tabs, Tab } from '@mui/material';
 
 import { useI18n } from '@milesight/shared/src/hooks';
-import { TabPanel, TableTransfer } from '@/components';
+import { TabPanel } from '@/components';
 
 import { ROLE_MAIN_TABS } from '../../constants';
 import Members from '../members';
+import Functions from '../functions';
 
 import styles from './style.module.less';
 
@@ -37,7 +38,7 @@ const RoleBody: React.FC = () => {
                 label: getIntlText('user.role.tab_title_functions'),
                 title: getIntlText('user.role.tab_title_functions'),
                 value: ROLE_MAIN_TABS.FUNCTIONS,
-                content: 'functions',
+                content: <Functions />,
             },
             {
                 label: getIntlText('user.role.tab_title_resources'),

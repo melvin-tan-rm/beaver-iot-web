@@ -56,7 +56,7 @@ export interface UserAPISchema extends APISchema {
     };
     editRole: {
         request: {
-            roleId: ApiKey;
+            role_id: ApiKey;
             name: string;
             description?: string;
         };
@@ -64,7 +64,7 @@ export interface UserAPISchema extends APISchema {
     };
     deleteRole: {
         request: {
-            roleId: ApiKey;
+            role_id: ApiKey;
         };
         response: void;
     };
@@ -94,6 +94,26 @@ export interface UserAPISchema extends APISchema {
         };
         response: SearchResponseType<RoleUndistributedUserType[]>;
     };
+    /**
+     * distributed users under the role
+     */
+    distributeUsersToRole: {
+        request: {
+            role_id: ApiKey;
+            user_ids: ApiKey[];
+        };
+        response: void;
+    };
+    /**
+     * Remove users from the role
+     */
+    removeUsersFromRole: {
+        request: {
+            role_id: ApiKey;
+            user_ids: ApiKey[];
+        };
+        response: void;
+    };
 }
 
 /**
@@ -103,10 +123,12 @@ export default attachAPI<UserAPISchema>(client, {
     apis: {
         addUserMember: `POST ${API_PREFIX}/user/members`,
         addRole: `POST ${API_PREFIX}/user/roles`,
-        editRole: `PUT ${API_PREFIX}/user/roles/:roleId`,
-        deleteRole: `DELETE ${API_PREFIX}/user/roles/:roleId`,
+        editRole: `PUT ${API_PREFIX}/user/roles/:role_id`,
+        deleteRole: `DELETE ${API_PREFIX}/user/roles/:role_id`,
         getAllRoles: `POST ${API_PREFIX}/user/roles/search`,
         getRoleAllUsers: `POST ${API_PREFIX}/user/roles/:role_id/members`,
         getRoleUndistributedUsers: `POST ${API_PREFIX}/user/roles/:role_id/undistributed-users`,
+        distributeUsersToRole: `POST ${API_PREFIX}/user/roles/:role_id/associate-user`,
+        removeUsersFromRole: `POST ${API_PREFIX}/user/roles/:role_id/disassociate-user`,
     },
 });

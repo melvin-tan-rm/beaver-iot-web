@@ -105,7 +105,7 @@ export function useRole() {
 
         const [err, resp] = await awaitWrap(
             userAPI.editRole({
-                roleId: activeRole.roleId,
+                role_id: activeRole.roleId,
                 name,
             }),
         );
@@ -159,7 +159,7 @@ export function useRole() {
 
                 const [err, resp] = await awaitWrap(
                     userAPI.deleteRole({
-                        roleId: activeRole.roleId,
+                        role_id: activeRole.roleId,
                     }),
                 );
 

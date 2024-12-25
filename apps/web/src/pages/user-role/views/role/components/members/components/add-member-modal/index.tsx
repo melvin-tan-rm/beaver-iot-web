@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMemoizedFn, useRequest } from 'ahooks';
+import { isEmpty } from 'lodash-es';
 
 import { useI18n } from '@milesight/shared/src/hooks';
-import { Modal, type ModalProps } from '@milesight/shared/src/components';
+import { Modal, type ModalProps, toast } from '@milesight/shared/src/components';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
 
 import { userAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
@@ -24,9 +25,13 @@ const AddMemberModal: React.FC<ModalProps> = props => {
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const [chosenMember, setChosenMember] = useState<TableRowDataType[]>([]);
 
-    const { data: undistributedMembers, loading } = useRequest(
+    const {
+        run: getUndistributedMembers,
+        data: undistributedMembers,
+        loading,
+    } = useRequest(
         async () => {
-            if (!activeRole) return;
+            if (!activeRole || !visible) return;
 
             const { page, pageSize } = paginationModel;
             const [error, resp] = await awaitWrap(
@@ -45,14 +50,40 @@ const AddMemberModal: React.FC<ModalProps> = props => {
         },
         {
             debounceWait: 300,
-            refreshDeps: [keyword, paginationModel, activeRole],
+            refreshDeps: [keyword, paginationModel, activeRole, visible],
         },
     );
 
-    const handleOk = useMemoizedFn(() => {
-        // onOk?.();
+    /**
+     * change role to initial pagination model
+     */
+    useEffect(() => {
+        setPaginationModel({ page: 0, pageSize: 10 });
+    }, [activeRole]);
 
-        console.log('handleOk ? ', chosenMember, undistributedMembers);
+    const handleOk = useMemoizedFn(async () => {
+        if (!Array.isArray(chosenMember) || isEmpty(chosenMember)) {
+            toast.info(getIntlText('common.placeholder.select'));
+            return;
+        }
+
+        /**
+         * distribute Users To the Role
+         */
+        if (!activeRole) return;
+        const [err, resp] = await awaitWrap(
+            userAPI.distributeUsersToRole({
+                role_id: activeRole.roleId,
+                user_ids: chosenMember.map(item => item.userId),
+            }),
+        );
+
+        if (err || !isRequestSuccess(resp)) {
+            return;
+        }
+
+        onOk?.();
+        toast.success(getIntlText('common.message.add_success'));
     });
 
     /**
@@ -81,16 +112,19 @@ const AddMemberModal: React.FC<ModalProps> = props => {
                     {...restProps}
                 >
                     <TableTransfer<TableRowDataType>
-                        onChosen={setChosenMember}
+                        onChange={setChosenMember}
                         selectedFilter={handleSelectedFilter}
                         sortField="createdAt"
                         tableProps={{
-                            rows: undistributedMembers as any,
+                            loading,
+                            rows: undistributedMembers?.content,
+                            rowCount: undistributedMembers?.total || 0,
                             columns,
                             getRowId: row => row.userId,
                             paginationModel,
                             onPaginationModelChange: setPaginationModel,
                             onSearch: setKeyword,
+                            onRefreshButtonClick: getUndistributedMembers,
                         }}
                     />
                 </Modal>

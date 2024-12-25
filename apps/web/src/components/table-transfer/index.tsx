@@ -10,7 +10,7 @@ import { useTransfer } from './hooks';
 import './style.less';
 
 export interface TableTransferProps<T extends GridValidRowModel> {
-    onChosen: (values: T[]) => void;
+    onChange: (values: T[]) => void;
     /**
      * Methods for filtering selected data
      */
@@ -30,7 +30,7 @@ export interface TableTransferProps<T extends GridValidRowModel> {
  * Table Transfer component
  */
 const TableTransfer = <T extends GridValidRowModel>(props: TableTransferProps<T>) => {
-    const { onChosen, selectedFilter, sortField, showTimeSort, tableProps } = props;
+    const { onChange, selectedFilter, sortField, showTimeSort, tableProps } = props;
     const { rows, getRowId } = tableProps || {};
 
     const {
@@ -45,7 +45,7 @@ const TableTransfer = <T extends GridValidRowModel>(props: TableTransferProps<T>
     } = useTransfer<T>({
         rows,
         getRowId,
-        onChosen,
+        onChange,
     });
 
     return (
@@ -56,7 +56,7 @@ const TableTransfer = <T extends GridValidRowModel>(props: TableTransferProps<T>
                     leftCheckedIds={leftCheckedIds}
                     setLeftCheckedIds={setLeftCheckedIds}
                     tableProps={tableProps}
-                    showTimeSort={false}
+                    showTimeSort={showTimeSort}
                 />
             </div>
             <div className="ms-table-transfer__operation">
@@ -85,7 +85,7 @@ const TableTransfer = <T extends GridValidRowModel>(props: TableTransferProps<T>
                     setRightCheckedIds={setRightCheckedIds}
                     selectedFilter={selectedFilter}
                     sortField={sortField}
-                    showTimeSort={false}
+                    showTimeSort={showTimeSort}
                 />
             </div>
         </div>

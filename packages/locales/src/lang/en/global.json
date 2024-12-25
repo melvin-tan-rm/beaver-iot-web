@@ -156,6 +156,7 @@
     "common.label.rename": "Rename",
     "common.label.remove": "Remove",
     "common.label.removal": "Removal",
+    "common.message.remove_success": "Remove successfully.",
     "common.label.bulk_removal": "Bulk Removal",
     "common.label.choices": "Choices",
     "common.label.chosen": "Chosen",
