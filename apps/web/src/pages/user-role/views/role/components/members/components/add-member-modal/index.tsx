@@ -55,10 +55,12 @@ const AddMemberModal: React.FC<ModalProps> = props => {
     );
 
     /**
-     * change role to initial pagination model
+     *  initial data
      */
     useEffect(() => {
         if (!visible) {
+            setKeyword('');
+            setChosenMember([]);
             setPaginationModel({ page: 0, pageSize: 10 });
         }
     }, [visible]);

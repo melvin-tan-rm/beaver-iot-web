@@ -9,13 +9,13 @@ import { TablePro, useConfirm } from '@/components';
 import { userAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import useUserRoleStore from '@/pages/user-role/store';
 
-import { AddMemberModal } from './components';
-import { useMembers, useColumns, type UseColumnsProps, type TableRowDataType } from './hooks';
+import { useIntegrations, useColumns, type UseColumnsProps, type TableRowDataType } from './hooks';
+import AddIntegrationModal from '../add-integration-modal';
 
 /**
- * User members under the role
+ * User resources integration list component
  */
-const Members: React.FC = () => {
+const IntegrationPermission: React.FC = () => {
     const { getIntlText } = useI18n();
     const { activeRole } = useUserRoleStore();
 
@@ -25,16 +25,16 @@ const Members: React.FC = () => {
     const [selectedIds, setSelectedIds] = useState<readonly ApiKey[]>([]);
 
     const {
-        data: userMembers,
+        data: roleIntegrations,
         loading,
-        run: getUserMembers,
+        run: getRoleIntegrations,
     } = useRequest(
         async () => {
             if (!activeRole) return;
 
             const { page, pageSize } = paginationModel;
             const [error, resp] = await awaitWrap(
-                userAPI.getRoleAllUsers({
+                userAPI.getRoleAllIntegrations({
                     keyword,
                     role_id: activeRole.roleId,
                     page_size: pageSize,
@@ -69,14 +69,16 @@ const Members: React.FC = () => {
 
         const description = () => {
             if (idsToDelete?.length === 1) {
-                const selectedMember = userMembers?.content?.find(u => u.userId === idsToDelete[0]);
+                const selectedMember = roleIntegrations?.content?.find(
+                    u => u.integrationId === idsToDelete[0],
+                );
 
-                return getIntlText('user.role.single_member_remove_tip', {
-                    0: selectedMember?.userNickname || '',
+                return getIntlText('user.role.single_integration_remove_tip', {
+                    0: selectedMember?.integrationName || '',
                 });
             }
 
-            return getIntlText('user.role.bulk_member_remove_tip', {
+            return getIntlText('user.role.bulk_integration_remove_tip', {
                 0: idsToDelete.length,
             });
         };
@@ -89,9 +91,12 @@ const Members: React.FC = () => {
                 if (!activeRole) return;
 
                 const [err, resp] = await awaitWrap(
-                    userAPI.removeUsersFromRole({
+                    userAPI.removeResourceFromRole({
                         role_id: activeRole.roleId,
-                        user_ids: idsToDelete,
+                        resources: idsToDelete.map(id => ({
+                            id,
+                            type: 'INTEGRATION',
+                        })),
                     }),
                 );
 
@@ -99,7 +104,7 @@ const Members: React.FC = () => {
                     return;
                 }
 
-                getUserMembers();
+                getRoleIntegrations();
                 setSelectedIds([]);
                 toast.success(getIntlText('common.message.remove_success'));
             },
@@ -107,7 +112,7 @@ const Members: React.FC = () => {
     });
 
     const { showAddModal, handleModalCancel, addModalVisible, handleModalOk } =
-        useMembers(getUserMembers);
+        useIntegrations(getRoleIntegrations);
 
     // ---------- Table render bar ----------
     const toolbarRender = useMemo(() => {
@@ -139,7 +144,7 @@ const Members: React.FC = () => {
         (type, record) => {
             switch (type) {
                 case 'remove': {
-                    handleRemoveConfirm([record.userId]);
+                    handleRemoveConfirm([record.integrationId]);
                     break;
                 }
                 default: {
@@ -157,18 +162,18 @@ const Members: React.FC = () => {
                 checkboxSelection
                 loading={loading}
                 columns={columns}
-                getRowId={row => row.userId}
-                rows={userMembers?.content}
-                rowCount={userMembers?.total || 0}
+                getRowId={row => row.integrationId}
+                rows={roleIntegrations?.content}
+                rowCount={roleIntegrations?.total || 0}
                 paginationModel={paginationModel}
                 rowSelectionModel={selectedIds}
                 toolbarRender={toolbarRender}
                 onPaginationModelChange={setPaginationModel}
                 onRowSelectionModelChange={setSelectedIds}
                 onSearch={setKeyword}
-                onRefreshButtonClick={getUserMembers}
+                onRefreshButtonClick={getRoleIntegrations}
             />
-            <AddMemberModal
+            <AddIntegrationModal
                 visible={addModalVisible}
                 onCancel={handleModalCancel}
                 onOk={handleModalOk}
@@ -177,4 +182,4 @@ const Members: React.FC = () => {
     );
 };
 
-export default Members;
+export default IntegrationPermission;

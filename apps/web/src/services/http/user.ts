@@ -45,6 +45,18 @@ export interface RoleUndistributedUserType {
     user_id: ApiKey;
 }
 
+export interface RoleIntegrationType {
+    integration_id: ApiKey;
+    integration_name: string;
+    device_num?: number;
+    entity_num?: number;
+}
+
+export interface RoleResourceType {
+    id: ApiKey;
+    type: 'ENTITY' | 'DEVICE' | 'INTEGRATION' | 'DASHBOARD' | 'WORKFLOW';
+}
+
 export interface UserAPISchema extends APISchema {
     addUserMember: {
         request: {
@@ -140,6 +152,34 @@ export interface UserAPISchema extends APISchema {
         };
         response: UserMenuType[];
     };
+    getRoleAllIntegrations: {
+        request: SearchRequestType & {
+            role_id: ApiKey;
+            keyword: string;
+        };
+        response: SearchResponseType<RoleIntegrationType[]>;
+    };
+    removeResourceFromRole: {
+        request: {
+            role_id: ApiKey;
+            resources: RoleResourceType[];
+        };
+        response: void;
+    };
+    getRoleUndistributedIntegrations: {
+        request: SearchRequestType & {
+            role_id: ApiKey;
+            keyword: string;
+        };
+        response: SearchResponseType<RoleIntegrationType[]>;
+    };
+    distributeResourcesToRole: {
+        request: {
+            role_id: ApiKey;
+            resources: RoleResourceType[];
+        };
+        response: void;
+    };
 }
 
 /**
@@ -159,5 +199,9 @@ export default attachAPI<UserAPISchema>(client, {
         getUserAllMenus: `GET ${API_PREFIX}/user/menus`,
         distributeMenusToRole: `POST ${API_PREFIX}/user/roles/:role_id/associate-menu`,
         getRoleAllMenus: `GET ${API_PREFIX}/user/roles/:role_id/menus`,
+        getRoleAllIntegrations: `POST ${API_PREFIX}/user/roles/:role_id/integrations`,
+        removeResourceFromRole: `POST ${API_PREFIX}/user/roles/:role_id/disassociate-resource`,
+        getRoleUndistributedIntegrations: `POST ${API_PREFIX}/user/roles/:role_id/undistributed-integrations`,
+        distributeResourcesToRole: `POST ${API_PREFIX}/user/roles/:role_id/associate-resource`,
     },
 });

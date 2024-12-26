@@ -8,3 +8,9 @@ export enum ROLE_MAIN_TABS {
     FUNCTIONS = 'functions',
     RESOURCES = 'resources',
 }
+
+export enum ROLE_RESOURCES_TABS {
+    INTEGRATION = 'integration',
+    DEVICE = 'device',
+    DASHBOARD = 'dashboard',
+}

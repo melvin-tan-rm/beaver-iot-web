@@ -15,5 +15,15 @@
     "user.role.delete_tip": "Deletion cannot be restored. Are you sure to delete role: {0}?",
     "user.role.title_table_model": "Model",
     "user.role.title_table_page": "Page",
-    "user.role.title_table_function": "Function"
+    "user.role.title_table_function": "Function",
+    "user.role.tab_title_resource_integration": "Integration Permission",
+    "user.role.tab_title_functions_resource_device": "Device Permission",
+    "user.role.tab_title_resources_resource_dashboard": "Dashboard Permission",
+    "user.role.title_table_integration_name": "Integration Name",
+    "user.role.title_table_integration_num_device": "Number of Devices",
+    "user.role.title_table_integration_num_entity": "Number of Entities",
+    "user.role.title_modal_integration_permission": "Add Integration Permission",
+    "user.role.integration_permission_add_tip": "添加集成后将允许访问该集成下的所有设备和独立设备外的实体数据。",
+    "user.role.single_integration_remove_tip": "After removal, access to all devices under the integration and independent entities will no longer be allowed. Are you sure to remove integration: {0}?",
+    "user.role.bulk_integration_remove_tip": "After removal, access to all devices under these integrations and independent entities will no longer be allowed. Are you sure to remove these {0} integrations in bulk？"
 }

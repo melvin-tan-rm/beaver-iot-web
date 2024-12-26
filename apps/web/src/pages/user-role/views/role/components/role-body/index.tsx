@@ -8,6 +8,7 @@ import { TabPanel } from '@/components';
 import { ROLE_MAIN_TABS } from '../../constants';
 import Members from '../members';
 import Functions from '../functions';
+import Resources from '../resources';
 
 import styles from './style.module.less';
 
@@ -21,8 +22,6 @@ const RoleBody: React.FC = () => {
     const [currentTab, setCurrentTab] = useState(ROLE_MAIN_TABS.MEMBERS);
 
     const handleTabChange = useMemoizedFn((e: React.SyntheticEvent, newValue: ROLE_MAIN_TABS) => {
-        console.log('handleTabChange ?  ', e, newValue);
-
         setCurrentTab(newValue);
     });
 
@@ -44,7 +43,7 @@ const RoleBody: React.FC = () => {
                 label: getIntlText('user.role.tab_title_resources'),
                 title: getIntlText('user.role.tab_title_resources'),
                 value: ROLE_MAIN_TABS.RESOURCES,
-                content: 'resources',
+                content: <Resources />,
             },
         ],
         [getIntlText],

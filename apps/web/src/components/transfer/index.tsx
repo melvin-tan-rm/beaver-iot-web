@@ -1,4 +1,5 @@
 import React from 'react';
+import { isEmpty } from 'lodash-es';
 
 import {
     List,
@@ -12,6 +13,7 @@ import {
 import { ChevronLeftIcon, ChevronRightIcon } from '@milesight/shared/src/components';
 import { useI18n } from '@milesight/shared/src/hooks';
 
+import Empty from '../empty';
 import { useTransfer } from './hooks';
 
 import type { TransferListProps, TransferItem } from './interface';
@@ -36,6 +38,31 @@ const TransferList: React.FC<TransferListProps> = props => {
         handleToggleAll,
         numberOfChecked,
     } = useTransfer(props);
+
+    const renderList = (items: readonly TransferItem[]) => {
+        if (!Array.isArray(items) || isEmpty(items)) {
+            return <Empty text={getIntlText('common.label.empty')} />;
+        }
+
+        return items.map(({ key, title }: TransferItem) => {
+            const labelId = `transfer-list-all-item-${key}-label`;
+
+            return (
+                <ListItemButton key={key} role="listitem" onClick={handleToggle({ key, title })}>
+                    <ListItemIcon>
+                        <Checkbox
+                            checked={checked.some(c => c.key === key)}
+                            tabIndex={-1}
+                            disableRipple
+                        />
+                    </ListItemIcon>
+                    <Typography id={labelId} variant="inherit" noWrap title={title}>
+                        {title}
+                    </Typography>
+                </ListItemButton>
+            );
+        });
+    };
 
     const customList = (title: React.ReactNode, items: readonly TransferItem[]) => {
         const statistics = `${numberOfChecked(items)}/${items.length}`;
@@ -64,8 +91,7 @@ const TransferList: React.FC<TransferListProps> = props => {
                 <Divider />
                 <List
                     sx={{
-                        width: 200,
-                        height: 230,
+                        height: 288,
                         bgcolor: 'background.paper',
                         overflow: 'auto',
                     }}
@@ -73,28 +99,7 @@ const TransferList: React.FC<TransferListProps> = props => {
                     component="div"
                     role="list"
                 >
-                    {items.map(({ key, title }: TransferItem) => {
-                        const labelId = `transfer-list-all-item-${key}-label`;
-
-                        return (
-                            <ListItemButton
-                                key={key}
-                                role="listitem"
-                                onClick={handleToggle({ key, title })}
-                            >
-                                <ListItemIcon>
-                                    <Checkbox
-                                        checked={checked.some(c => c.key === key)}
-                                        tabIndex={-1}
-                                        disableRipple
-                                    />
-                                </ListItemIcon>
-                                <Typography id={labelId} variant="inherit" noWrap title={title}>
-                                    {title}
-                                </Typography>
-                            </ListItemButton>
-                        );
-                    })}
+                    {renderList(items)}
                 </List>
             </div>
         );
@@ -127,3 +132,4 @@ const TransferList: React.FC<TransferListProps> = props => {
 };
 
 export default TransferList;
+export * from './interface';
