@@ -23,6 +23,15 @@ export interface RoleType {
     role_integration_count?: number;
 }
 
+export interface UserMenuType {
+    menu_id: ApiKey;
+    code: string;
+    name: string;
+    type: 'MENU' | 'FUNCTION';
+    parent_id: ApiKey;
+    children: UserMenuType[];
+}
+
 export interface RoleUserType {
     role_id: ApiKey;
     user_id: ApiKey;
@@ -114,6 +123,23 @@ export interface UserAPISchema extends APISchema {
         };
         response: void;
     };
+    getUserAllMenus: {
+        request: void;
+        response: UserMenuType[];
+    };
+    distributeMenusToRole: {
+        request: {
+            role_id: ApiKey;
+            menu_ids: ApiKey[];
+        };
+        response: void;
+    };
+    getRoleAllMenus: {
+        request: {
+            role_id: ApiKey;
+        };
+        response: UserMenuType[];
+    };
 }
 
 /**
@@ -130,5 +156,8 @@ export default attachAPI<UserAPISchema>(client, {
         getRoleUndistributedUsers: `POST ${API_PREFIX}/user/roles/:role_id/undistributed-users`,
         distributeUsersToRole: `POST ${API_PREFIX}/user/roles/:role_id/associate-user`,
         removeUsersFromRole: `POST ${API_PREFIX}/user/roles/:role_id/disassociate-user`,
+        getUserAllMenus: `GET ${API_PREFIX}/user/menus`,
+        distributeMenusToRole: `POST ${API_PREFIX}/user/roles/:role_id/associate-menu`,
+        getRoleAllMenus: `GET ${API_PREFIX}/user/roles/:role_id/menus`,
     },
 });
