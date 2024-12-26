@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useMemoizedFn } from 'ahooks';
 import { isNil } from 'lodash-es';
 
@@ -40,11 +40,71 @@ const useTransfer = <T extends GridValidRowModel>(props?: UseTransferProps<T>) =
     });
 
     /**
+     * Union the data in the a array that does not exist in the b array
+     */
+    const union = useMemoizedFn((a: readonly T[], b: readonly T[]) => {
+        return [...a, ...notExisted(b, a)];
+    });
+
+    /**
+     * Getting data that is common to both arrays
+     */
+    const intersection = useMemoizedFn((a: readonly T[], b: readonly T[]) => {
+        return a.filter(item => {
+            if (getRowId) {
+                return b.some(target => getRowId(item) === getRowId(target));
+            }
+
+            if (!isNil(item?.id)) {
+                return b.some(target => item.id === target.id);
+            }
+
+            return false;
+        });
+    });
+
+    const latestRight = useRef(right);
+    useEffect(() => {
+        latestRight.current = right;
+    }, [right]);
+
+    const latestGetRowId = useRef(getRowId);
+    useEffect(() => {
+        latestGetRowId.current = getRowId;
+    }, [getRowId]);
+
+    const latestIntersection = useRef(intersection);
+    useEffect(() => {
+        latestIntersection.current = intersection;
+    }, [intersection]);
+
+    /**
      * update left data
      */
     useEffect(() => {
-        setLeft(notExisted(rows || [], right));
-    }, [rows, notExisted, right]);
+        const newLeft = rows || [];
+        setLeft(newLeft);
+
+        /**
+         * update left table checked ids
+         */
+        const intersectionRows = latestIntersection.current(newLeft, latestRight.current);
+        setLeftCheckedIds(
+            intersectionRows
+                .map(r => {
+                    if (latestGetRowId?.current) {
+                        return latestGetRowId.current(r);
+                    }
+
+                    if (!isNil(r?.id)) {
+                        return r.id;
+                    }
+
+                    return null;
+                })
+                .filter(Boolean),
+        );
+    }, [rows]);
 
     /**
      * Getting left intersection
@@ -72,10 +132,9 @@ const useTransfer = <T extends GridValidRowModel>(props?: UseTransferProps<T>) =
      * Move the selected data to the right
      */
     const handleCheckedRight = useMemoizedFn(() => {
-        const newRight = right.concat(leftChecked);
+        const newRight = union(right, leftChecked);
 
         setRight(newRight);
-        setLeftCheckedIds([]);
 
         onChange?.(newRight);
     });
@@ -84,13 +143,25 @@ const useTransfer = <T extends GridValidRowModel>(props?: UseTransferProps<T>) =
      * Move the selected data to the left
      */
     const handleCheckedLeft = useMemoizedFn(() => {
-        const newRight = notExisted(right, rightChecked);
+        setLeftCheckedIds(prev => {
+            const newIds = [...prev];
 
-        setRight(notExisted(right, rightChecked));
+            return newIds.filter(id => !rightCheckedIds?.includes(id));
+        });
+
+        const newRight = notExisted(right, rightChecked);
+        setRight(newRight);
         setRightCheckedIds([]);
 
         onChange?.(newRight);
     });
+
+    /**
+     * is disabled move right button
+     */
+    const notMovedLeftChecked = useMemo(() => {
+        return notExisted(leftChecked, right);
+    }, [leftChecked, right, notExisted]);
 
     return {
         left,
@@ -105,6 +176,7 @@ const useTransfer = <T extends GridValidRowModel>(props?: UseTransferProps<T>) =
         setRightCheckedIds,
         handleCheckedRight,
         handleCheckedLeft,
+        notMovedLeftChecked,
     };
 };
 

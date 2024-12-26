@@ -58,8 +58,10 @@ const AddMemberModal: React.FC<ModalProps> = props => {
      * change role to initial pagination model
      */
     useEffect(() => {
-        setPaginationModel({ page: 0, pageSize: 10 });
-    }, [activeRole]);
+        if (!visible) {
+            setPaginationModel({ page: 0, pageSize: 10 });
+        }
+    }, [visible]);
 
     const handleOk = useMemoizedFn(async () => {
         if (!Array.isArray(chosenMember) || isEmpty(chosenMember)) {

@@ -42,6 +42,7 @@ const TableTransfer = <T extends GridValidRowModel>(props: TableTransferProps<T>
         setRightCheckedIds,
         handleCheckedLeft,
         handleCheckedRight,
+        notMovedLeftChecked,
     } = useTransfer<T>({
         rows,
         getRowId,
@@ -53,7 +54,9 @@ const TableTransfer = <T extends GridValidRowModel>(props: TableTransferProps<T>
             <div className="ms-table-transfer__list">
                 <TableLeft<T>
                     leftRows={left}
+                    notMovedLeftChecked={notMovedLeftChecked}
                     leftCheckedIds={leftCheckedIds}
+                    rightRows={right}
                     setLeftCheckedIds={setLeftCheckedIds}
                     tableProps={tableProps}
                     showTimeSort={showTimeSort}
@@ -70,7 +73,7 @@ const TableTransfer = <T extends GridValidRowModel>(props: TableTransferProps<T>
                 </Button>
                 <Button
                     variant="contained"
-                    disabled={Boolean(!leftCheckedIds?.length)}
+                    disabled={Boolean(notMovedLeftChecked?.length === 0)}
                     sx={{ width: 32, minWidth: 32 }}
                     onClick={handleCheckedRight}
                 >
