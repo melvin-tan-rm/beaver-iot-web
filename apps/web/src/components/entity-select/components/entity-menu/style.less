@@ -1,0 +1,31 @@
+.ms-entity-menu {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: @padding-xs @padding-md;
+    cursor: pointer;
+
+    &--active {
+        background-color: var(--component-background-gray);
+    }
+
+    &:hover {
+        background-color: var(--component-background-gray);
+    }
+
+    &__title {
+        overflow: hidden;
+        font-weight: @font-weight-regular;
+        .text-size(@font-size-md);
+    }
+
+    &__icon {
+        padding: @padding-xxs;
+        color: var(--icon-color-gray-secondary);
+
+        .MuiSvgIcon-root {
+            display: block;
+            font-size: @font-size-1;
+        }
+    }
+}

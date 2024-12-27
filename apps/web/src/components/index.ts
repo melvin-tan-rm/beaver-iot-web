@@ -8,6 +8,7 @@ export { default as Tooltip } from './tooltip';
 export { default as DateRangePicker } from './date-range-picker';
 export { default as RouteLoadingIndicator } from './route-loading-indicator';
 export { default as Empty } from './empty';
+export { default as EntitySelect } from './entity-select';
 export {
     CodeEditor,
     CodeEditorToolbar,
