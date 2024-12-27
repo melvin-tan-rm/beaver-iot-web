@@ -23,6 +23,10 @@ export interface TableTransferProps<T extends GridValidRowModel> {
      * show time sort
      */
     showTimeSort?: boolean;
+    /**
+     * on time sort change callbacks
+     */
+    onTimeSort?: (sort: SortType) => void;
     tableProps: TableProProps<T>;
 }
 
@@ -30,7 +34,7 @@ export interface TableTransferProps<T extends GridValidRowModel> {
  * Table Transfer component
  */
 const TableTransfer = <T extends GridValidRowModel>(props: TableTransferProps<T>) => {
-    const { onChange, selectedFilter, sortField, showTimeSort, tableProps } = props;
+    const { onChange, selectedFilter, sortField, showTimeSort, tableProps, onTimeSort } = props;
     const { rows, getRowId } = tableProps || {};
 
     const {
@@ -60,6 +64,7 @@ const TableTransfer = <T extends GridValidRowModel>(props: TableTransferProps<T>
                     setLeftCheckedIds={setLeftCheckedIds}
                     tableProps={tableProps}
                     showTimeSort={showTimeSort}
+                    onTimeSort={onTimeSort}
                 />
             </div>
             <div className="ms-table-transfer__operation">

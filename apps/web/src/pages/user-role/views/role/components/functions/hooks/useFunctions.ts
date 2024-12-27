@@ -179,13 +179,23 @@ const useFunctions = () => {
      * handle pages permission checked change
      */
     const handlePagesChecked = useMemoizedFn(
-        (props: { isChecked: boolean; permissions: ObjectToCamelCase<UserMenuType[]> }) => {
-            const { isChecked, permissions } = props || {};
+        (props: {
+            isChecked: boolean;
+            indeterminate: boolean;
+            permissions: ObjectToCamelCase<UserMenuType[]>;
+        }) => {
+            const { isChecked, indeterminate, permissions } = props || {};
+
+            /**
+             * if current page is indeterminate
+             * the state should be cleared when the user clicks on it
+             */
+            const newIsChecked = indeterminate ? false : isChecked;
 
             const menuIds = permissions.map(p => p.menuId);
             setCheckedPermissions(prev => {
                 let newChecked = [...prev];
-                if (isChecked) {
+                if (newIsChecked) {
                     newChecked = [...new Set([...newChecked, ...menuIds])];
                 } else {
                     newChecked = newChecked.filter(n => !menuIds.includes(n));

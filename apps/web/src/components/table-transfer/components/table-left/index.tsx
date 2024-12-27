@@ -18,6 +18,10 @@ export interface TableLeftProps<T extends GridValidRowModel> {
      * show time sort
      */
     showTimeSort?: boolean;
+    /**
+     * on time sort change callbacks
+     */
+    onTimeSort?: (sort: SortType) => void;
     tableProps: TableProProps<T>;
 }
 
@@ -34,6 +38,7 @@ const TableLeft = <T extends GridValidRowModel>(props: TableLeftProps<T>) => {
         setLeftCheckedIds,
         tableProps,
         showTimeSort,
+        onTimeSort,
     } = props;
 
     const { getRowId, rowCount } = tableProps || {};
@@ -94,7 +99,7 @@ const TableLeft = <T extends GridValidRowModel>(props: TableLeftProps<T>) => {
             {...tableProps}
             checkboxSelection
             toolbarRender={renderTopBar()}
-            toolbarSort={showTimeSort ? <TableSort /> : undefined}
+            toolbarSort={showTimeSort ? <TableSort onOperation={onTimeSort} /> : undefined}
             rows={leftRows}
             rowSelectionModel={leftCheckedIds}
             onRowSelectionModelChange={setLeftCheckedIds}

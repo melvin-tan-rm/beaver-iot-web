@@ -9,32 +9,33 @@ import { TablePro, useConfirm } from '@/components';
 import { userAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import useUserRoleStore from '@/pages/user-role/store';
 
-import { useIntegrations, useColumns, type UseColumnsProps, type TableRowDataType } from './hooks';
-import AddIntegrationModal from '../add-integration-modal';
+import AddDeviceModal from '../add-device-modal';
+import TooltipCheckbox from '../tooltip-checkbox';
+import { useDevice, useColumns, type UseColumnsProps, type TableRowDataType } from './hooks';
 
 /**
- * User resources integration list component
+ * Role devices under the role
  */
-const IntegrationPermission: React.FC = () => {
+const Members: React.FC = () => {
     const { getIntlText } = useI18n();
     const { activeRole } = useUserRoleStore();
 
-    // ---------- integration list ----------
+    // ---------- Role devices list ----------
     const [keyword, setKeyword] = useState<string>('');
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const [selectedIds, setSelectedIds] = useState<readonly ApiKey[]>([]);
 
     const {
-        data: roleIntegrations,
+        data: roleDevices,
         loading,
-        run: getRoleIntegrations,
+        run: getRoleDevices,
     } = useRequest(
         async () => {
             if (!activeRole) return;
 
             const { page, pageSize } = paginationModel;
             const [error, resp] = await awaitWrap(
-                userAPI.getRoleAllIntegrations({
+                userAPI.getRoleAllDevices({
                     keyword,
                     role_id: activeRole.roleId,
                     page_size: pageSize,
@@ -53,7 +54,7 @@ const IntegrationPermission: React.FC = () => {
         },
     );
 
-    // ---------- integration remove ----------
+    // ---------- Role devices remove ----------
     const confirm = useConfirm();
     const handleRemoveConfirm = useMemoizedFn((ids?: ApiKey[]) => {
         const idsToDelete = ids || [...selectedIds];
@@ -69,16 +70,16 @@ const IntegrationPermission: React.FC = () => {
 
         const description = () => {
             if (idsToDelete?.length === 1) {
-                const selectedMember = roleIntegrations?.content?.find(
-                    u => u.integrationId === idsToDelete[0],
+                const selectedDevice = roleDevices?.content?.find(
+                    u => u.deviceId === idsToDelete[0],
                 );
 
-                return getIntlText('user.role.single_integration_remove_tip', {
-                    0: selectedMember?.integrationName || '',
+                return getIntlText('user.role.single_device_remove_tip', {
+                    0: selectedDevice?.deviceName || '',
                 });
             }
 
-            return getIntlText('user.role.bulk_integration_remove_tip', {
+            return getIntlText('user.role.bulk_device_remove_tip', {
                 0: idsToDelete.length,
             });
         };
@@ -95,7 +96,7 @@ const IntegrationPermission: React.FC = () => {
                         role_id: activeRole.roleId,
                         resources: idsToDelete.map(id => ({
                             id,
-                            type: 'INTEGRATION',
+                            type: 'DEVICE',
                         })),
                     }),
                 );
@@ -104,7 +105,7 @@ const IntegrationPermission: React.FC = () => {
                     return;
                 }
 
-                getRoleIntegrations();
+                getRoleDevices();
                 setSelectedIds([]);
                 toast.success(getIntlText('common.message.remove_success'));
             },
@@ -112,7 +113,7 @@ const IntegrationPermission: React.FC = () => {
     });
 
     const { showAddModal, handleModalCancel, addModalVisible, handleModalOk } =
-        useIntegrations(getRoleIntegrations);
+        useDevice(getRoleDevices);
 
     // ---------- Table render bar ----------
     const toolbarRender = useMemo(() => {
@@ -144,7 +145,7 @@ const IntegrationPermission: React.FC = () => {
         (type, record) => {
             switch (type) {
                 case 'remove': {
-                    handleRemoveConfirm([record.integrationId]);
+                    handleRemoveConfirm([record.deviceId]);
                     break;
                 }
                 default: {
@@ -162,18 +163,22 @@ const IntegrationPermission: React.FC = () => {
                 checkboxSelection
                 loading={loading}
                 columns={columns}
-                getRowId={row => row.integrationId}
-                rows={roleIntegrations?.content}
-                rowCount={roleIntegrations?.total || 0}
+                getRowId={row => row.deviceId}
+                rows={roleDevices?.content}
+                rowCount={roleDevices?.total || 0}
                 paginationModel={paginationModel}
                 rowSelectionModel={selectedIds}
                 toolbarRender={toolbarRender}
                 onPaginationModelChange={setPaginationModel}
                 onRowSelectionModelChange={setSelectedIds}
                 onSearch={setKeyword}
-                onRefreshButtonClick={getRoleIntegrations}
+                onRefreshButtonClick={getRoleDevices}
+                isRowSelectable={params => Boolean(!params?.row?.roleIntegration)}
+                slots={{
+                    baseCheckbox: TooltipCheckbox,
+                }}
             />
-            <AddIntegrationModal
+            <AddDeviceModal
                 visible={addModalVisible}
                 onCancel={handleModalCancel}
                 onOk={handleModalOk}
@@ -182,4 +187,4 @@ const IntegrationPermission: React.FC = () => {
     );
 };
 
-export default IntegrationPermission;
+export default Members;

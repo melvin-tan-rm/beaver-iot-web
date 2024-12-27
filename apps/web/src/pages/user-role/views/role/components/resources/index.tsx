@@ -6,7 +6,7 @@ import { useI18n } from '@milesight/shared/src/hooks';
 import { TabPanel } from '@/components';
 
 import { ROLE_RESOURCES_TABS } from '../../constants';
-import { Integration } from './components';
+import { Integration, Device } from './components';
 
 import styles from './style.module.less';
 
@@ -36,7 +36,7 @@ const Resources: React.FC = () => {
                 label: getIntlText('user.role.tab_title_functions_resource_device'),
                 title: getIntlText('user.role.tab_title_functions_resource_device'),
                 value: ROLE_RESOURCES_TABS.DEVICE,
-                content: 'DEVICE',
+                content: <Device />,
             },
             {
                 label: getIntlText('user.role.tab_title_resources_resource_dashboard'),

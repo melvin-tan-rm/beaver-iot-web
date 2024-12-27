@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { useMemoizedFn } from 'ahooks';
 
 /**
- * integrations operate hooks
+ * device operate hooks
  */
-const useIntegrations = (getRoleIntegrations?: () => void) => {
-    // ---------- add new integration ------------------------
+const useDevice = (getRoleDevices?: () => void) => {
+    // ---------- add new device ------------------------
     const [addModalVisible, setAddModalVisible] = useState(false);
 
     const showAddModal = useMemoizedFn(() => {
@@ -17,7 +17,7 @@ const useIntegrations = (getRoleIntegrations?: () => void) => {
     });
 
     const handleModalOk = useMemoizedFn(() => {
-        getRoleIntegrations?.();
+        getRoleDevices?.();
         setAddModalVisible(false);
     });
 
@@ -29,4 +29,4 @@ const useIntegrations = (getRoleIntegrations?: () => void) => {
     };
 };
 
-export default useIntegrations;
+export default useDevice;

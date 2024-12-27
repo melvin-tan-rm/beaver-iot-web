@@ -25,5 +25,9 @@
     "user.role.title_modal_integration_permission": "Add Integration Permission",
     "user.role.integration_permission_add_tip": "添加集成后将允许访问该集成下的所有设备和独立设备外的实体数据。",
     "user.role.single_integration_remove_tip": "After removal, access to all devices under the integration and independent entities will no longer be allowed. Are you sure to remove integration: {0}?",
-    "user.role.bulk_integration_remove_tip": "After removal, access to all devices under these integrations and independent entities will no longer be allowed. Are you sure to remove these {0} integrations in bulk？"
+    "user.role.bulk_integration_remove_tip": "After removal, access to all devices under these integrations and independent entities will no longer be allowed. Are you sure to remove these {0} integrations in bulk？",
+    "user.role.title_modal_device_permission": "Add Device Permission",
+    "user.role.single_device_remove_tip": "Are you sure to remove device: {0}?",
+    "user.role.bulk_device_remove_tip": "Are you sure to remove these {0} devices in bulk？",
+    "user.role.device_can_not_remove_tip": "Unable to remove, source integration is checked, please uncheck source integration first."
 }

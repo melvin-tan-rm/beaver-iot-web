@@ -34,10 +34,10 @@ declare type APISchema = Record<
 
 /**
  * 数据排序类型
- * @param asc 升序
- * @param desc 降序
+ * @param ASC 升序
+ * @param DESC 降序
  */
-declare type SortType = 'asc' | 'desc';
+declare type SortType = 'ASC' | 'DESC';
 
 /**
  * 数据排序属性
@@ -58,7 +58,7 @@ declare type SearchRequestType = {
     page_number?: number | null;
 
     /** 排序字段 */
-    // sorts?: SortsProps[];
+    sorts?: SortsProps[];
 };
 
 /**

@@ -57,6 +57,23 @@ export interface RoleResourceType {
     type: 'ENTITY' | 'DEVICE' | 'INTEGRATION' | 'DASHBOARD' | 'WORKFLOW';
 }
 
+export interface RoleDeviceType {
+    device_id: ApiKey;
+    device_name: string;
+    created_at: number;
+    integration_id: ApiKey;
+    /** the source of device */
+    integration_name: string;
+    user_id: ApiKey;
+    user_email: string;
+    /** the add user */
+    user_nickname: string;
+    /**
+     * Whether or not the equipment for the integration display is assigned
+     */
+    role_integration?: boolean;
+}
+
 export interface UserAPISchema extends APISchema {
     addUserMember: {
         request: {
@@ -180,6 +197,20 @@ export interface UserAPISchema extends APISchema {
         };
         response: void;
     };
+    getRoleAllDevices: {
+        request: SearchRequestType & {
+            role_id: ApiKey;
+            keyword: string;
+        };
+        response: SearchResponseType<RoleDeviceType[]>;
+    };
+    getRoleUndistributedDevices: {
+        request: SearchRequestType & {
+            role_id: ApiKey;
+            keyword: string;
+        };
+        response: SearchResponseType<RoleDeviceType[]>;
+    };
 }
 
 /**
@@ -203,5 +234,7 @@ export default attachAPI<UserAPISchema>(client, {
         removeResourceFromRole: `POST ${API_PREFIX}/user/roles/:role_id/disassociate-resource`,
         getRoleUndistributedIntegrations: `POST ${API_PREFIX}/user/roles/:role_id/undistributed-integrations`,
         distributeResourcesToRole: `POST ${API_PREFIX}/user/roles/:role_id/associate-resource`,
+        getRoleAllDevices: `POST ${API_PREFIX}/user/roles/:role_id/devices`,
+        getRoleUndistributedDevices: `POST ${API_PREFIX}/user/roles/:role_id/undistributed-devices`,
     },
 });

@@ -27,7 +27,7 @@ const SortDropdown: React.FC<SortDropdownProps> = props => {
         return [
             {
                 label: getIntlText('common.label.sort_type_newest_to_oldest'),
-                value: 'desc',
+                value: 'DESC',
                 icon: (
                     <ListItemIcon>
                         <SouthIcon />
@@ -36,7 +36,7 @@ const SortDropdown: React.FC<SortDropdownProps> = props => {
             },
             {
                 label: getIntlText('common.label.sort_type_oldest_to_newest'),
-                value: 'asc',
+                value: 'ASC',
                 icon: (
                     <ListItemIcon>
                         <NorthIcon />

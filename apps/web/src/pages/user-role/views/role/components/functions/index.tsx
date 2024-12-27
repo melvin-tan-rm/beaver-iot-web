@@ -106,6 +106,7 @@ const FunctionsTable = () => {
                             onChange={(_, isChecked) =>
                                 handlePagesChecked({
                                     isChecked,
+                                    indeterminate: isPageIndeterminate(functions),
                                     permissions: functions,
                                 })
                             }
