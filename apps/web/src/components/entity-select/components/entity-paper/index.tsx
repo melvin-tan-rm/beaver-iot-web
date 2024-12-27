@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from 'react';
+import React, { Fragment, useCallback, useContext } from 'react';
 import { Paper, PaperProps, Tab, Tabs } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { EntityContext } from '../../context';
@@ -33,7 +33,7 @@ export default React.memo(({ children, ...props }: PaperProps) => {
                         <Tab label={getIntlText(label)} value={value} key={value} />
                     ))}
                 </Tabs>
-                {children}
+                <Fragment key={tabType}>{children}</Fragment>
             </Paper>
         </div>
     );

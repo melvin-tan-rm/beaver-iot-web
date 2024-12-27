@@ -38,4 +38,4 @@ const EntitySelectApp = <
 };
 export default React.memo(EntitySelectApp) as unknown as typeof EntitySelectApp;
 
-export type { EntitySelectOption } from './types';
+export type { EntitySelectOption, EntitySelectValueType, EntitySelectProps } from './types';

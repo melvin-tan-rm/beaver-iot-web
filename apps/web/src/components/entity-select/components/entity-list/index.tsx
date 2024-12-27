@@ -1,4 +1,5 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useRef, useState } from 'react';
+import { useVirtualList } from '@milesight/shared/src/hooks';
 import EntityMenuPopper from '../entity-menu-popper';
 import { EntityContext } from '../../context';
 import EntityOption from '../entity-option';
@@ -10,6 +11,8 @@ interface IProps {
 }
 export default React.memo(({ children: _children, ...props }: IProps) => {
     const { tabType, options, selectedEntityMap } = useContext(EntityContext);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const listRef = useRef<HTMLDivElement>(null);
 
     const [menuList, setMenuList] = useState<EntitySelectOption[]>([]);
     const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLDivElement | null>(null);
@@ -23,25 +26,28 @@ export default React.memo(({ children: _children, ...props }: IProps) => {
         setMenuList(children || []);
     }, []);
 
-    useEffect(() => {
-        // When the tab changes, the pop-up window is closed
-        if (tabType !== 'device') {
-            setMenuAnchorEl(null);
-        }
-    }, [tabType]);
+    /** virtual list */
+    const [virtualList] = useVirtualList(options, {
+        containerTarget: containerRef,
+        wrapperTarget: listRef,
+        itemHeight: tabType === 'entity' ? 58 : 38,
+        overscan: 10,
+    });
     return (
         <>
-            <div {...props}>
-                {(options || []).map(option => {
-                    const { value } = option || {};
-                    const selected = selectedEntityMap.has(value);
+            <div {...props} ref={containerRef}>
+                <div ref={listRef}>
+                    {(virtualList || []).map(({ data: option }) => {
+                        const { value } = option || {};
+                        const selected = selectedEntityMap.has(value);
 
-                    return tabType === 'entity' ? (
-                        <EntityOption key={value} option={option} selected={selected} />
-                    ) : (
-                        <EntityMenu key={value} option={option} onClick={handleClick} />
-                    );
-                })}
+                        return tabType === 'entity' ? (
+                            <EntityOption key={value} option={option} selected={selected} />
+                        ) : (
+                            <EntityMenu key={value} option={option} onClick={handleClick} />
+                        );
+                    })}
+                </div>
             </div>
             {tabType === 'device' && (
                 <EntityMenuPopper open={open} anchorEl={menuAnchorEl} menuList={menuList} />
