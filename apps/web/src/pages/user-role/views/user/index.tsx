@@ -1,63 +1,182 @@
-import React from 'react';
-import { LoadingWrapper } from '@milesight/shared/src/components';
-import { Transfer } from '@/components';
+import React, { useState, useMemo } from 'react';
+import { useRequest, useMemoizedFn } from 'ahooks';
+
+import { Button, Stack } from '@mui/material';
+import { useI18n } from '@milesight/shared/src/hooks';
+import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
+import { toast, AddIcon, RemoveCircleOutlineIcon } from '@milesight/shared/src/components';
+import { TablePro, useConfirm } from '@/components';
+import { userAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
+
+import { AddUserModal } from './components';
+import { useUser, useColumns, type UseColumnsProps, type TableRowDataType } from './hooks';
+
+import styles from './style.module.less';
 
 /**
- * User Module
+ * Role users under the role
  */
-const User: React.FC = () => {
+const Users: React.FC = () => {
+    const { getIntlText } = useI18n();
+
+    // ---------- Role users list ----------
+    const [keyword, setKeyword] = useState<string>('');
+    const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
+    const [selectedIds, setSelectedIds] = useState<readonly ApiKey[]>([]);
+
+    const {
+        data: allUsers,
+        loading,
+        run: getAllUsers,
+    } = useRequest(
+        async () => {
+            const { page, pageSize } = paginationModel;
+            const [error, resp] = await awaitWrap(
+                userAPI.getAllUsers({
+                    keyword,
+                    page_size: pageSize,
+                    page_number: page + 1,
+                }),
+            );
+            const respData = getResponseData(resp);
+
+            if (error || !respData || !isRequestSuccess(resp)) return;
+
+            return objectToCamelCase(respData);
+        },
+        {
+            debounceWait: 300,
+            refreshDeps: [keyword, paginationModel],
+        },
+    );
+
+    // ---------- Role users remove ----------
+    const confirm = useConfirm();
+    const handleDeleteConfirm = useMemoizedFn((ids?: ApiKey[]) => {
+        const idsToDelete = ids || [...selectedIds];
+        if (!Array.isArray(idsToDelete)) return;
+
+        const title = () => {
+            if (idsToDelete?.length === 1) {
+                return getIntlText('common.label.deletion');
+            }
+
+            return getIntlText('common.label.bulk_deletion');
+        };
+
+        const description = () => {
+            if (idsToDelete?.length === 1) {
+                const selectedUser = allUsers?.content?.find(u => u.userId === idsToDelete[0]);
+
+                return getIntlText('user.label.single_delete_tip', {
+                    0: selectedUser?.nickname || '',
+                });
+            }
+
+            return getIntlText('user.label.bulk_delete_tip', {
+                0: idsToDelete.length,
+            });
+        };
+
+        confirm({
+            title: title(),
+            description: description(),
+            confirmButtonText: getIntlText('common.label.remove'),
+            onConfirm: async () => {
+                const [err, resp] = await awaitWrap(
+                    userAPI.deleteUsers({
+                        user_id_list: idsToDelete,
+                    }),
+                );
+
+                if (err || !isRequestSuccess(resp)) {
+                    return;
+                }
+
+                getAllUsers();
+                setSelectedIds([]);
+                toast.success(getIntlText('common.message.remove_success'));
+            },
+        });
+    });
+
+    const { showAddModal, handleModalCancel, addModalVisible, handleAddUser } =
+        useUser(getAllUsers);
+
+    // ---------- Table render bar ----------
+    const toolbarRender = useMemo(() => {
+        return (
+            <Stack className="ms-operations-btns" direction="row" spacing="12px">
+                <Button
+                    variant="contained"
+                    sx={{ height: 36, textTransform: 'none' }}
+                    startIcon={<AddIcon />}
+                    onClick={showAddModal}
+                >
+                    {getIntlText('common.label.add')}
+                </Button>
+                <Button
+                    variant="outlined"
+                    color="error"
+                    disabled={!selectedIds.length}
+                    sx={{ height: 36, textTransform: 'none' }}
+                    startIcon={<RemoveCircleOutlineIcon />}
+                    onClick={() => handleDeleteConfirm()}
+                >
+                    {getIntlText('common.label.remove')}
+                </Button>
+            </Stack>
+        );
+    }, [getIntlText, handleDeleteConfirm, selectedIds, showAddModal]);
+
+    const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useMemoizedFn(
+        (type, record) => {
+            switch (type) {
+                case 'resetPassword': {
+                    console.log('resetPassword user');
+                    break;
+                }
+                case 'edit': {
+                    console.log('edit user info');
+                    break;
+                }
+                case 'delete': {
+                    handleDeleteConfirm([record.userId]);
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        },
+    );
+
+    const columns = useColumns<TableRowDataType>({ onButtonClick: handleTableBtnClick });
+
     return (
-        <>
-            <div style={{ width: '500px', height: '500px', background: 'yellow' }}>
-                <LoadingWrapper loading tip="Loading">
-                    <div
-                        style={{ width: '150px', height: '150px', background: 'yellow' }}
-                        onClick={() => console.log('hello world')}
-                    >
-                        Users
-                    </div>
-                </LoadingWrapper>
-            </div>
-            <div style={{ background: '#fff', margin: '20px', width: '600px' }}>
-                <Transfer
-                    dataSource={[
-                        {
-                            key: '1',
-                            title: 'User 1',
-                        },
-                        {
-                            key: '2',
-                            title: 'User 2',
-                        },
-                        {
-                            key: '3',
-                            title: 'User 3',
-                        },
-                        {
-                            key: '5',
-                            title: 'User 5',
-                        },
-                        {
-                            key: '6',
-                            title: 'User 6',
-                        },
-                        {
-                            key: '7',
-                            title: 'User 7',
-                        },
-                        {
-                            key: '8',
-                            title: 'User 8',
-                        },
-                    ]}
-                    selectedKeys={['2', '1']}
-                    targetKeys={['7', '8', '1']}
-                    onChange={val => console.log('onChange ? ', val)}
-                    onSelectChange={val => console.log('selectChange ? ', val)}
-                />
-            </div>
-        </>
+        <div className={styles['users-container']}>
+            <TablePro<TableRowDataType>
+                checkboxSelection
+                loading={loading}
+                columns={columns}
+                getRowId={row => row.userId}
+                rows={allUsers?.content}
+                rowCount={allUsers?.total || 0}
+                paginationModel={paginationModel}
+                rowSelectionModel={selectedIds}
+                toolbarRender={toolbarRender}
+                onPaginationModelChange={setPaginationModel}
+                onRowSelectionModelChange={setSelectedIds}
+                onSearch={setKeyword}
+                onRefreshButtonClick={getAllUsers}
+            />
+            <AddUserModal
+                visible={addModalVisible}
+                onCancel={handleModalCancel}
+                onFormSubmit={handleAddUser}
+            />
+        </div>
     );
 };
 
-export default User;
+export default Users;

@@ -33,5 +33,10 @@
     "user.role.dashboard_name_table_title": "Dashboard Name",
     "user.role.dashboard_permission_modal_title": "Add Dashboard Permission",
     "user.role.single_dashboard_remove_tip": "Are you sure to remove dashboard: {0}?",
-    "user.role.bulk_dashboard_remove_tip": "Are you sure to remove these {0} dashboards in bulk？"
+    "user.role.bulk_dashboard_remove_tip": "Are you sure to remove these {0} dashboards in bulk？",
+    "user.label.user_name_table_title": "User Name",
+    "user.label.role_table_title": "Role",
+    "user.label.reset_password": "Reset Password",
+    "user.label.single_delete_tip": "Deletion cannot be restored. Are you sure to delete user: {0}?",
+    "user.label.bulk_delete_tip": "Deletion cannot be restored. Are you sure to delete these {0} users in bulk？"
 }

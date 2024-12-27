@@ -1,5 +1,16 @@
 import { client, attachAPI, API_PREFIX } from './client';
 
+export interface UserType {
+    email: string;
+    nickname: string;
+    user_id: ApiKey;
+    created_at: number;
+    roles: {
+        role_id: ApiKey;
+        role_name: string;
+    }[];
+}
+
 export interface RoleType {
     /**
      * The id of the role
@@ -90,6 +101,33 @@ export interface UserAPISchema extends APISchema {
             email: string;
             nickname: string;
             password: string;
+        };
+        response: void;
+    };
+    getAllUsers: {
+        request: SearchRequestType & {
+            keyword?: string;
+        };
+        response: SearchResponseType<UserType[]>;
+    };
+    resetUserPassword: {
+        request: {
+            user_id: ApiKey;
+            password: string;
+        };
+        response: void;
+    };
+    editUserInfo: {
+        request: {
+            user_id: ApiKey;
+            nickname: string;
+            email: string;
+        };
+        response: void;
+    };
+    deleteUsers: {
+        request: {
+            user_id_list: ApiKey[];
         };
         response: void;
     };
@@ -243,6 +281,10 @@ export interface UserAPISchema extends APISchema {
 export default attachAPI<UserAPISchema>(client, {
     apis: {
         addUserMember: `POST ${API_PREFIX}/user/members`,
+        getAllUsers: `POST ${API_PREFIX}/user/members/search`,
+        resetUserPassword: `PUT ${API_PREFIX}/user/members/:user_id/change-password`,
+        editUserInfo: `PUT ${API_PREFIX}/user/members/:user_id`,
+        deleteUsers: `DELETE ${API_PREFIX}/user/batch-delete`,
         addRole: `POST ${API_PREFIX}/user/roles`,
         editRole: `PUT ${API_PREFIX}/user/roles/:role_id`,
         deleteRole: `DELETE ${API_PREFIX}/user/roles/:role_id`,

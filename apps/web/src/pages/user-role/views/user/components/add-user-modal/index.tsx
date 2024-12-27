@@ -5,7 +5,7 @@ import { TextField } from '@mui/material';
 import classNames from 'classnames';
 
 import { Modal, type ModalProps } from '@milesight/shared/src/components';
-import { checkRequired } from '@milesight/shared/src/utils/validators';
+import { userNameChecker } from '@milesight/shared/src/utils/validators';
 import { useI18n } from '@milesight/shared/src/hooks';
 
 interface Props extends Omit<ModalProps, 'onOk'> {
@@ -14,25 +14,25 @@ interface Props extends Omit<ModalProps, 'onOk'> {
     onFormSubmit: (name: string) => Promise<void>;
 }
 
-export interface AddRoleProps {
-    name: string;
+export interface AddUserProps {
+    username: string;
 }
 
 /**
- * add role Modal
+ * add user Modal
  */
-const AddRoleModal: React.FC<Props> = props => {
+const AddUserModal: React.FC<Props> = props => {
     const { visible, onCancel, onFormSubmit, data, ...restProps } = props;
 
     const { getIntlText } = useI18n();
-    const { control, formState, handleSubmit, reset, setValue } = useForm<AddRoleProps>();
+    const { control, formState, handleSubmit, reset, setValue } = useForm<AddUserProps>();
 
-    const formItems: ControllerProps<AddRoleProps>[] = useMemo(() => {
+    const formItems: ControllerProps<AddUserProps>[] = useMemo(() => {
         return [
             {
-                name: 'name',
+                name: 'username',
                 rules: {
-                    validate: { checkRequired: checkRequired() },
+                    validate: { userNameChecker: userNameChecker().checkUsername },
                 },
                 defaultValue: '',
                 render({ field: { onChange, value }, fieldState: { error } }) {
@@ -41,7 +41,7 @@ const AddRoleModal: React.FC<Props> = props => {
                             required
                             fullWidth
                             type="text"
-                            label={getIntlText('common.label.name')}
+                            label={getIntlText('user.label.user_name_table_title')}
                             error={!!error}
                             helperText={error ? error.message : null}
                             value={value}
@@ -53,8 +53,8 @@ const AddRoleModal: React.FC<Props> = props => {
         ];
     }, [getIntlText]);
 
-    const onSubmit: SubmitHandler<AddRoleProps> = async params => {
-        await onFormSubmit(params.name);
+    const onSubmit: SubmitHandler<AddUserProps> = async params => {
+        await onFormSubmit(params.username);
 
         reset();
     };
@@ -69,7 +69,7 @@ const AddRoleModal: React.FC<Props> = props => {
      */
     useEffect(() => {
         if (visible) {
-            setValue('name', data || '');
+            setValue('username', data || '');
         }
     }, [data, visible, setValue]);
 
@@ -85,7 +85,7 @@ const AddRoleModal: React.FC<Props> = props => {
                     {...restProps}
                 >
                     {formItems.map(item => (
-                        <Controller<AddRoleProps> {...item} key={item.name} control={control} />
+                        <Controller<AddUserProps> {...item} key={item.name} control={control} />
                     ))}
                 </Modal>
             );
@@ -97,4 +97,4 @@ const AddRoleModal: React.FC<Props> = props => {
     return renderModal();
 };
 
-export default AddRoleModal;
+export default AddUserModal;
