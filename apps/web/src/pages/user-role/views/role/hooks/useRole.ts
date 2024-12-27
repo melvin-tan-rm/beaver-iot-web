@@ -18,6 +18,8 @@ import {
 import { ROLE_MORE_OPERATION } from '../components';
 import { MODAL_TYPE } from '../constants';
 
+const SUPER_ADMIN_NAME = 'super_admin';
+
 /**
  * Handle role add、rename、delete etc...
  */
@@ -60,7 +62,9 @@ export function useRole() {
                 }
 
                 const list = getResponseData(resp);
-                const newList = objectToCamelCase(list?.content || []);
+                const newList = objectToCamelCase(
+                    (list?.content || []).filter(role => role.name !== SUPER_ADMIN_NAME),
+                );
                 setRoleData(newList);
 
                 if (newList?.[0] && !activeRole) {

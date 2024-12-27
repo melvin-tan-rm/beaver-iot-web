@@ -25,21 +25,21 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
         return [
             {
                 field: 'integrationName',
-                headerName: getIntlText('user.role.title_table_integration_name'),
+                headerName: getIntlText('user.role.integration_name_table_title'),
                 flex: 1,
                 minWidth: 150,
                 ellipsis: true,
             },
             {
                 field: 'deviceNum',
-                headerName: getIntlText('user.role.title_table_integration_num_device'),
+                headerName: getIntlText('user.role.integration_num_device_table_title'),
                 flex: 1,
                 minWidth: 150,
                 ellipsis: true,
             },
             {
                 field: 'entityNum',
-                headerName: getIntlText('user.role.title_table_integration_num_entity'),
+                headerName: getIntlText('user.role.integration_num_entity_table_title'),
                 flex: 1,
                 minWidth: 150,
                 ellipsis: true,

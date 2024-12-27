@@ -6,7 +6,7 @@ import { useI18n } from '@milesight/shared/src/hooks';
 import { TabPanel } from '@/components';
 
 import { ROLE_RESOURCES_TABS } from '../../constants';
-import { Integration, Device } from './components';
+import { Integration, Device, Dashboard } from './components';
 
 import styles from './style.module.less';
 
@@ -27,22 +27,22 @@ const Resources: React.FC = () => {
     const roleTabsOptions = useMemo(
         () => [
             {
-                label: getIntlText('user.role.tab_title_resource_integration'),
-                title: getIntlText('user.role.tab_title_resource_integration'),
+                label: getIntlText('user.role.resource_integration_tab_title'),
+                title: getIntlText('user.role.resource_integration_tab_title'),
                 value: ROLE_RESOURCES_TABS.INTEGRATION,
                 content: <Integration />,
             },
             {
-                label: getIntlText('user.role.tab_title_functions_resource_device'),
-                title: getIntlText('user.role.tab_title_functions_resource_device'),
+                label: getIntlText('user.role.resource_device_tab_title'),
+                title: getIntlText('user.role.resource_device_tab_title'),
                 value: ROLE_RESOURCES_TABS.DEVICE,
                 content: <Device />,
             },
             {
-                label: getIntlText('user.role.tab_title_resources_resource_dashboard'),
-                title: getIntlText('user.role.tab_title_resources_resource_dashboard'),
+                label: getIntlText('user.role.resource_dashboard_tab_title'),
+                title: getIntlText('user.role.resource_dashboard_tab_title'),
                 value: ROLE_RESOURCES_TABS.DASHBOARD,
-                content: 'DASHBOARD',
+                content: <Dashboard />,
             },
         ],
         [getIntlText],

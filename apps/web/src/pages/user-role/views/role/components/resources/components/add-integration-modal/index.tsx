@@ -104,7 +104,7 @@ const AddIntegrationModal: React.FC<ModalProps> = props => {
                 <Modal
                     width="900px"
                     visible={visible}
-                    title={getIntlText('user.role.title_modal_integration_permission')}
+                    title={getIntlText('user.role.integration_permission_modal_title')}
                     sx={{
                         '& .MuiDialogContent-root': {
                             display: 'flex',

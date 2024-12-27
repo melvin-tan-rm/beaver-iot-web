@@ -9,33 +9,32 @@ import { TablePro, useConfirm } from '@/components';
 import { userAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import useUserRoleStore from '@/pages/user-role/store';
 
-import AddDeviceModal from '../add-device-modal';
-import TooltipCheckbox from '../tooltip-checkbox';
-import { useDevice, useColumns, type UseColumnsProps, type TableRowDataType } from './hooks';
+import AddDashboardModal from '../add-dashboard-modal';
+import { useDashboard, useColumns, type UseColumnsProps, type TableRowDataType } from './hooks';
 
 /**
- * Role devices under the role
+ * Role dashboards under the role
  */
-const Devices: React.FC = () => {
+const Dashboards: React.FC = () => {
     const { getIntlText } = useI18n();
     const { activeRole } = useUserRoleStore();
 
-    // ---------- Role devices list ----------
+    // ---------- Role dashboards list ----------
     const [keyword, setKeyword] = useState<string>('');
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const [selectedIds, setSelectedIds] = useState<readonly ApiKey[]>([]);
 
     const {
-        data: roleDevices,
+        data: roleDashboards,
         loading,
-        run: getRoleDevices,
+        run: getRoleDashboards,
     } = useRequest(
         async () => {
             if (!activeRole) return;
 
             const { page, pageSize } = paginationModel;
             const [error, resp] = await awaitWrap(
-                userAPI.getRoleAllDevices({
+                userAPI.getRoleAllDashboards({
                     keyword,
                     role_id: activeRole.roleId,
                     page_size: pageSize,
@@ -54,7 +53,7 @@ const Devices: React.FC = () => {
         },
     );
 
-    // ---------- Role devices remove ----------
+    // ---------- Role dashboards remove ----------
     const confirm = useConfirm();
     const handleRemoveConfirm = useMemoizedFn((ids?: ApiKey[]) => {
         const idsToDelete = ids || [...selectedIds];
@@ -70,16 +69,16 @@ const Devices: React.FC = () => {
 
         const description = () => {
             if (idsToDelete?.length === 1) {
-                const selectedDevice = roleDevices?.content?.find(
-                    u => u.deviceId === idsToDelete[0],
+                const selectedDashboard = roleDashboards?.content?.find(
+                    u => u.dashboardId === idsToDelete[0],
                 );
 
-                return getIntlText('user.role.single_device_remove_tip', {
-                    0: selectedDevice?.deviceName || '',
+                return getIntlText('user.role.single_dashboard_remove_tip', {
+                    0: selectedDashboard?.dashboardName || '',
                 });
             }
 
-            return getIntlText('user.role.bulk_device_remove_tip', {
+            return getIntlText('user.role.bulk_dashboard_remove_tip', {
                 0: idsToDelete.length,
             });
         };
@@ -96,7 +95,7 @@ const Devices: React.FC = () => {
                         role_id: activeRole.roleId,
                         resources: idsToDelete.map(id => ({
                             id,
-                            type: 'DEVICE',
+                            type: 'DASHBOARD',
                         })),
                     }),
                 );
@@ -105,7 +104,7 @@ const Devices: React.FC = () => {
                     return;
                 }
 
-                getRoleDevices();
+                getRoleDashboards();
                 setSelectedIds([]);
                 toast.success(getIntlText('common.message.remove_success'));
             },
@@ -113,7 +112,7 @@ const Devices: React.FC = () => {
     });
 
     const { showAddModal, handleModalCancel, addModalVisible, handleModalOk } =
-        useDevice(getRoleDevices);
+        useDashboard(getRoleDashboards);
 
     // ---------- Table render bar ----------
     const toolbarRender = useMemo(() => {
@@ -145,7 +144,7 @@ const Devices: React.FC = () => {
         (type, record) => {
             switch (type) {
                 case 'remove': {
-                    handleRemoveConfirm([record.deviceId]);
+                    handleRemoveConfirm([record.dashboardId]);
                     break;
                 }
                 default: {
@@ -163,22 +162,18 @@ const Devices: React.FC = () => {
                 checkboxSelection
                 loading={loading}
                 columns={columns}
-                getRowId={row => row.deviceId}
-                rows={roleDevices?.content}
-                rowCount={roleDevices?.total || 0}
+                getRowId={row => row.dashboardId}
+                rows={roleDashboards?.content}
+                rowCount={roleDashboards?.total || 0}
                 paginationModel={paginationModel}
                 rowSelectionModel={selectedIds}
                 toolbarRender={toolbarRender}
                 onPaginationModelChange={setPaginationModel}
                 onRowSelectionModelChange={setSelectedIds}
                 onSearch={setKeyword}
-                onRefreshButtonClick={getRoleDevices}
-                isRowSelectable={params => Boolean(!params?.row?.roleIntegration)}
-                slots={{
-                    baseCheckbox: TooltipCheckbox,
-                }}
+                onRefreshButtonClick={getRoleDashboards}
             />
-            <AddDeviceModal
+            <AddDashboardModal
                 visible={addModalVisible}
                 onCancel={handleModalCancel}
                 onOk={handleModalOk}
@@ -187,4 +182,4 @@ const Devices: React.FC = () => {
     );
 };
 
-export default Devices;
+export default Dashboards;

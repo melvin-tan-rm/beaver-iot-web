@@ -28,20 +28,20 @@ const RoleBody: React.FC = () => {
     const roleTabsOptions = useMemo(
         () => [
             {
-                label: getIntlText('user.role.tab_title_members'),
-                title: getIntlText('user.role.tab_title_members'),
+                label: getIntlText('user.role.members_tab_title'),
+                title: getIntlText('user.role.members_tab_title'),
                 value: ROLE_MAIN_TABS.MEMBERS,
                 content: <Members />,
             },
             {
-                label: getIntlText('user.role.tab_title_functions'),
-                title: getIntlText('user.role.tab_title_functions'),
+                label: getIntlText('user.role.functions_tab_title'),
+                title: getIntlText('user.role.functions_tab_title'),
                 value: ROLE_MAIN_TABS.FUNCTIONS,
                 content: <Functions />,
             },
             {
-                label: getIntlText('user.role.tab_title_resources'),
-                title: getIntlText('user.role.tab_title_resources'),
+                label: getIntlText('user.role.resources_tab_title'),
+                title: getIntlText('user.role.resources_tab_title'),
                 value: ROLE_MAIN_TABS.RESOURCES,
                 content: <Resources />,
             },

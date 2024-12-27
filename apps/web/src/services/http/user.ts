@@ -74,6 +74,16 @@ export interface RoleDeviceType {
     role_integration?: boolean;
 }
 
+export interface RoleDashboardType {
+    dashboard_id: ApiKey;
+    dashboard_name: string;
+    created_at: number;
+    user_id: ApiKey;
+    user_email: string;
+    /** the add user */
+    user_nickname: string;
+}
+
 export interface UserAPISchema extends APISchema {
     addUserMember: {
         request: {
@@ -211,6 +221,20 @@ export interface UserAPISchema extends APISchema {
         };
         response: SearchResponseType<RoleDeviceType[]>;
     };
+    getRoleAllDashboards: {
+        request: SearchRequestType & {
+            role_id: ApiKey;
+            keyword: string;
+        };
+        response: SearchResponseType<RoleDashboardType[]>;
+    };
+    getRoleUndistributedDashboards: {
+        request: SearchRequestType & {
+            role_id: ApiKey;
+            keyword: string;
+        };
+        response: SearchResponseType<RoleDashboardType[]>;
+    };
 }
 
 /**
@@ -236,5 +260,7 @@ export default attachAPI<UserAPISchema>(client, {
         distributeResourcesToRole: `POST ${API_PREFIX}/user/roles/:role_id/associate-resource`,
         getRoleAllDevices: `POST ${API_PREFIX}/user/roles/:role_id/devices`,
         getRoleUndistributedDevices: `POST ${API_PREFIX}/user/roles/:role_id/undistributed-devices`,
+        getRoleAllDashboards: `POST ${API_PREFIX}/user/roles/:role_id/dashboards`,
+        getRoleUndistributedDashboards: `POST ${API_PREFIX}/user/roles/:role_id/undistributed-dashboards`,
     },
 });

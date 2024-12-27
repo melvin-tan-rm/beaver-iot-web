@@ -24,14 +24,14 @@ function UserRole() {
     const tabsData = useMemo(() => {
         return [
             {
-                title: getIntlText('user.label.tab_name_users'),
-                label: getIntlText('user.label.tab_name_users'),
+                title: getIntlText('user.role.users_tab_name'),
+                label: getIntlText('user.role.users_tab_name'),
                 key: '1',
                 content: <UserView />,
             },
             {
-                title: getIntlText('user.label.tab_name_roles'),
-                label: getIntlText('user.label.tab_name_roles'),
+                title: getIntlText('user.role.roles_tab_name'),
+                label: getIntlText('user.role.roles_tab_name'),
                 key: '2',
                 content: <RoleView />,
             },

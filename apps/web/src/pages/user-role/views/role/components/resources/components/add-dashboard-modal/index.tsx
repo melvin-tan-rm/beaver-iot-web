@@ -12,9 +12,9 @@ import { TableTransfer } from '@/components';
 import { type TableRowDataType, useColumns } from './hooks';
 
 /**
- * add device modal
+ * add dashboard modal
  */
-const AddDeviceModal: React.FC<ModalProps> = props => {
+const AddDashboardModal: React.FC<ModalProps> = props => {
     const { visible, onOk, ...restProps } = props;
 
     const { activeRole } = useUserRoleStore();
@@ -24,11 +24,11 @@ const AddDeviceModal: React.FC<ModalProps> = props => {
     const [keyword, setKeyword] = useState<string>('');
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const [sortType, setSortType] = useState<SortType>('DESC');
-    const [chosenDevices, setChosenDevices] = useState<TableRowDataType[]>([]);
+    const [chosenDashboards, setChosenDashboards] = useState<TableRowDataType[]>([]);
 
     const {
-        run: getUndistributedDevices,
-        data: undistributedDevices,
+        run: getUndistributedDashboards,
+        data: undistributedDashboards,
         loading,
     } = useRequest(
         async () => {
@@ -36,7 +36,7 @@ const AddDeviceModal: React.FC<ModalProps> = props => {
 
             const { page, pageSize } = paginationModel;
             const [error, resp] = await awaitWrap(
-                userAPI.getRoleUndistributedDevices({
+                userAPI.getRoleUndistributedDashboards({
                     keyword,
                     sorts: [
                         {
@@ -67,13 +67,13 @@ const AddDeviceModal: React.FC<ModalProps> = props => {
     useEffect(() => {
         if (!visible) {
             setKeyword('');
-            setChosenDevices([]);
+            setChosenDashboards([]);
             setPaginationModel({ page: 0, pageSize: 10 });
         }
     }, [visible]);
 
     const handleOk = useMemoizedFn(async () => {
-        if (!Array.isArray(chosenDevices) || isEmpty(chosenDevices)) {
+        if (!Array.isArray(chosenDashboards) || isEmpty(chosenDashboards)) {
             toast.info(getIntlText('common.placeholder.select'));
             return;
         }
@@ -85,9 +85,9 @@ const AddDeviceModal: React.FC<ModalProps> = props => {
         const [err, resp] = await awaitWrap(
             userAPI.distributeResourcesToRole({
                 role_id: activeRole.roleId,
-                resources: chosenDevices.map(d => ({
-                    id: d.deviceId,
-                    type: 'DEVICE',
+                resources: chosenDashboards.map(d => ({
+                    id: d.dashboardId,
+                    type: 'DASHBOARD',
                 })),
             }),
         );
@@ -105,9 +105,8 @@ const AddDeviceModal: React.FC<ModalProps> = props => {
      */
     const handleSelectedFilter = useMemoizedFn((keyword, row: TableRowDataType) => {
         return (
-            row.deviceName?.toLowerCase()?.includes(keyword) ||
-            row.userNickname?.toLowerCase()?.includes(keyword) ||
-            row.integrationName?.toLowerCase()?.includes(keyword)
+            row.dashboardName?.toLowerCase()?.includes(keyword) ||
+            row.userNickname?.toLowerCase()?.includes(keyword)
         );
     });
 
@@ -117,7 +116,7 @@ const AddDeviceModal: React.FC<ModalProps> = props => {
                 <Modal
                     width="1200px"
                     visible={visible}
-                    title={getIntlText('user.role.device_permission_modal_title')}
+                    title={getIntlText('user.role.dashboard_permission_modal_title')}
                     sx={{
                         '& .MuiDialogContent-root': {
                             display: 'flex',
@@ -128,20 +127,20 @@ const AddDeviceModal: React.FC<ModalProps> = props => {
                 >
                     <TableTransfer<TableRowDataType>
                         showTimeSort
-                        onChange={setChosenDevices}
+                        onChange={setChosenDashboards}
                         selectedFilter={handleSelectedFilter}
                         sortField="createdAt"
                         onTimeSort={setSortType}
                         tableProps={{
                             loading,
-                            rows: undistributedDevices?.content,
-                            rowCount: undistributedDevices?.total || 0,
+                            rows: undistributedDashboards?.content,
+                            rowCount: undistributedDashboards?.total || 0,
                             columns,
-                            getRowId: row => row.deviceId,
+                            getRowId: row => row.dashboardId,
                             paginationModel,
                             onPaginationModelChange: setPaginationModel,
                             onSearch: setKeyword,
-                            onRefreshButtonClick: getUndistributedDevices,
+                            onRefreshButtonClick: getUndistributedDashboards,
                         }}
                     />
                 </Modal>
@@ -154,4 +153,4 @@ const AddDeviceModal: React.FC<ModalProps> = props => {
     return renderModal();
 };
 
-export default AddDeviceModal;
+export default AddDashboardModal;

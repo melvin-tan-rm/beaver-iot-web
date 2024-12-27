@@ -168,13 +168,13 @@ const FunctionsTable = () => {
                             <TableHead sx={{ background: 'var(--component-background-gray)' }}>
                                 <TableRow>
                                     <TableCell>
-                                        {getIntlText('user.role.title_table_model')}
+                                        {getIntlText('user.role.model_table_title')}
                                     </TableCell>
                                     <TableCell {...cellSx}>
-                                        {getIntlText('user.role.title_table_page')}
+                                        {getIntlText('user.role.page_table_title')}
                                     </TableCell>
                                     <TableCell {...cellSx}>
-                                        {getIntlText('user.role.title_table_function')}
+                                        {getIntlText('user.role.function_table_title')}
                                     </TableCell>
                                 </TableRow>
                             </TableHead>

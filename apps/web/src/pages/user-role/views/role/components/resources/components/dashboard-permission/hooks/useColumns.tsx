@@ -5,12 +5,10 @@ import { RemoveCircleOutlineIcon } from '@milesight/shared/src/components';
 import { Tooltip, type ColumnType } from '@/components';
 import { type UserAPISchema } from '@/services/http';
 
-import styles from '../../../style.module.less';
-
 type OperationType = 'remove';
 
 export type TableRowDataType = ObjectToCamelCase<
-    UserAPISchema['getRoleAllDevices']['response']['content'][0]
+    UserAPISchema['getRoleAllDashboards']['response']['content'][0]
 >;
 
 export interface UseColumnsProps<T> {
@@ -27,17 +25,10 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
     const columns: ColumnType<T>[] = useMemo(() => {
         return [
             {
-                field: 'deviceName',
-                headerName: getIntlText('device.label.param_device_name'),
+                field: 'dashboardName',
+                headerName: getIntlText('user.role.dashboard_name_table_title'),
                 flex: 1,
                 minWidth: 150,
-                ellipsis: true,
-            },
-            {
-                field: 'integrationName',
-                headerName: getIntlText('device.label.param_source'),
-                flex: 1,
-                minWidth: 300,
                 ellipsis: true,
             },
             {
@@ -63,33 +54,25 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 flex: 2,
                 minWidth: 100,
                 renderCell({ row }) {
-                    const isDisabledRemove = Boolean(row?.roleIntegration);
-                    const tip = isDisabledRemove
-                        ? getIntlText('user.role.device_can_not_remove_tip')
-                        : getIntlText('common.label.remove');
-
                     return (
                         <Stack
                             direction="row"
                             spacing="4px"
                             sx={{ height: '100%', alignItems: 'center', justifyContent: 'end' }}
                         >
-                            <Tooltip title={tip}>
-                                <div className={styles['flex-layout']}>
-                                    <IconButton
-                                        color="error"
-                                        disabled={isDisabledRemove}
-                                        sx={{
-                                            width: 30,
-                                            height: 30,
-                                            color: 'text.secondary',
-                                            '&:hover': { color: 'error.light' },
-                                        }}
-                                        onClick={() => onButtonClick('remove', row)}
-                                    >
-                                        <RemoveCircleOutlineIcon sx={{ width: 20, height: 20 }} />
-                                    </IconButton>
-                                </div>
+                            <Tooltip title={getIntlText('common.label.remove')}>
+                                <IconButton
+                                    color="error"
+                                    sx={{
+                                        width: 30,
+                                        height: 30,
+                                        color: 'text.secondary',
+                                        '&:hover': { color: 'error.light' },
+                                    }}
+                                    onClick={() => onButtonClick('remove', row)}
+                                >
+                                    <RemoveCircleOutlineIcon sx={{ width: 20, height: 20 }} />
+                                </IconButton>
                             </Tooltip>
                         </Stack>
                     );
