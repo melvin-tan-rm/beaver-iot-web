@@ -118,7 +118,6 @@ const AddMemberModal: React.FC<ModalProps> = props => {
                     <TableTransfer<TableRowDataType>
                         onChange={setChosenMember}
                         selectedFilter={handleSelectedFilter}
-                        sortField="createdAt"
                         tableProps={{
                             loading,
                             rows: undistributedMembers?.content,

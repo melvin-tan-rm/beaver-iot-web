@@ -71,6 +71,24 @@ const TableLeft = <T extends GridValidRowModel>(props: TableLeftProps<T>) => {
         return isNil(isSelected) ? true : !isSelected;
     });
 
+    const handleRowClassname = useMemoizedFn((rowId: ApiKey) => {
+        let isDisabled = rightRows?.some(r => {
+            if (getRowId) {
+                return getRowId(r) === rowId;
+            }
+
+            if (!isNil(r?.id)) {
+                return r.id === rowId;
+            }
+
+            return true;
+        });
+
+        isDisabled = isNil(isDisabled) ? false : isDisabled;
+
+        return isDisabled ? 'ms-table-transfer__gray-row' : '';
+    });
+
     return (
         <TablePro<T>
             {...tableProps}
@@ -81,6 +99,7 @@ const TableLeft = <T extends GridValidRowModel>(props: TableLeftProps<T>) => {
             rowSelectionModel={leftCheckedIds}
             onRowSelectionModelChange={setLeftCheckedIds}
             isRowSelectable={row => handleIsRowSelectable(row.id)}
+            getRowClassName={row => handleRowClassname(row.id)}
         />
     );
 };
