@@ -9,16 +9,19 @@ import './style.less';
 interface IProps {
     option: EntitySelectOption;
     selected?: boolean;
+    disabled?: boolean;
 }
 export default React.memo((props: IProps) => {
     const { onEntityChange } = useContext(EntityContext);
-    const { option, selected } = props;
+    const { option, selected, disabled } = props;
     const { label, description } = option || {};
 
     /** When an entity item is selected/canceled */
     const handleClick = useCallback(() => {
+        if (disabled) return;
+
         onEntityChange(option);
-    }, [option, onEntityChange]);
+    }, [disabled, onEntityChange, option]);
 
     /** when mouse down, prevent default behavior */
     const handleMouseDown = useCallback((event: React.MouseEvent) => {
@@ -28,6 +31,7 @@ export default React.memo((props: IProps) => {
         <div
             className={cls('ms-entity-content', {
                 'ms-entity-content--active': selected,
+                'ms-entity-content--disabled': disabled,
             })}
             onClick={handleClick}
             onMouseDown={handleMouseDown}

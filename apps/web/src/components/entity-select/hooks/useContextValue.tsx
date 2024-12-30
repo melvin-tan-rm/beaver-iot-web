@@ -13,9 +13,9 @@ export const useContextValue = <
     M extends boolean | undefined = false,
     D extends boolean | undefined = false,
 >(
-    props: Pick<EntitySelectProps<V, M, D>, 'value' | 'multiple' | 'onChange'>,
+    props: Pick<EntitySelectProps<V, M, D>, 'value' | 'multiple' | 'onChange' | 'maxCount'>,
 ) => {
-    const { value, multiple, onChange } = props;
+    const { value, multiple, maxCount, onChange } = props;
 
     const [tabType, setTabType] = useState<TabType>('entity');
     const { options } = useOptions({ tabType });
@@ -28,6 +28,7 @@ export const useContextValue = <
     /** context value */
     const contextValue = useMemo(() => {
         const result: EntitySelectContext<V> = {
+            maxCount,
             options: (options as V[]) || [],
             tabType,
             setTabType,
@@ -36,7 +37,7 @@ export const useContextValue = <
         };
 
         return result;
-    }, [onEntityChange, options, selectedEntityMap, tabType]);
+    }, [maxCount, onEntityChange, options, selectedEntityMap, tabType]);
 
     return {
         contextValue,

@@ -10,3 +10,6 @@ export const TabOptions: { label: string; value: TabType }[] = [
         value: 'device',
     },
 ];
+
+// default max count of selected entities
+export const DEFAULT_MAX_COUNT = 5;

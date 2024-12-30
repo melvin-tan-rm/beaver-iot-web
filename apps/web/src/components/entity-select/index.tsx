@@ -3,6 +3,7 @@ import { useControllableValue } from 'ahooks';
 import EntitySelect from './entitySelect';
 import { useContextValue } from './hooks';
 import { EntityContext } from './context';
+import { DEFAULT_MAX_COUNT } from './constant';
 import type { EntitySelectContext, EntitySelectProps, EntitySelectValueType } from './types';
 
 const EntitySelectApp = <
@@ -15,12 +16,15 @@ const EntitySelectApp = <
         DisableClearable
     >,
 >(
-    props: Props,
+    props: EntitySelectProps<Value, Multiple, DisableClearable>,
 ) => {
-    const { multiple } = props;
+    const { multiple, maxCount: _maxCount } = props;
+    const maxCount = multiple ? (_maxCount! ?? DEFAULT_MAX_COUNT) : void 0;
+
     const [value, onChange] = useControllableValue<Required<Props>['value']>(props);
     const { contextValue } = useContextValue<Value, Multiple, DisableClearable>({
         value,
+        maxCount,
         multiple,
         onChange,
     });

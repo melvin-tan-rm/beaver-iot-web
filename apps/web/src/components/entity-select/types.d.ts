@@ -57,12 +57,24 @@ export interface EntitySelectProps<
     onChange?: (value: EntitySelectValue<Value, Multiple, DisableClearable>) => void;
     /** Whether the clear button is disabled */
     disableClearable?: DisableClearable;
+    /**
+     * maximum number of items that can be selected
+     * @default 5
+     * @description This prop is only used when `multiple` is true
+     */
+    maxCount?: Multiple extends true ? number : never;
 }
 
 /**
  * Context for the EntitySelect component.
  */
 export interface EntitySelectContext<V extends EntitySelectValueType = EntitySelectValueType> {
+    /**
+     * maximum number of items that can be selected
+     * @default 5
+     * @description This prop is only used when `multiple` is true
+     */
+    maxCount?: number;
     /** Available options for selection */
     options: V[];
     /** The current tab type */
