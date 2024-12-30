@@ -1,4 +1,5 @@
 import type { AutocompleteProps, TextFieldProps } from '@mui/material';
+import type { EntityAPISchema } from '@/services/http';
 
 /** Define the possible tab types */
 export type TabType = 'entity' | 'device';
@@ -37,6 +38,11 @@ export type EntitySelectValue<Value, Multiple, DisableClearable> = Multiple exte
       ? NonNullable<Value>
       : Value | null;
 
+/** Interface filter parameter */
+type FilterParameters = Omit<
+    ObjectToCamelCase<EntityAPISchema['getList']['request']>,
+    'pageSize' | 'pageNumber' | 'keyword'
+>;
 /**
  * Props for the EntitySelect component.
  */
@@ -44,11 +50,12 @@ export interface EntitySelectProps<
     Value extends EntitySelectValueType = EntitySelectValueType,
     Multiple extends boolean | undefined = false,
     DisableClearable extends boolean | undefined = false,
-> extends Pick<TextFieldProps, 'title' | 'required'>,
+> extends Pick<TextFieldProps, 'label' | 'required'>,
         Omit<
             AutocompleteProps<Value, Multiple, DisableClearable, false>,
             'renderInput' | 'options'
-        > {
+        >,
+        FilterParameters {
     /** Whether multiple selection is enabled */
     multiple?: Multiple;
     /** The current value of the select */
@@ -63,6 +70,10 @@ export interface EntitySelectProps<
      * @description This prop is only used when `multiple` is true
      */
     maxCount?: Multiple extends true ? number : never;
+    /**
+     * Callback function when the search input changes
+     */
+    onSearch?: (value: string) => void;
 }
 
 /**

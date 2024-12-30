@@ -1,7 +1,7 @@
 import React from 'react';
 import { useControllableValue } from 'ahooks';
 import EntitySelect from './entitySelect';
-import { useContextValue } from './hooks';
+import { useContextValue, useSourceData } from './hooks';
 import { EntityContext } from './context';
 import { DEFAULT_MAX_COUNT } from './constant';
 import type { EntitySelectContext, EntitySelectProps, EntitySelectValueType } from './types';
@@ -18,15 +18,34 @@ const EntitySelectApp = <
 >(
     props: EntitySelectProps<Value, Multiple, DisableClearable>,
 ) => {
-    const { multiple, maxCount: _maxCount } = props;
+    const {
+        multiple,
+        maxCount: _maxCount,
+        loading,
+        entityType,
+        entityValueType,
+        entityAccessMod,
+        excludeChildren,
+    } = props;
     const maxCount = multiple ? (_maxCount! ?? DEFAULT_MAX_COUNT) : void 0;
 
+    const {
+        entityList,
+        onSearch,
+        loading: sourceLoading,
+    } = useSourceData({
+        entityType,
+        entityValueType,
+        entityAccessMod,
+        excludeChildren,
+    });
     const [value, onChange] = useControllableValue<Required<Props>['value']>(props);
     const { contextValue } = useContextValue<Value, Multiple, DisableClearable>({
         value,
         maxCount,
         multiple,
         onChange,
+        entityList,
     });
 
     return (
@@ -36,6 +55,8 @@ const EntitySelectApp = <
                 multiple={multiple}
                 value={value}
                 onChange={onChange}
+                loading={loading || sourceLoading}
+                onSearch={onSearch}
             />
         </EntityContext.Provider>
     );

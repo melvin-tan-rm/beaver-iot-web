@@ -1,18 +1,15 @@
 import { useCallback, useMemo } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
-import { useEntityStore } from '@/stores';
 import { safeJsonParse } from '../helper';
 import type { EntitySelectOption, TabType } from '../types';
 
 interface IProps {
     tabType: TabType;
+    entityList: EntityData[];
 }
-
-export const useOptions = ({ tabType }: IProps) => {
+export const useOptions = ({ tabType, entityList }: IProps) => {
     const { getIntlText } = useI18n();
-    const { entityList } = useEntityStore(useShallow(state => ({ entityList: state.entityList })));
 
     /** Get description text */
     const getDescription = useCallback(
@@ -63,7 +60,7 @@ export const useOptions = ({ tabType }: IProps) => {
 
     /** Get entity drop-down options and device drop-down options */
     const { entityOptions, deviceOptions } = useMemo(() => {
-        const { entityOptions, deviceMap } = entityList.reduce<{
+        const { entityOptions, deviceMap } = (entityList || []).reduce<{
             deviceMap: Map<string, EntitySelectOption>;
             entityOptions: EntitySelectOption[];
         }>(

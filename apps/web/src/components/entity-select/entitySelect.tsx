@@ -23,7 +23,19 @@ const EntitySelect = <
 >(
     props: Props,
 ) => {
-    const { title, required, value, multiple, onChange, ...rest } = props;
+    const {
+        label,
+        required,
+        value,
+        multiple,
+        loading,
+        onChange,
+        onOpen,
+        onClose,
+        onInputChange,
+        onSearch,
+        ...rest
+    } = props;
     const { options } = useContext<EntitySelectContext<Value>>(
         EntityContext as unknown as React.Context<EntitySelectContext<Value>>,
     );
@@ -35,16 +47,24 @@ const EntitySelect = <
     /**
      * Handles opening of the select menu.
      */
-    const handleSelectOpen = useCallback<Required<EntityAutocompleteProps>['onOpen']>(event => {
-        setAnchorEl(event.currentTarget as HTMLDivElement);
-    }, []);
+    const handleSelectOpen = useCallback<Required<EntityAutocompleteProps>['onOpen']>(
+        event => {
+            setAnchorEl(event.currentTarget as HTMLDivElement);
+            onOpen?.(event);
+        },
+        [onOpen],
+    );
 
     /**
      * Handles closing of the select menu.
      */
-    const handleSelectClose = useCallback<Required<EntityAutocompleteProps>['onClose']>(() => {
-        setAnchorEl(null);
-    }, []);
+    const handleSelectClose = useCallback<Required<EntityAutocompleteProps>['onClose']>(
+        (...params) => {
+            setAnchorEl(null);
+            onClose?.(...params);
+        },
+        [onClose],
+    );
 
     /**
      * Handles the change event when an option is selected or cleared.
@@ -57,11 +77,23 @@ const EntitySelect = <
     );
 
     /**
+     * Handles the input change event.
+     */
+    const handleInputChange = useCallback<EntityAutocompleteProps['onInputChange']>(
+        (event, value, reason) => {
+            onSearch?.(reason === 'input' ? value : '');
+
+            onInputChange?.(event, value, reason);
+        },
+        [onInputChange, onSearch],
+    );
+
+    /**
      * Renders the input component for the Autocomplete.
      */
     const renderInput = useCallback<EntityAutocompleteProps['renderInput']>(
-        params => <TextField {...params} title={title} required={required} />,
-        [required, title],
+        params => <TextField {...params} label={label} required={required} />,
+        [required, label],
     );
 
     /**
@@ -92,6 +124,11 @@ const EntitySelect = <
         [],
     );
 
+    const filterOptions = useCallback<EntityAutocompleteProps['filterOptions']>(
+        options => options,
+        [],
+    );
+
     // Memoize custom slots and slot props to optimize rendering
     const slots = useMemo(() => ({ paper: EntityPaper }), []);
     const slotProps = useMemo(() => ({ listbox: { component: EntityList } }), []);
@@ -106,11 +143,14 @@ const EntitySelect = <
             onChange={handleChange}
             onOpen={handleSelectOpen}
             onClose={handleSelectClose}
+            onInputChange={handleInputChange}
             getOptionLabel={getOptionLabel}
             renderTags={renderTags}
             renderInput={renderInput}
             slots={slots}
             slotProps={slotProps}
+            loading={loading}
+            filterOptions={filterOptions}
         />
     );
 };

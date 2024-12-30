@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useRef, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { useVirtualList } from '@milesight/shared/src/hooks';
 import EntityMenuPopper from '../entity-menu-popper';
 import { EntityContext } from '../../context';
@@ -10,7 +10,7 @@ interface IProps {
     children: React.ReactNode;
 }
 export default React.memo(({ children: _children, ...props }: IProps) => {
-    const { tabType, options, selectedEntityMap } = useContext(EntityContext);
+    const { tabType, options, selectedEntityMap, maxCount } = useContext(EntityContext);
     const containerRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
 
@@ -33,6 +33,47 @@ export default React.memo(({ children: _children, ...props }: IProps) => {
         itemHeight: tabType === 'entity' ? 58 : 38,
         overscan: 10,
     });
+    const selectedCount = useMemo(() => selectedEntityMap.size, [selectedEntityMap]);
+
+    // get scroll bar width
+    const scrollbarWidth = useMemo(() => {
+        if (!menuAnchorEl) return 0;
+
+        const listNode = menuAnchorEl?.parentElement?.parentElement;
+        const popNode = listNode?.parentElement;
+        if (!listNode || !popNode) return 0;
+
+        const { scrollHeight, clientHeight, clientWidth } = listNode || {};
+        const hasScroll = scrollHeight > clientHeight;
+        if (!hasScroll) return 0;
+
+        const { clientWidth: popClientWidth } = popNode || {};
+        return popClientWidth - clientWidth || 0;
+    }, [menuAnchorEl]);
+    // Define popper modifiers
+    const modifiers = useMemo(
+        () => [
+            {
+                name: 'offset',
+                options: {
+                    offset: [0, scrollbarWidth],
+                },
+            },
+            {
+                name: 'preventOverflow',
+                options: {
+                    altBoundary: true,
+                    tether: false,
+                },
+            },
+            {
+                name: 'flip',
+                enabled: false,
+            },
+        ],
+        [scrollbarWidth],
+    );
+
     return (
         <>
             <div {...props} ref={containerRef}>
@@ -40,17 +81,29 @@ export default React.memo(({ children: _children, ...props }: IProps) => {
                     {(virtualList || []).map(({ data: option }) => {
                         const { value } = option || {};
                         const selected = selectedEntityMap.has(value);
+                        const disabled = maxCount && selectedCount >= maxCount ? !selected : false;
 
                         return tabType === 'entity' ? (
-                            <EntityOption key={value} option={option} selected={selected} />
+                            <EntityOption
+                                key={value}
+                                option={option}
+                                selected={selected}
+                                disabled={disabled}
+                            />
                         ) : (
                             <EntityMenu key={value} option={option} onClick={handleClick} />
                         );
                     })}
                 </div>
             </div>
-            {tabType === 'device' && (
-                <EntityMenuPopper open={open} anchorEl={menuAnchorEl} menuList={menuList} />
+            {tabType === 'device' && !!menuList.length && (
+                <EntityMenuPopper
+                    open={open}
+                    anchorEl={menuAnchorEl}
+                    menuList={menuList}
+                    modifiers={modifiers}
+                    disablePortal
+                />
             )}
         </>
     );

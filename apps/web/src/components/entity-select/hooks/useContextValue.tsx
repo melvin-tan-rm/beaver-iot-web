@@ -13,12 +13,14 @@ export const useContextValue = <
     M extends boolean | undefined = false,
     D extends boolean | undefined = false,
 >(
-    props: Pick<EntitySelectProps<V, M, D>, 'value' | 'multiple' | 'onChange' | 'maxCount'>,
+    props: Pick<EntitySelectProps<V, M, D>, 'value' | 'multiple' | 'onChange' | 'maxCount'> & {
+        entityList: EntityData[];
+    },
 ) => {
-    const { value, multiple, maxCount, onChange } = props;
+    const { value, multiple, maxCount, entityList, onChange } = props;
 
     const [tabType, setTabType] = useState<TabType>('entity');
-    const { options } = useOptions({ tabType });
+    const { options } = useOptions({ tabType, entityList });
     const { selectedEntityMap, onEntityChange } = useSelectValue<V, M, D>({
         value,
         multiple,
