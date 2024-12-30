@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Stack, IconButton } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
-import { DeleteOutlineIcon, EditOutlinedIcon, AirIcon } from '@milesight/shared/src/components';
+import { DeleteOutlineIcon, EditOutlinedIcon, CachedIcon } from '@milesight/shared/src/components';
 import { Tooltip, type ColumnType } from '@/components';
 import { type UserAPISchema } from '@/services/http';
 
@@ -38,8 +38,8 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 minWidth: 150,
                 ellipsis: true,
                 renderCell({ value }) {
-                    const roles: TableRowDataType['roles'] = value;
-                    return roles.map(r => r.roleName).join(',');
+                    const roles: TableRowDataType['roles'] = value || [];
+                    return roles.map(r => r.roleName).join(', ');
                 },
             },
             {
@@ -71,20 +71,20 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                             spacing="4px"
                             sx={{ height: '100%', alignItems: 'center', justifyContent: 'end' }}
                         >
-                            <Tooltip title={getIntlText('user.label.reset_password')}>
-                                <IconButton
-                                    sx={{ width: 30, height: 30 }}
-                                    onClick={() => onButtonClick('resetPassword', row)}
-                                >
-                                    <AirIcon sx={{ width: 20, height: 20 }} />
-                                </IconButton>
-                            </Tooltip>
                             <Tooltip title={getIntlText('common.button.edit')}>
                                 <IconButton
                                     sx={{ width: 30, height: 30 }}
                                     onClick={() => onButtonClick('edit', row)}
                                 >
                                     <EditOutlinedIcon sx={{ width: 20, height: 20 }} />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title={getIntlText('user.label.reset_password')}>
+                                <IconButton
+                                    sx={{ width: 30, height: 30 }}
+                                    onClick={() => onButtonClick('resetPassword', row)}
+                                >
+                                    <CachedIcon sx={{ width: 20, height: 20 }} />
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title={getIntlText('common.label.delete')}>

@@ -78,6 +78,7 @@ export {
     Sort as SortIcon,
     North as NorthIcon,
     South as SouthIcon,
+    Cached as CachedIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';

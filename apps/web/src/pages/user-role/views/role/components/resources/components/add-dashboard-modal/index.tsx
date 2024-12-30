@@ -104,10 +104,7 @@ const AddDashboardModal: React.FC<ModalProps> = props => {
      * right table selected items filter method
      */
     const handleSelectedFilter = useMemoizedFn((keyword, row: TableRowDataType) => {
-        return (
-            row.dashboardName?.toLowerCase()?.includes(keyword) ||
-            row.userNickname?.toLowerCase()?.includes(keyword)
-        );
+        return row.dashboardName?.toLowerCase()?.includes(keyword);
     });
 
     const renderModal = () => {

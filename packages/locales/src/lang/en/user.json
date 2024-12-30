@@ -38,5 +38,7 @@
     "user.label.role_table_title": "Role",
     "user.label.reset_password": "Reset Password",
     "user.label.single_delete_tip": "Deletion cannot be restored. Are you sure to delete user: {0}?",
-    "user.label.bulk_delete_tip": "Deletion cannot be restored. Are you sure to delete these {0} users in bulk？"
+    "user.label.bulk_delete_tip": "Deletion cannot be restored. Are you sure to delete these {0} users in bulk？",
+    "user.label.add_new_user_modal_title": "Add New User",
+    "user.label.edit_user_modal_title": "Edit User"
 }

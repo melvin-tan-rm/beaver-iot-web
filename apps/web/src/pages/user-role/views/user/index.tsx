@@ -8,7 +8,7 @@ import { toast, AddIcon, RemoveCircleOutlineIcon } from '@milesight/shared/src/c
 import { TablePro, useConfirm } from '@/components';
 import { userAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 
-import { AddUserModal } from './components';
+import { OperateUserModal } from './components';
 import { useUser, useColumns, type UseColumnsProps, type TableRowDataType } from './hooks';
 
 import styles from './style.module.less';
@@ -100,8 +100,16 @@ const Users: React.FC = () => {
         });
     });
 
-    const { showAddModal, handleModalCancel, addModalVisible, handleAddUser } =
-        useUser(getAllUsers);
+    const {
+        showUserModal,
+        handleModalCancel,
+        userModalVisible,
+        handleUserFormSubmit,
+        operateModalType,
+        modalTitle,
+        setEditUserInfo,
+        editModalData,
+    } = useUser(getAllUsers);
 
     // ---------- Table render bar ----------
     const toolbarRender = useMemo(() => {
@@ -111,7 +119,7 @@ const Users: React.FC = () => {
                     variant="contained"
                     sx={{ height: 36, textTransform: 'none' }}
                     startIcon={<AddIcon />}
-                    onClick={showAddModal}
+                    onClick={() => showUserModal('add')}
                 >
                     {getIntlText('common.label.add')}
                 </Button>
@@ -127,17 +135,19 @@ const Users: React.FC = () => {
                 </Button>
             </Stack>
         );
-    }, [getIntlText, handleDeleteConfirm, selectedIds, showAddModal]);
+    }, [getIntlText, handleDeleteConfirm, selectedIds, showUserModal]);
 
     const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useMemoizedFn(
         (type, record) => {
             switch (type) {
                 case 'resetPassword': {
-                    console.log('resetPassword user');
+                    showUserModal('resetPassword');
+                    setEditUserInfo(record);
                     break;
                 }
                 case 'edit': {
-                    console.log('edit user info');
+                    showUserModal('edit');
+                    setEditUserInfo(record);
                     break;
                 }
                 case 'delete': {
@@ -170,10 +180,13 @@ const Users: React.FC = () => {
                 onSearch={setKeyword}
                 onRefreshButtonClick={getAllUsers}
             />
-            <AddUserModal
-                visible={addModalVisible}
+            <OperateUserModal
+                operateType={operateModalType}
+                title={modalTitle}
+                visible={userModalVisible}
                 onCancel={handleModalCancel}
-                onFormSubmit={handleAddUser}
+                onFormSubmit={handleUserFormSubmit}
+                data={editModalData}
             />
         </div>
     );

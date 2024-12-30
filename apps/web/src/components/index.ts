@@ -10,3 +10,4 @@ export { default as RouteLoadingIndicator } from './route-loading-indicator';
 export { default as Empty } from './empty';
 export { default as TableTransfer } from './table-transfer';
 export { default as Transfer, type TransferItem } from './transfer';
+export { default as PasswordInput } from './password-input';

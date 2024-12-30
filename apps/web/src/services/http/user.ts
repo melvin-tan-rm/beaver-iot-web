@@ -96,7 +96,7 @@ export interface RoleDashboardType {
 }
 
 export interface UserAPISchema extends APISchema {
-    addUserMember: {
+    addUser: {
         request: {
             email: string;
             nickname: string;
@@ -280,11 +280,11 @@ export interface UserAPISchema extends APISchema {
  */
 export default attachAPI<UserAPISchema>(client, {
     apis: {
-        addUserMember: `POST ${API_PREFIX}/user/members`,
+        addUser: `POST ${API_PREFIX}/user/members`,
         getAllUsers: `POST ${API_PREFIX}/user/members/search`,
         resetUserPassword: `PUT ${API_PREFIX}/user/members/:user_id/change-password`,
         editUserInfo: `PUT ${API_PREFIX}/user/members/:user_id`,
-        deleteUsers: `DELETE ${API_PREFIX}/user/batch-delete`,
+        deleteUsers: `POST ${API_PREFIX}/user/batch-delete`,
         addRole: `POST ${API_PREFIX}/user/roles`,
         editRole: `PUT ${API_PREFIX}/user/roles/:role_id`,
         deleteRole: `DELETE ${API_PREFIX}/user/roles/:role_id`,
