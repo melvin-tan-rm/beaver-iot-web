@@ -45,6 +45,7 @@ interface FlowStore {
     setOpenLogPanel: (open: FlowStore['openLogPanel']) => void;
 
     setTestLogs: (testLogs: FlowStore['testLogs']) => void;
+    addTestLog: (log?: NonNullable<FlowStore['testLogs']>[0]) => void;
 
     setRunLogs: (runLogs: FlowStore['runLogs']) => void;
 
@@ -52,33 +53,14 @@ interface FlowStore {
 
     setLogDetailLoading: (loading: FlowStore['logDetailLoading']) => void;
 
-    setNodesDataValidResult: (data?: NodesDataValidResult) => void;
+    setNodesDataValidResult: (data: NodesDataValidResult | null) => void;
 }
 
 const useFlowStore = create(
     immer<FlowStore>(set => ({
         nodeConfigs: basicNodeConfigs,
 
-        testLogs: [
-            {
-                id: '1',
-                start_time: 1733809691235,
-                time_cost: 1000,
-                status: 'SUCCESS',
-            },
-            {
-                id: '2',
-                start_time: 1733809691235,
-                time_cost: 1000,
-                status: 'ERROR',
-            },
-            {
-                id: '3',
-                start_time: 1733809691235,
-                time_cost: 1000,
-                status: 'ERROR',
-            },
-        ],
+        testLogs: [],
 
         setNodeConfigs: nodeConfigs => {
             const configs = Object.entries(nodeConfigs).reduce((acc, [cat, configs]) => {
@@ -115,15 +97,21 @@ const useFlowStore = create(
         setLogPanelMode: logPanelMode => set({ logPanelMode }),
         setOpenLogPanel: open => set({ openLogPanel: open }),
         setTestLogs: testLogs => set({ testLogs }),
+        addTestLog: log => {
+            set(state => {
+                if (!log) return;
+                state.testLogs?.unshift(log);
+            });
+        },
         setRunLogs: runLogs => set({ runLogs }),
         setLogDetail: detail => set({ logDetail: detail }),
         setLogDetailLoading: loading => set({ logDetailLoading: loading }),
         setNodesDataValidResult(data) {
             if (!data) {
-                set({ logPanelMode: undefined, logDetail: undefined });
+                set({ openLogPanel: false, logPanelMode: undefined, logDetail: undefined });
                 return;
             }
-            console.log(data);
+            // console.log(data);
             const logDetail = Object.entries(data).map(([id, { type, name, label, errMsgs }]) => {
                 const result: NonNullable<FlowStore['logDetail']>[0] = {
                     node_id: id,
@@ -134,7 +122,7 @@ const useFlowStore = create(
                 return result;
             });
 
-            console.log(logDetail);
+            // console.log(logDetail);
             set({ openLogPanel: true, logPanelMode: 'feVerify', logDetail });
         },
     })),

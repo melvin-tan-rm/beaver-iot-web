@@ -4,14 +4,11 @@ import { isEqual } from 'lodash-es';
 import { Button, IconButton, Grid2, Switch, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { ArrowBackIcon, EditIcon } from '@milesight/shared/src/components';
+import { WorkflowAPISchema } from '@/services/http';
 import { Tooltip } from '@/components';
 import { EditModal, type EditModalProps } from '@/pages/workflow/components';
+import { type DesignMode } from '../../typings';
 import './style.less';
-
-/**
- * Workflow Design Mode
- */
-export type DesignMode = 'canvas' | 'advanced';
 
 export interface TopbarProps {
     /* Is Data Loading */
@@ -21,12 +18,7 @@ export interface TopbarProps {
     disabled?: boolean;
 
     /** Workflow Detail Data */
-    data?: {
-        id?: ApiKey;
-        name?: string;
-        remark?: string;
-        enabled?: boolean;
-    };
+    data?: Partial<Omit<WorkflowAPISchema['getFlowDesign']['response'], 'design_data'>>;
 
     /** Default Workflow Design Mode */
     mode?: DesignMode;
@@ -58,7 +50,6 @@ const Topbar: React.FC<TopbarProps> = ({
 }) => {
     const navigate = useNavigate();
     const { getIntlText } = useI18n();
-    // const isEdit = !!data?.id;
 
     // ---------- Workflow Name/Remark/Status Edit ----------
     const [flowData, setFlowData] = useState<TopbarProps['data']>();

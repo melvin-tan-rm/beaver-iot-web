@@ -1,11 +1,18 @@
-import { useMemo } from 'react';
-import { Stack, IconButton } from '@mui/material';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Stack, IconButton, Switch, Menu, MenuItem } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
-import { ListAltIcon, DeleteOutlineIcon, EditIcon } from '@milesight/shared/src/components';
+import {
+    ListAltIcon,
+    DeleteOutlineIcon,
+    EditIcon,
+    MoreVertIcon,
+    IosShareIcon,
+    EventNoteIcon,
+} from '@milesight/shared/src/components';
 import { Tooltip, type ColumnType } from '@/components';
-import { type WorkflowAPISchema } from '@/services/http';
+import { workflowAPI, type WorkflowAPISchema } from '@/services/http';
 
-type OperationType = 'detail' | 'delete' | 'edit';
+type OperationType = 'log' | 'delete' | 'edit' | 'enable' | 'export';
 
 export type TableRowDataType = ObjectToCamelCase<
     WorkflowAPISchema['getList']['response']['content'][0]
@@ -21,7 +28,22 @@ export interface UseColumnsProps<T> {
 const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsProps<T>) => {
     const { getIntlText } = useI18n();
     const { getTimeFormat } = useTime();
-
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const [popoverId, setPopoverId] = useState<string>('');
+    const handlerPopoverClose = useCallback(
+        (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => {
+            setPopoverId('');
+            setAnchorEl(null);
+        },
+        [popoverId, anchorEl],
+    );
+    const handlerPopoverOpen = useCallback(
+        (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => {
+            setPopoverId(id);
+            setAnchorEl(e.currentTarget);
+        },
+        [popoverId, anchorEl],
+    );
     const columns: ColumnType<T>[] = useMemo(() => {
         return [
             {
@@ -61,16 +83,31 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 },
             },
             {
-                field: 'status',
-                headerName: getIntlText('common.label.enable_status'),
+                field: 'userNickname',
+                headerName: getIntlText('common.label.creator'),
+                flex: 1,
+                minWidth: 150,
                 ellipsis: true,
-                flex: 2,
+            },
+            {
+                field: 'enabled',
+                headerName: getIntlText('common.label.enable_status'),
+                // ellipsis: true,
+                flex: 1,
                 minWidth: 200,
+                renderCell({ row }) {
+                    return (
+                        <Switch
+                            checked={row.enabled}
+                            onChange={() => onButtonClick('enable', row)}
+                        />
+                    );
+                },
             },
             {
                 field: '$operation',
                 headerName: getIntlText('common.label.operation'),
-                flex: 2,
+                flex: 1,
                 minWidth: 100,
                 renderCell({ row }) {
                     return (
@@ -87,35 +124,73 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                                     <EditIcon sx={{ width: 20, height: 20 }} />
                                 </IconButton>
                             </Tooltip>
-                            <Tooltip title={getIntlText('common.label.detail')}>
+                            <Tooltip title={getIntlText('common.label.log')}>
                                 <IconButton
                                     sx={{ width: 30, height: 30 }}
-                                    onClick={() => onButtonClick('detail', row)}
+                                    onClick={() => onButtonClick('log', row)}
                                 >
-                                    <ListAltIcon sx={{ width: 20, height: 20 }} />
+                                    <EventNoteIcon sx={{ width: 20, height: 20 }} />
                                 </IconButton>
                             </Tooltip>
-                            <Tooltip title={getIntlText('common.label.delete')}>
-                                <IconButton
-                                    color="error"
-                                    disabled={row.enabled}
-                                    sx={{
-                                        width: 30,
-                                        height: 30,
-                                        color: 'text.secondary',
-                                        '&:hover': { color: 'error.light' },
-                                    }}
-                                    onClick={() => onButtonClick('delete', row)}
-                                >
-                                    <DeleteOutlineIcon sx={{ width: 20, height: 20 }} />
-                                </IconButton>
-                            </Tooltip>
+                            <IconButton
+                                sx={{ width: 30, height: 30 }}
+                                onClick={e => handlerPopoverOpen(e, row.id as string)}
+                            >
+                                <MoreVertIcon sx={{ width: 20, height: 20 }} />
+                            </IconButton>
+                            <Menu
+                                id={row.id as string}
+                                open={popoverId === row.id}
+                                anchorEl={anchorEl}
+                                className="ms-workflow-list-more-menu"
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'right',
+                                }}
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                onClose={handlerPopoverClose}
+                            >
+                                <MenuItem onClick={() => onButtonClick('export', row)}>
+                                    <IconButton
+                                        disabled={row.enabled}
+                                        sx={{
+                                            width: 30,
+                                            height: 30,
+                                        }}
+                                    >
+                                        <IosShareIcon sx={{ width: 20, height: 20 }} />
+                                        <span className="ms-workflow-list-more-menu-item-text">
+                                            {getIntlText('common.label.export')}
+                                        </span>
+                                    </IconButton>
+                                </MenuItem>
+                                <MenuItem onClick={() => onButtonClick('delete', row)}>
+                                    <IconButton
+                                        color="error"
+                                        disabled={row.enabled}
+                                        sx={{
+                                            width: 30,
+                                            height: 30,
+                                            color: 'text.secondary',
+                                            '&:hover': { color: 'error.light' },
+                                        }}
+                                    >
+                                        <DeleteOutlineIcon sx={{ width: 20, height: 20 }} />
+                                        <span className="ms-workflow-list-more-menu-item-text">
+                                            {getIntlText('common.label.delete')}
+                                        </span>
+                                    </IconButton>
+                                </MenuItem>
+                            </Menu>
                         </Stack>
                     );
                 },
             },
         ];
-    }, [getIntlText, getTimeFormat, onButtonClick]);
+    }, [getIntlText, getTimeFormat, onButtonClick, popoverId, anchorEl]);
 
     return columns;
 };

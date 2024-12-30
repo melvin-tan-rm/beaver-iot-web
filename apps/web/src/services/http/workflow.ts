@@ -29,6 +29,10 @@ export interface WorkflowAPISchema extends APISchema {
         request: {
             name?: string;
             status?: FlowStatus;
+            /** data per page */
+            page_size?: number | null;
+            /** pagination page numbers */
+            page_number?: number | null;
         };
         response: SearchResponseType<
             {
@@ -110,7 +114,8 @@ export interface WorkflowAPISchema extends APISchema {
 
     /** Get workflow log list */
     getLogList: {
-        request: void | {
+        request: SearchRequestType & {
+            id: ApiKey;
             status?: WorkflowNodeStatus;
         };
         response: SearchResponseType<
@@ -183,7 +188,7 @@ export interface WorkflowAPISchema extends APISchema {
             /** Flow Remark */
             remark?: string;
             /** Enabled */
-            enabled: boolean;
+            enabled?: boolean;
             /** Flow Design Data (JSON string) */
             design_data: string;
         };
@@ -219,7 +224,7 @@ export interface WorkflowAPISchema extends APISchema {
     /** Test single node */
     testSingleNode: {
         request: {
-            input: Record<string, any>;
+            input?: Record<string, any>;
             /** Node Config (JSON string) */
             node_config: string;
         };

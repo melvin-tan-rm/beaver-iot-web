@@ -59,6 +59,11 @@ export const NODE_SPACING_Y = 48;
 export const PARAM_REFERENCE_PREFIX = '@';
 
 /**
+ * Global parameter reference pattern
+ */
+export const PARAM_REFERENCE_PATTERN = /^#\{([^{}]+)\}$/;
+
+/**
  * Global parameter reference key divider
  */
 export const PARAM_REFERENCE_DIVIDER = '.';
@@ -93,10 +98,10 @@ export const conditionOperatorMap: Partial<
     END_WITH: {
         labelIntlKey: 'workflow.label.condition_operator_end_with',
     },
-    IS: {
+    EQ: {
         labelIntlKey: 'workflow.label.condition_operator_is',
     },
-    IS_NOT: {
+    NE: {
         labelIntlKey: 'workflow.label.condition_operator_is_not',
     },
     IS_EMPTY: {

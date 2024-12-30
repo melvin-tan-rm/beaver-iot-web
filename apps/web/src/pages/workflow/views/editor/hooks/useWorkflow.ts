@@ -7,25 +7,28 @@ import {
     getOutgoers,
     type IsValidConnection,
 } from '@xyflow/react';
-import { uniqBy, omit, cloneDeep } from 'lodash-es';
+import { uniqBy, omit, cloneDeep, pick, isEmpty, isObject } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 import { basicNodeConfigs } from '@/pages/workflow/config';
+import useFlowStore from '../store';
 import {
     PARALLEL_LIMIT,
     PARALLEL_DEPTH_LIMIT,
     NODE_MIN_NUMBER_LIMIT,
     ENTRY_NODE_NUMBER_LIMIT,
 } from '../constants';
+import { genRefParamKey, isRefParamKey } from '../helper';
 import { getParallelInfo } from './utils';
 
 export type NodeParamType = {
     nodeId: ApiKey;
     nodeName?: string;
     nodeType?: WorkflowNodeType;
+    nodeLabel?: string;
     outputs: {
         name: string;
-        type: string;
+        type?: string;
         key: string;
     }[];
 };
@@ -35,7 +38,7 @@ export type FlattenNodeParamType = {
     nodeName?: string;
     nodeType?: WorkflowNodeType;
     valueName: string;
-    valueType: string;
+    valueType?: string;
     valueKey: string;
 };
 
@@ -44,10 +47,11 @@ const entryNodeTypes = Object.values(basicNodeConfigs)
     .map(item => item.type);
 
 const useWorkflow = () => {
-    const { getNodes, getEdges, setNodes } = useReactFlow<WorkflowNode, WorkflowEdge>();
+    const { getNodes, getEdges, setNodes, fitView } = useReactFlow<WorkflowNode, WorkflowEdge>();
     const nodes = useNodes<WorkflowNode>();
     const edges = useEdges<WorkflowEdge>();
     const { getIntlText } = useI18n();
+    const nodeConfigs = useFlowStore(state => state.nodeConfigs);
 
     const selectedNode = useMemo(() => {
         const selectedNodes = nodes.filter(item => item.selected);
@@ -197,8 +201,11 @@ const useWorkflow = () => {
 
     // Get all upstream nodes of the current node
     const getUpstreamNodes = useCallback(
-        (currentNode?: WorkflowNode) => {
+        (currentNode?: WorkflowNode, nodes?: WorkflowNode[], edges?: WorkflowEdge[]) => {
+            nodes = nodes || getNodes();
+            edges = edges || getEdges();
             currentNode = currentNode || getSelectedNode();
+
             const getAllIncomers = (
                 node: WorkflowNode,
                 data: Record<ApiKey, WorkflowNode[]> = {},
@@ -222,7 +229,7 @@ const useWorkflow = () => {
 
             return getAllIncomers(currentNode!);
         },
-        [nodes, edges, getSelectedNode],
+        [getNodes, getEdges, getSelectedNode],
     );
 
     const getUpstreamNodeParams = useCallback(
@@ -230,25 +237,75 @@ const useWorkflow = () => {
             currentNode = currentNode || getSelectedNode();
             if (!currentNode) return [];
 
-            const incomeNodes = getUpstreamNodes(currentNode);
-            // TODO: get the correct nodes params
-            const result: NodeParamType[] = incomeNodes.map(node => ({
-                nodeId: node.id,
-                nodeName: node.data?.nodeName,
-                nodeType: node.type as WorkflowNodeType,
-                outputs: [
-                    {
-                        name: 'output112123123123123123123123131231231',
-                        type: 'string',
-                        key: `${node.type}.${node.id}.1132e3123132`,
-                    },
-                    {
-                        name: 'output22',
-                        type: 'number',
-                        key: `${node.type}.${node.id}.11eyu3123132`,
-                    },
-                ],
-            }));
+            const incomeNodes = getUpstreamNodes(currentNode, nodes, edges);
+            const result = incomeNodes
+                .map(({ id, type, data }) => {
+                    const { nodeName, parameters } = data || {};
+                    const config = nodeConfigs[type!];
+                    const outputKeys = config?.outputKeys;
+                    const paramData: NodeParamType = {
+                        nodeId: id,
+                        nodeName,
+                        nodeType: type,
+                        nodeLabel: config?.labelIntlKey ? getIntlText(config.labelIntlKey) : '',
+                        outputs: [],
+                    };
+
+                    if (isEmpty(parameters) || !outputKeys?.length) return;
+                    const outputArgs = pick(parameters, outputKeys);
+
+                    Object.entries(outputArgs).forEach(([param, data]) => {
+                        switch (param) {
+                            case 'entityConfigs':
+                            case 'Payload': {
+                                if (!Array.isArray(data)) return;
+                                data.forEach((item: Record<string, any>) => {
+                                    paramData.outputs.push({
+                                        name: item?.name,
+                                        type: item?.type,
+                                        key: genRefParamKey(id, item.name),
+                                    });
+                                });
+                                break;
+                            }
+                            case 'entities': {
+                                if (!Array.isArray(data)) return;
+                                data.forEach(item => {
+                                    // TODO: get the entity value type
+                                    paramData.outputs.push({
+                                        name: item,
+                                        // type: ??,
+                                        key: genRefParamKey(id, item),
+                                    });
+                                });
+                                break;
+                            }
+                            case 'inputArguments':
+                            case 'exchangePayload':
+                            case 'serviceInvocationSetting': {
+                                if (param === 'serviceInvocationSetting') {
+                                    data = data.serviceParams;
+                                }
+                                if (!isObject(data)) return;
+                                Object.entries(data).forEach(([key, value]) => {
+                                    if (isRefParamKey(value)) return;
+                                    // TODO: get the entity value type
+                                    paramData.outputs.push({
+                                        name: key,
+                                        // type: ??,
+                                        key: genRefParamKey(id, key),
+                                    });
+                                });
+                                break;
+                            }
+                            default: {
+                                break;
+                            }
+                        }
+                    });
+                    return paramData;
+                })
+                .filter(item => !!item);
             const flattenResult = result.reduce((acc, item) => {
                 acc.push(
                     ...item.outputs.map(output => ({
@@ -265,19 +322,20 @@ const useWorkflow = () => {
 
             return [result, flattenResult];
         },
-        [getSelectedNode, getUpstreamNodes],
+        [nodes, edges, nodeConfigs, getSelectedNode, getUpstreamNodes, getIntlText],
     );
 
     // Check if there is a node that is not connected to an entry node
     const checkFreeNodeLimit = useCallback(
-        (nodes?: WorkflowNode[]) => {
+        (nodes?: WorkflowNode[], edges?: WorkflowEdge[]) => {
             nodes = nodes || getNodes();
+            edges = edges || getEdges();
             let result = false;
 
             result = nodes
                 .filter(node => !entryNodeTypes.includes(node.type as WorkflowNodeType))
                 .some(node => {
-                    const upstreamNodes = getUpstreamNodes(node);
+                    const upstreamNodes = getUpstreamNodes(node, nodes, edges);
                     const hasEntryNode = upstreamNodes.some(item =>
                         entryNodeTypes.includes(item.type as WorkflowNodeType),
                     );
@@ -294,13 +352,26 @@ const useWorkflow = () => {
 
             return result;
         },
-        [getNodes, getUpstreamNodes, getIntlText],
+        [getNodes, getEdges, getUpstreamNodes, getIntlText],
+    );
+
+    // Check if the workflow nodes&edges is valid
+    const checkWorkflowValid = useCallback(
+        (nodes: WorkflowNode[], edges: WorkflowEdge[]) => {
+            if (!checkNodeNumberLimit(nodes)) return false;
+            if (checkFreeNodeLimit(nodes, edges)) return false;
+            if (!checkNestedParallelLimit(nodes, edges)) return false;
+            if (nodes.some(node => !checkParallelLimit(node.id, undefined, edges))) return false;
+
+            return true;
+        },
+        [checkNodeNumberLimit, checkFreeNodeLimit, checkNestedParallelLimit, checkParallelLimit],
     );
 
     // Update node status
     const updateNodesStatus = useCallback(
-        (data: Record<string, WorkflowNodeStatus> | null, nodes?: WorkflowNode[]) => {
-            nodes = cloneDeep(nodes || getNodes());
+        (data: Record<string, WorkflowNodeStatus> | null) => {
+            const nodes = cloneDeep(getNodes());
 
             if (!data) {
                 nodes.forEach(node => {
@@ -317,11 +388,12 @@ const useWorkflow = () => {
                         $status: status,
                     };
                 });
+                fitView({ duration: 300 });
             }
 
             setNodes(nodes);
         },
-        [getNodes, setNodes],
+        [getNodes, setNodes, fitView],
     );
 
     return {
@@ -332,6 +404,7 @@ const useWorkflow = () => {
         checkNestedParallelLimit,
         checkNodeNumberLimit,
         checkFreeNodeLimit,
+        checkWorkflowValid,
         getSelectedNode,
         getUpstreamNodes,
         getUpstreamNodeParams,

@@ -1,7 +1,7 @@
-import { memo, useState, useCallback } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { memo, useState, useCallback, useEffect } from 'react';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useRequest } from 'ahooks';
-import { omitBy } from 'lodash-es';
+import { omitBy, merge, isEmpty, cloneDeep } from 'lodash-es';
 import {
     ReactFlow,
     Background,
@@ -15,18 +15,12 @@ import {
 } from '@xyflow/react';
 import { checkPrivateProperty } from '@milesight/shared/src/utils/tools';
 import { useI18n, useStoreShallow, usePreventLeave } from '@milesight/shared/src/hooks';
-import { CheckIcon, InfoIcon, LoadingButton, toast } from '@milesight/shared/src/components';
+import { InfoIcon, LoadingButton, toast } from '@milesight/shared/src/components';
 import { CodeEditor, useConfirm } from '@/components';
 import { workflowAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import { MIN_ZOOM, MAX_ZOOM, FROZEN_NODE_PROPERTY_KEYS } from './constants';
 import useFlowStore from './store';
-import {
-    useNodeTypes,
-    useInteractions,
-    useWorkflow,
-    useValidate,
-    NODE_VALIDATE_TOAST_KEY,
-} from './hooks';
+import { useNodeTypes, useInteractions, useWorkflow, useValidate } from './hooks';
 import {
     Topbar,
     Controls,
@@ -37,10 +31,9 @@ import {
     EntryPanel,
     LogPanel,
     TestButton,
-    type DesignMode,
     type TopbarProps,
 } from './components';
-import demoData from './demo-data.json';
+import { type DesignMode } from './typings';
 
 import '@xyflow/react/dist/style.css';
 import './style.less';
@@ -56,34 +49,13 @@ const WorkflowEditor = () => {
     const { getIntlText } = useI18n();
     const nodeTypes = useNodeTypes();
     const { toObject } = useReactFlow<WorkflowNode, WorkflowEdge>();
-    const {
-        isValidConnection,
-        checkParallelLimit,
-        checkNestedParallelLimit,
-        checkNodeNumberLimit,
-        checkFreeNodeLimit,
-        updateNodesStatus,
-    } = useWorkflow();
+    const { isValidConnection, checkWorkflowValid, updateNodesStatus } = useWorkflow();
     const { handleConnect, handleBeforeDelete, handleEdgeMouseEnter, handleEdgeMouseLeave } =
         useInteractions();
     const [nodes, setNodes, onNodesChange] = useNodesState<WorkflowNode>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<WorkflowEdge>([]);
-    const { checkNodesData } = useValidate();
-    const checkWorkflowValid = useCallback(() => {
-        const { nodes, edges } = toObject();
-        if (!checkNodeNumberLimit(nodes)) return false;
-        if (checkFreeNodeLimit(nodes)) return false;
-        if (!checkNestedParallelLimit(nodes, edges)) return false;
-        if (nodes.some(node => !checkParallelLimit(node.id, undefined, edges))) return false;
-
-        return true;
-    }, [
-        toObject,
-        checkNodeNumberLimit,
-        checkFreeNodeLimit,
-        checkNestedParallelLimit,
-        checkParallelLimit,
-    ]);
+    const { checkNodesId, checkNodesType, checkNodesData, checkEdgesId, checkEdgesType } =
+        useValidate();
     const confirm = useConfirm();
 
     // ---------- Prevent Leave ----------
@@ -138,9 +110,16 @@ const WorkflowEditor = () => {
     );
 
     // ---------- Fetch Nodes Config ----------
-    const { setNodeConfigs, setNodesDataValidResult } = useFlowStore(
-        useStoreShallow(['setNodeConfigs', 'setNodesDataValidResult']),
-    );
+    const { setOpenLogPanel, setNodeConfigs, setTestLogs, setLogDetail, setNodesDataValidResult } =
+        useFlowStore(
+            useStoreShallow([
+                'setOpenLogPanel',
+                'setNodeConfigs',
+                'setTestLogs',
+                'setLogDetail',
+                'setNodesDataValidResult',
+            ]),
+        );
     const { loading: nodeConfigLoading } = useRequest(
         async () => {
             const [error, resp] = await awaitWrap(workflowAPI.getFlowNodes());
@@ -160,128 +139,181 @@ const WorkflowEditor = () => {
         if (wid) return { id: wid };
     });
     const [flowDataLoading, setFlowDataLoading] = useState<boolean>();
-    const {
-        // loading,
-        // data: flowData,
-        run: getFlowDesign,
-    } = useRequest(
+    const handleFlowDataChange = useCallback<NonNullable<TopbarProps['onDataChange']>>(data => {
+        setBasicData(data);
+        setIsPreventLeave(true);
+    }, []);
+
+    useRequest(
         async () => {
             if (!wid) return;
             setFlowDataLoading(true);
-            // TODO: Call workflow detail API
             const [error, resp] = await awaitWrap(workflowAPI.getFlowDesign({ id: wid, version }));
-            // await new Promise(resolve => {
-            //     setTimeout(resolve, 500);
-            // });
 
             setFlowDataLoading(false);
-            // if (error || !isRequestSuccess(resp)) return;
-            // const data = getResponseData(resp);
+            if (error || !isRequestSuccess(resp)) return;
+            const data = getResponseData(resp);
+            const { design_data: designData, ...basicData } = data || {};
+            let flowData: Pick<WorkflowSchema, 'nodes' | 'edges'>;
+
             // console.log(data);
+            try {
+                flowData = JSON.parse(designData || '{}');
+            } catch (e) {
+                console.warn(e);
+                toast.error({ content: getIntlText('common.message.json_format_error') });
+                return;
+            }
 
-            setFlowDataLoading(false);
-            setNodes(demoData.nodes as WorkflowNode[]);
-            setEdges(demoData.edges as WorkflowEdge[]);
-            setBasicData({
-                id: 'xxx',
-                name: 'Workflow Name',
-                remark: 'Workflow Remark',
-                enabled: false,
-            });
+            setNodes(flowData?.nodes);
+            setEdges(flowData?.edges);
+            setBasicData(basicData);
 
-            return { id: 'xxx', name: 'Workflow Name', remark: 'Workflow Remark', enabled: false };
+            return data;
         },
         {
             debounceWait: 300,
             refreshDeps: [wid, version],
         },
     );
-    const handleFlowDataChange = useCallback<NonNullable<TopbarProps['onDataChange']>>(data => {
-        setBasicData(data);
-        setIsPreventLeave(true);
-    }, []);
+
+    // ---------- Handle Import Data ----------
+    const { state } = useLocation();
+    const importedData = state?.workflowSchema as WorkflowSchema | undefined;
+
+    useEffect(() => {
+        if (wid || !importedData) return;
+        const { nodes, edges, viewport } = importedData;
+
+        setNodes(nodes);
+        setEdges(edges);
+    }, [wid, importedData, setNodes, setEdges]);
 
     // ---------- Design Mode Change ----------
     const [designMode, setDesignMode] = useState<DesignMode>('canvas');
     const [editorFlowData, setEditorFlowData] = useState<string>();
     const handleDesignModeChange = useCallback(
         (mode: DesignMode) => {
-            if (!checkWorkflowValid()) return;
-
             if (mode === 'advanced') {
-                const { nodes, edges } = toObject();
+                const { nodes, edges } = cloneDeep(toObject());
                 const newNodes = nodes.map(node => {
                     const result = omitBy(node, (_, key) =>
                         FROZEN_NODE_PROPERTY_KEYS.includes(key),
                     );
                     result.data = omitBy(node.data, (_, key) => checkPrivateProperty(key));
-                    return result;
+                    return result as WorkflowNode;
                 });
                 const newEdges = edges.map(edge => {
                     edge.data = omitBy(edge.data, (_, key) => checkPrivateProperty(key));
                     return edge;
                 });
 
+                if (!checkWorkflowValid(newNodes, newEdges)) return;
+
                 setEditorFlowData(JSON.stringify({ nodes: newNodes, edges: newEdges }, null, 2));
             } else if (mode === 'canvas') {
                 let data: Pick<WorkflowSchema, 'nodes' | 'edges'>;
 
-                // TODO: json validate, data validate
                 try {
                     data = JSON.parse(editorFlowData || '{}');
                 } catch (e) {
+                    console.warn(e);
                     toast.error({ content: getIntlText('common.message.json_format_error') });
                     return;
                 }
                 const { nodes, edges } = data;
 
+                if (!checkWorkflowValid(nodes, edges)) return;
+                if (
+                    checkNodesId(nodes, { validateFirst: true }) ||
+                    checkNodesType(nodes, { validateFirst: true }) ||
+                    checkEdgesId(edges, nodes, { validateFirst: true }) ||
+                    checkEdgesType(edges, nodes, { validateFirst: true })
+                ) {
+                    return;
+                }
+
                 setNodes(nodes);
                 setEdges(edges);
+                setOpenLogPanel(false);
             }
-            const data = toObject();
-
-            // TODO: check the nodes json data is valid
-            console.log('workflow data', data);
 
             setDesignMode(mode);
         },
-        [editorFlowData, toObject, setEdges, setNodes, checkWorkflowValid, getIntlText],
+        [
+            editorFlowData,
+            checkWorkflowValid,
+            toObject,
+            checkNodesId,
+            checkNodesType,
+            checkEdgesId,
+            checkEdgesType,
+            setNodes,
+            setEdges,
+            setOpenLogPanel,
+            getIntlText,
+        ],
     );
 
     // ---------- Save Workflow ----------
     const navigate = useNavigate();
     const [saveLoading, setSaveLoading] = useState(false);
     const handleSave = async () => {
-        if (!checkWorkflowValid()) return;
-        const dataCheckResult = checkNodesData();
+        const flowData = cloneDeep(toObject());
+        const isAdvanceMode = designMode === 'advanced';
 
-        console.log({ dataCheckResult });
-        if (dataCheckResult !== true) {
-            if (designMode === 'canvas') {
-                const statusData = Object.entries(dataCheckResult).reduce(
-                    (acc, [id, item]) => {
-                        acc[id] = item.status;
-                        return acc;
-                    },
-                    {} as NonNullable<Parameters<typeof updateNodesStatus>[0]>,
-                );
-                // TODO: show validate panel
-                setNodesDataValidResult(dataCheckResult);
-                updateNodesStatus(statusData, nodes);
-            } else {
-                const errItem = Object.values(dataCheckResult).find(item => item.errMsgs.length);
+        if (isAdvanceMode) {
+            let jsonData: Pick<WorkflowSchema, 'nodes' | 'edges'>;
 
-                toast.error({ key: NODE_VALIDATE_TOAST_KEY, content: errItem?.errMsgs[0] });
+            try {
+                jsonData = JSON.parse(editorFlowData || '{}');
+            } catch (e) {
+                console.warn(e);
+                toast.error({ content: getIntlText('common.message.json_format_error') });
+                return;
             }
-            return;
+
+            flowData.nodes = jsonData.nodes;
+            flowData.edges = jsonData.edges;
         }
 
-        if (!basicData) {
-            // TODO: data validate
+        const { nodes, edges, viewport } = flowData;
+
+        // console.log({ nodes, edges });
+        if (!checkWorkflowValid(nodes, edges)) return;
+
+        const edgesCheckResult = merge(
+            checkEdgesId(edges, nodes, { validateFirst: true }),
+            checkEdgesType(edges, nodes, { validateFirst: true }),
+        );
+        // console.log({ edgesCheckResult });
+        if (!isEmpty(edgesCheckResult)) return;
+
+        const nodesCheckResult = merge(
+            checkNodesId(nodes, { validateFirst: isAdvanceMode }),
+            checkNodesType(nodes, { validateFirst: isAdvanceMode }),
+            checkNodesData(nodes, { validateFirst: isAdvanceMode }),
+        );
+        // console.log({ nodesCheckResult });
+        if (!isEmpty(nodesCheckResult)) {
+            if (isAdvanceMode) return;
+            const statusData = Object.entries(nodesCheckResult).reduce(
+                (acc, [id, item]) => {
+                    acc[id] = item.status;
+                    return acc;
+                },
+                {} as NonNullable<Parameters<typeof updateNodesStatus>[0]>,
+            );
+
+            setNodesDataValidResult(nodesCheckResult);
+            updateNodesStatus(statusData);
             return;
         }
+        updateNodesStatus(null);
+        setNodesDataValidResult(null);
 
-        // const { nodes, edges, viewport } = toObject();
+        if (!basicData?.name) return;
+
         const hasTriggerNode = nodes.find(node => node.type === 'trigger');
 
         // If has a trigger node and it is the first time to create, show tip
@@ -300,29 +332,49 @@ const WorkflowEditor = () => {
             if (!proceed) return;
         }
 
+        nodes.forEach(node => {
+            // remove interactive property
+            delete node.selected;
+            delete node.dragging;
+
+            // remove private property
+            node.data = omitBy(node.data, (_, key) => checkPrivateProperty(key));
+        });
+        edges.forEach(edge => {
+            delete edge.selected;
+            edge.data = omitBy(edge.data, (_, key) => checkPrivateProperty(key));
+        });
+
         // TODO: referenced warning confirm ?
 
-        // TODO: check the nodes data is valid
-        console.log('workflow data', { nodes, edges });
         setSaveLoading(true);
         const [error, resp] = await awaitWrap(
             workflowAPI.saveFlowDesign({
-                name: basicData.name!,
-                remark: basicData.remark!,
-                enabled: basicData.enabled!,
-                design_data: JSON.stringify({ nodes, edges }),
+                ...basicData,
+                name: basicData.name,
+                design_data: JSON.stringify({ nodes, edges, viewport }),
             }),
         );
 
-        console.log({ error, resp });
+        // console.log({ error, resp });
         setSaveLoading(false);
         if (error || !isRequestSuccess(resp)) return;
         const data = getResponseData(resp);
 
-        console.log(data);
+        // console.log(data);
         toast.success(getIntlText('common.message.operation_success'));
-        navigate('/workflow');
+        setIsPreventLeave(false);
+        setTimeout(() => navigate('/workflow'), 0);
     };
+
+    useEffect(() => {
+        return () => {
+            setOpenLogPanel(false);
+            setIsPreventLeave(false);
+            setTestLogs(undefined);
+            setLogDetail(undefined);
+        };
+    }, []);
 
     return (
         <div className="ms-main">
@@ -385,7 +437,7 @@ const WorkflowEditor = () => {
                             horizontal={helperLineHorizontal}
                             vertical={helperLineVertical}
                         />
-                        <LogPanel />
+                        <LogPanel designMode={designMode} />
                         <ConfigPanel />
                         <EntryPanel isEditing={!!wid} loading={flowDataLoading} />
                     </ReactFlow>

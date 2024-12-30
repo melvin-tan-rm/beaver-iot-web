@@ -100,5 +100,16 @@
     "workflow.valid.node_parameters_required": "The {1} node parameters is required.",
     "workflow.valid.min_length": "The {1} field length of the value you entered should be more than or equal to {0}.",
     "workflow.valid.max_length": "The {1} field length of the value you entered cannot exceed {2} digits.",
-    "workflow.valid.parameter_required": "The {1} Node parameter is required."
+    "workflow.valid.parameter_required": "The {1} Node parameter is required.",
+    "workflow.valid.invalid_node_id": "The {1} Node ID is invalid.",
+    "workflow.valid.invalid_edge_id": "The Edge (connecting node {1} and {2}) ID is invalid.",
+    "workflow.valid.invalid_node_type": "The {1} Node type is invalid.",
+    "workflow.valid.invalid_edge_type": "The Edge (connecting node {1} and {2}) Type is invalid.",
+    "workflow.valid.node_id_duplicated": "{1} and {2} Node ID is duplicated.",
+    "workflow.valid.edge_id_duplicated": "The Edge (connecting node {1} and {2}) ID is duplicated.",
+    "workflow.node.service_helptext": "Please select the service you want to call first.",
+    "workflow.node.input_variables": "Input Variables",
+    "workflow.editor.config_panel_test_title": "Test {1}",
+    "workflow.valid.invalid_url": "The {1} field value is not a valid URL.",
+    "workflow.valid.invalid_email": "The {1} field value is not a valid email."
 }

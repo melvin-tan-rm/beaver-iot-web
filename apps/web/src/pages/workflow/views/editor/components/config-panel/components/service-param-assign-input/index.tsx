@@ -1,9 +1,13 @@
-import { useLayoutEffect, useMemo } from 'react';
+import { useCallback, useLayoutEffect, useMemo } from 'react';
+import { isEqual } from 'lodash-es';
+import { useControllableValue, useDebounceFn, useDynamicList } from 'ahooks';
+import { Divider, IconButton, Tooltip } from '@mui/material';
+import { useI18n, useStoreShallow } from '@milesight/shared/src/hooks';
+import { HelpIcon } from '@milesight/shared/src/components';
 import { useEntityApi } from '@/plugin/hooks';
-import { useStoreShallow } from '@milesight/shared/src/hooks';
-import { useControllableValue, useDynamicList } from 'ahooks';
-import ParamInputSelect, { type ParamInputSelectProps } from '../param-input-select';
 import useConfigPanelStore from '../../store';
+import ParamInputSelect, { ParamInputSelectProps } from '../param-input-select';
+import EntitySelect from '../entity-select';
 import './style.less';
 
 type InputParamListType = {
@@ -12,13 +16,20 @@ type InputParamListType = {
     type: ApiKey;
     value: ParamInputSelectProps['value'];
 };
-type ServiceParamAssignInputValueType = InputParamListType[];
+type ServiceParamsValueType = {
+    [key: string]: string | undefined;
+};
+type ServiceParamAssignInputValueType = {
+    serviceEntity?: ApiKey;
+    paramList?: InputParamListType[];
+    serviceParams: ServiceParamsValueType;
+};
 type ServiceParamAssignInputProps = {
     required?: boolean;
     disabled?: boolean;
-    serviceKey?: ApiKey;
+    helperText?: string;
     value?: ServiceParamAssignInputValueType;
-    defaultValue?: any;
+    defaultValue?: ServiceParamAssignInputValueType;
     onChange?: (value: ServiceParamAssignInputValueType) => void;
 };
 type EntityItem = {
@@ -31,42 +42,48 @@ const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
     required,
     disabled,
     defaultValue,
-    serviceKey,
     ...props
 }) => {
+    const { getIntlText } = useI18n();
+    const { helperText = getIntlText('workflow.node.service_helptext') } = props;
     const { getEntityList } = useConfigPanelStore(useStoreShallow(['getEntityList']));
     const { getEntityChildren } = useEntityApi();
     const [innerValue, setInnerValue] =
         useControllableValue<ServiceParamAssignInputValueType>(props);
-    const { list, replace, resetList } = useDynamicList<InputParamListType>(innerValue);
-    const handlerChange = async (entityKey?: ApiKey) => {
-        if (entityKey) {
-            const entityFilterList = await getEntityList({ keyword: entityKey as string });
-            if (entityFilterList?.length) {
-                const entityItem = entityFilterList[0];
-                const { error, res } = await getEntityChildren({
-                    id: entityItem.entity_id,
-                });
-                if (!error) {
-                    resetList(
-                        res.map((item: EntityItem) => {
-                            const valueItem = innerValue?.find(
-                                innerItem => innerItem.key === item.entity_key,
-                            );
-                            return {
-                                key: item.entity_key,
-                                name: item.entity_name,
-                                type: item.entity_value_type,
-                                value: valueItem?.value ?? '',
-                            };
-                        }),
-                    );
-                    return;
+    const { list, replace, resetList } = useDynamicList<InputParamListType>([]);
+    const { run: handlerChange } = useDebounceFn(
+        async (serviceEntity?: ApiKey) => {
+            setInnerValue(pre => ({ ...pre, serviceEntity }));
+            if (serviceEntity) {
+                const entityFilterList = await getEntityList({ keyword: serviceEntity as string });
+                if (entityFilterList?.length) {
+                    const entityItem = entityFilterList[0];
+                    const { error, res } = await getEntityChildren({
+                        id: entityItem.entity_id,
+                    });
+                    if (!error) {
+                        resetList(
+                            res.map((item: EntityItem) => {
+                                const valueItem: ParamInputSelectProps['value'] =
+                                    innerValue?.serviceParams?.[item.entity_key as string];
+                                return {
+                                    key: item.entity_key,
+                                    name: item.entity_name,
+                                    type: item.entity_value_type,
+                                    value: valueItem || undefined,
+                                };
+                            }),
+                        );
+                        return;
+                    }
                 }
             }
-        }
-        resetList([]);
-    };
+            if (list.length) {
+                resetList([]);
+            }
+        },
+        { wait: 100 },
+    );
     const renderInputParam = useMemo(() => {
         if (list.length) {
             return (
@@ -93,12 +110,44 @@ const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
         }
         return null;
     }, [list]);
+    const transformParams = useCallback(
+        (paramList: InputParamListType[]): ServiceParamsValueType => {
+            const res: ServiceParamsValueType = {};
+            paramList.forEach(item => {
+                res[item.key] = item.value;
+            });
+            return res;
+        },
+        [],
+    );
     useLayoutEffect(() => {
-        setInnerValue(list);
+        const serviceParams = innerValue?.serviceParams ?? {};
+        if (isEqual(serviceParams, transformParams(list))) return;
+        handlerChange(innerValue?.serviceEntity);
+    }, [innerValue]);
+    useLayoutEffect(() => {
+        setInnerValue(pre => ({ ...pre, serviceParams: transformParams(list) }));
     }, [list]);
-    useLayoutEffect(() => {
-        handlerChange(serviceKey);
-    }, [serviceKey]);
-    return <div className="ms-service-entity-call">{renderInputParam}</div>;
+    return (
+        <div className="ms-service-entity-call">
+            <EntitySelect
+                filterModel={{ type: 'SERVICE' }}
+                value={innerValue?.serviceEntity ?? ''}
+                onChange={handlerChange}
+            />
+            <Divider className="ms-divider" />
+            <div className="ms-node-form-group-title">
+                {getIntlText('workflow.node.input_variables')}
+                {helperText && !innerValue?.serviceEntity && (
+                    <Tooltip enterDelay={300} enterNextDelay={300} title={helperText}>
+                        <IconButton size="small">
+                            <HelpIcon sx={{ fontSize: 16 }} />
+                        </IconButton>
+                    </Tooltip>
+                )}
+            </div>
+            {renderInputParam}
+        </div>
+    );
 };
 export default ServiceParamAssignInput;
