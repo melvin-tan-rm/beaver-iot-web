@@ -12,7 +12,7 @@ interface IProps {
 }
 export default React.memo((props: IProps) => {
     const { option, selected, onClick } = props;
-    const { label } = option || {};
+    const { label, children } = option || {};
 
     /** When an entity item is selected/canceled */
     const handleClick = useCallback(
@@ -32,9 +32,7 @@ export default React.memo((props: IProps) => {
             <div className="ms-entity-menu__title">
                 <Tooltip title={label} autoEllipsis />
             </div>
-            <div className="ms-entity-menu__icon">
-                <ArrowForwardIosIcon />
-            </div>
+            <div className="ms-entity-menu__icon">{!!children && <ArrowForwardIosIcon />}</div>
         </div>
     );
 });

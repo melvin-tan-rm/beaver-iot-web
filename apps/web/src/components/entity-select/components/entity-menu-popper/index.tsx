@@ -1,6 +1,6 @@
-import React, { useContext, useMemo, useRef } from 'react';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import { Paper, Popper, PopperProps } from '@mui/material';
-import { useVirtualList } from '@milesight/shared/src/hooks';
+import { useVirtualList } from 'ahooks';
 import EntityOption from '../entity-option';
 import { EntityContext } from '../../context';
 import type { EntitySelectOption } from '../../types';
@@ -14,20 +14,27 @@ export default React.memo(({ menuList, ...props }: IProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
 
-    // /** virtual list */
-    // const [virtualList] = useVirtualList(menuList, {
-    //     containerTarget: containerRef,
-    //     wrapperTarget: listRef,
-    //     itemHeight: 58,
-    //     overscan: 10,
-    // });
+    /** virtual list */
+    const [virtualList, scrollTo] = useVirtualList(menuList, {
+        containerTarget: containerRef,
+        wrapperTarget: listRef,
+        itemHeight: 58,
+        overscan: 10,
+    });
+    useEffect(() => {
+        scrollTo(0);
+    }, [menuList]);
     const selectedCount = useMemo(() => selectedEntityMap.size, [selectedEntityMap]);
     return (
-        <Popper placement="right-start" {...props} className="ms-entity-menu-popper">
+        <Popper placement="right" {...props} className="ms-entity-menu-popper">
             <Paper className="ms-entity-menu-paper">
-                <div ref={containerRef} className="ms-entity-menu-paper__list">
+                <div
+                    ref={containerRef}
+                    className="ms-entity-menu-paper__list"
+                    style={{ height: Math.min(menuList.length, 6) * 58 }}
+                >
                     <div ref={listRef}>
-                        {(menuList || []).map(menu => {
+                        {(virtualList || []).map(({ data: menu }) => {
                             const { value } = menu || {};
                             const selected = selectedEntityMap.has(value);
                             const disabled =
@@ -35,7 +42,6 @@ export default React.memo(({ menuList, ...props }: IProps) => {
 
                             return (
                                 <EntityOption
-                                    key={value}
                                     option={menu}
                                     selected={selected}
                                     disabled={disabled}

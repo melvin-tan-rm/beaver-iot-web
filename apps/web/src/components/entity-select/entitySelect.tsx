@@ -34,6 +34,8 @@ const EntitySelect = <
         onClose,
         onInputChange,
         onSearch,
+        error,
+        helperText,
         ...rest
     } = props;
     const { options } = useContext<EntitySelectContext<Value>>(
@@ -92,8 +94,16 @@ const EntitySelect = <
      * Renders the input component for the Autocomplete.
      */
     const renderInput = useCallback<EntityAutocompleteProps['renderInput']>(
-        params => <TextField {...params} label={label} required={required} />,
-        [required, label],
+        params => (
+            <TextField
+                {...params}
+                error={error}
+                helperText={helperText}
+                label={label}
+                required={required}
+            />
+        ),
+        [error, helperText, label, required],
     );
 
     /**

@@ -50,7 +50,7 @@ export interface EntitySelectProps<
     Value extends EntitySelectValueType = EntitySelectValueType,
     Multiple extends boolean | undefined = false,
     DisableClearable extends boolean | undefined = false,
-> extends Pick<TextFieldProps, 'label' | 'required'>,
+> extends Pick<TextFieldProps, 'label' | 'required' | 'error' | 'helperText'>,
         Omit<
             AutocompleteProps<Value, Multiple, DisableClearable, false>,
             'renderInput' | 'options'

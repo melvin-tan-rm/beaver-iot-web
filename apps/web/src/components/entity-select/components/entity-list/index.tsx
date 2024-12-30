@@ -1,4 +1,5 @@
-import React, { useCallback, useContext, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useMemoizedFn } from 'ahooks';
 import { useVirtualList } from '@milesight/shared/src/hooks';
 import EntityMenuPopper from '../entity-menu-popper';
 import { EntityContext } from '../../context';
@@ -50,6 +51,23 @@ export default React.memo(({ children: _children, ...props }: IProps) => {
         const { clientWidth: popClientWidth } = popNode || {};
         return popClientWidth - clientWidth || 0;
     }, [menuAnchorEl]);
+
+    // when scroll, clear menu list
+    const handleScroll = useMemoizedFn(() => {
+        if (!menuList?.length) return;
+
+        setMenuList([]);
+    });
+    useEffect(() => {
+        const node = containerRef.current;
+        if (!node) return;
+
+        node.addEventListener('scroll', handleScroll);
+        return () => {
+            node.removeEventListener('scroll', handleScroll);
+        };
+    }, [handleScroll]);
+
     // Define popper modifiers
     const modifiers = useMemo(
         () => [
@@ -59,21 +77,9 @@ export default React.memo(({ children: _children, ...props }: IProps) => {
                     offset: [0, scrollbarWidth],
                 },
             },
-            {
-                name: 'preventOverflow',
-                options: {
-                    altBoundary: true,
-                    tether: false,
-                },
-            },
-            {
-                name: 'flip',
-                enabled: false,
-            },
         ],
         [scrollbarWidth],
     );
-
     return (
         <>
             <div {...props} ref={containerRef}>
@@ -102,7 +108,6 @@ export default React.memo(({ children: _children, ...props }: IProps) => {
                     anchorEl={menuAnchorEl}
                     menuList={menuList}
                     modifiers={modifiers}
-                    disablePortal
                 />
             )}
         </>
