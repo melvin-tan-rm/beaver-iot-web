@@ -1,6 +1,6 @@
 import { useI18n } from '@milesight/shared/src/hooks';
 
-import { Empty } from '@/components';
+import notPermissionImg from './assets/403.svg';
 
 import './style.less';
 
@@ -9,7 +9,15 @@ export default () => {
 
     return (
         <div className="ms-view-403">
-            <Empty type="nodata" text={getIntlText('common.label.page_not_permission')} />
+            <div className="ms-view-403__wrapper">
+                <div className="ms-view-403__img">
+                    <img src={notPermissionImg} alt="not-permission" />
+                </div>
+                <div className="ms-view-403__title">403 Forbidden</div>
+                <div className="ms-view-403__description">
+                    {getIntlText('common.label.page_not_permission')}
+                </div>
+            </div>
         </div>
     );
 };

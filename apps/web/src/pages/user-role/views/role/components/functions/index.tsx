@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 
 import { useI18n } from '@milesight/shared/src/hooks';
-import { LoadingWrapper } from '@milesight/shared/src/components';
+import { LoadingWrapper, EditIcon, CheckIcon, CloseIcon } from '@milesight/shared/src/components';
 
 import { type UserMenuType } from '@/services/http';
 import { useFunctions } from './hooks';
@@ -64,10 +64,20 @@ const FunctionsTable = () => {
         if (isEditing) {
             return (
                 <>
-                    <Button onClick={handleSave} variant="contained" {...btnSx}>
+                    <Button
+                        onClick={handleSave}
+                        variant="contained"
+                        startIcon={<CheckIcon />}
+                        {...btnSx}
+                    >
                         {getIntlText('common.button.save')}
                     </Button>
-                    <Button onClick={closeEditing} variant="outlined" {...btnSx}>
+                    <Button
+                        onClick={closeEditing}
+                        variant="outlined"
+                        startIcon={<CloseIcon />}
+                        {...btnSx}
+                    >
                         {getIntlText('common.button.cancel')}
                     </Button>
                 </>
@@ -75,7 +85,7 @@ const FunctionsTable = () => {
         }
 
         return (
-            <Button onClick={openEditing} variant="contained" {...btnSx}>
+            <Button onClick={openEditing} variant="contained" startIcon={<EditIcon />} {...btnSx}>
                 {getIntlText('common.button.edit')}
             </Button>
         );

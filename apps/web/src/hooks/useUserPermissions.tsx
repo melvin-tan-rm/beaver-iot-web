@@ -1,26 +1,49 @@
+import { useMemo } from 'react';
+import { useMemoizedFn } from 'ahooks';
+import { isEmpty } from 'lodash-es';
+
+import { useUserStore } from '@/stores';
 import { PERMISSIONS } from '@/constants';
+import { type UserMenuType } from '@/services/http';
 
 /**
  * Global User Permissions Controller hooks
  */
 const useUserPermissions = () => {
-    /**
-     * Convert back-end permission information based on back-end data
-     */
-    const userInfo = {
-        isSuperAdmin: false,
-        permissions: [
-            PERMISSIONS.USER_ROLE_MODULE,
-            PERMISSIONS.INTEGRATION_MODULE,
-            PERMISSIONS.DEVICE_MODULE,
-        ],
-    };
+    const { userInfo } = useUserStore();
 
-    const hasPermission = (p: PERMISSIONS[] | PERMISSIONS) => {
+    const userPermissions = useMemo((): PERMISSIONS[] => {
+        const { menus } = userInfo || {};
+
+        if (!Array.isArray(menus) || isEmpty(menus)) {
+            return [];
+        }
+
+        /**
+         * Recursive traversal to get permission codes
+         */
+        const getCodes = (m: UserMenuType[]): PERMISSIONS[] => {
+            const codes: PERMISSIONS[] = [];
+
+            (m || []).forEach(item => {
+                if (Array.isArray(item?.children) && !isEmpty(item.children)) {
+                    codes.push(...getCodes(item.children));
+                }
+
+                codes.push(item.code as PERMISSIONS);
+            });
+
+            return codes;
+        };
+
+        return getCodes(menus);
+    }, [userInfo]);
+
+    const hasPermission = useMemoizedFn((p: PERMISSIONS[] | PERMISSIONS) => {
         /**
          * Super Admin has all permissions
          */
-        if (userInfo?.isSuperAdmin) {
+        if (userInfo?.is_super_admin) {
             return true;
         }
 
@@ -29,14 +52,14 @@ const useUserPermissions = () => {
          * it can be accessed
          */
         if (Array.isArray(p)) {
-            return p.some(item => userInfo.permissions.includes(item));
+            return p.some(item => userPermissions.includes(item));
         }
 
         /**
          * Determine if you have the specified permission
          */
-        return userInfo.permissions.includes(p);
-    };
+        return userPermissions.includes(p);
+    });
 
     return {
         hasPermission,

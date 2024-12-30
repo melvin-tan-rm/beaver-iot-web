@@ -1,28 +1,30 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useMatches } from 'react-router';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { isEmpty } from 'lodash-es';
+import { isEmpty, get } from 'lodash-es';
 
 import { useUserPermissions } from '@/hooks';
 
 /**
  * Router Permissions Controller
  */
-const useRoutePermission = () => {
+const useRoutePermission = (userInfoLoading: boolean | null) => {
     const routeMatches = useMatches();
     const location = useLocation();
     const navigate = useNavigate();
     const { hasPermission } = useUserPermissions();
 
-    const [permissionLoading, setPermissionLoading] = useState(false);
     const timerRef = useRef<ReturnType<typeof setTimeout>>();
+    const [pathPermission, setPathPermission] = useState<Record<string, boolean>>();
 
     /**
      * Determine whether the user has permission to access the current page.
      * No permission to jump directly to 403
      */
     useEffect(() => {
-        setPermissionLoading(true);
+        if (userInfoLoading !== false) {
+            return;
+        }
 
         if (timerRef.current) {
             clearTimeout(timerRef.current);
@@ -30,6 +32,10 @@ const useRoutePermission = () => {
         }
 
         timerRef.current = setTimeout(() => {
+            setPathPermission({
+                [location.pathname]: true,
+            });
+
             /**
              * To query permissions
              */
@@ -41,12 +47,15 @@ const useRoutePermission = () => {
                 }
 
                 if (permissions && !hasPermission(permissions)) {
+                    setPathPermission({
+                        [location.pathname]: false,
+                    });
+
                     navigate('/403', { replace: true });
                 }
             };
 
             getPermission();
-            setPermissionLoading(false);
         }, 150);
 
         /**
@@ -58,10 +67,16 @@ const useRoutePermission = () => {
                 timerRef.current = undefined;
             }
         };
-    }, [navigate, routeMatches, location, hasPermission]);
+    }, [navigate, routeMatches, location, hasPermission, userInfoLoading]);
+
+    const hasPathPermission = useMemo(() => {
+        const pathname = location?.pathname || '';
+        return Boolean(get(pathPermission || {}, pathname));
+    }, [pathPermission, location]);
 
     return {
-        permissionLoading,
+        /** whether current location path has permission to access */
+        hasPathPermission,
     };
 };
 
