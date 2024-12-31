@@ -21,6 +21,22 @@ export const useSelectValue = <
         }, new Map());
     }, [value]);
 
+    /** selected device to entity map */
+    const selectedDeviceMap = useMemo(() => {
+        if (!value) return new Map<string, V[]>();
+
+        const valueList: V[] = Array.isArray(value) ? value : ([value] as unknown as V[]);
+        return valueList.reduce<Map<string, V[]>>((acc, curr) => {
+            const { rawData } = curr || {};
+            const { deviceName = '' } = rawData || {};
+
+            const deviceList = acc.get(deviceName) || [];
+            deviceList.push(curr);
+            acc.set(deviceName, deviceList);
+            return acc;
+        }, new Map());
+    }, [value]);
+
     /** Select/cancel entity selection callback */
     const onEntityChange = useCallback<EntitySelectContext['onEntityChange']>(
         selectedItem => {
@@ -47,6 +63,7 @@ export const useSelectValue = <
 
     return {
         selectedEntityMap,
+        selectedDeviceMap,
         onEntityChange,
     };
 };

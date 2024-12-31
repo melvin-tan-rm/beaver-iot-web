@@ -11,7 +11,8 @@ interface IProps {
     children: React.ReactNode;
 }
 export default React.memo(({ children: _children, ...props }: IProps) => {
-    const { tabType, options, selectedEntityMap, maxCount } = useContext(EntityContext);
+    const { tabType, options, selectedEntityMap, selectedDeviceMap, maxCount } =
+        useContext(EntityContext);
     const containerRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
 
@@ -23,8 +24,10 @@ export default React.memo(({ children: _children, ...props }: IProps) => {
     const handleClick = useCallback((event: React.MouseEvent, option: EntitySelectOption) => {
         setMenuAnchorEl(event.currentTarget as HTMLDivElement);
 
-        const { children } = option || {};
-        setMenuList(children || []);
+        setTimeout(() => {
+            const { children } = option || {};
+            setMenuList(children || []);
+        }, 0);
     }, []);
 
     /** virtual list */
@@ -86,30 +89,42 @@ export default React.memo(({ children: _children, ...props }: IProps) => {
                 <div ref={listRef}>
                     {(virtualList || []).map(({ data: option }) => {
                         const { value } = option || {};
-                        const selected = selectedEntityMap.has(value);
-                        const disabled = maxCount && selectedCount >= maxCount ? !selected : false;
 
-                        return tabType === 'entity' ? (
-                            <EntityOption
+                        // Only entity drop-down
+                        if (tabType === 'entity') {
+                            const selected = selectedEntityMap.has(value);
+                            const disabled =
+                                maxCount && selectedCount >= maxCount ? !selected : false;
+
+                            return (
+                                <EntityOption
+                                    key={value}
+                                    option={option}
+                                    selected={selected}
+                                    disabled={disabled}
+                                />
+                            );
+                        }
+
+                        // Drop down the device entity
+                        const hasSelectedDevice = selectedDeviceMap.has((value as string) || '');
+                        return (
+                            <EntityMenu
                                 key={value}
                                 option={option}
-                                selected={selected}
-                                disabled={disabled}
+                                onClick={handleClick}
+                                selected={hasSelectedDevice}
                             />
-                        ) : (
-                            <EntityMenu key={value} option={option} onClick={handleClick} />
                         );
                     })}
                 </div>
             </div>
-            {tabType === 'device' && !!menuList.length && (
-                <EntityMenuPopper
-                    open={open}
-                    anchorEl={menuAnchorEl}
-                    menuList={menuList}
-                    modifiers={modifiers}
-                />
-            )}
+            <EntityMenuPopper
+                open={open}
+                anchorEl={menuAnchorEl}
+                menuList={menuList}
+                modifiers={modifiers}
+            />
         </>
     );
 });

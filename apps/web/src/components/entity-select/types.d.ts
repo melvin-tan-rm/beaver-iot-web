@@ -66,7 +66,6 @@ export interface EntitySelectProps<
     disableClearable?: DisableClearable;
     /**
      * maximum number of items that can be selected
-     * @default 5
      * @description This prop is only used when `multiple` is true
      */
     maxCount?: Multiple extends true ? number : never;
@@ -74,6 +73,10 @@ export interface EntitySelectProps<
      * Callback function when the search input changes
      */
     onSearch?: (value: string) => void;
+    /**
+     * Callback function to filter options
+     */
+    filterOption?: (options: EntitySelectOption<ApiKey>[]) => boolean;
 }
 
 /**
@@ -82,7 +85,6 @@ export interface EntitySelectProps<
 export interface EntitySelectContext<V extends EntitySelectValueType = EntitySelectValueType> {
     /**
      * maximum number of items that can be selected
-     * @default 5
      * @description This prop is only used when `multiple` is true
      */
     maxCount?: number;
@@ -94,6 +96,8 @@ export interface EntitySelectContext<V extends EntitySelectValueType = EntitySel
     setTabType: (tabType: TabType) => void;
     /** The map of selected entities */
     selectedEntityMap: Map<V['value'], V>;
+    /** The map of selected devices */
+    selectedDeviceMap: Map<string, V[]>;
     /** Callback function when an entity is selected or changed */
     onEntityChange: (selectedItem: EntitySelectValue<Value, Multiple, DisableClearable>) => void;
 }

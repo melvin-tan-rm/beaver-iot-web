@@ -3,7 +3,6 @@ import { useControllableValue } from 'ahooks';
 import EntitySelect from './entitySelect';
 import { useContextValue, useSourceData } from './hooks';
 import { EntityContext } from './context';
-import { DEFAULT_MAX_COUNT } from './constant';
 import type { EntitySelectContext, EntitySelectProps, EntitySelectValueType } from './types';
 
 const EntitySelectApp = <
@@ -26,8 +25,9 @@ const EntitySelectApp = <
         entityValueType,
         entityAccessMod,
         excludeChildren,
+        filterOption,
     } = props;
-    const maxCount = multiple ? (_maxCount! ?? DEFAULT_MAX_COUNT) : void 0;
+    const maxCount = multiple ? _maxCount : void 0;
 
     const {
         entityList,
@@ -46,6 +46,7 @@ const EntitySelectApp = <
         multiple,
         onChange,
         entityList,
+        filterOption,
     });
 
     return (

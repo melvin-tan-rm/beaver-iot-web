@@ -5,12 +5,18 @@
     padding: @padding-xs @padding-md;
     cursor: pointer;
 
-    &--active {
+    &:hover {
         background-color: var(--component-background-gray);
     }
 
-    &:hover {
-        background-color: var(--component-background-gray);
+    &--active {
+        font-weight: @font-weight-medium;
+        color: var(--text-color-main);
+        background-color: var(--purple-1);
+
+        &:hover {
+            background-color: var(--purple-1);
+        }
     }
 
     &__title {

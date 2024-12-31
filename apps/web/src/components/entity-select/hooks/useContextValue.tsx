@@ -13,15 +13,22 @@ export const useContextValue = <
     M extends boolean | undefined = false,
     D extends boolean | undefined = false,
 >(
-    props: Pick<EntitySelectProps<V, M, D>, 'value' | 'multiple' | 'onChange' | 'maxCount'> & {
+    props: Pick<
+        EntitySelectProps<V, M, D>,
+        'value' | 'multiple' | 'onChange' | 'maxCount' | 'filterOption'
+    > & {
         entityList: EntityData[];
     },
 ) => {
-    const { value, multiple, maxCount, entityList, onChange } = props;
+    const { value, multiple, maxCount, entityList, onChange, filterOption } = props;
 
     const [tabType, setTabType] = useState<TabType>('entity');
-    const { options } = useOptions({ tabType, entityList });
-    const { selectedEntityMap, onEntityChange } = useSelectValue<V, M, D>({
+    const { options: _options } = useOptions({ tabType, entityList });
+    const options = useMemo(
+        () => (filterOption ? filterOption(_options) : _options),
+        [_options, filterOption],
+    );
+    const { selectedEntityMap, selectedDeviceMap, onEntityChange } = useSelectValue<V, M, D>({
         value,
         multiple,
         onChange,
@@ -35,11 +42,12 @@ export const useContextValue = <
             tabType,
             setTabType,
             selectedEntityMap,
+            selectedDeviceMap,
             onEntityChange,
         };
 
         return result;
-    }, [maxCount, onEntityChange, options, selectedEntityMap, tabType]);
+    }, [maxCount, onEntityChange, options, selectedDeviceMap, selectedEntityMap, tabType]);
 
     return {
         contextValue,
