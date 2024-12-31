@@ -50,7 +50,7 @@ export interface EntitySelectProps<
     Value extends EntitySelectValueType = EntitySelectValueType,
     Multiple extends boolean | undefined = false,
     DisableClearable extends boolean | undefined = false,
-> extends Pick<TextFieldProps, 'label' | 'required' | 'error' | 'helperText'>,
+> extends Pick<TextFieldProps, 'label' | 'required' | 'error' | 'helperText' | 'placeholder'>,
         Omit<
             AutocompleteProps<Value, Multiple, DisableClearable, false>,
             'renderInput' | 'options'
@@ -76,13 +76,19 @@ export interface EntitySelectProps<
     /**
      * Callback function to filter options
      */
-    filterOption?: (options: EntitySelectOption<ApiKey>[]) => boolean;
+    filterOption?: (options: EntitySelectOption<ApiKey>[]) => EntitySelectOption<ApiKey>[];
+    /**
+     * custom popper width
+     */
+    popperWidth?: number;
 }
 
 /**
  * Context for the EntitySelect component.
  */
 export interface EntitySelectContext<V extends EntitySelectValueType = EntitySelectValueType> {
+    /** custom popper width */
+    popperWidth?: number;
     /**
      * maximum number of items that can be selected
      * @description This prop is only used when `multiple` is true

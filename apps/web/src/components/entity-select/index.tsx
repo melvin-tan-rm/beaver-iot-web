@@ -25,6 +25,7 @@ const EntitySelectApp = <
         entityValueType,
         entityAccessMod,
         excludeChildren,
+        popperWidth,
         filterOption,
     } = props;
     const maxCount = multiple ? _maxCount : void 0;
@@ -47,6 +48,7 @@ const EntitySelectApp = <
         onChange,
         entityList,
         filterOption,
+        popperWidth,
     });
 
     return (

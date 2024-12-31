@@ -1,7 +1,7 @@
 import React, { useState, useContext, useCallback, useMemo } from 'react';
 import { Autocomplete, TextField, AutocompleteProps, Chip } from '@mui/material';
 import Tooltip from '@/components/tooltip';
-import { EntityList, EntityPaper } from './components';
+import { EntityList, EntityPaper, EntityPopper } from './components';
 import { EntityContext } from './context';
 import type { EntitySelectContext, EntitySelectProps, EntitySelectValueType } from './types';
 
@@ -36,6 +36,7 @@ const EntitySelect = <
         onSearch,
         error,
         helperText,
+        placeholder,
         ...rest
     } = props;
     const { options } = useContext<EntitySelectContext<Value>>(
@@ -101,9 +102,10 @@ const EntitySelect = <
                 helperText={helperText}
                 label={label}
                 required={required}
+                placeholder={placeholder}
             />
         ),
-        [error, helperText, label, required],
+        [error, helperText, label, required, placeholder],
     );
 
     /**
@@ -140,7 +142,7 @@ const EntitySelect = <
     );
 
     // Memoize custom slots and slot props to optimize rendering
-    const slots = useMemo(() => ({ paper: EntityPaper }), []);
+    const slots = useMemo(() => ({ paper: EntityPaper, popper: EntityPopper }), []);
     const slotProps = useMemo(() => ({ listbox: { component: EntityList } }), []);
 
     return (
