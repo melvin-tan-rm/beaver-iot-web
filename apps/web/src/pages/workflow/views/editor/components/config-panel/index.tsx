@@ -3,12 +3,12 @@ import { Panel, useReactFlow } from '@xyflow/react';
 import cls from 'classnames';
 import { isEqual } from 'lodash-es';
 import { useDebounceEffect } from 'ahooks';
-import { Stack, IconButton, Divider, Tooltip } from '@mui/material';
+import { Stack, IconButton, Divider } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
-import { useI18n } from '@milesight/shared/src/hooks';
+import { useI18n, useStoreShallow } from '@milesight/shared/src/hooks';
 import { CloseIcon, PlayArrowIcon, HelpIcon } from '@milesight/shared/src/components';
+import { Tooltip } from '@/components';
 import useFlowStore from '../../store';
-import useWorkflow from '../../hooks/useWorkflow';
 import {
     useCommonFormItems,
     useNodeFormItems,
@@ -29,9 +29,9 @@ const ConfigPanel = () => {
     const { updateNode, updateNodeData } = useReactFlow();
 
     // ---------- Handle Node-related logic ----------
-    const { getSelectedNode } = useWorkflow();
-    const selectedNode = useMemo(() => getSelectedNode(), [getSelectedNode]);
-    const nodeConfigs = useFlowStore(state => state.nodeConfigs);
+    const { selectedNode, nodeConfigs } = useFlowStore(
+        useStoreShallow(['selectedNode', 'nodeConfigs']),
+    );
     const openPanel = !!selectedNode;
     const nodeConfig = useMemo(() => {
         if (!selectedNode) return;
@@ -116,13 +116,27 @@ const ConfigPanel = () => {
         >
             <div className="ms-workflow-panel-config">
                 <div className="ms-workflow-panel-config-header">
-                    <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
+                    <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{ flex: 1, width: 0, alignItems: 'center' }}
+                    >
                         <span className="icon" style={{ backgroundColor: nodeConfig?.iconBgColor }}>
                             {nodeConfig?.icon}
                         </span>
-                        {!!nodeConfig?.labelIntlKey && (
+                        <Tooltip
+                            autoEllipsis
+                            className="title"
+                            title={
+                                latestFormData?.nodeName ||
+                                (!nodeConfig?.labelIntlKey
+                                    ? ''
+                                    : getIntlText(nodeConfig?.labelIntlKey))
+                            }
+                        />
+                        {/* {!!nodeConfig?.labelIntlKey && (
                             <span className="title">{getIntlText(nodeConfig.labelIntlKey)}</span>
-                        )}
+                        )} */}
                     </Stack>
                     <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                         {nodeConfig?.testable && (

@@ -21,10 +21,12 @@ export const CodeEditor = forwardRef<EditorHandlers, EditorProps>((props, ref) =
         fontSize,
         ...rest
     } = props;
+    const editorRef = useRef<HTMLDivElement>(null);
     const editorInstanceRef = useRef<ReactCodeMirrorRef>(null);
     const { handleBlur, handleFocus, themeBgColor } = useCssVariable({
         onBlur,
         onFocus,
+        editorRef,
     });
     const { editorTheme } = useEditorTheme({ fontSize });
 
@@ -44,7 +46,7 @@ export const CodeEditor = forwardRef<EditorHandlers, EditorProps>((props, ref) =
     useImperativeHandle(ref, () => handlers);
 
     return (
-        <div className="ms-code-editor">
+        <div className="ms-code-editor" ref={editorRef}>
             {CustomHeader !== null && (
                 <EditorHeaderComponent
                     title={title}

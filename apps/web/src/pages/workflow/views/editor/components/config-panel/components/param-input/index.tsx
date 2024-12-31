@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import { useDynamicList, useControllableValue } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
+import { genRandomString } from '@milesight/shared/src/utils/tools';
 import { DeleteOutlineIcon, AddIcon } from '@milesight/shared/src/components';
 import './style.less';
 import { isEqual } from 'lodash-es';
@@ -41,11 +42,28 @@ export interface ParamInputProps {
 }
 
 const DEFAULT_EMPTY_VALUE: ParamInputValueType = {
+    identify: '',
     name: '',
-    type: '' as WorkflowParamValueType,
+    type: '' as EntityValueDataType,
 };
-const typeOptions: WorkflowParamValueType[] = ['INT', 'FLOAT', 'BOOLEAN', 'STRING'];
-
+const typeOptions = [
+    {
+        label: 'INT',
+        value: 'LONG',
+    },
+    {
+        label: 'FLOAT',
+        value: 'DOUBLE',
+    },
+    {
+        label: 'BOOLEAN',
+        value: 'BOOLEAN',
+    },
+    {
+        label: 'STRING',
+        value: 'STRING',
+    },
+];
 const ParamInput: React.FC<ParamInputProps> = ({
     required,
     disabled,
@@ -81,12 +99,15 @@ const ParamInput: React.FC<ParamInputProps> = ({
     }, [list]);
     const handlerAdd = () => {
         if (disabledAdd) return;
-        insert(list.length, DEFAULT_EMPTY_VALUE);
+        insert(list.length, {
+            ...DEFAULT_EMPTY_VALUE,
+            identify: `param_${genRandomString(8, { lowerCase: true })}`,
+        });
     };
     return (
         <div className="ms-param-input">
             {list.map((item, index) => (
-                <div className="ms-param-input-item" key={getKey(index)}>
+                <div className="ms-param-input-item" key={getKey(index) || index}>
                     <FormControl required={required} disabled={disabled}>
                         <TextField
                             label={nameInputProps?.label || getIntlText('common.label.name')}
@@ -110,8 +131,8 @@ const ParamInput: React.FC<ParamInputProps> = ({
                             }
                         >
                             {typeOptions.map(item => (
-                                <MenuItem key={item} value={item}>
-                                    {item}
+                                <MenuItem key={item.value} value={item.value}>
+                                    {item.label}
                                 </MenuItem>
                             ))}
                         </Select>

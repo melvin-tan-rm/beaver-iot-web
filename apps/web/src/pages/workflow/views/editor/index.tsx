@@ -49,14 +49,50 @@ const WorkflowEditor = () => {
     const { getIntlText } = useI18n();
     const nodeTypes = useNodeTypes();
     const { toObject } = useReactFlow<WorkflowNode, WorkflowEdge>();
+    const [nodes, setNodes, onNodesChange] = useNodesState<WorkflowNode>([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState<WorkflowEdge>([]);
     const { isValidConnection, checkWorkflowValid, updateNodesStatus } = useWorkflow();
     const { handleConnect, handleBeforeDelete, handleEdgeMouseEnter, handleEdgeMouseLeave } =
         useInteractions();
-    const [nodes, setNodes, onNodesChange] = useNodesState<WorkflowNode>([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState<WorkflowEdge>([]);
     const { checkNodesId, checkNodesType, checkNodesData, checkEdgesId, checkEdgesType } =
         useValidate();
     const confirm = useConfirm();
+    const {
+        setSelectedNode,
+        setOpenLogPanel,
+        setNodeConfigs,
+        setTestLogs,
+        setLogDetail,
+        setNodesDataValidResult,
+    } = useFlowStore(
+        useStoreShallow([
+            'setSelectedNode',
+            'setOpenLogPanel',
+            'setNodeConfigs',
+            'setTestLogs',
+            'setLogDetail',
+            'setNodesDataValidResult',
+        ]),
+    );
+
+    // ---------- Store selected node ----------
+    const selectedNode = (() => {
+        const selectedNodes = nodes.filter(item => item.selected);
+        const node = selectedNodes?.[0];
+
+        if (selectedNodes.length > 1 || !node || !node.selected || node.dragging) {
+            return;
+        }
+
+        return node;
+    })();
+    const selectedNodeId = selectedNode?.id;
+    const selectedNodeType = selectedNode?.type;
+
+    // Only the nodeId/nodeType changed, we update the selected node
+    useEffect(() => {
+        setSelectedNode(selectedNode);
+    }, [selectedNodeId, selectedNodeType]);
 
     // ---------- Prevent Leave ----------
     const [isPreventLeave, setIsPreventLeave] = useState(false);
@@ -110,16 +146,7 @@ const WorkflowEditor = () => {
     );
 
     // ---------- Fetch Nodes Config ----------
-    const { setOpenLogPanel, setNodeConfigs, setTestLogs, setLogDetail, setNodesDataValidResult } =
-        useFlowStore(
-            useStoreShallow([
-                'setOpenLogPanel',
-                'setNodeConfigs',
-                'setTestLogs',
-                'setLogDetail',
-                'setNodesDataValidResult',
-            ]),
-        );
+
     const { loading: nodeConfigLoading } = useRequest(
         async () => {
             const [error, resp] = await awaitWrap(workflowAPI.getFlowNodes());
@@ -141,7 +168,7 @@ const WorkflowEditor = () => {
     const [flowDataLoading, setFlowDataLoading] = useState<boolean>();
     const handleFlowDataChange = useCallback<NonNullable<TopbarProps['onDataChange']>>(data => {
         setBasicData(data);
-        setIsPreventLeave(true);
+        // setIsPreventLeave(true);
     }, []);
 
     useRequest(
@@ -359,9 +386,15 @@ const WorkflowEditor = () => {
         // console.log({ error, resp });
         setSaveLoading(false);
         if (error || !isRequestSuccess(resp)) return;
-        const data = getResponseData(resp);
+        const respData = getResponseData(resp);
 
         // console.log(data);
+        setBasicData(data => {
+            const result = data || {};
+            result.version = respData?.version ? respData.version : result.version;
+
+            return result;
+        });
         toast.success(getIntlText('common.message.operation_success'));
         setIsPreventLeave(false);
         setTimeout(() => navigate('/workflow'), 0);
@@ -390,7 +423,7 @@ const WorkflowEditor = () => {
                         key="test-button"
                         disabled={
                             designMode === 'advanced' ||
-                            !nodes.length ||
+                            !nodes?.length ||
                             nodeConfigLoading ||
                             saveLoading
                         }
@@ -398,7 +431,7 @@ const WorkflowEditor = () => {
                     <LoadingButton
                         key="save-button"
                         variant="contained"
-                        disabled={!nodes.length}
+                        disabled={!nodes?.length}
                         loading={saveLoading}
                         // startIcon={<CheckIcon />}
                         onClick={handleSave}

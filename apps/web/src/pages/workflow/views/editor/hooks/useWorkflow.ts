@@ -1,14 +1,7 @@
-import { useMemo, useCallback } from 'react';
-import {
-    useReactFlow,
-    useNodes,
-    useEdges,
-    getIncomers,
-    getOutgoers,
-    type IsValidConnection,
-} from '@xyflow/react';
+import { useCallback } from 'react';
+import { useReactFlow, getIncomers, getOutgoers, type IsValidConnection } from '@xyflow/react';
 import { uniqBy, omit, cloneDeep, pick, isEmpty, isObject } from 'lodash-es';
-import { useI18n } from '@milesight/shared/src/hooks';
+import { useI18n, useStoreShallow } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 import { basicNodeConfigs } from '@/pages/workflow/config';
 import useFlowStore from '../store';
@@ -48,24 +41,10 @@ const entryNodeTypes = Object.values(basicNodeConfigs)
 
 const useWorkflow = () => {
     const { getNodes, getEdges, setNodes, fitView } = useReactFlow<WorkflowNode, WorkflowEdge>();
-    const nodes = useNodes<WorkflowNode>();
-    const edges = useEdges<WorkflowEdge>();
     const { getIntlText } = useI18n();
-    const nodeConfigs = useFlowStore(state => state.nodeConfigs);
-
-    const selectedNode = useMemo(() => {
-        const selectedNodes = nodes.filter(item => item.selected);
-        const node = selectedNodes?.[0];
-
-        if (selectedNodes.length > 1 || !node || !node.selected || node.dragging) {
-            return;
-        }
-
-        return node;
-    }, [nodes]);
-    // Use nodeId, nodeType to avoid frequent render triggers
-    const selectedNodeId = selectedNode?.id;
-    const selectedNodeType = selectedNode?.type;
+    const { selectedNode, nodeConfigs } = useFlowStore(
+        useStoreShallow(['selectedNode', 'nodeConfigs']),
+    );
 
     // Check node number limit
     const checkNodeNumberLimit = useCallback(
@@ -184,27 +163,12 @@ const useWorkflow = () => {
         [getNodes, getEdges, checkParallelLimit],
     );
 
-    // Get the only selected node that is not dragging
-    const getSelectedNode = useCallback(() => {
-        const nodes = getNodes();
-        const selectedNodes = nodes.filter(
-            item => item.id === selectedNodeId && item.type === selectedNodeType,
-        );
-        const node = selectedNodes?.[0];
-
-        if (selectedNodes.length > 1 || !node || !node.selected || node.dragging) {
-            return;
-        }
-
-        return node;
-    }, [selectedNodeId, selectedNodeType, getNodes]);
-
     // Get all upstream nodes of the current node
     const getUpstreamNodes = useCallback(
         (currentNode?: WorkflowNode, nodes?: WorkflowNode[], edges?: WorkflowEdge[]) => {
             nodes = nodes || getNodes();
             edges = edges || getEdges();
-            currentNode = currentNode || getSelectedNode();
+            currentNode = currentNode || selectedNode;
 
             const getAllIncomers = (
                 node: WorkflowNode,
@@ -229,12 +193,18 @@ const useWorkflow = () => {
 
             return getAllIncomers(currentNode!);
         },
-        [getNodes, getEdges, getSelectedNode],
+        [getNodes, getEdges, selectedNode],
     );
 
     const getUpstreamNodeParams = useCallback(
-        (currentNode?: WorkflowNode): [NodeParamType[], FlattenNodeParamType[]] | [] => {
-            currentNode = currentNode || getSelectedNode();
+        (
+            currentNode?: WorkflowNode,
+            nodes?: WorkflowNode[],
+            edges?: WorkflowEdge[],
+        ): [NodeParamType[], FlattenNodeParamType[]] | [] => {
+            nodes = nodes || getNodes();
+            edges = edges || getEdges();
+            currentNode = currentNode || selectedNode;
             if (!currentNode) return [];
 
             const incomeNodes = getUpstreamNodes(currentNode, nodes, edges);
@@ -256,18 +226,24 @@ const useWorkflow = () => {
 
                     Object.entries(outputArgs).forEach(([param, data]) => {
                         switch (param) {
+                            // Data Type: { identify?: string; name: string; type: string }[]
                             case 'entityConfigs':
                             case 'Payload': {
                                 if (!Array.isArray(data)) return;
+                                // TODO: The key may use `identity` to replace `name` ?
                                 data.forEach((item: Record<string, any>) => {
                                     paramData.outputs.push({
                                         name: item?.name,
                                         type: item?.type,
-                                        key: genRefParamKey(id, item.name),
+                                        key:
+                                            param === 'entityConfigs'
+                                                ? genRefParamKey(id, item.name)
+                                                : genRefParamKey(id, item.identify),
                                     });
                                 });
                                 break;
                             }
+                            // Data Type: string[]
                             case 'entities': {
                                 if (!Array.isArray(data)) return;
                                 data.forEach(item => {
@@ -280,6 +256,7 @@ const useWorkflow = () => {
                                 });
                                 break;
                             }
+                            // Data Type: Record<string, string>
                             case 'inputArguments':
                             case 'exchangePayload':
                             case 'serviceInvocationSetting': {
@@ -322,7 +299,7 @@ const useWorkflow = () => {
 
             return [result, flattenResult];
         },
-        [nodes, edges, nodeConfigs, getSelectedNode, getUpstreamNodes, getIntlText],
+        [nodeConfigs, selectedNode, getNodes, getEdges, getUpstreamNodes, getIntlText],
     );
 
     // Check if there is a node that is not connected to an entry node
@@ -397,15 +374,12 @@ const useWorkflow = () => {
     );
 
     return {
-        nodes,
-        edges,
         isValidConnection,
         checkParallelLimit,
         checkNestedParallelLimit,
         checkNodeNumberLimit,
         checkFreeNodeLimit,
         checkWorkflowValid,
-        getSelectedNode,
         getUpstreamNodes,
         getUpstreamNodeParams,
         updateNodesStatus,
