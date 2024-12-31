@@ -1,18 +1,34 @@
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useMemoizedFn } from 'ahooks';
 import { useVirtualList } from '@milesight/shared/src/hooks';
 import EntityMenuPopper from '../entity-menu-popper';
-import { EntityContext } from '../../context';
 import EntityOption from '../entity-option';
 import EntityMenu from '../entity-menu';
-import type { EntitySelectOption } from '../../types';
+import type { EntitySelectInnerProps, EntitySelectOption } from '../../types';
 
-interface IProps {
+interface IProps
+    extends Pick<
+        EntitySelectInnerProps,
+        | 'tabType'
+        | 'options'
+        | 'maxCount'
+        | 'selectedEntityMap'
+        | 'selectedDeviceMap'
+        | 'onEntityChange'
+    > {
     children: React.ReactNode;
 }
-export default React.memo(({ children: _children, ...props }: IProps) => {
-    const { tabType, options, selectedEntityMap, selectedDeviceMap, maxCount } =
-        useContext(EntityContext);
+export default React.memo((props: IProps) => {
+    const {
+        children: _children,
+        tabType,
+        options,
+        selectedEntityMap,
+        selectedDeviceMap,
+        maxCount,
+        onEntityChange,
+        ...rest
+    } = props;
     const containerRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
 
@@ -85,7 +101,7 @@ export default React.memo(({ children: _children, ...props }: IProps) => {
     );
     return (
         <>
-            <div {...props} ref={containerRef}>
+            <div {...rest} ref={containerRef}>
                 <div ref={listRef}>
                     {(virtualList || []).map(({ data: option }) => {
                         const { value } = option || {};
@@ -102,6 +118,7 @@ export default React.memo(({ children: _children, ...props }: IProps) => {
                                     option={option}
                                     selected={selected}
                                     disabled={disabled}
+                                    onEntityChange={onEntityChange}
                                 />
                             );
                         }
@@ -124,6 +141,9 @@ export default React.memo(({ children: _children, ...props }: IProps) => {
                 anchorEl={menuAnchorEl}
                 menuList={menuList}
                 modifiers={modifiers}
+                maxCount={maxCount}
+                selectedEntityMap={selectedEntityMap}
+                onEntityChange={onEntityChange}
             />
         </>
     );

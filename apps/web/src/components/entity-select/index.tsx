@@ -2,8 +2,7 @@ import React from 'react';
 import { useControllableValue } from 'ahooks';
 import EntitySelect from './entitySelect';
 import { useContextValue, useSourceData } from './hooks';
-import { EntityContext } from './context';
-import type { EntitySelectContext, EntitySelectProps, EntitySelectValueType } from './types';
+import type { EntitySelectProps, EntitySelectValueType } from './types';
 
 const EntitySelectApp = <
     Value extends EntitySelectValueType = EntitySelectValueType,
@@ -25,7 +24,6 @@ const EntitySelectApp = <
         entityValueType,
         entityAccessMod,
         excludeChildren,
-        popperWidth,
         filterOption,
     } = props;
     const maxCount = multiple ? _maxCount : void 0;
@@ -48,20 +46,25 @@ const EntitySelectApp = <
         onChange,
         entityList,
         filterOption,
-        popperWidth,
     });
+    const { tabType, setTabType, selectedDeviceMap, selectedEntityMap, onEntityChange, options } =
+        contextValue || {};
 
     return (
-        <EntityContext.Provider value={contextValue as unknown as EntitySelectContext}>
-            <EntitySelect<Value, Multiple, DisableClearable>
-                {...props}
-                multiple={multiple}
-                value={value}
-                onChange={onChange}
-                loading={loading || sourceLoading}
-                onSearch={onSearch}
-            />
-        </EntityContext.Provider>
+        <EntitySelect<Value, Multiple, DisableClearable>
+            {...props}
+            multiple={multiple}
+            value={value}
+            onChange={onChange}
+            loading={loading || sourceLoading}
+            onSearch={onSearch}
+            tabType={tabType}
+            setTabType={setTabType}
+            onEntityChange={onEntityChange}
+            options={options}
+            selectedDeviceMap={selectedDeviceMap}
+            selectedEntityMap={selectedEntityMap}
+        />
     );
 };
 export default React.memo(EntitySelectApp) as unknown as typeof EntitySelectApp;

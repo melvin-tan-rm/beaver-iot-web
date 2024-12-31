@@ -1,9 +1,8 @@
-import React, { useState, useContext, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { Autocomplete, TextField, AutocompleteProps, Chip } from '@mui/material';
 import Tooltip from '@/components/tooltip';
 import { EntityList, EntityPaper, EntityPopper } from './components';
-import { EntityContext } from './context';
-import type { EntitySelectContext, EntitySelectProps, EntitySelectValueType } from './types';
+import type { EntitySelectInnerProps, EntitySelectValueType } from './types';
 
 /**
  * EntitySelect Component
@@ -12,16 +11,11 @@ const EntitySelect = <
     Value extends EntitySelectValueType = EntitySelectValueType,
     Multiple extends boolean | undefined = false,
     DisableClearable extends boolean | undefined = false,
-    Props extends EntitySelectProps<Value, Multiple, DisableClearable> = EntitySelectProps<
-        Value,
-        Multiple,
-        DisableClearable
-    >,
     EntityAutocompleteProps extends Required<
         AutocompleteProps<Value, Multiple, DisableClearable, false>
     > = Required<AutocompleteProps<Value, Multiple, DisableClearable, false>>,
 >(
-    props: Props,
+    props: EntitySelectInnerProps<Value, Multiple, DisableClearable>,
 ) => {
     const {
         label,
@@ -37,11 +31,16 @@ const EntitySelect = <
         error,
         helperText,
         placeholder,
+        tabType,
+        setTabType,
+        popperWidth,
+        options,
+        selectedEntityMap,
+        selectedDeviceMap,
+        maxCount,
+        onEntityChange,
         ...rest
     } = props;
-    const { options } = useContext<EntitySelectContext<Value>>(
-        EntityContext as unknown as React.Context<EntitySelectContext<Value>>,
-    );
 
     // State to manage the open/close status of the select menu
     const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
@@ -142,9 +141,31 @@ const EntitySelect = <
     );
 
     // Memoize custom slots and slot props to optimize rendering
-    const slots = useMemo(() => ({ paper: EntityPaper, popper: EntityPopper }), []);
-    const slotProps = useMemo(() => ({ listbox: { component: EntityList } }), []);
-
+    const slotProps = useMemo(
+        () => ({
+            listbox: {
+                component: EntityList,
+                tabType,
+                options,
+                maxCount,
+                selectedEntityMap,
+                selectedDeviceMap,
+                onEntityChange,
+            },
+            paper: { component: EntityPaper, tabType, setTabType },
+            popper: { component: EntityPopper, popperWidth },
+        }),
+        [
+            popperWidth,
+            setTabType,
+            tabType,
+            options,
+            selectedEntityMap,
+            selectedDeviceMap,
+            maxCount,
+            onEntityChange,
+        ],
+    );
     return (
         <Autocomplete<Value, Multiple, DisableClearable, false>
             {...rest}
@@ -159,7 +180,6 @@ const EntitySelect = <
             getOptionLabel={getOptionLabel}
             renderTags={renderTags}
             renderInput={renderInput}
-            slots={slots}
             slotProps={slotProps}
             loading={loading}
             filterOptions={filterOptions}

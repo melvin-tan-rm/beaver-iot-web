@@ -1,17 +1,26 @@
-import React, { useContext, useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Paper, Popper, PopperProps } from '@mui/material';
 import { useVirtualList } from 'ahooks';
 import EntityOption from '../entity-option';
-import { EntityContext } from '../../context';
-import type { EntitySelectOption } from '../../types';
+import type { EntitySelectInnerProps, EntitySelectOption } from '../../types';
 import './style.less';
 
-export interface IProps extends PopperProps {
+interface IProps
+    extends PopperProps,
+        Pick<
+            EntitySelectInnerProps,
+            | 'tabType'
+            | 'options'
+            | 'maxCount'
+            | 'selectedEntityMap'
+            | 'selectedDeviceMap'
+            | 'onEntityChange'
+        > {
     menuList: EntitySelectOption[];
 }
 const LINE_HEIGHT = 58;
-export default React.memo(({ menuList, ...props }: IProps) => {
-    const { selectedEntityMap, maxCount } = useContext(EntityContext);
+export default React.memo((props: IProps) => {
+    const { menuList, maxCount, selectedEntityMap, onEntityChange, ...rest } = props;
     const containerRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
 
@@ -24,11 +33,12 @@ export default React.memo(({ menuList, ...props }: IProps) => {
     });
     useEffect(() => {
         scrollTo(0);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [menuList]);
 
     const selectedCount = useMemo(() => selectedEntityMap.size, [selectedEntityMap]);
     return (
-        <Popper placement="right" {...props} className="ms-entity-menu-popper">
+        <Popper placement="right" {...rest} className="ms-entity-menu-popper">
             <Paper className="ms-entity-menu-paper">
                 <div
                     ref={containerRef}
@@ -47,6 +57,7 @@ export default React.memo(({ menuList, ...props }: IProps) => {
                                     option={menu}
                                     selected={selected}
                                     disabled={disabled}
+                                    onEntityChange={onEntityChange}
                                 />
                             );
                         })}

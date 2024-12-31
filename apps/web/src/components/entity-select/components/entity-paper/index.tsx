@@ -1,12 +1,11 @@
-import React, { Fragment, useCallback, useContext } from 'react';
+import React, { Fragment, useCallback } from 'react';
 import { Paper, PaperProps, Tab, Tabs } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { EntityContext } from '../../context';
 import { TabOptions } from '../../constant';
-import type { TabType } from '../../types';
+import type { EntitySelectInnerProps, TabType } from '../../types';
 
-export default React.memo(({ children, ...props }: PaperProps) => {
-    const { tabType, setTabType } = useContext(EntityContext);
+type IProps = PaperProps & Pick<EntitySelectInnerProps, 'tabType' | 'setTabType'>;
+export default React.memo(({ children, tabType, setTabType, ...props }: IProps) => {
     const { getIntlText } = useI18n();
 
     /** handle tab change */

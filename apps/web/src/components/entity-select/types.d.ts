@@ -83,8 +83,28 @@ export interface EntitySelectProps<
     popperWidth?: number;
 }
 
+export interface EntitySelectInnerProps<
+    Value extends EntitySelectValueType = EntitySelectValueType,
+    Multiple extends boolean | undefined = false,
+    DisableClearable extends boolean | undefined = false,
+> extends EntitySelectProps<Value, Multiple, DisableClearable> {
+    /** The current tab type */
+    tabType: TabType;
+    /** Function to set the tab type */
+    setTabType: (tabType: TabType) => void;
+    /** Available options for selection */
+    options: Value[];
+    /** The map of selected entities */
+    selectedEntityMap: Map<Value['value'], Value>;
+    /** The map of selected devices */
+    selectedDeviceMap: Map<string, Value[]>;
+    /** Callback function when an entity is selected or changed */
+    onEntityChange: (selectedItem: EntitySelectValue<Value, Multiple, DisableClearable>) => void;
+}
+
 /**
  * Context for the EntitySelect component.
+ * @deprecated This type is deprecated and will be removed in the future.
  */
 export interface EntitySelectContext<V extends EntitySelectValueType = EntitySelectValueType> {
     /** custom popper width */

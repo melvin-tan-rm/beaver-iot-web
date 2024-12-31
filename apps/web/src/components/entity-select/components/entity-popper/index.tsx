@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import cls from 'classnames';
 import { Popper, PopperProps } from '@mui/material';
-import { EntityContext } from '../../context';
+import type { EntitySelectInnerProps } from '../../types';
 
-export default React.memo(({ className, style, ...props }: PopperProps) => {
-    const { popperWidth } = useContext(EntityContext);
+type IProps = PopperProps & Pick<EntitySelectInnerProps, 'popperWidth'>;
+export default React.memo(({ className, style, popperWidth, ...props }: IProps) => {
     const newStyle = popperWidth ? { ...style, width: popperWidth } : style;
 
     return (
