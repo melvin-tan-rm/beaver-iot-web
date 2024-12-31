@@ -75,6 +75,19 @@ const useValidate = () => {
             };
         };
 
+        const entitiesChecker: Record<string, NodeDataValidator> = {
+            checkRequired(
+                value: NonNullable<ListenerNodeDataType['parameters']>['entities'],
+                fieldName?: string,
+            ) {
+                if (value?.length && value.some(item => !isEmpty(item))) {
+                    return true;
+                }
+                const message = getIntlText(ErrorIntlKey.required, { 1: fieldName });
+                return message;
+            },
+        };
+
         // Note: The `checkRequired` name is fixed and cannot be modified
         const result: Record<string, Record<string, NodeDataValidator>> = {
             nodeName: {
@@ -95,19 +108,6 @@ const useValidate = () => {
                     const message = getIntlText(ErrorIntlKey.rangeLength, {
                         1: getIntlText('common.label.remark'),
                     });
-                    return message;
-                },
-            },
-            // Check listener.entities, select.entities
-            entities: {
-                checkRequired(
-                    value: NonNullable<ListenerNodeDataType['parameters']>['entities'],
-                    fieldName?: string,
-                ) {
-                    if (value?.length && value.some(item => !isEmpty(item))) {
-                        return true;
-                    }
-                    const message = getIntlText(ErrorIntlKey.required, { 1: fieldName });
                     return message;
                 },
             },
@@ -134,6 +134,9 @@ const useValidate = () => {
                     return true;
                 },
             },
+            // Check listener.entities, select.entities
+            'listener.entities': entitiesChecker,
+            'select.entities': entitiesChecker,
             'trigger.entityConfigs': {
                 checkRequired(
                     value?: NonNullable<TriggerNodeDataType['parameters']>['entityConfigs'],

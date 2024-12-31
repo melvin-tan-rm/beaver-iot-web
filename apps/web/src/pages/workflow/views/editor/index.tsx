@@ -1,7 +1,7 @@
 import { memo, useState, useCallback, useEffect } from 'react';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useRequest } from 'ahooks';
-import { omitBy, merge, isEmpty, cloneDeep } from 'lodash-es';
+import { omitBy, merge, isEmpty, isEqual, cloneDeep } from 'lodash-es';
 import {
     ReactFlow,
     Background,
@@ -114,9 +114,30 @@ const WorkflowEditor = () => {
     const [helperLineVertical, setHelperLineVertical] = useState<number | undefined>(undefined);
     const handleNodesChange = useCallback(
         (changes: NodeChange<WorkflowNode>[]) => {
-            if (changes.some(({ type }) => ['add', 'remove', 'position'].includes(type))) {
-                setIsPreventLeave(true);
-            }
+            const isPreventLeave = changes.some(change => {
+                switch (change.type) {
+                    case 'add':
+                    case 'remove':
+                    case 'position': {
+                        return true;
+                    }
+                    case 'replace': {
+                        const { id: nodeId, data: nodeData } = change.item;
+                        const { nodeName, nodeRemark } = nodeData;
+                        const node = nodes.find(item => item.id === nodeId);
+                        const isEq =
+                            node?.data?.nodeName === nodeName &&
+                            node?.data?.nodeRemark === nodeRemark &&
+                            isEqual(node?.data.parameters, nodeData.parameters);
+
+                        return !isEq;
+                    }
+                    default: {
+                        return false;
+                    }
+                }
+            });
+            if (isPreventLeave) setIsPreventLeave(true);
 
             // reset the helper lines (clear existing lines, if any)
             setHelperLineHorizontal(undefined);
@@ -146,7 +167,6 @@ const WorkflowEditor = () => {
     );
 
     // ---------- Fetch Nodes Config ----------
-
     const { loading: nodeConfigLoading } = useRequest(
         async () => {
             const [error, resp] = await awaitWrap(workflowAPI.getFlowNodes());

@@ -246,7 +246,11 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
         >
             <div className="ms-workflow-panel-log">
                 <div className="ms-workflow-panel-config-header">
-                    <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
+                    <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{ flex: 1, width: 0, alignItems: 'center' }}
+                    >
                         <span className="title">{title}</span>
                     </Stack>
                     <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
