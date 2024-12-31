@@ -3,12 +3,19 @@ import { THEME_MAIN_BG_COLOR } from '../constant';
 import { getCssVariable } from '../helper';
 import { type EditorProps } from '../types';
 
-type IProps = Pick<EditorProps, 'onFocus' | 'onBlur'>;
-export const useCssVariable = ({ onFocus, onBlur }: IProps) => {
-    const updateCssVariable = useCallback((themeColor: string) => {
-        const root = document.documentElement;
-        root.style.setProperty(THEME_MAIN_BG_COLOR, themeColor);
-    }, []);
+type IProps = Pick<EditorProps, 'onFocus' | 'onBlur'> & {
+    editorRef: React.RefObject<HTMLDivElement>;
+};
+export const useCssVariable = ({ onFocus, onBlur, editorRef }: IProps) => {
+    const updateCssVariable = useCallback(
+        (themeColor: string) => {
+            const root = editorRef.current;
+            if (!root) return;
+
+            root.style.setProperty(THEME_MAIN_BG_COLOR, themeColor);
+        },
+        [editorRef],
+    );
 
     const handleFocus: Required<EditorProps>['onFocus'] = useCallback(
         async (...params) => {

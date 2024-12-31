@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { isNil } from 'lodash-es';
 import cls from 'classnames';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Tooltip } from '@/components';
@@ -49,7 +50,7 @@ export default React.memo(({ data }: IProps) => {
                     <Tooltip autoEllipsis title={name || ''} />
                 </div>
             </div>
-            {timeCost && (
+            {!isNil(timeCost) && (
                 <div className="ms-header-ms">{`${timeCost}${getIntlText('common.label.ms')}`}</div>
             )}
             <div className={cls('ms-header-status', statusClassName)}>{statusIcon}</div>

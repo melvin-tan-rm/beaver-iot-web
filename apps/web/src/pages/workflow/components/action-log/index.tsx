@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { Alert } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -9,6 +9,14 @@ import { ALPHABET_LIST } from './constant';
 import type { ActionLogProps, WorkflowNestNode } from './types';
 import './style.less';
 
+function safeJsonParse(str: string) {
+    try {
+        const result = JSON.parse(str);
+        return JSON.stringify(result, null, 2);
+    } catch (e) {
+        return str;
+    }
+}
 /**
  * get alphabet index
  * @example getAlphabetIndex(0) => A
@@ -23,10 +31,25 @@ const getAlphabetIndex = (index: number) => {
     }
     return ALPHABET_LIST[index];
 };
-
 export default React.memo(({ traceData, workflowData }: ActionLogProps) => {
     const { getIntlText } = useI18n();
     const { treeData } = useNestedData({ workflowData, traceData });
+
+    const renderTreeData = useMemo(() => {
+        return treeData.map(data => {
+            const { attrs } = data || {};
+            const { input, output } = attrs || {};
+
+            return {
+                ...(data || {}),
+                attrs: {
+                    ...attrs,
+                    input: safeJsonParse(input!),
+                    output: safeJsonParse(output!),
+                },
+            };
+        });
+    }, [treeData]);
 
     /** recursive rendering */
     const renderAccordion = (treeData: WorkflowNestNode[], level: number = 0) => {
@@ -100,5 +123,5 @@ export default React.memo(({ traceData, workflowData }: ActionLogProps) => {
         });
     };
 
-    return <div className="ms-action-log">{renderAccordion(treeData)}</div>;
+    return <div className="ms-action-log">{renderAccordion(renderTreeData)}</div>;
 });
