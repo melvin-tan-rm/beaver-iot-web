@@ -273,6 +273,16 @@ export interface UserAPISchema extends APISchema {
         };
         response: SearchResponseType<RoleDashboardType[]>;
     };
+    getUserHasResourcePermission: {
+        request: {
+            user_id: ApiKey;
+            resource_id: ApiKey;
+            resource_type: RoleResourceType['type'];
+        };
+        response: {
+            has_permission: boolean;
+        };
+    };
 }
 
 /**
@@ -304,5 +314,6 @@ export default attachAPI<UserAPISchema>(client, {
         getRoleUndistributedDevices: `POST ${API_PREFIX}/user/roles/:role_id/undistributed-devices`,
         getRoleAllDashboards: `POST ${API_PREFIX}/user/roles/:role_id/dashboards`,
         getRoleUndistributedDashboards: `POST ${API_PREFIX}/user/roles/:role_id/undistributed-dashboards`,
+        getUserHasResourcePermission: `POST ${API_PREFIX}/user/members/:user_id/permission`,
     },
 });

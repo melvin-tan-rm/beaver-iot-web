@@ -38,8 +38,7 @@ const LoadingWrapper: React.FC<LoadingWrapperProps> = props => {
     const { className, wrapperClassName, loading, style, size = 40, tip, children } = props;
 
     const loadingClassName = useMemo(() => {
-        return classNames('ms-loading', {
-            className,
+        return classNames('ms-loading', className, {
             'ms-loading-processing': loading,
             'ms-loading-show-text': !!tip,
         });
@@ -61,11 +60,7 @@ const LoadingWrapper: React.FC<LoadingWrapperProps> = props => {
     );
 
     return (
-        <div
-            className={classNames('ms-loading-wrapper', {
-                wrapperClassName,
-            })}
-        >
+        <div className={classNames('ms-loading-wrapper', wrapperClassName)}>
             {loading && <div key="loading">{loadingElement}</div>}
             <div className={containerClassName} key="container">
                 {children}

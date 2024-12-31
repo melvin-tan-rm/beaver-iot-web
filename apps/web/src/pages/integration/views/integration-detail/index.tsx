@@ -12,12 +12,15 @@ import {
     getResponseData,
     isRequestSuccess,
 } from '@/services/http';
+import { usePermissionsError } from '@/hooks';
 import { genInteIconUrl } from '../../helper';
 import { GeneralContent, MscContent } from './components';
+
 import './style.less';
 
 const IntegrationDetail = () => {
     const { integrationId } = useParams();
+    const { handlePermissionsError } = usePermissionsError();
 
     // ---------- 集成详情数据逻辑 ----------
     const { state } = useLocation();
@@ -35,6 +38,7 @@ const IntegrationDetail = () => {
             const respData = getResponseData(resp);
 
             if (error || !respData || !isRequestSuccess(resp)) {
+                handlePermissionsError(error);
                 return;
             }
             const data = objectToCamelCase(respData);

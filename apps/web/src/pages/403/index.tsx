@@ -13,7 +13,9 @@ export default () => {
                 <div className="ms-view-403__img">
                     <img src={notPermissionImg} alt="not-permission" />
                 </div>
-                <div className="ms-view-403__title">403 Forbidden</div>
+                <div className="ms-view-403__title">
+                    {getIntlText('common.label.403_forbidden')}
+                </div>
                 <div className="ms-view-403__description">
                     {getIntlText('common.label.page_not_permission')}
                 </div>

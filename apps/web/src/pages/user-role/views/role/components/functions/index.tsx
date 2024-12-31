@@ -173,7 +173,7 @@ const FunctionsTable = () => {
             <div className={styles.operation}>{renderButtons()}</div>
             <div className={styles.permissions}>
                 <LoadingWrapper loading={loading}>
-                    <TableContainer>
+                    <TableContainer sx={{ minHeight: 400 }}>
                         <Table sx={{ border: '1px solid var(--border-color-base)' }}>
                             <TableHead sx={{ background: 'var(--component-background-gray)' }}>
                                 <TableRow>

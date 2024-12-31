@@ -12,4 +12,5 @@ export {
     type RoleType,
     type UserMenuType,
     type UserType,
+    type RoleResourceType,
 } from './user';

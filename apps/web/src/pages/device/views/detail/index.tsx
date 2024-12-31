@@ -4,7 +4,7 @@ import { Tabs, Tab } from '@mui/material';
 import { useRequest } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
-import { useRouteTab } from '@/hooks';
+import { useRouteTab, usePermissionsError } from '@/hooks';
 import {
     deviceAPI,
     awaitWrap,
@@ -22,6 +22,7 @@ export default () => {
     const { state } = useLocation();
     const { deviceId } = useParams();
     const { getIntlText } = useI18n();
+    const { handlePermissionsError } = usePermissionsError();
 
     // ---------- 设备详情相关逻辑 ----------
     const [deviceDetail, setDeviceDetail] = useState<DeviceDetailType>();
@@ -35,7 +36,11 @@ export default () => {
             const [error, resp] = await awaitWrap(deviceAPI.getDetail({ id: deviceId }));
             const respData = getResponseData(resp);
 
-            if (error || !respData || !isRequestSuccess(resp)) return;
+            if (error || !respData || !isRequestSuccess(resp)) {
+                handlePermissionsError(error);
+                return;
+            }
+
             const data = objectToCamelCase(respData);
 
             setDeviceDetail(data);
