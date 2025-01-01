@@ -32,13 +32,20 @@ export default React.memo((props: IProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
 
+    const [popperDiff, setPopperDiff] = useState([0, 0]);
     const [menuList, setMenuList] = useState<EntitySelectOption[]>([]);
     const [menuAnchorEl, setMenuAnchorEl] = useState<HTMLDivElement | null>(null);
     const open = Boolean(menuAnchorEl);
 
     /** When clicked, the pop-up window opens */
     const handleClick = useCallback((event: React.MouseEvent, option: EntitySelectOption) => {
-        setMenuAnchorEl(event.currentTarget as HTMLDivElement);
+        const containerNode = containerRef.current!;
+        const popperNode = event.currentTarget;
+
+        const diffH =
+            popperNode.getBoundingClientRect().top - containerNode.getBoundingClientRect().top;
+        setPopperDiff([diffH, 0]);
+        setMenuAnchorEl(containerNode);
 
         setTimeout(() => {
             const { children } = option || {};
@@ -54,22 +61,6 @@ export default React.memo((props: IProps) => {
         overscan: 10,
     });
     const selectedCount = useMemo(() => selectedEntityMap.size, [selectedEntityMap]);
-
-    // get scroll bar width
-    const scrollbarWidth = useMemo(() => {
-        if (!menuAnchorEl) return 0;
-
-        const listNode = menuAnchorEl?.parentElement?.parentElement;
-        const popNode = listNode?.parentElement;
-        if (!listNode || !popNode) return 0;
-
-        const { scrollHeight, clientHeight, clientWidth } = listNode || {};
-        const hasScroll = scrollHeight > clientHeight;
-        if (!hasScroll) return 0;
-
-        const { clientWidth: popClientWidth } = popNode || {};
-        return popClientWidth - clientWidth || 0;
-    }, [menuAnchorEl]);
 
     // when scroll, clear menu list
     const handleScroll = useMemoizedFn(() => {
@@ -93,11 +84,11 @@ export default React.memo((props: IProps) => {
             {
                 name: 'offset',
                 options: {
-                    offset: [0, scrollbarWidth],
+                    offset: popperDiff,
                 },
             },
         ],
-        [scrollbarWidth],
+        [popperDiff],
     );
     return (
         <>

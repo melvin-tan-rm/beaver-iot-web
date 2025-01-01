@@ -33,7 +33,7 @@ export const useSourceData = (
 
     const { data: searchEntityList, loading: searchLoading } = useRequest(
         async () => {
-            if (!keyword) return;
+            if (!keyword) return [];
 
             const params = {
                 keyword,
@@ -52,7 +52,7 @@ export const useSourceData = (
     }, []);
 
     return {
-        entityList: keyword ? searchEntityList : entityList,
+        entityList: keyword ? searchEntityList! : entityList,
         loading: keyword ? searchLoading : entityLoading,
         onSearch,
     };
