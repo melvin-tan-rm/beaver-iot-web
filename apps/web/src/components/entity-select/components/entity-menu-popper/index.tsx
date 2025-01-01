@@ -7,15 +7,7 @@ import './style.less';
 
 interface IProps
     extends PopperProps,
-        Pick<
-            EntitySelectInnerProps,
-            | 'tabType'
-            | 'options'
-            | 'maxCount'
-            | 'selectedEntityMap'
-            | 'selectedDeviceMap'
-            | 'onEntityChange'
-        > {
+        Pick<EntitySelectInnerProps, 'maxCount' | 'selectedEntityMap' | 'onEntityChange'> {
     menuList: EntitySelectOption[];
 }
 const LINE_HEIGHT = 58;

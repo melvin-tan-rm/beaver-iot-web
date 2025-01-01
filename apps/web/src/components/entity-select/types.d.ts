@@ -27,7 +27,11 @@ export interface EntitySelectOption<T extends EntityValueType = EntityValueType>
     children?: EntitySelectOption<T>[];
 }
 
-export type EntitySelectValueType = EntitySelectOption<EntityValueType>;
+/**
+ * For now, no restrictions will be imposed.
+ * First, specify the `ElementSelectValueType` as any to facilitate type restrictions on the `value` in the future
+ */
+export type EntitySelectValueType = any;
 
 /**
  * Type to represent the value of the EntitySelect component based on its configuration.
@@ -61,7 +65,9 @@ export interface EntitySelectProps<
     /** The current value of the select */
     value?: EntitySelectValue<Value, Multiple, DisableClearable>;
     /** Callback function when the value changes */
-    onChange?: (value: EntitySelectValue<Value, Multiple, DisableClearable>) => void;
+    onChange?: (
+        value: EntitySelectValue<EntitySelectOption<EntityValueType>, Multiple, DisableClearable>,
+    ) => void;
     /** Whether the clear button is disabled */
     disableClearable?: DisableClearable;
     /**
@@ -76,54 +82,45 @@ export interface EntitySelectProps<
     /**
      * Callback function to filter options
      */
-    filterOption?: (options: EntitySelectOption<ApiKey>[]) => EntitySelectOption<ApiKey>[];
+    filterOption?: (
+        options: EntitySelectOption<EntityValueType>[],
+    ) => EntitySelectOption<EntityValueType>[];
+    /**
+     * Get the unique value of the current value
+     */
+    getOptionValue?: (option: Value) => EntityValueType;
     /**
      * custom popper width
      */
     popperWidth?: number;
 }
 
-export interface EntitySelectInnerProps<
+export interface EntitySelectComponentProps<
     Value extends EntitySelectValueType = EntitySelectValueType,
     Multiple extends boolean | undefined = false,
     DisableClearable extends boolean | undefined = false,
 > extends EntitySelectProps<Value, Multiple, DisableClearable> {
-    /** The current tab type */
     tabType: TabType;
-    /** Function to set the tab type */
-    setTabType: (tabType: TabType) => void;
-    /** Available options for selection */
-    options: Value[];
-    /** The map of selected entities */
-    selectedEntityMap: Map<Value['value'], Value>;
-    /** The map of selected devices */
-    selectedDeviceMap: Map<string, Value[]>;
-    /** Callback function when an entity is selected or changed */
-    onEntityChange: (selectedItem: EntitySelectValue<Value, Multiple, DisableClearable>) => void;
+    setTabType: (value: TabType) => void;
+    options: EntitySelectOption<EntityValueType>[];
+    entityOptionMap: Map<EntityValueType, EntitySelectOption<EntityValueType>>;
+    onChange: (value: EntitySelectValue<Value, Multiple, DisableClearable>) => void;
+    getOptionValue: Required<
+        EntitySelectProps<Value, Multiple, DisableClearable>
+    >['getOptionValue'];
 }
 
-/**
- * Context for the EntitySelect component.
- * @deprecated This type is deprecated and will be removed in the future.
- */
-export interface EntitySelectContext<V extends EntitySelectValueType = EntitySelectValueType> {
-    /** custom popper width */
-    popperWidth?: number;
-    /**
-     * maximum number of items that can be selected
-     * @description This prop is only used when `multiple` is true
-     */
-    maxCount?: number;
-    /** Available options for selection */
-    options: V[];
-    /** The current tab type */
-    tabType: TabType;
-    /** Function to set the tab type */
-    setTabType: (tabType: TabType) => void;
+export interface SelectedParameterType {
     /** The map of selected entities */
-    selectedEntityMap: Map<V['value'], V>;
+    selectedEntityMap: Map<EntityValueType, EntitySelectOption<EntityValueType>>;
     /** The map of selected devices */
-    selectedDeviceMap: Map<string, V[]>;
+    selectedDeviceMap: Map<string, EntitySelectOption<EntityValueType>[]>;
     /** Callback function when an entity is selected or changed */
-    onEntityChange: (selectedItem: EntitySelectValue<Value, Multiple, DisableClearable>) => void;
+    onEntityChange: (selectedItem: EntitySelectOption<EntityValueType>) => void;
 }
+
+export type EntitySelectInnerProps<
+    Value extends EntitySelectValueType = EntitySelectValueType,
+    Multiple extends boolean | undefined = false,
+    DisableClearable extends boolean | undefined = false,
+> = SelectedParameterType & EntitySelectComponentProps<Value, Multiple, DisableClearable>;

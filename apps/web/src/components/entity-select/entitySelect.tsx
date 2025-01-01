@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { Autocomplete, TextField, AutocompleteProps, Chip } from '@mui/material';
-import Tooltip from '@/components/tooltip';
+import { Autocomplete, TextField, AutocompleteProps, Chip, Tooltip } from '@mui/material';
 import { EntityList, EntityPaper, EntityPopper } from './components';
-import type { EntitySelectInnerProps, EntitySelectValueType } from './types';
+import { useSelectValue } from './hooks';
+import type { EntitySelectComponentProps, EntitySelectValueType } from './types';
 
 /**
  * EntitySelect Component
@@ -15,7 +15,7 @@ const EntitySelect = <
         AutocompleteProps<Value, Multiple, DisableClearable, false>
     > = Required<AutocompleteProps<Value, Multiple, DisableClearable, false>>,
 >(
-    props: EntitySelectInnerProps<Value, Multiple, DisableClearable>,
+    props: EntitySelectComponentProps<Value, Multiple, DisableClearable>,
 ) => {
     const {
         label,
@@ -31,20 +31,31 @@ const EntitySelect = <
         error,
         helperText,
         placeholder,
+        popperWidth,
+        maxCount,
         tabType,
         setTabType,
-        popperWidth,
         options,
-        selectedEntityMap,
-        selectedDeviceMap,
-        maxCount,
-        onEntityChange,
+        entityOptionMap,
+        getOptionValue,
         ...rest
     } = props;
 
     // State to manage the open/close status of the select menu
     const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
     const open = Boolean(anchorEl);
+
+    const { selectedEntityMap, selectedDeviceMap, onEntityChange } = useSelectValue<
+        Value,
+        Multiple,
+        DisableClearable
+    >({
+        value,
+        multiple,
+        onChange,
+        entityOptionMap,
+        getOptionValue,
+    });
 
     /**
      * Handles opening of the select menu.
@@ -114,7 +125,10 @@ const EntitySelect = <
         (value, getTagProps) => {
             if (!multiple) return;
 
-            return value.map((option, index) => {
+            const valueList = value
+                .map(v => entityOptionMap.get(getOptionValue(v))!)
+                .filter(Boolean);
+            return valueList.map((option, index) => {
                 const { key, ...tagProps } = getTagProps({ index });
 
                 return (
@@ -124,15 +138,20 @@ const EntitySelect = <
                 );
             });
         },
-        [multiple],
+        [entityOptionMap, getOptionValue, multiple],
     );
 
     /**
      * Gets the display text for the input box based on the selected option.
      */
     const getOptionLabel = useCallback<EntityAutocompleteProps['getOptionLabel']>(
-        option => option?.label || '',
-        [],
+        option => {
+            const value = getOptionValue(option);
+
+            const currentOption = entityOptionMap.get(value);
+            return currentOption?.label || '';
+        },
+        [entityOptionMap, getOptionValue],
     );
 
     const filterOptions = useCallback<EntityAutocompleteProps['filterOptions']>(
@@ -171,7 +190,7 @@ const EntitySelect = <
             {...rest}
             open={open}
             value={value}
-            options={options}
+            options={options as Value[]}
             multiple={multiple}
             onChange={handleChange}
             onOpen={handleSelectOpen}

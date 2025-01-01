@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { useControllableValue } from 'ahooks';
 import EntitySelect from './entitySelect';
-import { useContextValue, useSourceData } from './hooks';
-import type { EntitySelectProps, EntitySelectValueType } from './types';
+import { useOptions, useSourceData } from './hooks';
+import type { EntitySelectProps, EntitySelectValueType, TabType } from './types';
 
 const EntitySelectApp = <
     Value extends EntitySelectValueType = EntitySelectValueType,
@@ -24,9 +24,15 @@ const EntitySelectApp = <
         entityValueType,
         entityAccessMod,
         excludeChildren,
+        getOptionValue: _getOptionValue,
         filterOption,
     } = props;
-    const maxCount = multiple ? _maxCount : void 0;
+
+    const maxCount = useMemo(() => (multiple ? _maxCount : void 0), [_maxCount, multiple]);
+    const getOptionValue = useMemo(
+        () => _getOptionValue || ((value: EntitySelectValueType) => value),
+        [_getOptionValue],
+    );
 
     const {
         entityList,
@@ -39,16 +45,13 @@ const EntitySelectApp = <
         excludeChildren,
     });
     const [value, onChange] = useControllableValue<Required<Props>['value']>(props);
-    const { contextValue } = useContextValue<Value, Multiple, DisableClearable>({
-        value,
-        maxCount,
-        multiple,
-        onChange,
+
+    const [tabType, setTabType] = useState<TabType>('entity');
+    const { options, entityOptionMap } = useOptions<Value, Multiple, DisableClearable>({
+        tabType,
         entityList,
         filterOption,
     });
-    const { tabType, setTabType, selectedDeviceMap, selectedEntityMap, onEntityChange, options } =
-        contextValue || {};
 
     return (
         <EntitySelect<Value, Multiple, DisableClearable>
@@ -58,12 +61,12 @@ const EntitySelectApp = <
             onChange={onChange}
             loading={loading || sourceLoading}
             onSearch={onSearch}
+            maxCount={maxCount}
+            getOptionValue={getOptionValue}
             tabType={tabType}
             setTabType={setTabType}
-            onEntityChange={onEntityChange}
             options={options}
-            selectedDeviceMap={selectedDeviceMap}
-            selectedEntityMap={selectedEntityMap}
+            entityOptionMap={entityOptionMap}
         />
     );
 };

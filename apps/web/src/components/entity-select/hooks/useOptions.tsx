@@ -2,13 +2,32 @@ import { useCallback, useMemo } from 'react';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
 import { safeJsonParse } from '../helper';
-import type { EntitySelectOption, TabType } from '../types';
+import type {
+    EntitySelectComponentProps,
+    EntitySelectOption,
+    EntitySelectValueType,
+    EntityValueType,
+    TabType,
+} from '../types';
 
-interface IProps {
+interface IProps<
+    Value extends EntitySelectValueType = EntitySelectValueType,
+    Multiple extends boolean | undefined = false,
+    DisableClearable extends boolean | undefined = false,
+> {
     tabType: TabType;
     entityList: EntityData[];
+    filterOption?: EntitySelectComponentProps<Value, Multiple, DisableClearable>['filterOption'];
 }
-export const useOptions = ({ tabType, entityList }: IProps) => {
+export const useOptions = <
+    Value extends EntitySelectValueType = EntitySelectValueType,
+    Multiple extends boolean | undefined = false,
+    DisableClearable extends boolean | undefined = false,
+>({
+    tabType,
+    entityList,
+    filterOption,
+}: IProps<Value, Multiple, DisableClearable>) => {
     const { getIntlText } = useI18n();
 
     /** Get description text */
@@ -43,7 +62,7 @@ export const useOptions = ({ tabType, entityList }: IProps) => {
             ) as EntityValueAttributeType;
 
             // Create an entity item for the select option
-            const entityItem: EntitySelectOption = {
+            const entityItem: EntitySelectOption<EntityValueType> = {
                 value: entityId,
                 label: entityName,
                 valueType: entityValueType,
@@ -58,20 +77,28 @@ export const useOptions = ({ tabType, entityList }: IProps) => {
         [getDescription],
     );
 
+    const optionList = useMemo(() => {
+        const result = (entityList || []).map(entity => {
+            // Convert entity data to camel case
+            const entityData = objectToCamelCase(entity || {});
+
+            return getOptionValue(entityData);
+        });
+        return filterOption ? filterOption(result) : result;
+    }, [entityList, filterOption, getOptionValue]);
+
     /** Get entity drop-down options and device drop-down options */
     const { entityOptions, deviceOptions } = useMemo(() => {
-        const { entityOptions, deviceMap } = (entityList || []).reduce<{
-            deviceMap: Map<string, EntitySelectOption>;
-            entityOptions: EntitySelectOption[];
+        const { entityOptions, deviceMap } = (optionList || []).reduce<{
+            deviceMap: Map<string, EntitySelectOption<EntityValueType>>;
+            entityOptions: EntitySelectOption<EntityValueType>[];
         }>(
             (prev, entity) => {
                 const { entityOptions, deviceMap } = prev;
 
-                // Convert entity data to camel case
-                const entityData = objectToCamelCase(entity || {});
-                const { deviceName, entityType, entityKey } = entityData || {};
-                const entityItem = getOptionValue(entityData);
-                entityOptions.push(entityItem);
+                const { rawData } = entity || {};
+                const { deviceName, entityType, entityKey } = rawData! || {};
+                entityOptions.push(entity);
 
                 // Create or update device group
                 let deviceGroup = deviceMap.get(deviceName);
@@ -83,7 +110,7 @@ export const useOptions = ({ tabType, entityList }: IProps) => {
                     };
                 }
                 deviceGroup.children?.push({
-                    ...entityItem,
+                    ...entity,
                     description: getDescription(entityType, entityKey),
                 });
                 deviceMap.set(deviceName, deviceGroup);
@@ -94,7 +121,7 @@ export const useOptions = ({ tabType, entityList }: IProps) => {
                 };
             },
             {
-                deviceMap: new Map<string, EntitySelectOption>(),
+                deviceMap: new Map<string, EntitySelectOption<EntityValueType>>(),
                 entityOptions: [],
             },
         );
@@ -103,7 +130,7 @@ export const useOptions = ({ tabType, entityList }: IProps) => {
             entityOptions,
             deviceOptions: Array.from(deviceMap.values()),
         };
-    }, [entityList, getDescription, getOptionValue]);
+    }, [optionList, getDescription]);
 
     /** Get the corresponding drop-down rendering options based on `tabType` */
     const options = useMemo(
@@ -111,7 +138,17 @@ export const useOptions = ({ tabType, entityList }: IProps) => {
         [deviceOptions, entityOptions, tabType],
     );
 
+    const entityOptionMap = useMemo(() => {
+        return (optionList || []).reduce((acc, option) => {
+            const { value } = option;
+
+            acc.set(value, option);
+            return acc;
+        }, new Map<EntityValueType, EntitySelectOption<EntityValueType>>());
+    }, [optionList]);
+
     return {
         options,
+        entityOptionMap,
     };
 };

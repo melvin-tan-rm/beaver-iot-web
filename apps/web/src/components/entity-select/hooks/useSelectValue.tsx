@@ -1,59 +1,93 @@
 import { useCallback, useMemo } from 'react';
-import type { EntitySelectContext, EntitySelectProps, EntitySelectValueType } from '../types';
+import type {
+    EntitySelectInnerProps,
+    EntitySelectComponentProps,
+    EntitySelectValueType,
+    SelectedParameterType,
+    EntitySelectOption,
+    EntitySelectProps,
+    EntityValueType,
+} from '../types';
 
+interface IProps<
+    V extends EntitySelectValueType = EntitySelectValueType,
+    M extends boolean | undefined = false,
+    D extends boolean | undefined = false,
+> extends Pick<
+        EntitySelectComponentProps<V, M, D>,
+        'value' | 'multiple' | 'onChange' | 'getOptionValue'
+    > {
+    entityOptionMap: Map<EntityValueType, EntitySelectOption<EntityValueType>>;
+}
 export const useSelectValue = <
     V extends EntitySelectValueType = EntitySelectValueType,
     M extends boolean | undefined = false,
     D extends boolean | undefined = false,
 >(
-    props: Pick<EntitySelectProps<V, M, D>, 'value' | 'multiple' | 'onChange'>,
-) => {
-    const { value, multiple, onChange } = props;
+    props: IProps<V, M, D>,
+): SelectedParameterType => {
+    const { entityOptionMap, value, multiple, onChange, getOptionValue } = props;
+
+    const valueList = useMemo<EntityValueType[]>(() => {
+        const valueList = (Array.isArray(value) ? value : [value]) as unknown as V[];
+
+        return valueList.map(getOptionValue);
+    }, [getOptionValue, value]);
 
     /** selected Value to entity map */
     const selectedEntityMap = useMemo(() => {
-        if (!value) return new Map<V['value'], V>();
+        if (!valueList?.length)
+            return new Map<EntityValueType, EntitySelectOption<EntityValueType>>();
 
-        const valueList: V[] = Array.isArray(value) ? value : ([value] as unknown as V[]);
-        return valueList.reduce<Map<V['value'], V>>((acc, curr) => {
-            acc.set(curr.value, curr);
-            return acc;
-        }, new Map());
-    }, [value]);
+        return valueList.reduce<Map<EntityValueType, EntitySelectOption<EntityValueType>>>(
+            (acc, curr) => {
+                const option = entityOptionMap.get(curr);
+                if (!option) return acc;
+
+                acc.set(curr, option);
+                return acc;
+            },
+            new Map(),
+        );
+    }, [entityOptionMap, valueList]);
 
     /** selected device to entity map */
     const selectedDeviceMap = useMemo(() => {
-        if (!value) return new Map<string, V[]>();
+        if (!valueList?.length) return new Map<string, EntitySelectOption<EntityValueType>[]>();
 
-        const valueList: V[] = Array.isArray(value) ? value : ([value] as unknown as V[]);
-        return valueList.reduce<Map<string, V[]>>((acc, curr) => {
-            const { rawData } = curr || {};
+        return valueList.reduce<Map<string, EntitySelectOption<EntityValueType>[]>>((acc, curr) => {
+            const option = entityOptionMap.get(curr);
+            if (!option) return acc;
+
+            const { rawData } = option || {};
             const { deviceName = '' } = rawData || {};
 
             const deviceList = acc.get(deviceName) || [];
-            deviceList.push(curr);
+            deviceList.push(option);
             acc.set(deviceName, deviceList);
             return acc;
         }, new Map());
-    }, [value]);
+    }, [entityOptionMap, valueList]);
 
     /** Select/cancel entity selection callback */
-    const onEntityChange = useCallback<EntitySelectContext['onEntityChange']>(
+    const onEntityChange = useCallback<EntitySelectInnerProps<V, M, D>['onEntityChange']>(
         selectedItem => {
             const { value } = selectedItem || {};
             if (!value) return;
 
             if (!multiple) {
+                const onSingleChange = onChange as EntitySelectProps<V, false, D>['onChange'];
                 // single select
-                onChange?.(selectedItem);
+                onSingleChange?.(selectedItem);
                 return;
             }
 
+            const realValue = value;
             // multiple select
-            if (selectedEntityMap.has(value)) {
-                selectedEntityMap.delete(value);
+            if (selectedEntityMap.has(realValue)) {
+                selectedEntityMap.delete(realValue);
             } else {
-                selectedEntityMap.set(value, selectedItem!);
+                selectedEntityMap.set(realValue, selectedItem!);
             }
             const onMultipleChange = onChange as EntitySelectProps<V, true, D>['onChange'];
             onMultipleChange?.(Array.from(selectedEntityMap.values()));
