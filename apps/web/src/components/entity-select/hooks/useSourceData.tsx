@@ -1,6 +1,7 @@
-import { useCallback, useMemo } from 'react';
-import { useRequest } from 'ahooks';
-import { awaitWrap, entityAPI, getResponseData, isRequestSuccess } from '@/services/http';
+import { useCallback, useEffect, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
+import { useMemoizedFn, useRequest } from 'ahooks';
+import useEntityStore from '../store';
 import type { EntitySelectProps } from '../types';
 
 export const useSourceData = (
@@ -10,56 +11,49 @@ export const useSourceData = (
     >,
 ) => {
     const { entityType, entityAccessMod, excludeChildren, entityValueType } = props;
-    const {
-        run: getEntityList,
-        data: entityList,
-        loading,
-    } = useRequest(
-        async (keyword?: string) => {
-            const [error, resp] = await awaitWrap(
-                entityAPI.getList({
-                    page_number: 1,
-                    page_size: 9999,
-                    entity_type: entityType,
-                    entity_access_mod: entityAccessMod,
-                    exclude_children: excludeChildren,
-                    entity_value_type: entityValueType,
-                    keyword,
-                }),
-            );
-            if (error || !isRequestSuccess(resp)) return;
+    const [keyword, setKeyword] = useState('');
+    const { entityList, getEntityList, entityLoading, initEntityList, status } = useEntityStore(
+        useShallow(state => ({
+            entityList: state.entityList,
+            entityLoading: state.entityLoading,
+            getEntityList: state.getEntityList,
+            initEntityList: state.initEntityList,
+            status: state.status,
+        })),
+    );
 
-            const data = getResponseData(resp)!;
-            return data?.content || [];
-        },
-        {
-            refreshDeps: [
-                entityType,
+    const init = useMemoizedFn(() => {
+        initEntityList({ entityType, entityAccessMod, excludeChildren, entityValueType });
+    });
+    useEffect(() => {
+        if (status !== 'ready') return;
+
+        init();
+    }, [init, initEntityList, status]);
+
+    const { data: searchEntityList, loading: searchLoading } = useRequest(
+        async () => {
+            if (!keyword) return;
+
+            const params = {
+                keyword,
                 entityType,
                 entityAccessMod,
                 excludeChildren,
                 entityValueType,
-            ],
-            debounceWait: 300,
+            };
+            return getEntityList(params);
         },
+        { refreshDeps: [keyword], debounceWait: 300 },
     );
-
     /** search entity list by keyword */
-    const onSearch = useCallback(
-        async (keyword: string) => {
-            if (!keyword) {
-                getEntityList();
-                return;
-            }
-
-            getEntityList(keyword);
-        },
-        [getEntityList],
-    );
+    const onSearch = useCallback((keyword: string) => {
+        setKeyword(keyword);
+    }, []);
 
     return {
-        entityList: useMemo(() => entityList || [], [entityList]),
-        loading,
+        entityList: keyword ? searchEntityList : entityList,
+        loading: keyword ? searchLoading : entityLoading,
         onSearch,
     };
 };
