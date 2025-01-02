@@ -10,7 +10,7 @@ export type LogType = 'test' | 'run';
 export interface LogListProps {
     // type: LogType;
 
-    data: WorkflowAPISchema['getLogList']['response']['content'];
+    data: Omit<WorkflowAPISchema['getLogList']['response']['content'][0], 'version'>[];
 
     loading?: boolean;
 
