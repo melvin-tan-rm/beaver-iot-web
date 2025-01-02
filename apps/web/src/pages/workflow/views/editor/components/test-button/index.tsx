@@ -101,31 +101,55 @@ const TestButton: React.FC<Props> = ({ disabled }) => {
             updateNodesStatus(null);
             switch (type) {
                 case 'test': {
+                    console.log(1111, record);
                     setLogPanelMode('testLog');
+                    setLogDetail({ traceInfos: record.trace_infos!, flowData: record.flow_data });
                     break;
                 }
                 case 'run': {
+                    if (!wid) return;
                     setLogPanelMode('runLog');
+                    setLogDetailLoading(true);
+
+                    let resp;
+                    try {
+                        resp = await Promise.all([
+                            workflowAPI.getLogDetail({ id: record.id }),
+                            workflowAPI.getFlowDesign({ id: wid, version: record.version }),
+                        ]);
+                    } catch (e) {
+                        return;
+                    }
+                    const [detailResp, flowResp] = resp;
+
+                    setLogDetailLoading(false);
+                    if (!isRequestSuccess(detailResp) || !isRequestSuccess(flowResp)) return;
+                    const traceInfos = getResponseData(detailResp)!.trace_info;
+                    const designData = getResponseData(flowResp)?.design_data;
+                    const flowData: undefined | Pick<WorkflowSchema, 'nodes' | 'edges'> =
+                        designData && typeof designData === 'string'
+                            ? JSON.parse(designData)
+                            : designData;
+
+                    setLogDetail({ traceInfos, flowData });
                     break;
                 }
                 default: {
                     break;
                 }
             }
-
-            // TODO: get log detail
-            setLogDetailLoading(true);
-            const [error, resp] = await awaitWrap(workflowAPI.getLogDetail({ id: record.id }));
-            setLogDetailLoading(false);
-
-            if (error || !isRequestSuccess(resp)) return;
-            const data = getResponseData(resp);
-
-            setLogDetail(data?.trace_info);
         },
-        [setLogDetail, setLogDetailLoading, setLogPanelMode, setOpenLogPanel, updateNodesStatus],
+        [
+            wid,
+            setLogDetail,
+            setLogDetailLoading,
+            setLogPanelMode,
+            setOpenLogPanel,
+            updateNodesStatus,
+        ],
     );
 
+    console.log({ testLogs });
     // ---------- Tab ----------
     const [tabKey, setTabKey] = useState<LogType>(DEFAULT_TAB_KEY);
     const tabs = useMemo(() => {
