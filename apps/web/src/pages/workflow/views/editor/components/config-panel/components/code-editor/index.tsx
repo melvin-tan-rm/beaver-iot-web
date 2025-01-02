@@ -22,7 +22,7 @@ const CodeEditor: React.FC<IProps> = ({ value, onChange }) => {
     /** Actual form change callbacks */
     const handleChange = useCallback(
         (data: Partial<CodeEditorData>) => {
-            const { language = DEFAULT_LANGUAGE, expression = '' } = data;
+            const { language, expression = '' } = data;
 
             const result = {
                 language: language ?? value?.language,
