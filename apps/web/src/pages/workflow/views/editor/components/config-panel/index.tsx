@@ -67,6 +67,7 @@ const ConfigPanel = () => {
     // Backfill form data
     useEffect(() => {
         if (!selectedNode) {
+            reset();
             formDataInit.current = false;
             return;
         }
