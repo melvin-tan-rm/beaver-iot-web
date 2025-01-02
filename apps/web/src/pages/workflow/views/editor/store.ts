@@ -29,7 +29,7 @@ interface FlowStore {
     /**
      * Test Log List
      */
-    testLogs?: WorkflowAPISchema['getLogList']['response']['content'];
+    testLogs?: Omit<WorkflowAPISchema['getLogList']['response']['content'][number], 'version'>[];
 
     /**
      * Run Log List
