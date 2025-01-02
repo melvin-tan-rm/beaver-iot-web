@@ -14,6 +14,10 @@ export interface AccordionLog
      */
     $$token: string;
     /**
+     * Parallel branch or not
+     */
+    $$isParallelBranch?: boolean;
+    /**
      * Node Type
      */
     type: WorkflowNodeType;

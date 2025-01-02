@@ -177,20 +177,29 @@ export const useNestedData = ({ traceData, workflowData }: ActionLogProps) => {
         [getDepthByNode, workflowNestData],
     );
 
+    /** Mark whether it is a parallel branch */
+    const signParallelNode = useCallback((node: WorkflowNestNode) => {
+        node.attrs.$$isParallelBranch = true;
+    }, []);
+
     /** Get nodes that need to be promoted to the same level */
     const getParallelNodeList = useCallback((): ParallelNodeResult[] => {
         const { nodes } = workflowNestData || {};
         const parallelNodeList: ParallelNodeResult[] = [];
 
-        (nodes || []).forEach(node => {
+        (nodes || []).forEach((node, index) => {
+            if (index === 0) {
+                signParallelNode(node);
+            }
             const result = getOnceIncomeNode(node);
             if (!result) return;
 
+            signParallelNode(node);
             parallelNodeList.push(result);
         });
 
         return parallelNodeList;
-    }, [getOnceIncomeNode, workflowNestData]);
+    }, [getOnceIncomeNode, signParallelNode, workflowNestData]);
 
     /** Cancel references */
     const cancelQuote = useCallback(

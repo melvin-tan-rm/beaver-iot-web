@@ -52,7 +52,11 @@ export default React.memo(({ traceData, workflowData }: ActionLogProps) => {
     }, [treeData]);
 
     /** recursive rendering */
-    const renderAccordion = (treeData: WorkflowNestNode[], level: number = 0) => {
+    const renderAccordion = (
+        treeData: WorkflowNestNode[],
+        level: number = 0,
+        parallelTitle = '',
+    ) => {
         // Existence of parallel branches
         const parallelBranchCount = treeData.reduce((acc, cur) => {
             if (cur.children?.length) acc++;
@@ -64,9 +68,9 @@ export default React.memo(({ traceData, workflowData }: ActionLogProps) => {
         // There are multiple parallel branches
         let multiBranchInParallelIndex = -1;
 
-        return treeData.map(data => {
+        return treeData.map((data, index) => {
             const { children, attrs } = data || {};
-            const { input, output, errorMessage, $$token } = attrs || {};
+            const { input, output, errorMessage, $$token, $$isParallelBranch } = attrs || {};
 
             // If there are child nodes, increment the index
             if ((children?.length || 0) > 1) {
@@ -82,11 +86,12 @@ export default React.memo(({ traceData, workflowData }: ActionLogProps) => {
                 1: `-${parallelLabel}`,
             });
             const branchText = getIntlText('workflow.label.branch', {
-                1: `-${parallelLabel}-${getAlphabetIndex(multiBranchInParallelIndex)}`,
+                1: `-${parallelTitle}-${getAlphabetIndex(index)}`,
             });
 
             return (
                 <Fragment key={$$token}>
+                    {!$$isParallelBranch && <div className="ms-log-branch">{branchText}</div>}
                     <AccordionCard header={<AccordionHeader data={attrs} />}>
                         {errorMessage && (
                             <div className="ms-action-log__alert">
@@ -114,8 +119,7 @@ export default React.memo(({ traceData, workflowData }: ActionLogProps) => {
                     </AccordionCard>
                     {!!children?.length && (
                         <AccordionTree header={parallelText}>
-                            <div className="ms-log-branch">{branchText}</div>
-                            {renderAccordion(children, currentLevel)}
+                            {renderAccordion(children, currentLevel, parallelLabel)}
                         </AccordionTree>
                     )}
                 </Fragment>
