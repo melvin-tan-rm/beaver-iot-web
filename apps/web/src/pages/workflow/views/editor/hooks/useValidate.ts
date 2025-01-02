@@ -1,5 +1,6 @@
 import { useMemo, useCallback } from 'react';
 import { useReactFlow } from '@xyflow/react';
+import { isObject } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 import {
@@ -225,10 +226,25 @@ const useValidate = () => {
                 },
             },
             'code.expression': {
-                checkRequired,
-                checkMaxLength(value: string, fieldName) {
+                checkRequired(
+                    value: NonNullable<CodeNodeDataType['parameters']>['expression'],
+                    fieldName,
+                ) {
+                    if (!isObject(value) || !value.language || !value.expression) {
+                        return getIntlText(ErrorIntlKey.required, { 1: fieldName });
+                    }
+                    return true;
+                },
+                checkMaxLength(
+                    value: NonNullable<CodeNodeDataType['parameters']>['expression'],
+                    fieldName,
+                ) {
                     const maxLength = 2000;
-                    if (value && value.length > maxLength) {
+                    if (
+                        isObject(value) &&
+                        value.expression &&
+                        value.expression.length > maxLength
+                    ) {
                         return getIntlText(ErrorIntlKey.maxLength, {
                             1: fieldName,
                             2: maxLength,
