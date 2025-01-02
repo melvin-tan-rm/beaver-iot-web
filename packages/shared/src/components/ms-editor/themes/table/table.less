@@ -1,0 +1,97 @@
+@editor: ~'ms-editor-theme';
+
+.@{editor} {
+    &__table {
+        // 添加按钮样式
+        @keyframes table-controls {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        width: max-content;
+        margin: @margin-xs 0 @margin-xl 0;
+        overflow: scroll scroll;
+        table-layout: fixed;
+        border-spacing: 0;
+        border-collapse: collapse;
+
+        // 表头
+        &-cell-header {
+            text-align: start;
+            background-color: var(--gray-1);
+        }
+
+        // 每个表格格子
+        &-cell {
+            position: relative;
+            width: 75px;
+            min-width: 75px;
+            padding: @padding-xxs @padding-xs;
+            text-align: start;
+            vertical-align: top;
+            border: 1px solid var(--border-color-gray);
+            outline: none;
+        }
+
+        // 表身
+        td&-cell {
+            background-color: var(--main-background);
+        }
+
+        // 选中效果
+        &-selection {
+            *::selection {
+                color: unset;
+                background-color: transparent;
+            }
+        }
+
+        &-add {
+            &-container {
+                position: absolute;
+                z-index: 1200;
+                animation: table-controls 0.2s ease;
+            }
+
+            // 添加列的样式
+            &-columns {
+                height: 100%;
+                padding-left: @padding-xxs;
+            }
+
+            // 添加行的样式
+            &-rows {
+                width: calc(100% - 32px);
+                padding-top: @padding-xxs;
+            }
+
+            &-button {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                height: 100%;
+                background-color: var(--component-background-gray);
+                cursor: pointer;
+
+                .ysd-icon {
+                    font-size: @font-size-md;
+                    color: var(--icon-color-gray-secondary);
+                }
+
+                &:hover {
+                    background-color: var(--blue-1);
+
+                    .ysd-icon {
+                        color: var(--text-color-hover);
+                    }
+                }
+            }
+        }
+    }
+}

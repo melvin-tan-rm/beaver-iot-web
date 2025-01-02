@@ -100,6 +100,15 @@ export {
     MoreVert as MoreVertIcon,
     IosShare as IosShareIcon,
     EventNote as EventNoteIcon,
+    FormatBold as FormatBoldIcon,
+    FormatItalic as FormatItalicIcon,
+    FormatUnderlined as FormatUnderlinedIcon,
+    FormatStrikethrough as FormatStrikethroughIcon,
+    FormatAlignCenter as FormatAlignCenterIcon,
+    FormatAlignLeft as FormatAlignLeftIcon,
+    FormatAlignRight as FormatAlignRightIcon,
+    FormatColorText as FormatColorTextIcon,
+    TableView as TableViewIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';
