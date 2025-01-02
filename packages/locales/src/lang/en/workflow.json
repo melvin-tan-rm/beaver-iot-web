@@ -27,7 +27,6 @@
     "workflow.modal.running_log": "Running Log",
     "workflow.label.design_mode_canvas_name": "Canvas Mode",
     "workflow.label.design_mode_advanced_name": "Advances Mode",
-    "workflow.button.delete_filter": "More Filters",
     "workflow.modal.upload_tips": "Click here or drag file to this area to upload",
     "workflow.editor.logs_popover_title_test": "Test Logs",
     "workflow.editor.logs_popover_title_run": "Run Logs",
@@ -111,5 +110,6 @@
     "workflow.node.input_variables": "Input Variables",
     "workflow.editor.config_panel_test_title": "Test {1}",
     "workflow.valid.invalid_url": "The {1} field value is not a valid URL.",
-    "workflow.valid.invalid_email": "The {1} field value is not a valid email."
+    "workflow.valid.invalid_email": "The {1} field value is not a valid email.",
+    "workflow.editor.node_test_tip": "Test this Node"
 }

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Stack } from '@mui/material';
 import { useRequest } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
+import { objectToCamelCase, linkDownload } from '@milesight/shared/src/utils/tools';
 import {
     AddIcon,
     DeleteOutlineIcon,
@@ -28,7 +28,7 @@ const Workflow = () => {
     const navigate = useNavigate();
     const { getIntlText } = useI18n();
 
-    // ---------- 列表数据相关逻辑 ----------
+    // ---------- Fetch Workflow List ----------
     const [keyword, setKeyword] = useState<string>();
     const [importModal, setImportModal] = useState<boolean>(false);
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
@@ -64,17 +64,14 @@ const Workflow = () => {
         },
     );
 
-    // ---------- 数据删除相关逻辑 ----------
+    // ---------- Delete Flow ----------
     const confirm = useConfirm();
-    const warnIcon = useMemo(() => {
-        return <ErrorIcon className="ms-workflowIcon modal-waringIcon" />;
-    }, []);
     const handleDeleteConfirm = useCallback(
         (ids?: ApiKey[]) => {
             const idsToDelete = ids || [...selectedIds];
             confirm({
                 title: getIntlText('workflow.label.deletion'),
-                icon: warnIcon,
+                icon: <ErrorIcon className="ms-workflowIcon modal-waringIcon" />,
                 description: getIntlText('workflow.message.delete_tip'),
                 onConfirm: async () => {
                     const [error, resp] = await awaitWrap(
@@ -94,91 +91,51 @@ const Workflow = () => {
         },
         [confirm, getIntlText, getWorkflowList, selectedIds],
     );
-    const handlerAddModal = () => {
-        navigate('/workflow/editor');
-    };
-    // ---------- Table 渲染相关 ----------
-    const toolbarRender = useMemo(() => {
-        return (
-            <Stack className="ms-operations-btns" direction="row" spacing="12px">
-                <Button
-                    variant="contained"
-                    sx={{ height: 36, textTransform: 'none' }}
-                    startIcon={<AddIcon />}
-                    onClick={handlerAddModal}
-                >
-                    {getIntlText('common.label.add')}
-                </Button>
-                <Button
-                    variant="outlined"
-                    sx={{ height: 36, textTransform: 'none' }}
-                    startIcon={<SystemUpdateAltIcon />}
-                    onClick={() => handlerImportModal(true)}
-                >
-                    {getIntlText('workflow.button.label_import_from_dsl')}
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="error"
-                    disabled={!selectedIds.length}
-                    sx={{ height: 36, textTransform: 'none' }}
-                    startIcon={<DeleteOutlineIcon />}
-                    onClick={() => handleDeleteConfirm()}
-                >
-                    {getIntlText('workflow.button.delete_filter')}
-                </Button>
-            </Stack>
+
+    // ---------- Workflow Row Data Interaction ----------
+    const handleExportWorkFlow = useCallback(async (record: TableRowDataType) => {
+        const [error, resp] = await awaitWrap(
+            workflowAPI.getFlowDesign({ id: record.id, version: '' }),
         );
-    }, [getIntlText, handleDeleteConfirm, selectedIds]);
-    const handlerImportModal = useCallback(
-        (isOpen: boolean, contains?: WorkflowSchema) => {
-            if (contains) {
-                // TODO: wid should be deleted
-                navigate('/workflow/editor', {
-                    state: {
-                        workflowSchema: contains,
-                    },
-                });
-            }
-            setImportModal(isOpen);
-        },
-        [navigate],
-    );
 
-    /** Wake up log pop-up window */
-    const handleLog = useCallback((record: TableRowDataType) => {
-        setLogModalVisible(true);
-        setWorkflowItem(record);
+        if (error || !isRequestSuccess(resp)) return;
+        // exportJsonFile(getResponseData(resp) as WorkflowAPISchema['getFlowDesign']['response']);
+        const { name, design_data: designData = '{}' } = getResponseData(resp) || {};
+        const blob = new Blob([JSON.stringify(JSON.parse(designData), null, 4)], {
+            type: 'application/json',
+        });
+
+        linkDownload(blob, `${name}.json`);
     }, []);
-    const exportJsonFile = useCallback(
-        (workflowItem: WorkflowAPISchema['getFlowDesign']['response']) => {
-            const { name, design_data: designData } = workflowItem;
-            const blob = new Blob([JSON.stringify(JSON.parse(designData), null, 4)], {
-                type: 'application/json',
-            });
-            const fileName = `${name}.json`;
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-        },
-        [workflowList],
-    );
-    const handleExportWorkFlow = useCallback(
-        async (record: TableRowDataType) => {
-            const [error, resp] = await awaitWrap(
-                workflowAPI.getFlowDesign({ id: record.id, version: '' }),
-            );
 
-            if (error || !isRequestSuccess(resp)) return;
-            exportJsonFile(getResponseData(resp) as WorkflowAPISchema['getFlowDesign']['response']);
+    const handleSwitchChange = useCallback(
+        async (row: TableRowDataType) => {
+            if (!workflowList?.content) {
+                return;
+            }
+            const { enabled } = row;
+            const [error, res] = await awaitWrap(
+                workflowAPI.enableFlow({
+                    id: row.id,
+                    status: enabled ? 'disable' : 'enable',
+                }),
+            );
+            updateWorkflowList({
+                ...workflowList,
+                content: workflowList?.content.map(item =>
+                    item.id === row.id
+                        ? {
+                              ...item,
+                              enabled:
+                                  error || !isRequestSuccess(res) ? item.enabled : !item.enabled,
+                          }
+                        : item,
+                ),
+            });
         },
         [workflowList],
     );
+
     const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useCallback(
         (type, record) => {
             // console.log(type, record);
@@ -209,43 +166,61 @@ const Workflow = () => {
                 }
             }
         },
-        [workflowList, navigate, handleDeleteConfirm],
+        [navigate, handleDeleteConfirm, handleExportWorkFlow, handleSwitchChange],
     );
+
+    // ---------- Table Render ----------
     const columns = useColumns<TableRowDataType>({ onButtonClick: handleTableBtnClick });
-    const handleCloseLogModal = useCallback(() => setLogModalVisible(false), []);
-    const isRowSelectable = useCallback(
-        ({ row }: { row: TableRowDataType }) => {
-            return !row.enabled;
-        },
-        [columns],
-    );
-    const handleSwitchChange = useCallback(
-        async (row: TableRowDataType) => {
-            if (!workflowList?.content) {
-                return;
+    const isRowSelectable = useCallback(({ row }: { row: TableRowDataType }) => {
+        return !row.enabled;
+    }, []);
+    const handlerImportModal = useCallback(
+        (isOpen: boolean, contains?: WorkflowSchema) => {
+            if (contains) {
+                // TODO: wid should be deleted
+                navigate('/workflow/editor', {
+                    state: {
+                        workflowSchema: contains,
+                    },
+                });
             }
-            const { enabled } = row;
-            const [error, res] = await awaitWrap(
-                workflowAPI.enableFlow({
-                    id: row.id,
-                    status: enabled ? 'disable' : 'enable',
-                }),
-            );
-            updateWorkflowList({
-                ...workflowList,
-                content: workflowList?.content.map(item =>
-                    item.id === row.id
-                        ? {
-                              ...item,
-                              enabled:
-                                  error || !isRequestSuccess(res) ? item.enabled : !item.enabled,
-                          }
-                        : item,
-                ),
-            });
+            setImportModal(isOpen);
         },
-        [workflowList],
+        [navigate],
     );
+    const toolbarRender = useMemo(() => {
+        return (
+            <Stack className="ms-operations-btns" direction="row" spacing="12px">
+                <Button
+                    variant="contained"
+                    sx={{ height: 36, textTransform: 'none' }}
+                    startIcon={<AddIcon />}
+                    onClick={() => navigate('/workflow/editor')}
+                >
+                    {getIntlText('common.label.add')}
+                </Button>
+                <Button
+                    variant="outlined"
+                    sx={{ height: 36, textTransform: 'none' }}
+                    startIcon={<SystemUpdateAltIcon />}
+                    onClick={() => handlerImportModal(true)}
+                >
+                    {getIntlText('workflow.button.label_import_from_dsl')}
+                </Button>
+                <Button
+                    variant="outlined"
+                    color="error"
+                    disabled={!selectedIds.length}
+                    sx={{ height: 36, textTransform: 'none' }}
+                    startIcon={<DeleteOutlineIcon />}
+                    onClick={() => handleDeleteConfirm()}
+                >
+                    {getIntlText('common.label.delete')}
+                </Button>
+            </Stack>
+        );
+    }, [getIntlText, navigate, handleDeleteConfirm, handlerImportModal, selectedIds]);
+
     return (
         <div className="ms-main">
             <Breadcrumbs />
@@ -274,8 +249,8 @@ const Workflow = () => {
             {logModalVisible && (
                 <LogModal
                     visible={logModalVisible}
-                    onCancel={handleCloseLogModal}
                     data={workflowItem!}
+                    onCancel={() => setLogModalVisible(false)}
                 />
             )}
             <ImportModal

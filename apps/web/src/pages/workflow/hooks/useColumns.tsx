@@ -2,7 +2,6 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Stack, IconButton, Switch, Menu, MenuItem } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import {
-    ListAltIcon,
     DeleteOutlineIcon,
     EditIcon,
     MoreVertIcon,
@@ -10,7 +9,7 @@ import {
     EventNoteIcon,
 } from '@milesight/shared/src/components';
 import { Tooltip, type ColumnType } from '@/components';
-import { workflowAPI, type WorkflowAPISchema } from '@/services/http';
+import { type WorkflowAPISchema } from '@/services/http';
 
 type OperationType = 'log' | 'delete' | 'edit' | 'enable' | 'export';
 
@@ -30,19 +29,16 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
     const { getTimeFormat } = useTime();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [popoverId, setPopoverId] = useState<string>('');
-    const handlerPopoverClose = useCallback(
-        (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => {
-            setPopoverId('');
-            setAnchorEl(null);
-        },
-        [popoverId, anchorEl],
-    );
+    const handlerPopoverClose = useCallback(() => {
+        setPopoverId('');
+        setAnchorEl(null);
+    }, []);
     const handlerPopoverOpen = useCallback(
         (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => {
             setPopoverId(id);
             setAnchorEl(e.currentTarget);
         },
-        [popoverId, anchorEl],
+        [],
     );
     const columns: ColumnType<T>[] = useMemo(() => {
         return [
@@ -86,15 +82,19 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 field: 'userNickname',
                 headerName: getIntlText('common.label.creator'),
                 flex: 1,
-                minWidth: 150,
+                minWidth: 100,
                 ellipsis: true,
             },
             {
                 field: 'enabled',
                 headerName: getIntlText('common.label.enable_status'),
-                // ellipsis: true,
+                // align: 'left',
+                headerAlign: 'left',
+                type: 'boolean',
+                filterable: true,
+                disableColumnMenu: false,
                 flex: 1,
-                minWidth: 200,
+                minWidth: 150,
                 renderCell({ row }) {
                     return (
                         <Switch
@@ -108,7 +108,7 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 field: '$operation',
                 headerName: getIntlText('common.label.operation'),
                 flex: 1,
-                minWidth: 100,
+                minWidth: 118,
                 renderCell({ row }) {
                     return (
                         <Stack
@@ -153,37 +153,33 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                                 }}
                                 onClose={handlerPopoverClose}
                             >
-                                <MenuItem onClick={() => onButtonClick('export', row)}>
-                                    <IconButton
-                                        sx={{
-                                            width: 30,
-                                            height: 30,
-                                        }}
-                                    >
-                                        <IosShareIcon sx={{ width: 20, height: 20 }} />
-                                        <span className="ms-workflow-list-more-menu-item-text">
-                                            {getIntlText('common.label.export')}
-                                        </span>
-                                    </IconButton>
+                                <MenuItem
+                                    onClick={() => {
+                                        handlerPopoverClose();
+                                        onButtonClick('export', row);
+                                    }}
+                                    sx={{ color: 'text.secondary' }}
+                                >
+                                    <IosShareIcon sx={{ width: 20, height: 20 }} />
+                                    <span className="ms-workflow-list-more-menu-item-text">
+                                        {getIntlText('common.label.export')}
+                                    </span>
                                 </MenuItem>
                                 <MenuItem
                                     disabled={row.enabled}
-                                    onClick={() => onButtonClick('delete', row)}
+                                    onClick={() => {
+                                        handlerPopoverClose();
+                                        onButtonClick('delete', row);
+                                    }}
+                                    sx={{
+                                        color: 'text.secondary',
+                                        '&:hover': { color: 'error.light' },
+                                    }}
                                 >
-                                    <IconButton
-                                        color="error"
-                                        sx={{
-                                            width: 30,
-                                            height: 30,
-                                            color: 'text.secondary',
-                                            '&:hover': { color: 'error.light' },
-                                        }}
-                                    >
-                                        <DeleteOutlineIcon sx={{ width: 20, height: 20 }} />
-                                        <span className="ms-workflow-list-more-menu-item-text">
-                                            {getIntlText('common.label.delete')}
-                                        </span>
-                                    </IconButton>
+                                    <DeleteOutlineIcon sx={{ width: 20, height: 20 }} />
+                                    <span className="ms-workflow-list-more-menu-item-text">
+                                        {getIntlText('common.label.delete')}
+                                    </span>
                                 </MenuItem>
                             </Menu>
                         </Stack>
@@ -191,7 +187,15 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 },
             },
         ];
-    }, [getIntlText, getTimeFormat, onButtonClick, popoverId, anchorEl]);
+    }, [
+        popoverId,
+        anchorEl,
+        getIntlText,
+        getTimeFormat,
+        onButtonClick,
+        handlerPopoverOpen,
+        handlerPopoverClose,
+    ]);
 
     return columns;
 };

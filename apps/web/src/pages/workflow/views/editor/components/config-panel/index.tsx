@@ -141,9 +141,11 @@ const ConfigPanel = () => {
                     </Stack>
                     <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                         {nodeConfig?.testable && (
-                            <IconButton onClick={() => setDrawerOpen(true)}>
-                                <PlayArrowIcon />
-                            </IconButton>
+                            <Tooltip title={getIntlText('workflow.editor.node_test_tip')}>
+                                <IconButton onClick={() => setDrawerOpen(true)}>
+                                    <PlayArrowIcon />
+                                </IconButton>
+                            </Tooltip>
                         )}
                         <MoreMenu />
                         <Divider
