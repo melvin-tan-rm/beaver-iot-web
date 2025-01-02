@@ -43,9 +43,9 @@ export type EntitySelectValue<Value, Multiple, DisableClearable> = Multiple exte
       : Value | null;
 
 /** Interface filter parameter */
-type FilterParameters = Omit<
+type FilterParameters = Pick<
     ObjectToCamelCase<EntityAPISchema['getList']['request']>,
-    'pageSize' | 'pageNumber' | 'keyword'
+    'entityType' | 'entityAccessMod' | 'excludeChildren' | 'entityValueType'
 >;
 /**
  * Props for the EntitySelect component.

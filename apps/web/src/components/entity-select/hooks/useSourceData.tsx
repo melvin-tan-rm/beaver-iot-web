@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import useEntityStore from '../store';
@@ -23,7 +23,7 @@ export const useSourceData = (
     );
 
     const init = useMemoizedFn(() => {
-        initEntityList({ entityType, entityAccessMod, excludeChildren, entityValueType });
+        initEntityList();
     });
     useEffect(() => {
         if (status !== 'ready') return;
@@ -51,9 +51,39 @@ export const useSourceData = (
         setKeyword(keyword);
     }, []);
 
+    const hasFilterParams = useMemo(
+        () => !!(entityType || entityAccessMod || excludeChildren || entityValueType),
+        [entityType, entityAccessMod, excludeChildren, entityValueType],
+    );
+    const { data: sourceEntityList, loading: sourceSearchLoading } = useRequest(
+        async () => {
+            if (!hasFilterParams) return;
+
+            const params = {
+                entityType,
+                entityAccessMod,
+                excludeChildren,
+                entityValueType,
+            };
+            return getEntityList(params);
+        },
+        {
+            refreshDeps: [entityType, entityAccessMod, excludeChildren, entityValueType],
+        },
+    );
+
+    const fetchEntityList = useMemo(() => {
+        if (!keyword) return hasFilterParams ? sourceEntityList : entityList;
+        return searchEntityList;
+    }, [entityList, hasFilterParams, keyword, searchEntityList, sourceEntityList]);
+    const fetchLoading = useMemo(() => {
+        if (!keyword) return hasFilterParams ? sourceSearchLoading : entityLoading;
+        return searchLoading;
+    }, [entityLoading, hasFilterParams, keyword, searchLoading, sourceSearchLoading]);
+
     return {
-        entityList: keyword ? searchEntityList! : entityList,
-        loading: keyword ? searchLoading : entityLoading,
+        entityList: fetchEntityList,
+        loading: fetchLoading,
         onSearch,
     };
 };
