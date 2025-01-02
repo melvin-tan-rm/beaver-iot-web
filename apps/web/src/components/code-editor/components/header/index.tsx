@@ -14,6 +14,7 @@ export default React.memo(
         title,
         style,
         renderOptions,
+        supportLangs,
     }: EditorToolbarProps) => {
         const { handleCopy } = useCopy();
 
@@ -25,6 +26,7 @@ export default React.memo(
                             editorLang={editorLang}
                             onEditorLangChange={setEditorLang}
                             renderOptions={renderOptions}
+                            supportLangs={supportLangs}
                         />
                     ) : (
                         title

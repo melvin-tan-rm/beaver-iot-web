@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { CodeEditor as CodeMirror, type EditorSupportLang } from '@/components';
 import './style.less';
 
@@ -21,31 +21,34 @@ const CodeEditor: React.FC<IProps> = ({ value, onChange }) => {
 
     /** Actual form change callbacks */
     const handleChange = useCallback(
-        (data: Partial<CodeEditorData>) => {
+        (data: CodeEditorData) => {
             const { language, expression } = data;
 
-            const result = {
-                language: language ?? value?.language,
-                expression: expression ?? value?.expression,
-            };
-            onChange?.(result);
+            onChange?.({
+                language,
+                expression,
+            });
         },
-        [value, onChange],
+        [onChange],
     );
 
     /** Callback function triggered when the language changes. */
     const handleEditorLangChange = useCallback(
         (language: EditorSupportLang) => {
-            handleChange?.({ language });
+            handleChange?.({ language, expression });
         },
-        [handleChange],
+        [expression, handleChange],
     );
     /** Callback function triggered when the content value changes. */
     const handleEditorValueChange = useCallback(
         (expression: string) => {
-            handleChange?.({ expression });
+            handleChange?.({ language, expression });
         },
-        [handleChange],
+        [handleChange, language],
+    );
+    const supportLangs = useMemo<EditorSupportLang[]>(
+        () => ['groovy', 'javascript', 'python', 'mvel'],
+        [],
     );
     return (
         <CodeMirror
@@ -54,6 +57,7 @@ const CodeEditor: React.FC<IProps> = ({ value, onChange }) => {
             onLangChange={handleEditorLangChange}
             value={expression}
             onChange={handleEditorValueChange}
+            supportLangs={supportLangs}
         />
     );
 };

@@ -26,7 +26,7 @@ export interface EditorContentProps extends ReactCodeMirrorProps {
 /** Props for the code editor component. */
 export interface EditorProps
     extends EditorContentProps,
-        Pick<EditorToolbarProps, 'title' | 'icon'> {
+        Pick<EditorToolbarProps, 'title' | 'icon' | 'supportLangs'> {
     /** The font size used in the editor. */
     fontSize?: number;
     /** Default editor language. */
@@ -49,11 +49,6 @@ export interface EditorProps
      */
     onChange?: (value: string) => void;
 
-    /**
-     * Custom editor toolbar header.
-     * @deprecated This prop is deprecated and will be removed in a future version., please use the `renderHeader` prop instead.
-     */
-    Header?: React.FC<EditorToolbarProps> | null;
     /** Custom editor toolbar header. */
     renderHeader?: (props: EditorToolbarProps) => React.ReactNode;
 
@@ -85,11 +80,13 @@ export interface EditorSelectProps {
      * @returns The rendered node.
      */
     renderOptions?: SelectProps<EditorSupportLang>['renderOptions'];
+    /** support language */
+    supportLangs?: EditorSupportLang[];
 }
 
 /** Props for the code editor toolbar. */
 export interface EditorToolbarProps
-    extends Pick<EditorSelectProps, 'renderOptions'>,
+    extends Pick<EditorSelectProps, 'renderOptions' | 'supportLangs'>,
         Pick<EditorProps, 'editable' | 'readOnly'> {
     /** The content value of the editor. */
     editorValue: string;
@@ -108,6 +105,8 @@ export interface EditorToolbarProps
     editorHandlers: EditorHandlers;
     /** The style to use for the toolbar. */
     style?: React.CSSProperties;
+    /** support languages */
+    supportLangs?: EditorSupportLang[];
 }
 
 /**
