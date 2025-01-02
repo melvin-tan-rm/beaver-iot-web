@@ -1,12 +1,12 @@
 import React, { useCallback, useMemo } from 'react';
-import { CodeEditor as CodeMirror, type EditorSupportLang } from '@/components';
+import { CodeEditor as CodeMirror, type EditorProps, type EditorSupportLang } from '@/components';
 import './style.less';
 
 interface CodeEditorData {
     language: EditorSupportLang;
     expression: string;
 }
-export interface IProps {
+export interface IProps extends Omit<EditorProps, 'value' | 'onChange'> {
     value: CodeEditorData;
     onChange: (value: CodeEditorData) => void;
 }
@@ -16,7 +16,7 @@ const DEFAULT_LANGUAGE = 'javascript';
  *
  * Note: Use in CodeNode, IfelseNode
  */
-const CodeEditor: React.FC<IProps> = ({ value, onChange }) => {
+const CodeEditor: React.FC<IProps> = ({ value, onChange, ...props }) => {
     const { language = DEFAULT_LANGUAGE, expression } = value || {};
 
     /** Actual form change callbacks */
@@ -52,6 +52,7 @@ const CodeEditor: React.FC<IProps> = ({ value, onChange }) => {
     );
     return (
         <CodeMirror
+            {...props}
             height="200px"
             editorLang={language}
             onLangChange={handleEditorLangChange}
