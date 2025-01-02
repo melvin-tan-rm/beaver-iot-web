@@ -38,8 +38,7 @@ export const useLogDetail = ({
             const { id } = data || {};
             const resp = await workflowAPI.getFlowDesign({
                 id,
-                // TODO Get the specified version
-                version: '',
+                version: activeItem.version,
             });
 
             const designData = getResponseData(resp)?.design_data;

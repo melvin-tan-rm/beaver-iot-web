@@ -128,6 +128,8 @@ export interface WorkflowAPISchema extends APISchema {
                 time_cost: number;
                 /** Running status */
                 status: WorkflowNodeStatus;
+                /** Version */
+                version: string;
             }[]
         >;
     };
