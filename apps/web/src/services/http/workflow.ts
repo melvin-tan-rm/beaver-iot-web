@@ -282,7 +282,7 @@ export default attachAPI<WorkflowAPISchema>(client, {
         getFlowDesign: `GET ${API_PREFIX}/workflow/flows/:id/design?version=:version`,
         checkFlowDesign: `POST ${API_PREFIX}/workflow/flows/design/validate`,
         saveFlowDesign: `POST ${API_PREFIX}/workflow/flows/design`,
-        testFlow: `POST ${API_PREFIX}/workflow/flows/test`,
+        testFlow: `POST ${API_PREFIX}/workflow/flows/design/test`,
         testSingleNode: `POST ${API_PREFIX}/workflow/flows/node/test`,
         getFlowNodes: `GET ${API_PREFIX}/workflow/components`,
         getNodeForm: `GET ${API_PREFIX}/workflow/components/:id`,
