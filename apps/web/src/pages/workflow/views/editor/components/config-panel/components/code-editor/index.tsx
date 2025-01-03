@@ -10,7 +10,7 @@ export interface IProps extends Omit<EditorProps, 'value' | 'onChange'> {
     value: CodeEditorData;
     onChange: (value: CodeEditorData) => void;
 }
-const DEFAULT_LANGUAGE = 'javascript';
+const DEFAULT_LANGUAGE = 'js';
 /**
  * Code Editor Component
  *
@@ -46,10 +46,7 @@ const CodeEditor: React.FC<IProps> = ({ value, onChange, ...props }) => {
         },
         [handleChange, language],
     );
-    const supportLangs = useMemo<EditorSupportLang[]>(
-        () => ['groovy', 'javascript', 'python', 'mvel'],
-        [],
-    );
+    const supportLangs = useMemo<EditorSupportLang[]>(() => ['groovy', 'js', 'python', 'mvel'], []);
     return (
         <CodeMirror
             {...props}

@@ -6,7 +6,7 @@ export const editorLangOptions: {
     label: string;
 }[] = [
     {
-        value: 'javascript',
+        value: 'js',
         label: 'JavaScript',
     },
     {
