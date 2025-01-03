@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
-// import { safeJsonParse } from '../helper';
+import { DEFAULT_DEVICE_NAME } from '../constant';
 import type {
     EntitySelectComponentProps,
     EntitySelectOption,
@@ -35,13 +35,12 @@ export const useOptions = <
 
     /** Get description text */
     const getDescription = useCallback(
-        (entityType: string, entityKey: string, deviceName?: string) => {
-            const comma = getIntlText('common.symbol.comma');
-            // Extract meaningful part of the entity key
-            const entityKeyText = entityKey.split('.').slice(3).join('.');
+        (entity: ObjectToCamelCase<EntityData>, extraName?: string) => {
+            const { entityType, entityParentName } = entity;
 
+            const comma = getIntlText('common.symbol.comma');
             // Join entity type, entity key, and device name with commas
-            return [entityType, entityKeyText, deviceName].filter(Boolean).join(`${comma} `);
+            return [entityType, entityParentName, extraName].filter(Boolean).join(`${comma} `);
         },
         [getIntlText],
     );
@@ -49,33 +48,16 @@ export const useOptions = <
     /** Get value of the option based on entity data */
     const getOptionValue = useCallback(
         (entityData: ObjectToCamelCase<EntityData>) => {
-            const {
-                deviceName,
-                entityId,
-                entityName,
-                entityType,
-                entityKey,
-                entityValueType,
-                entityValueAttribute: entityValueAttributeString,
-            } = entityData || {};
-
-            // // Parse the entity value attribute from JSON string
-            // const entityValueAttribute = safeJsonParse(
-            //     entityValueAttributeString,
-            // ) as EntityValueAttributeType;
-            const entityValueAttribute =
-                entityValueAttributeString as unknown as EntityValueAttributeType;
+            const { deviceName, entityKey, entityName, entityValueType, integrationName } =
+                entityData || {};
 
             // Create an entity item for the select option
             const entityItem: EntitySelectOption<EntityValueType> = {
-                value: fieldName ? entityData[fieldName] : entityId,
+                value: fieldName ? entityData[fieldName] : entityKey,
                 label: entityName,
                 valueType: entityValueType,
-                description: getDescription(entityType, entityKey, deviceName),
-                rawData: {
-                    ...entityData,
-                    entityValueAttribute,
-                },
+                description: getDescription(entityData, deviceName || integrationName),
+                rawData: entityData as unknown as EntitySelectOption<EntityValueType>['rawData'],
             };
             return entityItem;
         },
@@ -102,23 +84,26 @@ export const useOptions = <
                 const { entityOptions, deviceMap } = prev;
 
                 const { rawData } = entity || {};
-                const { deviceName, entityType, entityKey } = rawData! || {};
+                const { deviceName } = rawData! || {};
                 entityOptions.push(entity);
+                const name = deviceName || DEFAULT_DEVICE_NAME;
 
                 // Create or update device group
-                let deviceGroup = deviceMap.get(deviceName);
+                let deviceGroup = deviceMap.get(name);
                 if (!deviceGroup) {
                     deviceGroup = {
-                        value: deviceName,
-                        label: deviceName,
+                        value: name,
+                        label: name,
                         children: [],
                     };
                 }
                 deviceGroup.children?.push({
                     ...entity,
-                    description: getDescription(entityType, entityKey),
+                    description: getDescription(
+                        rawData as unknown as ObjectToCamelCase<EntityData>,
+                    ),
                 });
-                deviceMap.set(deviceName, deviceGroup);
+                deviceMap.set(name, deviceGroup);
 
                 return {
                     deviceMap,

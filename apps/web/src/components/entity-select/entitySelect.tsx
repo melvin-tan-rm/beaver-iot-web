@@ -94,9 +94,8 @@ const EntitySelect = <
      */
     const handleInputChange = useCallback<EntityAutocompleteProps['onInputChange']>(
         (event, value, reason) => {
-            if (reason === 'input') {
+            if (['input', 'blur'].includes(reason)) {
                 onSearch?.(value);
-                return;
             }
 
             onInputChange?.(event, value, reason);

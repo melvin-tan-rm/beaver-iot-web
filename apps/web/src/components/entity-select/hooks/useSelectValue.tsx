@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react';
+import { DEFAULT_DEVICE_NAME } from '../constant';
 import type {
     EntitySelectInnerProps,
     EntitySelectComponentProps,
@@ -60,7 +61,7 @@ export const useSelectValue = <
             if (!option) return acc;
 
             const { rawData } = option || {};
-            const { deviceName = '' } = rawData || {};
+            const { deviceName = DEFAULT_DEVICE_NAME } = rawData || {};
 
             const deviceList = acc.get(deviceName) || [];
             deviceList.push(option);

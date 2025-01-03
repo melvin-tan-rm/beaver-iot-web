@@ -95,9 +95,9 @@ export interface EntitySelectProps<
     dropdownMatchSelectWidth?: number;
     /**
      * The field name of the entity
-     * @default 'entityId'
+     * @default 'entityKey'
      */
-    fieldName?: keyof ObjectToCamelCase<EntityData>;
+    fieldName?: 'entityKey' | 'entityId';
 }
 
 export interface EntitySelectComponentProps<

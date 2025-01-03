@@ -24,7 +24,7 @@ const EntitySelectApp = <
         entityValueType,
         entityAccessMod,
         excludeChildren,
-        fieldName = 'entityId',
+        fieldName = 'entityKey',
         getOptionValue: _getOptionValue,
         filterOption,
     } = props;
