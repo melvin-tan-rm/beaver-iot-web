@@ -24,6 +24,7 @@ const EntitySelectApp = <
         entityValueType,
         entityAccessMod,
         excludeChildren,
+        fieldName = 'entityId',
         getOptionValue: _getOptionValue,
         filterOption,
     } = props;
@@ -50,6 +51,7 @@ const EntitySelectApp = <
     const { options, entityOptionMap } = useOptions<Value, Multiple, DisableClearable>({
         tabType,
         entityList,
+        fieldName,
         filterOption,
     });
 

@@ -47,7 +47,11 @@ export interface EntitySelectProps
  *
  * Note: This is a basic component, use in EntityListeningNode, ServiceNode, EntitySelectNode
  */
-const EntitySelect: React.FC<EntitySelectProps> = ({ filterModel, ...props }) => {
+const EntitySelect: React.FC<EntitySelectProps> = ({
+    filterModel,
+    fieldName = 'entityKey',
+    ...props
+}) => {
     const [value, setValue] = useControllableValue<EntitySelectValueType | undefined>(props);
 
     const handleChange = useCallback<Required<WorkflowEntitySelectProps>['onChange']>(
@@ -79,6 +83,7 @@ const EntitySelect: React.FC<EntitySelectProps> = ({ filterModel, ...props }) =>
             {...filterModelValue}
             value={value}
             onChange={handleChange}
+            fieldName={fieldName}
         />
     );
 };

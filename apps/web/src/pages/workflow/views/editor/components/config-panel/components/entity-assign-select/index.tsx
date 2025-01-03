@@ -69,7 +69,7 @@ const EntityAssignSelect: React.FC<EntityAssignSelectProps> = ({
                         onChange={value => {
                             replace(index, [`${value || ''}`, item?.[1] || '']);
                         }}
-                        popperWidth={400}
+                        dropdownMatchSelectWidth={400}
                     />
                     <ParamInputSelect
                         value={item?.[1]}

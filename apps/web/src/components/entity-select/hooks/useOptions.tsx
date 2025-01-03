@@ -14,10 +14,12 @@ interface IProps<
     Value extends EntitySelectValueType = EntitySelectValueType,
     Multiple extends boolean | undefined = false,
     DisableClearable extends boolean | undefined = false,
-> {
+> extends Pick<
+        EntitySelectComponentProps<Value, Multiple, DisableClearable>,
+        'fieldName' | 'filterOption'
+    > {
     tabType: TabType;
     entityList: EntityData[];
-    filterOption?: EntitySelectComponentProps<Value, Multiple, DisableClearable>['filterOption'];
 }
 export const useOptions = <
     Value extends EntitySelectValueType = EntitySelectValueType,
@@ -26,6 +28,7 @@ export const useOptions = <
 >({
     tabType,
     entityList,
+    fieldName,
     filterOption,
 }: IProps<Value, Multiple, DisableClearable>) => {
     const { getIntlText } = useI18n();
@@ -63,7 +66,7 @@ export const useOptions = <
 
             // Create an entity item for the select option
             const entityItem: EntitySelectOption<EntityValueType> = {
-                value: entityId,
+                value: fieldName ? entityData[fieldName] : entityId,
                 label: entityName,
                 valueType: entityValueType,
                 description: getDescription(entityType, entityKey, deviceName),
@@ -74,7 +77,7 @@ export const useOptions = <
             };
             return entityItem;
         },
-        [getDescription],
+        [fieldName, getDescription],
     );
 
     const optionList = useMemo(() => {

@@ -30,7 +30,7 @@ export default React.memo((props: IProps) => {
 
     const selectedCount = useMemo(() => selectedEntityMap.size, [selectedEntityMap]);
     return (
-        <Popper placement="right" {...rest} className="ms-entity-menu-popper">
+        <Popper placement="right-start" {...rest} className="ms-entity-menu-popper">
             <Paper className="ms-entity-menu-paper">
                 <div
                     ref={containerRef}

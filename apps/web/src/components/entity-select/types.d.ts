@@ -92,7 +92,12 @@ export interface EntitySelectProps<
     /**
      * custom popper width
      */
-    popperWidth?: number;
+    dropdownMatchSelectWidth?: number;
+    /**
+     * The field name of the entity
+     * @default 'entityId'
+     */
+    fieldName?: keyof ObjectToCamelCase<EntityData>;
 }
 
 export interface EntitySelectComponentProps<

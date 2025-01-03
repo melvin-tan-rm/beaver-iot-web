@@ -82,7 +82,7 @@ export const useSourceData = (
     }, [entityLoading, hasFilterParams, keyword, searchLoading, sourceSearchLoading]);
 
     return {
-        entityList: fetchEntityList,
+        entityList: useMemo(() => fetchEntityList || [], [fetchEntityList]),
         loading: fetchLoading,
         onSearch,
     };
