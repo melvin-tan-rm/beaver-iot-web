@@ -8,6 +8,16 @@
     &.hidden {
         display: none;
     }
+
+    &.readonly {
+        .@{prefix}-workflow-panel-config-body {
+            pointer-events: none;
+        }
+
+        .@{prefix}-code-editor-header__operations {
+            pointer-events: all;
+        }
+    }
 }
 
 .@{prefix}-workflow-panel-config {

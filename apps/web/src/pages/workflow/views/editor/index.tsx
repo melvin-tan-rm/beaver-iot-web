@@ -17,9 +17,16 @@ import { checkPrivateProperty } from '@milesight/shared/src/utils/tools';
 import { useI18n, useStoreShallow, usePreventLeave } from '@milesight/shared/src/hooks';
 import { InfoIcon, LoadingButton, toast } from '@milesight/shared/src/components';
 import { CodeEditor, useConfirm } from '@/components';
-import { workflowAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
+import {
+    workflowAPI,
+    awaitWrap,
+    getResponseData,
+    isRequestSuccess,
+    type FlowNodeTraceInfo,
+} from '@/services/http';
 import { MIN_ZOOM, MAX_ZOOM, FROZEN_NODE_PROPERTY_KEYS } from './constants';
 import useFlowStore from './store';
+import { normalizeNodes, normalizeEdges } from './helper';
 import { useNodeTypes, useInteractions, useWorkflow, useValidate } from './hooks';
 import {
     Topbar,
@@ -58,6 +65,9 @@ const WorkflowEditor = () => {
         useValidate();
     const confirm = useConfirm();
     const {
+        logDetail,
+        openLogPanel,
+        logPanelMode,
         setSelectedNode,
         setOpenLogPanel,
         setNodeConfigs,
@@ -66,6 +76,9 @@ const WorkflowEditor = () => {
         setNodesDataValidResult,
     } = useFlowStore(
         useStoreShallow([
+            'logDetail',
+            'openLogPanel',
+            'logPanelMode',
             'setSelectedNode',
             'setOpenLogPanel',
             'setNodeConfigs',
@@ -236,6 +249,50 @@ const WorkflowEditor = () => {
         setEdges(edges);
     }, [wid, importedData, setNodes, setEdges]);
 
+    // ---------- Render Log Flow Data ----------
+    const [originFlowData, setOriginFlowData] = useState<
+        undefined | Pick<WorkflowSchema, 'nodes' | 'edges'>
+    >();
+    const isLogMode = useFlowStore(state => state.isLogMode());
+
+    useEffect(() => {
+        if (!isLogMode) {
+            if (originFlowData) {
+                setNodes(originFlowData.nodes);
+                setEdges(originFlowData.edges);
+                setOriginFlowData(undefined);
+            }
+            return;
+        }
+        const { nodes, edges } = cloneDeep(logDetail?.flowData) || {};
+        const traceInfos = logDetail?.traceInfos.reduce(
+            (acc, item) => {
+                acc[item.node_id] = item;
+                return acc;
+            },
+            {} as Record<string, Partial<FlowNodeTraceInfo>>,
+        );
+
+        if (!nodes?.length || !edges?.length) return;
+
+        nodes.forEach(node => {
+            const traceInfo = traceInfos?.[node.id];
+            if (!traceInfo) return;
+            node.data = { ...node.data, $status: traceInfo.status };
+        });
+
+        if (!originFlowData) {
+            const originData = originFlowData || toObject();
+            setOriginFlowData({
+                nodes: normalizeNodes(originData.nodes),
+                edges: normalizeEdges(originData.edges),
+            });
+        }
+
+        setNodes(nodes);
+        setEdges(edges);
+    }, [isLogMode, logDetail, setNodes, setEdges, toObject]);
+
     // ---------- Design Mode Change ----------
     const [designMode, setDesignMode] = useState<DesignMode>('canvas');
     const [editorFlowData, setEditorFlowData] = useState<string>();
@@ -243,17 +300,8 @@ const WorkflowEditor = () => {
         (mode: DesignMode) => {
             if (mode === 'advanced') {
                 const { nodes, edges } = cloneDeep(toObject());
-                const newNodes = nodes.map(node => {
-                    const result = omitBy(node, (_, key) =>
-                        FROZEN_NODE_PROPERTY_KEYS.includes(key),
-                    );
-                    result.data = omitBy(node.data, (_, key) => checkPrivateProperty(key));
-                    return result as WorkflowNode;
-                });
-                const newEdges = edges.map(edge => {
-                    edge.data = omitBy(edge.data, (_, key) => checkPrivateProperty(key));
-                    return edge;
-                });
+                const newNodes = normalizeNodes(nodes, [...FROZEN_NODE_PROPERTY_KEYS, 'measured']);
+                const newEdges = normalizeEdges(edges);
 
                 if (!checkWorkflowValid(newNodes, newEdges)) return;
 
@@ -324,7 +372,7 @@ const WorkflowEditor = () => {
             flowData.edges = jsonData.edges;
         }
 
-        const { nodes, edges, viewport } = flowData;
+        let { nodes, edges } = flowData;
 
         // console.log({ nodes, edges });
         if (!checkWorkflowValid(nodes, edges)) return;
@@ -379,18 +427,8 @@ const WorkflowEditor = () => {
             if (!proceed) return;
         }
 
-        nodes.forEach(node => {
-            // remove interactive property
-            delete node.selected;
-            delete node.dragging;
-
-            // remove private property
-            node.data = omitBy(node.data, (_, key) => checkPrivateProperty(key));
-        });
-        edges.forEach(edge => {
-            delete edge.selected;
-            edge.data = omitBy(edge.data, (_, key) => checkPrivateProperty(key));
-        });
+        nodes = normalizeNodes(nodes, FROZEN_NODE_PROPERTY_KEYS);
+        edges = normalizeEdges(edges);
 
         // TODO: referenced warning confirm ?
 
@@ -399,7 +437,7 @@ const WorkflowEditor = () => {
             workflowAPI.saveFlowDesign({
                 ...basicData,
                 name: basicData.name,
-                design_data: JSON.stringify({ nodes, edges, viewport }),
+                design_data: JSON.stringify({ nodes, edges, viewport: flowData.viewport }),
             }),
         );
 
@@ -434,7 +472,7 @@ const WorkflowEditor = () => {
             <Topbar
                 data={basicData}
                 loading={flowDataLoading}
-                disabled={saveLoading}
+                disabled={saveLoading || isLogMode}
                 mode={designMode}
                 onDataChange={handleFlowDataChange}
                 onDesignModeChange={handleDesignModeChange}
@@ -451,7 +489,7 @@ const WorkflowEditor = () => {
                     <LoadingButton
                         key="save-button"
                         variant="contained"
-                        disabled={!nodes?.length}
+                        disabled={!nodes?.length || isLogMode}
                         loading={saveLoading}
                         // startIcon={<CheckIcon />}
                         onClick={handleSave}
@@ -485,19 +523,21 @@ const WorkflowEditor = () => {
                         onEdgeMouseLeave={handleEdgeMouseLeave}
                     >
                         <Background />
-                        <Controls minZoom={MIN_ZOOM} maxZoom={MAX_ZOOM} />
+                        <Controls minZoom={MIN_ZOOM} maxZoom={MAX_ZOOM} addable={!isLogMode} />
                         <HelperLines
                             horizontal={helperLineHorizontal}
                             vertical={helperLineVertical}
                         />
                         <LogPanel designMode={designMode} />
-                        <ConfigPanel />
+                        <ConfigPanel readonly={isLogMode} />
                         <EntryPanel isEditing={!!wid} loading={flowDataLoading} />
                     </ReactFlow>
                     {designMode === 'advanced' && (
                         <div className="ms-workflow-advance">
                             <CodeEditor
                                 editorLang="json"
+                                readOnly={isLogMode}
+                                editable={!isLogMode}
                                 renderHeader={() => null}
                                 value={editorFlowData}
                                 onChange={value => {

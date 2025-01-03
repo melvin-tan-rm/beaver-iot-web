@@ -1,4 +1,5 @@
-import { genRandomString } from '@milesight/shared/src/utils/tools';
+import { omitBy } from 'lodash-es';
+import { genRandomString, checkPrivateProperty } from '@milesight/shared/src/utils/tools';
 import {
     checkRequired,
     checkRangeLength,
@@ -54,4 +55,28 @@ export const parseRefParamKey = (key?: string) => {
  */
 export const genUuid = (type: 'node' | 'edge' | 'condition' | 'subcondition' | 'temp') => {
     return `${type}_${genRandomString(8, { lowerCase: true })}`;
+};
+
+/**
+ * Normalize nodes data
+ * @description Remove private properties and exclude keys
+ */
+export const normalizeNodes = (nodes: WorkflowNode[], excludeKeys?: string[]): WorkflowNode[] => {
+    return nodes.map(node => {
+        const result = omitBy(node, (_, key) => excludeKeys?.includes(key));
+
+        result.data = omitBy(node.data, (_, key) => checkPrivateProperty(key));
+        return result as WorkflowNode;
+    });
+};
+
+/**
+ * Normalize edges data
+ * @description Remove private properties
+ */
+export const normalizeEdges = (edges: WorkflowEdge[]) => {
+    return edges.map(edge => {
+        edge.data = omitBy(edge.data, (_, key) => checkPrivateProperty(key));
+        return edge;
+    });
 };

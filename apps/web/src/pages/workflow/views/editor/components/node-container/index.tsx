@@ -94,6 +94,7 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
     // ---------- ContextMenu ----------
     const [searchParams] = useSearchParams();
     const isEditing = !!searchParams.get('wid');
+    const isLogMode = useFlowStore(state => state.isLogMode());
     const [contextMenu, setContextMenu] = useState<{
         mouseX: number;
         mouseY: number;
@@ -122,7 +123,7 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
     const handleContextMenu = (event: React.MouseEvent) => {
         event.preventDefault();
 
-        if (!menuItems.length) {
+        if (!menuItems.length || isLogMode) {
             setContextMenu(null);
             return;
         }
