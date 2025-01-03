@@ -27,7 +27,7 @@ export const editorLangOptions: {
     },
     {
         value: 'mvel',
-        label: 'mvel',
+        label: 'Mvel',
     },
     {
         value: 'markdown',
