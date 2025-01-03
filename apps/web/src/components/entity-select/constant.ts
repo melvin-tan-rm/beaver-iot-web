@@ -11,4 +11,4 @@ export const TabOptions: { label: string; value: TabType }[] = [
     },
 ];
 
-export const DEFAULT_DEVICE_NAME = 'anonymous';
+export const DEFAULT_DEVICE_NAME = 'Entities with no device';

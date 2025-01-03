@@ -40,7 +40,7 @@ export const useOptions = <
 
             const comma = getIntlText('common.symbol.comma');
             // Join entity type, entity key, and device name with commas
-            return [entityType, entityParentName, extraName].filter(Boolean).join(`${comma} `);
+            return [entityType, extraName, entityParentName].filter(Boolean).join(`${comma} `);
         },
         [getIntlText],
     );
@@ -82,6 +82,7 @@ export const useOptions = <
         }>(
             (prev, entity) => {
                 const { entityOptions, deviceMap } = prev;
+                let newDeviceMap = deviceMap;
 
                 const { rawData } = entity || {};
                 const { deviceName } = rawData! || {};
@@ -89,7 +90,7 @@ export const useOptions = <
                 const name = deviceName || DEFAULT_DEVICE_NAME;
 
                 // Create or update device group
-                let deviceGroup = deviceMap.get(name);
+                let deviceGroup = newDeviceMap.get(name);
                 if (!deviceGroup) {
                     deviceGroup = {
                         value: name,
@@ -103,10 +104,16 @@ export const useOptions = <
                         rawData as unknown as ObjectToCamelCase<EntityData>,
                     ),
                 });
-                deviceMap.set(name, deviceGroup);
+
+                if (!deviceName) {
+                    // Create a new Map and insert the entity without the device name first
+                    newDeviceMap = new Map([[name, deviceGroup], ...newDeviceMap]);
+                } else {
+                    newDeviceMap.set(name, deviceGroup);
+                }
 
                 return {
-                    deviceMap,
+                    deviceMap: newDeviceMap,
                     entityOptions,
                 };
             },
