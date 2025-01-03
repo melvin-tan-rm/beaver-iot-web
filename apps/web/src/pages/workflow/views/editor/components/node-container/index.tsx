@@ -2,6 +2,7 @@ import React, { Fragment, useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useReactFlow, Position, type NodeProps } from '@xyflow/react';
 import cls from 'classnames';
+import { useDebounceEffect } from 'ahooks';
 import { Menu, MenuItem } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { CheckCircleIcon, ErrorIcon, LoopIcon } from '@milesight/shared/src/components';
@@ -88,8 +89,17 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
     children,
 }) => {
     const { getIntlText } = useI18n();
-    const status = nodeProps?.data?.$status;
-    const nodeName = nodeProps?.data?.nodeName;
+    const [finalProps, setFinalProps] = useState(nodeProps);
+    const status = finalProps?.data?.$status;
+    const nodeName = finalProps?.data?.nodeName;
+
+    useDebounceEffect(
+        () => {
+            setFinalProps(nodeProps);
+        },
+        [nodeProps],
+        { wait: 300 },
+    );
 
     // ---------- ContextMenu ----------
     const [searchParams] = useSearchParams();
@@ -100,8 +110,8 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
         mouseY: number;
     } | null>(null);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>();
-    const nodeId = nodeProps?.id;
-    const nodeType = nodeProps?.type as WorkflowNodeType;
+    const nodeId = finalProps?.id;
+    const nodeType = finalProps?.type as WorkflowNodeType;
     const isEntryNode = basicNodeConfigs[nodeType]?.category === 'entry';
 
     /**
