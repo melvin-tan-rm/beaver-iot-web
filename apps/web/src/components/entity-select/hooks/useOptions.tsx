@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
-import { safeJsonParse } from '../helper';
+// import { safeJsonParse } from '../helper';
 import type {
     EntitySelectComponentProps,
     EntitySelectOption,
@@ -59,10 +59,12 @@ export const useOptions = <
                 entityValueAttribute: entityValueAttributeString,
             } = entityData || {};
 
-            // Parse the entity value attribute from JSON string
-            const entityValueAttribute = safeJsonParse(
-                entityValueAttributeString,
-            ) as EntityValueAttributeType;
+            // // Parse the entity value attribute from JSON string
+            // const entityValueAttribute = safeJsonParse(
+            //     entityValueAttributeString,
+            // ) as EntityValueAttributeType;
+            const entityValueAttribute =
+                entityValueAttributeString as unknown as EntityValueAttributeType;
 
             // Create an entity item for the select option
             const entityItem: EntitySelectOption<EntityValueType> = {
