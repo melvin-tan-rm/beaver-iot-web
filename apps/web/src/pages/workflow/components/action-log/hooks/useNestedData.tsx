@@ -168,10 +168,13 @@ export const useNestedData = ({ traceData, workflowData }: ActionLogProps) => {
             const usableIncomes = incomers.sort((a, b) => getDepthByNode(a) - getDepthByNode(b));
             const [usableIncome] = usableIncomes || [];
 
+            // Get the available upstream nodes recursively
+            const result = getOnceIncomeNode(usableIncome);
+
             return {
                 node,
                 incomers,
-                usableIncome,
+                usableIncome: result?.usableIncome || usableIncome,
             };
         },
         [getDepthByNode, workflowNestData],
@@ -188,9 +191,8 @@ export const useNestedData = ({ traceData, workflowData }: ActionLogProps) => {
         const parallelNodeList: ParallelNodeResult[] = [];
 
         (nodes || []).forEach((node, index) => {
-            if (index === 0) {
-                signParallelNode(node);
-            }
+            index === 0 && signParallelNode(node);
+
             const result = getOnceIncomeNode(node);
             if (!result) return;
 
@@ -225,6 +227,18 @@ export const useNestedData = ({ traceData, workflowData }: ActionLogProps) => {
                 const parentNode = getParentNodeInTree(usableIncome);
 
                 if (parentNode) {
+                    parentNode.children = parentNode.children || [];
+
+                    // Insert a node behind the ancestor node
+                    const index = (parentNode.children || []).findIndex(
+                        v => v.id === usableIncome.id,
+                    );
+                    if (index !== -1) {
+                        // Insert a node after index
+                        parentNode.children.splice(index + 1, 0, node);
+                        return;
+                    }
+
                     parentNode.children = (parentNode.children || []).concat(node);
                     return;
                 }
@@ -239,7 +253,7 @@ export const useNestedData = ({ traceData, workflowData }: ActionLogProps) => {
     const treeData = useMemo(() => {
         const parallelNodeList = getParallelNodeList();
         const taskQueue = [cancelQuote, connectQuote];
-        taskQueue.forEach(handler => handler(parallelNodeList));
+        taskQueue.forEach(handler => handler([...parallelNodeList].reverse()));
 
         return roots;
     }, [cancelQuote, connectQuote, getParallelNodeList, roots]);
