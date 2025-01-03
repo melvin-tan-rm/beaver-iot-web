@@ -125,7 +125,18 @@ const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
                     label={
                         <>
                             <Tooltip autoEllipsis className="name" title={selectValue.valueName} />
-                            <span className="type">{selectValue.valueType}</span>
+                            {/* <span className="divider">/</span> */}
+                            {/* <Tooltip autoEllipsis className="type" title="BOOLEAN" /> */}
+                            {selectValue.valueType && (
+                                <>
+                                    <span className="divider">/</span>
+                                    <Tooltip
+                                        autoEllipsis
+                                        className="type"
+                                        title={selectValue.valueType}
+                                    />
+                                </>
+                            )}
                         </>
                     }
                     onDelete={() => setData(undefined)}

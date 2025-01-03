@@ -28,9 +28,11 @@ const UpstreamNodeList: React.FC<UpstreamNodeListProps> = props => {
 
     const renderedUpstreamNodes = useMemo(() => {
         return upstreamNodes?.reduce((acc, node) => {
+            if (!node.outputs?.length) return acc;
+
             acc.push(
                 <ListSubheader key={node.nodeId} className="ms-upstream-node-list-option-groupname">
-                    {`${node.nodeLabel} (${node.nodeName || node.nodeId})`}
+                    {`${node.nodeName || node.nodeId} (${node.nodeLabel})`}
                 </ListSubheader>,
             );
 
@@ -47,7 +49,7 @@ const UpstreamNodeList: React.FC<UpstreamNodeListProps> = props => {
                     >
                         <div className="ms-upstream-node-list-item">
                             <Tooltip autoEllipsis className="name" title={output.name} />
-                            <span className="type">{output.type}</span>
+                            {output.type && <span className="type">{output.type}</span>}
                         </div>
                     </MenuItem>,
                 );
