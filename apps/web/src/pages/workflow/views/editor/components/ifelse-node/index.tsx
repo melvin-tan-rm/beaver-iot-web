@@ -1,6 +1,7 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { Position, useReactFlow, useUpdateNodeInternals, type NodeProps } from '@xyflow/react';
 import { isString } from 'lodash-es';
+import { useDebounceEffect } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Tooltip } from '@/components';
 import { basicNodeConfigs } from '@/pages/workflow/config';
@@ -37,11 +38,20 @@ const calculateHandleTop = (blockIndex: number, preConditionCount: number) => {
  * IFELSE Node
  */
 const IfElseNode: React.FC<NodeProps<IfElseNode>> = props => {
-    const { id: nodeId, selected } = props;
     const { getIntlText } = useI18n();
+    const [finalProps, setFinalProps] = useState(props);
+    const { id: nodeId, selected } = finalProps;
+
+    useDebounceEffect(
+        () => {
+            setFinalProps(props);
+        },
+        [props],
+        { wait: 300 },
+    );
 
     // ---------- Render Handles ----------
-    const { when, otherwise } = props.data.parameters?.choice || {};
+    const { when, otherwise } = finalProps.data.parameters?.choice || {};
     const whenList = useMemo(
         () =>
             when ||
@@ -63,7 +73,7 @@ const IfElseNode: React.FC<NodeProps<IfElseNode>> = props => {
             <Handle
                 type="target"
                 position={Position.Left}
-                nodeProps={props}
+                nodeProps={finalProps}
                 style={{ top: DEFAULT_NODE_HEIGHT / 2 }}
             />,
         ];
@@ -79,7 +89,7 @@ const IfElseNode: React.FC<NodeProps<IfElseNode>> = props => {
                     id={`${block.id}`}
                     type="source"
                     position={Position.Right}
-                    nodeProps={props}
+                    nodeProps={finalProps}
                     style={{ top: calculateHandleTop(index, preConditionCount) }}
                 />,
             );
@@ -94,7 +104,7 @@ const IfElseNode: React.FC<NodeProps<IfElseNode>> = props => {
                 id={`${otherwiseItem.id}`}
                 type="source"
                 position={Position.Right}
-                nodeProps={props}
+                nodeProps={finalProps}
                 style={{ top: calculateHandleTop(whenList?.length || 1, preConditionCount) - 1 }}
             />,
         );
@@ -105,7 +115,7 @@ const IfElseNode: React.FC<NodeProps<IfElseNode>> = props => {
     const { getUpstreamNodeParams } = useWorkflow();
     const { getNode, getEdges, setEdges } = useReactFlow<WorkflowNode, WorkflowEdge>();
     const updateNodeInternals = useUpdateNodeInternals();
-    const [, nodeParams] = getUpstreamNodeParams(getNode(props.id));
+    const [, nodeParams] = getUpstreamNodeParams(getNode(finalProps.id));
 
     // Replace the temp handle id to real id; Remove the useless edges;
     useEffect(() => {
@@ -159,7 +169,7 @@ const IfElseNode: React.FC<NodeProps<IfElseNode>> = props => {
             title={getIntlText(nodeConfig.labelIntlKey)}
             icon={nodeConfig.icon}
             iconBgColor={nodeConfig.iconBgColor}
-            nodeProps={props}
+            nodeProps={finalProps}
             handles={handles}
         >
             <div className="ms-condition-block-root">
