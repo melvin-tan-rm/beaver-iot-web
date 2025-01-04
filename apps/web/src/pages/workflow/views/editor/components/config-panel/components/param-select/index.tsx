@@ -10,7 +10,7 @@ import {
 import { isNil } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { KeyboardArrowDownIcon } from '@milesight/shared/src/components';
-import { Tooltip } from '@/components';
+import { Empty, Tooltip } from '@/components';
 import useWorkflow from '@/pages/workflow/views/editor/hooks/useWorkflow';
 import './style.less';
 
@@ -29,22 +29,38 @@ const ParamSelect: React.FC<ParamSelectProps> = ({ label, required, disabled, ..
 
     const renderOptions = useCallback(() => {
         const [data] = getUpstreamNodeParams();
+        const result: React.ReactNode[] = (data || [])
+            .map(item => {
+                if (!item.outputs.length) return null;
 
-        // TODO: render Empty component when the options is empty
-        return data?.map(item => [
-            <ListSubheader className="ms-param-select-option-groupname" key={item.nodeId}>
-                {item.nodeType}
-            </ListSubheader>,
-            item.outputs.map(output => (
-                <MenuItem className="ms-param-select-option" key={output.key} value={output.key}>
-                    <div className="ms-param-select-item">
-                        <Tooltip autoEllipsis className="name" title={output.name} />
-                        <span className="type">{output.type}</span>
-                    </div>
-                </MenuItem>
-            )),
-        ]);
-    }, [getUpstreamNodeParams]);
+                return [
+                    <ListSubheader className="ms-param-select-option-groupname" key={item.nodeId}>
+                        {item.nodeType}
+                    </ListSubheader>,
+                    item.outputs.map(output => (
+                        <MenuItem
+                            className="ms-param-select-option"
+                            key={output.key}
+                            value={output.key}
+                        >
+                            <div className="ms-param-select-item">
+                                <Tooltip autoEllipsis className="name" title={output.name} />
+                                <span className="divider">/</span>
+                                <Tooltip autoEllipsis className="type" title={output.type} />
+                                {/* <span className="type">{output.type}</span> */}
+                            </div>
+                        </MenuItem>
+                    )),
+                ];
+            })
+            .filter(Boolean);
+
+        if (!result.length) {
+            result.push(<Empty size="small" text={getIntlText('common.label.empty')} />);
+        }
+
+        return result;
+    }, [getIntlText, getUpstreamNodeParams]);
 
     return (
         <div className="ms-param-select">
