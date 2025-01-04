@@ -48,7 +48,6 @@
     "workflow.editor.form_param_expire_time": "Expire Time",
     "workflow.editor.form_param_timer_type_once": "Single Execution",
     "workflow.editor.form_param_timer_type_cycle": "Cycle Execution",
-    "workflow.editor.form_param_timer_period_everyday": "Every Day",
     "workflow.editor.form_param_timer_period_monday": "Monday",
     "workflow.editor.form_param_timer_period_tuesday": "Tuesday",
     "workflow.editor.form_param_timer_period_wednesday": "Wednesday",

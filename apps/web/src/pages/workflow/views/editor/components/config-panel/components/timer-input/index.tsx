@@ -57,9 +57,9 @@ const periodConfigs: Record<
         labelIntlKey: string;
     }
 > = {
-    EVERYDAY: {
-        labelIntlKey: 'workflow.editor.form_param_timer_period_everyday',
-    },
+    // EVERYDAY: {
+    //     labelIntlKey: 'workflow.editor.form_param_timer_period_everyday',
+    // },
     MONDAY: {
         labelIntlKey: 'workflow.editor.form_param_timer_period_monday',
     },
@@ -176,13 +176,18 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                                     </InputLabel>
                                     <Select
                                         notched
+                                        multiple
                                         labelId="time-input-period-label"
                                         label={getIntlText('workflow.editor.form_param_timer_type')}
-                                        value={item.daysOfWeek?.[0] || ''}
+                                        value={item.daysOfWeek || []}
                                         onChange={e => {
+                                            const { value } = e.target;
+                                            const daysOfWeek = Array.isArray(value)
+                                                ? value
+                                                : value.split(',');
                                             replace(index, {
                                                 ...item,
-                                                daysOfWeek: [e.target.value as TimePeriodType],
+                                                daysOfWeek: daysOfWeek as TimePeriodType[],
                                             });
                                         }}
                                     >

@@ -101,7 +101,6 @@ declare type TriggerNodeDataType = BaseNodeDataType<{
 }>;
 
 declare type TimePeriodType =
-    | 'EVERYDAY'
     | 'MONDAY'
     | 'TUESDAY'
     | 'WEDNESDAY'
