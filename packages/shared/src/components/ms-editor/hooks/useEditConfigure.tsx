@@ -1,16 +1,18 @@
 import { useMemo } from 'react';
-import { TableNodes } from '../nodes';
+import type { Klass, LexicalNode } from 'lexical';
+
+import { TableNodes, HeadingNode } from '../nodes';
 import { NAMESPACE } from '../constant';
 import { EditorTheme } from '../themes';
 
 /**
- * 编辑器全局配置
+ * editor global configuration
  */
 export const useEditConfigure = () => {
     return useMemo(() => {
         return {
             namespace: NAMESPACE,
-            nodes: [...TableNodes],
+            nodes: [...TableNodes, HeadingNode] as Array<Klass<LexicalNode>>,
             onError(error: Error) {
                 throw error;
             },

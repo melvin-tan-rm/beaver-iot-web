@@ -11,6 +11,28 @@
     border: @border-base;
     border-radius: @border-radius-xs;
 
+    h1 {
+        display: block;
+        font-size: @font-size-6;
+        font-weight: @font-weight-bold;
+        color: var(--text-color-primary);
+        .line-height(@font-size-6);
+    }
+
+    h2 {
+        display: block;
+        font-size: @font-size-xxl;
+        font-weight: @font-weight-bold;
+        color: var(--text-color-primary);
+        .line-height(@font-size-xxl);
+    }
+
+    h3 {
+        font-size: @font-size-lg;
+        color: var(--text-color-primary);
+        .line-height(@font-size-lg);
+    }
+
     &--readonly {
         background-color: var(--body-background);
     }

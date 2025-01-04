@@ -8,31 +8,38 @@ import {
 } from 'lexical';
 import { $getSelectionStyleValueForProperty, $patchStyleText } from '@lexical/selection';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { mergeRegister } from '@lexical/utils';
 import { DEFAULT_FONT_SIZE } from '../constant';
 
 export const useFontSize = () => {
     const [editor] = useLexicalComposerContext();
     const [fontSize, setFontSize] = useState<number>(DEFAULT_FONT_SIZE);
 
-    /** 下拉切换时 */
+    /** font size menu on change */
     const onChange = useMemoizedFn((value: React.Key) => {
         updateFontSizeInSelection(`${value}px`);
     });
-    /** 修改内容字号的主要函数 */
+
+    /** update editor status */
     const updateFontSizeInSelection = useMemoizedFn((newFontSize: string) => {
         editor.update(() => {
             if (!editor.isEditable()) return;
 
             const selection = $getSelection();
+
             if (selection === null) return;
 
             $patchStyleText(selection, {
                 'font-size': newFontSize,
             });
+
+            /** manual to focus the editor */
+            setTimeout(() => {
+                editor.focus();
+            }, 150);
         });
     });
 
-    /** 更新工具栏的显示 */
     const $updateToolbar = useMemoizedFn(() => {
         const selection = $getSelection();
         if (!$isRangeSelection(selection)) {
@@ -40,7 +47,6 @@ export const useFontSize = () => {
             return;
         }
 
-        /** 获取当前字号大小 */
         const currentFontSize = $getSelectionStyleValueForProperty(
             selection,
             'font-size',
@@ -49,21 +55,26 @@ export const useFontSize = () => {
         setFontSize(currentFontSize ? Number(currentFontSize.slice(0, -2)) : DEFAULT_FONT_SIZE);
     });
     useEffect(() => {
-        /** 监听字号变化，变化时，更新工具栏 */
-        return editor.registerCommand(
-            SELECTION_CHANGE_COMMAND,
-            () => {
-                $updateToolbar();
-                return false;
-            },
-            COMMAND_PRIORITY_CRITICAL,
+        /** listener change */
+        return mergeRegister(
+            editor.registerUpdateListener(({ editorState }) => {
+                editorState.read(() => {
+                    $updateToolbar();
+                });
+            }),
+            editor.registerCommand(
+                SELECTION_CHANGE_COMMAND,
+                () => {
+                    $updateToolbar();
+                    return false;
+                },
+                COMMAND_PRIORITY_CRITICAL,
+            ),
         );
     }, [editor, $updateToolbar]);
 
     return {
-        /** 字号 */
         fontSize,
-        /** 下拉切换时 */
         onChange,
     };
 };

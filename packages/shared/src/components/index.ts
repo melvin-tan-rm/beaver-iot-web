@@ -14,4 +14,9 @@ export * from './icons';
 export * as MUIForm from './mui-form';
 export { default as LoadingButton } from './loading-button';
 export { default as MuiSelect } from './select';
-export { MSRichtextEditor } from './ms-editor';
+export {
+    MSRichtextEditor,
+    type EditorHandlers,
+    type MSEditor,
+    type IEditorProps,
+} from './ms-editor';

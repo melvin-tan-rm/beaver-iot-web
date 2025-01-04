@@ -1,11 +1,15 @@
 import { useMemo } from 'react';
-import { FontSize, FontColor, TextFormat, TextAlign, TablePart } from '../components';
+import { FontSize, FontColor, TextFormat, TextAlign, TablePart, BlockFormat } from '../components';
 import type { IEditorProps, TextAlignItemConfig, TextFormatItemConfig } from '../../../types';
 
 type IProps = Pick<IEditorProps, 'editorConfig'>;
 export const useGroup = ({ editorConfig }: IProps) => {
     const groupList = useMemo(() => {
         return [
+            {
+                type: 'blockFormat',
+                Component: BlockFormat,
+            },
             {
                 type: 'fontSize',
                 Component: FontSize,

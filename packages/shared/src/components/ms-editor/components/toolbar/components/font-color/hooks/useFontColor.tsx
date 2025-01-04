@@ -8,6 +8,7 @@ import {
 } from 'lexical';
 import { $getSelectionStyleValueForProperty, $patchStyleText } from '@lexical/selection';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { mergeRegister } from '@lexical/utils';
 import { DEFAULT_FONT_COLOR } from '../constant';
 
 export const useFontColor = () => {
@@ -28,6 +29,11 @@ export const useFontColor = () => {
             $patchStyleText(selection, {
                 color: newFontColor,
             });
+
+            /** manual to focus the editor */
+            setTimeout(() => {
+                editor.focus();
+            }, 150);
         });
     });
 
@@ -48,14 +54,21 @@ export const useFontColor = () => {
         setFontColor(currentFontColor);
     });
     useEffect(() => {
-        /** 监听字体颜色变化，变化时，更新工具栏 */
-        return editor.registerCommand(
-            SELECTION_CHANGE_COMMAND,
-            () => {
-                $updateToolbar();
-                return false;
-            },
-            COMMAND_PRIORITY_CRITICAL,
+        /** listener change */
+        return mergeRegister(
+            editor.registerUpdateListener(({ editorState }) => {
+                editorState.read(() => {
+                    $updateToolbar();
+                });
+            }),
+            editor.registerCommand(
+                SELECTION_CHANGE_COMMAND,
+                () => {
+                    $updateToolbar();
+                    return false;
+                },
+                COMMAND_PRIORITY_CRITICAL,
+            ),
         );
     }, [editor, $updateToolbar]);
 
