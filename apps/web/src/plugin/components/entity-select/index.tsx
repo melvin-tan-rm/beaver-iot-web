@@ -38,6 +38,7 @@ export default React.memo((props: IProps) => {
     );
     return (
         <EntitySelect
+            fieldName="entityId"
             entityType={entityType}
             entityValueType={entityValueTypes || entityValueType}
             entityAccessMod={entityAccessMods || entityAccessMod}
