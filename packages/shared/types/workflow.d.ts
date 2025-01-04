@@ -167,11 +167,12 @@ declare type IfElseNodeDataType = BaseNodeDataType<{
             id: ApiKey;
             logicOperator: WorkflowLogicOperator;
             /**
-             * 表达式类型（默认 `condition`）
-             * @param mvel mvel 表达式
-             * @param condition 条件表达式
+             * Expression Type (Default `condition`)
+             * @param mvel MVEL Expression
+             * @param condition Conditional Expression
+             * @param {string} Custom Language
              */
-            expressionType: 'mvel' | 'condition';
+            expressionType: 'mvel' | 'condition' | string;
             conditions: {
                 id: ApiKey;
                 expressionValue?:
@@ -181,7 +182,7 @@ declare type IfElseNodeDataType = BaseNodeDataType<{
                           operator?: WorkflowFilterOperator;
                           value?: string;
                       };
-                /** 表达式备注 */
+                /** Remark */
                 expressionDescription?: string;
             }[];
         }[];

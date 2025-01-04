@@ -294,7 +294,7 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
         });
 
         return result;
-    }, [nodeConfigs]);
+    }, [nodeConfigs, readonly]);
 
     return !nodeType ? [] : formConfigs[nodeType] || [];
 };
