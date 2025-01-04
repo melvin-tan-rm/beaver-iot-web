@@ -10,7 +10,6 @@ import type {
 } from '../types';
 
 export const useServerNestedData = ({ traceData, workflowData }: ActionLogProps) => {
-    console.log('traceData >>>', traceData);
     /** get unique id */
     const getUniqueId = useCallback((trace: AccordionLog) => {
         const { messageId, nodeId } = trace || {};
