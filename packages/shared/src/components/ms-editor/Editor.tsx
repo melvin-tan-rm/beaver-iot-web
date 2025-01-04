@@ -17,7 +17,17 @@ import type { EditorHandlers, IEditorProps } from './types';
 import './style.less';
 
 export const LexicalEditor = forwardRef<EditorHandlers, IEditorProps>((props, ref) => {
-    const { mode, placeholder, editorConfig, onSave, onCancel, renderOperator, autoFocus } = props;
+    const {
+        mode,
+        placeholder,
+        editorConfig,
+        onSave,
+        onCancel,
+        renderOperator,
+        autoFocus,
+        renderToolbar,
+        extraToolbar,
+    } = props;
     const { toolbar = true, plugin } = editorConfig || {};
     const { table: tablePlugin } = plugin || {};
     const [isEditable, onEditableChange] = useEditable(props);
@@ -39,7 +49,7 @@ export const LexicalEditor = forwardRef<EditorHandlers, IEditorProps>((props, re
                 'ms-editor-container--readonly': !isEditable,
             })}
         >
-            {!!toolbar && (
+            {!!toolbar && !renderToolbar && (
                 <Toolbar
                     mode={mode}
                     isEditable={isEditable}
@@ -48,8 +58,13 @@ export const LexicalEditor = forwardRef<EditorHandlers, IEditorProps>((props, re
                     onCancel={onCancel}
                     editorConfig={editorConfig}
                     renderOperator={renderOperator}
+                    extraToolbar={extraToolbar}
                 />
             )}
+
+            {/* custom render toolbar */}
+            {renderToolbar}
+
             <div className="ms-editor-inner">
                 <RichTextPlugin
                     contentEditable={

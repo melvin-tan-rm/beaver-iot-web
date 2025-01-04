@@ -40,7 +40,7 @@ export default React.memo(({ disabled, items }: IProps) => {
         <>
             {fontBold && (
                 <ToolbarPart isActive={isBold} disabled={disabled} onClick={() => onClick('bold')}>
-                    <FormatBoldIcon className="ms-toolbar__icon" />
+                    <FormatBoldIcon color="action" className="ms-toolbar__icon" />
                 </ToolbarPart>
             )}
             {fontItalic && (
@@ -49,7 +49,11 @@ export default React.memo(({ disabled, items }: IProps) => {
                     disabled={disabled}
                     onClick={() => onClick('italic')}
                 >
-                    <FormatItalicIcon type="icon-tilt" className="ms-toolbar__icon" />
+                    <FormatItalicIcon
+                        color="action"
+                        type="icon-tilt"
+                        className="ms-toolbar__icon"
+                    />
                 </ToolbarPart>
             )}
             {fontUnderline && (
@@ -58,7 +62,7 @@ export default React.memo(({ disabled, items }: IProps) => {
                     disabled={disabled}
                     onClick={() => onClick('underline')}
                 >
-                    <FormatUnderlinedIcon className="ms-toolbar__icon" />
+                    <FormatUnderlinedIcon color="action" className="ms-toolbar__icon" />
                 </ToolbarPart>
             )}
             {fontStrikethrough && (
@@ -67,7 +71,7 @@ export default React.memo(({ disabled, items }: IProps) => {
                     disabled={disabled}
                     onClick={() => onClick('strikethrough')}
                 >
-                    <FormatStrikethroughIcon className="ms-toolbar__icon" />
+                    <FormatStrikethroughIcon color="action" className="ms-toolbar__icon" />
                 </ToolbarPart>
             )}
         </>

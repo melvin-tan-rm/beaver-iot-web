@@ -1,9 +1,12 @@
 import React from 'react';
 import { useControllableValue } from 'ahooks';
+import { IconButton } from '@mui/material';
 
-import { CodeEditor } from '@/components';
+import { MSRichtextEditor, OpenInFullIcon } from '@milesight/shared/src/components';
+import { useI18n } from '@milesight/shared/src/hooks';
 
-import { ContentHeader } from './components';
+import { RichTextModal } from './components';
+import { useEmailContent } from './hooks';
 
 import styles from './style.module.less';
 
@@ -19,18 +22,41 @@ export interface EmailContentProps {
 const EmailContent: React.FC<EmailContentProps> = props => {
     const { value, onChange } = props;
 
-    const [content, setContent] = useControllableValue({
+    const { getIntlText } = useI18n();
+    const [content, setContent] = useControllableValue<string>({
         value: value || '',
         onChange,
     });
+    const { modalVisible, showModal, hiddenModal, editorRef, smallEditorContent } =
+        useEmailContent(content);
+
+    const renderToolbar = () => {
+        return (
+            <div className={styles['email-content__toolbar']}>
+                <div className={styles.text}>{getIntlText('common.label.content')}</div>
+                <IconButton onClick={showModal}>
+                    <OpenInFullIcon />
+                </IconButton>
+            </div>
+        );
+    };
 
     return (
         <div className={styles['email-content']}>
-            <CodeEditor
-                editorLang="text"
-                value={content}
-                renderHeader={ContentHeader}
-                onChange={setContent}
+            <MSRichtextEditor
+                ref={editorRef}
+                isEditable
+                editorConfig={{
+                    toolbar: false,
+                }}
+                renderToolbar={renderToolbar()}
+            />
+            <RichTextModal
+                data={smallEditorContent}
+                visible={modalVisible}
+                onCancel={hiddenModal}
+                onOk={hiddenModal}
+                onSave={setContent}
             />
         </div>
     );

@@ -20,6 +20,10 @@ export interface IEditorProps {
     renderOperator?: (node: React.ReactNode) => React.ReactNode;
     /** whether auto focus */
     autoFocus?: boolean;
+    /** render custom toolbar */
+    renderToolbar?: React.ReactNode;
+    /** extra custom toolbar */
+    extraToolbar?: React.ReactNode;
 }
 export interface EditorConfig {
     /** toolbar config */
@@ -94,6 +98,10 @@ export interface EditorHandlers {
     /** get editor html content result */
     getEditorHtml: () => Promise<string>;
     setEditorContent: (content: string | SerializedEditorState) => void;
+    /** insert text content to current selection */
+    insertTextContent: (text: string) => void;
+    /** HTML -> Lexical */
+    setEditorHtmlContent: (htmlString: string) => void;
 }
 
 /** toolbar props */

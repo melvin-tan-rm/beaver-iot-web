@@ -1,7 +1,8 @@
 import { useMemoizedFn } from 'ahooks';
-import { SerializedEditorState } from 'lexical';
-import { $generateHtmlFromNodes } from '@lexical/html';
+import { SerializedEditorState, $getSelection, $getRoot, $insertNodes } from 'lexical';
+import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+
 import type { EditorHandlers, IEditorProps } from '../types';
 
 type IProps = Pick<IEditorProps, 'onEditableChange'>;
@@ -31,11 +32,77 @@ export const useTransmit = ({ onEditableChange }: IProps) => {
         editor.setEditorState(editor.parseEditorState(content));
     };
 
+    /**
+     * insert to text to current selection
+     */
+    const insertTextContent = (text: string) => {
+        editor.update(() => {
+            if (!editor.isEditable()) return;
+
+            const selection = $getSelection();
+
+            if (selection === null) return;
+
+            selection.insertText(text);
+        });
+    };
+
+    /**
+     * HTML -> Lexical
+     */
+    const setEditorHtmlContent = (htmlString: string) => {
+        editor.update(() => {
+            const root = $getRoot();
+
+            /**
+             * if the html string is empty then it will be cleared.
+             */
+            if (!htmlString) {
+                /**
+                 * Select the root
+                 */
+                root.select();
+
+                /** clear all */
+                root.clear();
+                return;
+            }
+
+            /**
+             *  In the browser you can use the native DOMParser API to parse the HTML string.
+             */
+            const parser = new DOMParser();
+            const dom = parser.parseFromString(htmlString, 'text/html');
+            if (!dom) return;
+
+            /**
+             *  Once you have the DOM instance it's easy to generate LexicalNodes.
+             */
+            const nodes = $generateNodesFromDOM(editor, dom);
+            if (!nodes) return;
+
+            /**
+             * Select the root
+             */
+            root.select();
+
+            /** clear all */
+            root.clear();
+
+            /**
+             * Insert them at a selection
+             */
+            $insertNodes(nodes);
+        });
+    };
+
     return useMemoizedFn(
         (): EditorHandlers => ({
             getEditor,
             getEditorHtml,
             setEditorContent,
+            insertTextContent,
+            setEditorHtmlContent,
         }),
     );
 };

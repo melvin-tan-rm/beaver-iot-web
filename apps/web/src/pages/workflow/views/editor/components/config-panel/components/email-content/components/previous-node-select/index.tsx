@@ -30,7 +30,13 @@ const PreviousNodeSelect: React.FC<PreviousNodeSelectProps> = props => {
 
     return (
         <div>
-            <IconButton color="primary" onClick={handleClick}>
+            <IconButton
+                color="default"
+                onClick={handleClick}
+                sx={{
+                    borderRadius: '4px',
+                }}
+            >
                 <AddCircleIcon />
             </IconButton>
             <Popover
@@ -40,11 +46,11 @@ const PreviousNodeSelect: React.FC<PreviousNodeSelectProps> = props => {
                 onClose={handleClose}
                 anchorOrigin={{
                     vertical: 'bottom',
-                    horizontal: 'right',
+                    horizontal: 'left',
                 }}
                 transformOrigin={{
                     vertical: 'top',
-                    horizontal: 'right',
+                    horizontal: 'left',
                 }}
             >
                 <UpstreamNodeList

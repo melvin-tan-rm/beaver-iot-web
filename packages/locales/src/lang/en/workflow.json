@@ -83,6 +83,7 @@
     "workflow.email.label_smtp_config_encryption_method": "Encryption Method",
     "workflow.email.label_smtp_config_encryption_none": "None",
     "workflow.email.label_smtp_config_encryption_start_tls": "StartTLS",
+    "workflow.email.content_modal_title": "Edit Email Content",
     "workflow.editor.valid.condition_not_setup": "Condition not setup",
     "workflow.label.node_id": "Node ID",
     "workflow.label.abnormal_edge_tip": "节点嵌套错误，请检查重试",

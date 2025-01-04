@@ -18,6 +18,7 @@ type IProps = Pick<
     | 'mode'
     | 'editorConfig'
     | 'renderOperator'
+    | 'extraToolbar'
 >;
 const Divider = () => <div className="ms-toolbar__divider" />;
 export default function ToolbarPlugin({
@@ -28,6 +29,7 @@ export default function ToolbarPlugin({
     onSave,
     onCancel,
     renderOperator,
+    extraToolbar,
 }: IProps) {
     const { getIntlText } = useI18n();
     const [editor] = useLexicalComposerContext();
@@ -108,6 +110,7 @@ export default function ToolbarPlugin({
                                     </Fragment>
                                 );
                             })}
+                            {extraToolbar}
                         </div>
                         {hasReadOnly(mode) && (
                             <div className="ms-toolbar__operator">
