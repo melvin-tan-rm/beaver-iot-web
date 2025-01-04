@@ -11,12 +11,12 @@ import {
 
 type Props<T extends ApiKey> = {
     /**
-     * 下拉选项
+     * Drop-down option
      */
     options: OptionsProps<T>[];
     /**
-     * 自定义下拉选项
-     * @returns 返回自定义下拉选项内容
+     * Custom drop-down option
+     * @returns Return to the customized drop-down option content
      */
     renderOptions?: (options: (OptionsProps<T> & { description?: string })[]) => any[];
     /**
@@ -30,7 +30,7 @@ export type SelectProps<T extends ApiKey> = Props<T> & MuiSelectProps<T>;
 const Select = <T extends ApiKey = ApiKey>(props: SelectProps<T>) => {
     const { options, renderOptions, style, label, formControlProps, ...rest } = props;
 
-    // 转换下拉选项数据
+    // Conversion of down pull option data on of down pull option data
     const getMenuItems = useMemo(() => {
         const list: OptionsProps[] = [];
         const loopItem = (item: OptionsProps): any => {

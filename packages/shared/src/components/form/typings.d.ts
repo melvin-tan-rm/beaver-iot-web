@@ -30,7 +30,7 @@ export interface renderType {
 export interface FormItemsProps {
     name: Path<T>;
     render: any;
-    customRender?: () => React.ReactNode; // 自定义渲染其他其他内容
+    customRender?: () => React.ReactNode; // Customize rendered other content
     multiple?: number;
     multipleIndex?: number;
     rules?: rulesType;
@@ -38,8 +38,8 @@ export interface FormItemsProps {
     title?: string;
     label?: string;
     defaultValue?: any;
-    children?: FormItemsProps[]; // 一行多个子表单
-    col?: number; // 布局列数
+    children?: FormItemsProps[]; // One line of multiple sub lines
+    col?: number; // Number of layouts
 }
 
 export type UseFormItemsType = Omit<FormItemsProps, 'render'>;

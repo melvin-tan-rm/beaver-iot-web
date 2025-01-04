@@ -80,7 +80,7 @@ const Forms = <T extends FieldValues>(props: formProps<T>, ref: any) => {
         }
     };
 
-    /** 暴露给父组件的方法 */
+    /** How to expose to the father's component */
     useImperativeHandle(ref, () => ({
         handleSubmit: handleSubmit(onSubmit),
     }));
