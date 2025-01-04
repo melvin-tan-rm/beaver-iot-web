@@ -148,12 +148,14 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                 <DateTimePicker
                     ampm={false}
                     label={getIntlText('workflow.editor.form_param_execution_time')}
-                    value={data.executionEpochSecond ? getTime(data.executionEpochSecond) : null}
+                    value={
+                        data.executionEpochSecond ? getTime(data.executionEpochSecond * 1000) : null
+                    }
                     sx={{ width: '100%' }}
                     onChange={time => {
                         setData({
                             ...data,
-                            executionEpochSecond: getTime(time, true).valueOf(),
+                            executionEpochSecond: getTime(time, true).unix(),
                             rules: undefined,
                             expirationEpochSecond: undefined,
                         });
@@ -232,14 +234,16 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                         ampm={false}
                         label={getIntlText('workflow.editor.form_param_expire_time')}
                         value={
-                            data.expirationEpochSecond ? getTime(data.expirationEpochSecond) : null
+                            data.expirationEpochSecond
+                                ? getTime(data.expirationEpochSecond * 1000)
+                                : null
                         }
                         sx={{ width: '100%' }}
                         onChange={time => {
                             setData({
                                 ...data,
                                 executionEpochSecond: undefined,
-                                expirationEpochSecond: getTime(time, true).valueOf(),
+                                expirationEpochSecond: getTime(time, true).unix(),
                             });
                         }}
                     />
