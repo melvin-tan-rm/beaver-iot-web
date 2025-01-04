@@ -101,7 +101,6 @@ const TestButton: React.FC<Props> = ({ disabled }) => {
             updateNodesStatus(null);
             switch (type) {
                 case 'test': {
-                    console.log(1111, record);
                     setLogPanelMode('testLog');
                     setLogDetail({ traceInfos: record.trace_infos!, flowData: record.flow_data });
                     break;
@@ -149,7 +148,6 @@ const TestButton: React.FC<Props> = ({ disabled }) => {
         ],
     );
 
-    console.log({ testLogs });
     // ---------- Tab ----------
     const [tabKey, setTabKey] = useState<LogType>(DEFAULT_TAB_KEY);
     const tabs = useMemo(() => {

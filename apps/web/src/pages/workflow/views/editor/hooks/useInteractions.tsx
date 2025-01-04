@@ -19,6 +19,7 @@ import {
     DEFAULT_NODE_HEIGHT,
     EDGE_TYPE_ADDABLE,
 } from '../constants';
+import useFlowStore from '../store';
 import useWorkflow from './useWorkflow';
 
 type RFProps = ReactFlowProps<WorkflowNode, WorkflowEdge>;
@@ -60,6 +61,7 @@ const useInteractions = () => {
         fitView,
         flowToScreenPosition,
     } = useReactFlow<WorkflowNode, WorkflowEdge>();
+    const isLogMode = useFlowStore(state => state.isLogMode());
     const { checkParallelLimit, checkNestedParallelLimit } = useWorkflow();
     const { width: bodyWidth, height: bodyHeight } = useSize(document.querySelector('body')) || {};
     const { getIntlText } = useI18n();
@@ -86,7 +88,7 @@ const useInteractions = () => {
                     node.type === 'trigger' || node.type === 'timer' || node.type === 'listener',
             );
 
-            if (hasEntryNode) return false;
+            if (hasEntryNode || isLogMode) return false;
 
             if (nodes.length) {
                 let result = false;
@@ -103,7 +105,7 @@ const useInteractions = () => {
 
             return true;
         },
-        [confirm, getIntlText],
+        [isLogMode, confirm, getIntlText],
     );
 
     // Handle edge mouse enter

@@ -21,12 +21,17 @@ export interface ControlsProps {
      * Maximum zoom
      */
     maxZoom?: number;
+
+    /**
+     * Whether disable add button
+     */
+    addable?: boolean;
 }
 
 /**
  * Workflow Editor Controls
  */
-const Controls: React.FC<ControlsProps> = ({ minZoom, maxZoom }) => {
+const Controls: React.FC<ControlsProps> = ({ minZoom, maxZoom, addable = true }) => {
     const nodes = useNodes();
     const { zoom } = useViewport();
     const { zoomIn, zoomOut, fitView } = useReactFlow();
@@ -58,7 +63,7 @@ const Controls: React.FC<ControlsProps> = ({ minZoom, maxZoom }) => {
                     </ButtonGroup>
                 </Paper>
                 <Paper elevation={0}>
-                    <Button sx={{ minWidth: 'auto' }} onClick={handleClick}>
+                    <Button disabled={!addable} sx={{ minWidth: 'auto' }} onClick={handleClick}>
                         <AddCircleIcon sx={{ fontSize: 20 }} />
                     </Button>
                     <NodeMenu

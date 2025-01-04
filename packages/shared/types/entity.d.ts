@@ -123,6 +123,8 @@ declare interface EntityData {
     entity_access_mod: EntityAccessMode;
     /** 唯一表示 */
     identifier: string;
+    /** 父实体名称 */
+    entity_parent_name?: string;
 }
 
 /**

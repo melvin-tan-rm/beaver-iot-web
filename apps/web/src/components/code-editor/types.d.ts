@@ -7,7 +7,7 @@ import { type SelectProps } from '@milesight/shared/src/components';
 /** Supported languages for the code editor. */
 export type EditorSupportLang =
     | 'groovy'
-    | 'javascript'
+    | 'js'
     | 'python'
     | 'mvel'
     | 'json'

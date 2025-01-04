@@ -17,23 +17,27 @@
 
         .@{mui-prefix}Chip-label {
             display: flex;
+            align-items: center;
+            width: 100px;
 
             .name {
-                max-width: 120px;
+                flex: 1;
+                width: 0;
+                .text-size(@font-size-base);
+            }
+
+            .divider {
+                display: block;
+                margin: 0 @margin-xxs;
+                color: var(--text-color-secondary);
                 .text-size(@font-size-base);
             }
 
             .type {
+                flex: 1;
+                width: 0;
                 font-size: @font-size-sm;
                 color: var(--text-color-tertiary);
-
-                &::before {
-                    display: inline-block;
-                    margin: 0 @margin-xxs;
-                    color: var(--text-color-secondary);
-                    content: '/';
-                    .text-size(@font-size-base);
-                }
             }
         }
     }

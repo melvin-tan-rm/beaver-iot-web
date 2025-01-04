@@ -5,11 +5,11 @@ import { useI18n } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 import {
     isEmpty,
-    isRangeValue,
     isMaxLength,
     isURL,
     isMatches,
     isEmail,
+    isRangeLength,
 } from '@milesight/shared/src/utils/validators';
 import { EDGE_TYPE_ADDABLE } from '../constants';
 import useFlowStore from '../store';
@@ -94,22 +94,28 @@ const useValidate = () => {
             nodeName: {
                 checkRequired,
                 checkRangeLength(value) {
-                    if (!isRangeValue(value, 1, 50)) return true;
-
-                    const message = getIntlText(ErrorIntlKey.rangeLength, {
-                        1: getIntlText('common.label.name'),
-                    });
-                    return message;
+                    if (value && !isRangeLength(value, 1, 50)) {
+                        const message = getIntlText(ErrorIntlKey.rangeLength, {
+                            1: getIntlText('common.label.name'),
+                            2: 1,
+                            3: 50,
+                        });
+                        return message;
+                    }
+                    return true;
                 },
             },
             nodeRemark: {
                 checkRangeLength(value) {
-                    if (!isEmpty(value) || !isRangeValue(value, 1, 1000)) return true;
-
-                    const message = getIntlText(ErrorIntlKey.rangeLength, {
-                        1: getIntlText('common.label.remark'),
-                    });
-                    return message;
+                    if (value && !isRangeLength(value || '', 1, 1000)) {
+                        const message = getIntlText(ErrorIntlKey.rangeLength, {
+                            1: getIntlText('common.label.remark'),
+                            2: 1,
+                            3: 1000,
+                        });
+                        return message;
+                    }
+                    return true;
                 },
             },
             // Check code.inputArguments and webhook.inputArguments

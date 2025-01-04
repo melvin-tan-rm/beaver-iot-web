@@ -49,6 +49,8 @@ export interface FlowStore {
 
     logDetailLoading?: boolean;
 
+    isLogMode: () => boolean;
+
     setSelectedNode: (node?: FlowStore['selectedNode']) => void;
 
     setNodeConfigs: (nodeConfigs: WorkflowAPISchema['getFlowNodes']['response']) => void;
@@ -73,10 +75,19 @@ export interface FlowStore {
 }
 
 const useFlowStore = create(
-    immer<FlowStore>(set => ({
+    immer<FlowStore>((set, get) => ({
         nodeConfigs: basicNodeConfigs,
 
         testLogs: [],
+
+        isLogMode: () => {
+            const { openLogPanel, logDetail, logPanelMode } = get();
+            return !!(
+                openLogPanel &&
+                logDetail &&
+                (logPanelMode === 'runLog' || logPanelMode === 'testLog')
+            );
+        },
 
         setSelectedNode: node => set({ selectedNode: node }),
 

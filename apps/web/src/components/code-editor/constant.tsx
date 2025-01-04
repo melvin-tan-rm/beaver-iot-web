@@ -6,7 +6,7 @@ export const editorLangOptions: {
     label: string;
 }[] = [
     {
-        value: 'javascript',
+        value: 'js',
         label: 'JavaScript',
     },
     {
@@ -27,7 +27,7 @@ export const editorLangOptions: {
     },
     {
         value: 'mvel',
-        label: 'mvel',
+        label: 'Mvel',
     },
     {
         value: 'markdown',

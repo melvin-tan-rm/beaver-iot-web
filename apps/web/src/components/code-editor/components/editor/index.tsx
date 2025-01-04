@@ -56,7 +56,7 @@ export const CodeEditorContent = forwardRef<ReactCodeMirrorRef, IProps>((props, 
                 return [java()];
             case 'python':
                 return [python()];
-            case 'javascript':
+            case 'js':
                 return [javascript()];
             case 'groovy':
                 return [StreamLanguage.define(groovy)];

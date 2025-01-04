@@ -10,6 +10,7 @@ import {
 import { Stack } from '@mui/material';
 import { AddCircleIcon } from '@milesight/shared/src/components';
 import NodeMenu from '../node-menu';
+import useFlowStore from '../../store';
 import './style.less';
 
 /**
@@ -38,6 +39,7 @@ const AddableEdge = ({
         targetY,
         targetPosition,
     });
+    const isLogMode = useFlowStore(state => state.isLogMode());
 
     // ---------- Add Button Click Callback ----------
     const { updateEdgeData } = useReactFlow<WorkflowNode, WorkflowEdge>();
@@ -50,7 +52,7 @@ const AddableEdge = ({
     return (
         <>
             <BaseEdge path={edgePath} markerEnd={markerEnd} style={style} />
-            {data?.$hovering && (
+            {data?.$hovering && !isLogMode && (
                 <EdgeLabelRenderer>
                     <div
                         className="ms-workflow-edge-label"
