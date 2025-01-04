@@ -117,12 +117,14 @@ declare type TimerNodeDataType = BaseNodeDataType<{
     timerSettings: {
         type: 'ONCE' | 'SCHEDULE';
         timezone: string;
+        /** Execution Time (Unit s) */
         executionEpochSecond?: number;
         rules?: {
             hour?: number;
             minute?: number;
             daysOfWeek?: TimePeriodType[];
         }[];
+        /** Expiration Time (Unit s) */
         expirationEpochSecond?: number;
     };
 }>;
