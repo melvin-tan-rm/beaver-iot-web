@@ -5,7 +5,6 @@ import { useI18n } from '@milesight/shared/src/hooks';
 import { Tooltip } from '@/components';
 import { AccordionCard, AccordionHeader, AccordionTree, ActionCodeEditor } from './components';
 import { useNestedData } from './hooks';
-import { ALPHABET_LIST } from './constant';
 import type { ActionLogProps, WorkflowNestNode } from './types';
 import './style.less';
 
@@ -17,26 +16,12 @@ function safeJsonParse(str: string) {
         return str;
     }
 }
-/**
- * get alphabet index
- * @example getAlphabetIndex(0) => A
- */
-const getAlphabetIndex = (index: number) => {
-    if (index < 0) return;
-
-    if (index > 26) {
-        const first = Math.floor(index / 26);
-        const second = index % 26;
-        return `${ALPHABET_LIST[first - 1]}${ALPHABET_LIST[second]}`;
-    }
-    return ALPHABET_LIST[index];
-};
-export default React.memo(({ traceData, workflowData }: ActionLogProps) => {
+export default React.memo(({ traceData, workflowData, logType }: ActionLogProps) => {
     const { getIntlText } = useI18n();
-    const { treeData } = useNestedData({ workflowData, traceData });
+    const { roots } = useNestedData({ workflowData, traceData, logType });
 
     const renderTreeData = useMemo(() => {
-        return treeData.map(data => {
+        return (roots || []).map(data => {
             const { attrs } = data || {};
             const { input, output } = attrs || {};
 
@@ -49,49 +34,16 @@ export default React.memo(({ traceData, workflowData }: ActionLogProps) => {
                 },
             };
         });
-    }, [treeData]);
+    }, [roots]);
 
     /** recursive rendering */
-    const renderAccordion = (
-        treeData: WorkflowNestNode[],
-        level: number = 0,
-        parallelTitle = '',
-    ) => {
-        // Existence of parallel branches
-        const parallelBranchCount = treeData.reduce((acc, cur) => {
-            if (cur.children?.length) acc++;
-            return acc;
-        }, 0);
-        const hasParallelBranch = parallelBranchCount > 1;
-        // current level
-        const currentLevel = level + 1;
-        // There are multiple parallel branches
-        let multiBranchInParallelIndex = -1;
-
-        return treeData.map((data, index) => {
+    const renderAccordion = (treeData: WorkflowNestNode[], title?: string) => {
+        return treeData.map(data => {
             const { children, attrs } = data || {};
-            const { input, output, errorMessage, $$token, $$isParallelBranch } = attrs || {};
-
-            // If there are child nodes, increment the index
-            if ((children?.length || 0) > 1) {
-                multiBranchInParallelIndex++;
-            }
-
-            const parallelLabel = hasParallelBranch
-                ? `${currentLevel}${getAlphabetIndex(multiBranchInParallelIndex)}`
-                : `${currentLevel}`;
-
-            // Text to be displayed
-            const parallelText = getIntlText('workflow.label.parallel', {
-                1: `-${parallelLabel}`,
-            });
-            const branchText = getIntlText('workflow.label.branch', {
-                1: `-${parallelTitle}-${getAlphabetIndex(index)}`,
-            });
+            const { input, output, errorMessage, $$token } = attrs || {};
 
             return (
                 <Fragment key={$$token}>
-                    {!$$isParallelBranch && <div className="ms-log-branch">{branchText}</div>}
                     <AccordionCard header={<AccordionHeader data={attrs} />}>
                         {errorMessage && (
                             <div className="ms-action-log__alert">
@@ -117,11 +69,24 @@ export default React.memo(({ traceData, workflowData }: ActionLogProps) => {
                             </div>
                         )}
                     </AccordionCard>
-                    {!!children?.length && (
-                        <AccordionTree header={parallelText}>
-                            {renderAccordion(children, currentLevel, parallelLabel)}
-                        </AccordionTree>
-                    )}
+                    {!!children?.length &&
+                        children.map((child, index) => {
+                            const currentIndex = index + 1;
+                            const parentTitle = title
+                                ? `${title}-${currentIndex}`
+                                : `${currentIndex}`;
+
+                            return (
+                                <AccordionTree
+                                    header={getIntlText('workflow.label.branch', {
+                                        1: `-${parentTitle}`,
+                                    })}
+                                    key={child.id}
+                                >
+                                    {renderAccordion([child], parentTitle)}
+                                </AccordionTree>
+                            );
+                        })}
                 </Fragment>
             );
         });
