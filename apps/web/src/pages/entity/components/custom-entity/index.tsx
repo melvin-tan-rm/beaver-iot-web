@@ -230,7 +230,7 @@ export default () => {
                         {getIntlText('entity.label.create_entity_only')}
                     </div>
                 </MenuItem>
-                <MenuItem
+                {/* <MenuItem
                     disabled
                     sx={{
                         '&.Mui-disabled': {
@@ -247,7 +247,7 @@ export default () => {
                         <CalculateIcon className="entity-add-menu-item-icon" />
                         {getIntlText('entity.label.create_entity_from_workflow')}
                     </div>
-                </MenuItem>
+                </MenuItem> */}
             </Menu>
         </div>
     );
