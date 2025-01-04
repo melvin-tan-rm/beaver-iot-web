@@ -37,60 +37,59 @@ export default React.memo(({ traceData, workflowData, logType }: ActionLogProps)
     }, [roots]);
 
     /** recursive rendering */
-    const renderAccordion = (treeData: WorkflowNestNode[], title?: string) => {
-        return treeData.map(data => {
-            const { children, attrs } = data || {};
-            const { input, output, errorMessage, $$token } = attrs || {};
+    const renderAccordion = (treeData: WorkflowNestNode, title?: string) => {
+        const { children, attrs } = treeData || {};
+        const { input, output, errorMessage } = attrs || {};
 
-            return (
-                <Fragment key={$$token}>
-                    <AccordionCard header={<AccordionHeader data={attrs} />}>
-                        {errorMessage && (
-                            <div className="ms-action-log__alert">
-                                <Alert severity="error" icon={false}>
-                                    <Tooltip autoEllipsis title={errorMessage} />
-                                </Alert>
-                            </div>
-                        )}
-                        {input && (
-                            <div className="ms-action-log__input">
-                                <ActionCodeEditor
-                                    value={input}
-                                    title={getIntlText('common.label.input')}
-                                />
-                            </div>
-                        )}
-                        {output && (
-                            <div className="ms-action-log__output">
-                                <ActionCodeEditor
-                                    value={output}
-                                    title={getIntlText('common.label.output')}
-                                />
-                            </div>
-                        )}
-                    </AccordionCard>
-                    {!!children?.length &&
-                        children.map((child, index) => {
-                            const currentIndex = index + 1;
-                            const parentTitle = title
-                                ? `${title}-${currentIndex}`
-                                : `${currentIndex}`;
+        return (
+            <Fragment>
+                <AccordionCard header={<AccordionHeader data={attrs} />}>
+                    {errorMessage && (
+                        <div className="ms-action-log__alert">
+                            <Alert severity="error" icon={false}>
+                                <Tooltip autoEllipsis title={errorMessage} />
+                            </Alert>
+                        </div>
+                    )}
+                    {input && (
+                        <div className="ms-action-log__input">
+                            <ActionCodeEditor
+                                value={input}
+                                title={getIntlText('common.label.input')}
+                            />
+                        </div>
+                    )}
+                    {output && (
+                        <div className="ms-action-log__output">
+                            <ActionCodeEditor
+                                value={output}
+                                title={getIntlText('common.label.output')}
+                            />
+                        </div>
+                    )}
+                </AccordionCard>
+                {!!children?.length &&
+                    (children.length === 1
+                        ? renderAccordion(children[0], title)
+                        : children.map((child, index) => {
+                              const parentTitle = title ? `${title}-${index + 1}` : `${index + 1}`;
 
-                            return (
-                                <AccordionTree
-                                    header={getIntlText('workflow.label.branch', {
-                                        1: `-${parentTitle}`,
-                                    })}
-                                    key={child.id}
-                                >
-                                    {renderAccordion([child], parentTitle)}
-                                </AccordionTree>
-                            );
-                        })}
-                </Fragment>
-            );
-        });
+                              return (
+                                  <AccordionTree
+                                      header={getIntlText('workflow.label.branch', {
+                                          1: `-${parentTitle}`,
+                                      })}
+                                      key={child?.attrs?.$$token}
+                                  >
+                                      {renderAccordion(child, parentTitle)}
+                                  </AccordionTree>
+                              );
+                          }))}
+            </Fragment>
+        );
     };
 
-    return <div className="ms-action-log">{renderAccordion(renderTreeData)}</div>;
+    return (
+        <div className="ms-action-log">{renderTreeData.map(child => renderAccordion(child))}</div>
+    );
 });
