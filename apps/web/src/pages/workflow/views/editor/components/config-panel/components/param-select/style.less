@@ -15,19 +15,18 @@
             .text-size(@font-size-base);
 
             .name {
+                flex: 1;
                 max-width: 60%;
             }
 
             .divider {
-                display: block;
-                margin: 0 @margin-xxs;
-                color: var(--text-color-secondary);
-                .text-size(@font-size-base);
+                display: none;
             }
 
             .type {
                 display: inline-block;
                 padding: 0 @padding-xxs;
+                margin-left: @margin-md;
                 color: var(--text-color-tertiary);
                 background-color: var(--component-background-gray);
                 border-radius: @border-radius-base;
@@ -51,7 +50,7 @@
         .@{prefix}-param-select-item {
             display: inline-flex;
             align-items: center;
-            width: 100%;
+            max-width: calc(100% - 40px);
             max-width: 120px;
             padding: 0 @padding-xs;
             background-color: var(--component-background-gray);
@@ -59,8 +58,8 @@
             .text-size(@font-size-base);
 
             .name {
-                flex: 1;
-                width: 0;
+                min-width: 8px;
+                max-width: calc(50% - 8px);
             }
 
             .divider {
@@ -69,8 +68,6 @@
             }
 
             .type {
-                flex: 1;
-                width: 0;
                 font-size: @font-size-sm;
                 color: var(--text-color-tertiary);
             }

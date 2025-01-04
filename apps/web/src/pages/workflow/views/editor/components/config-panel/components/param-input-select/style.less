@@ -13,29 +13,27 @@
         position: absolute;
         top: @margin-xs;
         left: @margin-sm;
+        max-width: calc(100% - 54px);
         border-radius: @border-radius-base;
 
         .@{mui-prefix}Chip-label {
             display: flex;
             align-items: center;
-            width: 100px;
+            width: 100%;
+            .text-size(@font-size-base);
 
             .name {
-                flex: 1;
-                width: 0;
-                .text-size(@font-size-base);
+                min-width: 8px;
+                max-width: calc(50% - 28px);
             }
 
             .divider {
                 display: block;
                 margin: 0 @margin-xxs;
                 color: var(--text-color-secondary);
-                .text-size(@font-size-base);
             }
 
             .type {
-                flex: 1;
-                width: 0;
                 font-size: @font-size-sm;
                 color: var(--text-color-tertiary);
             }

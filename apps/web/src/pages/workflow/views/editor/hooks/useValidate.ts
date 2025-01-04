@@ -216,6 +216,10 @@ const useValidate = () => {
                                     if (typeof expressionValue === 'string') return true;
                                     const { key, operator, value } = expressionValue || {};
 
+                                    if (operator === 'IS_EMPTY' || operator === 'IS_NOT_EMPTY') {
+                                        return !key || !operator;
+                                    }
+
                                     return !key || !operator || !value;
                                 });
 

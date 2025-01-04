@@ -25,6 +25,7 @@ import {
 import { genUuid } from '../../../../helper';
 import { logicOperatorMap, conditionOperatorMap } from '../../../../constants';
 import ParamSelect from '../param-select';
+import CodeEditor, { DEFAULT_LANGUAGE, type CodeEditorData } from '../code-editor';
 import './style.less';
 
 export type ConditionsInputValueType = NonNullable<IfElseNodeDataType['parameters']>['choice'];
@@ -179,13 +180,13 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
                             <div className="btns">
                                 <ToggleButtonGroup
                                     size="small"
-                                    value={expressionType}
+                                    value={expressionType === 'condition' ? 'condition' : 'other'}
                                     onChange={() => handleExpTypeChange(block, blockIndex)}
                                 >
                                     <ToggleButton disableRipple value="condition">
                                         <InputIcon />
                                     </ToggleButton>
-                                    <ToggleButton disableRipple value="mvel">
+                                    <ToggleButton disableRipple value="other">
                                         <CodeIcon />
                                     </ToggleButton>
                                 </ToggleButtonGroup>
@@ -196,25 +197,27 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
                                 )}
                             </div>
                         </div>
-                        {expressionType === 'mvel' ? (
+                        {expressionType && expressionType !== 'condition' ? (
                             <div className="ms-conditions-input-item-mvel">
-                                <TextField
-                                    fullWidth
-                                    multiline
-                                    autoComplete="off"
-                                    rows={5}
-                                    sx={{ marginTop: 0 }}
-                                    value={conditions[0]?.expressionValue || ''}
-                                    onChange={e =>
-                                        replaceCondition(
-                                            0,
-                                            {
-                                                expressionValue: e.target.value,
-                                            },
-                                            block,
-                                            blockIndex,
-                                        )
-                                    }
+                                <CodeEditor
+                                    value={{
+                                        language: (expressionType ||
+                                            DEFAULT_LANGUAGE) as CodeEditorData['language'],
+                                        expression: conditions[0]?.expressionValue as string,
+                                    }}
+                                    onChange={value => {
+                                        const condition = conditions[0] || genConditionValue();
+                                        replaceBlock(blockIndex, {
+                                            ...block,
+                                            expressionType: value.language,
+                                            conditions: [
+                                                {
+                                                    ...condition,
+                                                    expressionValue: value.expression,
+                                                },
+                                            ],
+                                        });
+                                    }}
                                 />
                                 <TextField
                                     fullWidth
