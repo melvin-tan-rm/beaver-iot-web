@@ -19,7 +19,7 @@ interface IProps {
 export const useRenderList = ({ getLogList, containerRef, listRef }: IProps) => {
     const [paginationModel, setPaginationModel] = useState<PaginationModel>({
         page: 0,
-        pageSize: 20,
+        pageSize: 30,
     });
     const { getTimeFormat } = useTime();
 

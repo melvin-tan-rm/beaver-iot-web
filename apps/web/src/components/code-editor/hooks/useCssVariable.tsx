@@ -35,9 +35,7 @@ export const useCssVariable = ({ onFocus, onBlur, editorRef }: IProps) => {
     );
 
     useEffect(() => {
-        return () => {
-            updateCssVariable('var(--component-background-gray)');
-        };
+        updateCssVariable('var(--component-background-gray)');
     }, []);
 
     const themeBgColor = useMemo(() => {
