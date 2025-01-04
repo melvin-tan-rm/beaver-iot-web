@@ -1,12 +1,13 @@
-import { useMemo, useLayoutEffect, useEffect, useRef, useState } from 'react';
+import React, { useMemo, useLayoutEffect, useEffect, useRef, useState } from 'react';
 import { Panel, useReactFlow } from '@xyflow/react';
 import cls from 'classnames';
 import { isEqual } from 'lodash-es';
-import { useDebounceEffect } from 'ahooks';
-import { Stack, IconButton, Divider, Tooltip } from '@mui/material';
+import { useThrottleEffect } from 'ahooks';
+import { Stack, IconButton, Divider } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { useI18n, useStoreShallow } from '@milesight/shared/src/hooks';
 import { CloseIcon, PlayArrowIcon, HelpIcon } from '@milesight/shared/src/components';
+import { Tooltip } from '@/components';
 import useFlowStore from '../../store';
 import {
     useCommonFormItems,
@@ -20,10 +21,14 @@ import './style.less';
 
 type FormDataProps = CommonFormDataProps & NodeFormDataProps;
 
+interface Props {
+    readonly?: boolean;
+}
+
 /**
  * Config Panel
  */
-const ConfigPanel = () => {
+const ConfigPanel: React.FC<Props> = ({ readonly }) => {
     const { getIntlText } = useI18n();
     const { updateNode, updateNodeData } = useReactFlow();
 
@@ -49,7 +54,7 @@ const ConfigPanel = () => {
     // ---------- Handle Form-related logic ----------
     const { control, setValue, watch, reset } = useForm<FormDataProps>();
     const commonFormItems = useCommonFormItems();
-    const nodeFormGroups = useNodeFormItems(selectedNode);
+    const nodeFormGroups = useNodeFormItems({ nodeType: selectedNode?.type, readonly });
     const allFormData = watch();
     const preFormData = useRef<FormDataProps>();
     const formDataInit = useRef(false);
@@ -66,6 +71,7 @@ const ConfigPanel = () => {
     // Backfill form data
     useEffect(() => {
         if (!selectedNode) {
+            reset();
             formDataInit.current = false;
             return;
         }
@@ -86,7 +92,7 @@ const ConfigPanel = () => {
     }, [selectedNode, reset, setValue]);
 
     // Save node data
-    useDebounceEffect(
+    useThrottleEffect(
         () => {
             if (!openPanel || !formDataInit.current) return;
             const { nodeName, nodeRemark, ...formData } = latestFormData || {};
@@ -95,7 +101,7 @@ const ConfigPanel = () => {
             updateNodeData(selectedNode.id, { nodeName, nodeRemark, parameters: formData });
         },
         [openPanel, selectedNode, latestFormData, updateNodeData],
-        { wait: 300 },
+        { wait: 200 },
     );
 
     // ---------- Show Test Drawer ----------
@@ -111,23 +117,40 @@ const ConfigPanel = () => {
             position="top-right"
             className={cls('ms-workflow-panel-config-root', {
                 hidden: !selectedNode,
+                readonly,
             })}
         >
             <div className="ms-workflow-panel-config">
                 <div className="ms-workflow-panel-config-header">
-                    <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
+                    <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{ flex: 1, width: 0, alignItems: 'center' }}
+                    >
                         <span className="icon" style={{ backgroundColor: nodeConfig?.iconBgColor }}>
                             {nodeConfig?.icon}
                         </span>
-                        {!!nodeConfig?.labelIntlKey && (
+                        <Tooltip
+                            autoEllipsis
+                            className="title"
+                            title={
+                                latestFormData?.nodeName ||
+                                (!nodeConfig?.labelIntlKey
+                                    ? ''
+                                    : getIntlText(nodeConfig?.labelIntlKey))
+                            }
+                        />
+                        {/* {!!nodeConfig?.labelIntlKey && (
                             <span className="title">{getIntlText(nodeConfig.labelIntlKey)}</span>
-                        )}
+                        )} */}
                     </Stack>
                     <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                        {nodeConfig?.testable && (
-                            <IconButton onClick={() => setDrawerOpen(true)}>
-                                <PlayArrowIcon />
-                            </IconButton>
+                        {nodeConfig?.testable && !readonly && (
+                            <Tooltip title={getIntlText('workflow.editor.node_test_tip')}>
+                                <IconButton onClick={() => setDrawerOpen(true)}>
+                                    <PlayArrowIcon />
+                                </IconButton>
+                            </Tooltip>
                         )}
                         <MoreMenu />
                         <Divider
@@ -221,4 +244,4 @@ const ConfigPanel = () => {
     );
 };
 
-export default ConfigPanel;
+export default React.memo(ConfigPanel);

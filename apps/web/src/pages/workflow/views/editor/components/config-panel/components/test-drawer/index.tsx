@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import cls from 'classnames';
-import { pick, isEmpty } from 'lodash-es';
+import { pick, isEmpty, isObject } from 'lodash-es';
 import { useRequest } from 'ahooks';
 import {
     Backdrop,
@@ -48,6 +48,18 @@ const statusDefaultMsgKey: Record<
         icon: <CheckCircleIcon />,
         intlKey: 'common.label.success',
     },
+};
+
+const safeJSONStringify = (value?: string, space: number = 2) => {
+    if (!value) return '';
+    let result = '';
+    try {
+        result = JSON.stringify(JSON.parse(value), null, space);
+    } catch (e) {
+        result = value;
+    }
+
+    return result;
 };
 
 const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
@@ -222,7 +234,7 @@ const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
                                                 editable={false}
                                                 editorLang="json"
                                                 title={getIntlText('common.label.output')}
-                                                value={testResult.output}
+                                                value={safeJSONStringify(testResult.output)}
                                             />
                                         )}
                                     </div>

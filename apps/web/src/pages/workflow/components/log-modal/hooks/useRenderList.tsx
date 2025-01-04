@@ -27,11 +27,12 @@ export const useRenderList = ({ getLogList, containerRef, listRef }: IProps) => 
     const getRenderLogList = useCallback(
         (logList: LogListPageType['content']): LogItemProps[] => {
             return (logList || []).map(item => {
-                const { start_time: startTime, status, id } = item || {};
+                const { start_time: startTime, status, id, version } = item || {};
                 return {
                     id,
                     status,
                     title: startTime ? getTimeFormat(startTime, 'fullDateTimeSecondFormat') : '',
+                    version,
                 };
             });
         },

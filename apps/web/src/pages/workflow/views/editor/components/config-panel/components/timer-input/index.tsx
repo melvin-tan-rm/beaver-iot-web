@@ -57,9 +57,9 @@ const periodConfigs: Record<
         labelIntlKey: string;
     }
 > = {
-    EVERYDAY: {
-        labelIntlKey: 'workflow.editor.form_param_timer_period_everyday',
-    },
+    // EVERYDAY: {
+    //     labelIntlKey: 'workflow.editor.form_param_timer_period_everyday',
+    // },
     MONDAY: {
         labelIntlKey: 'workflow.editor.form_param_timer_period_monday',
     },
@@ -148,12 +148,14 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                 <DateTimePicker
                     ampm={false}
                     label={getIntlText('workflow.editor.form_param_execution_time')}
-                    value={data.executionEpochSecond ? getTime(data.executionEpochSecond) : null}
+                    value={
+                        data.executionEpochSecond ? getTime(data.executionEpochSecond * 1000) : null
+                    }
                     sx={{ width: '100%' }}
                     onChange={time => {
                         setData({
                             ...data,
-                            executionEpochSecond: getTime(time, true).valueOf(),
+                            executionEpochSecond: getTime(time, true).unix(),
                             rules: undefined,
                             expirationEpochSecond: undefined,
                         });
@@ -167,20 +169,25 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                             {getIntlText('workflow.editor.form_param_execution_time_queue')}
                         </span>
                         {list.map((item, index) => (
-                            <div className="queue-item" key={getKey(index)}>
+                            <div className="queue-item" key={getKey(index) || index}>
                                 <FormControl fullWidth required={required}>
                                     <InputLabel id="time-input-period-label">
                                         {getIntlText('workflow.editor.form_param_timer_type')}
                                     </InputLabel>
                                     <Select
                                         notched
+                                        multiple
                                         labelId="time-input-period-label"
                                         label={getIntlText('workflow.editor.form_param_timer_type')}
-                                        value={item.daysOfWeek?.[0] || ''}
+                                        value={item.daysOfWeek || []}
                                         onChange={e => {
+                                            const { value } = e.target;
+                                            const daysOfWeek = Array.isArray(value)
+                                                ? value
+                                                : value.split(',');
                                             replace(index, {
                                                 ...item,
-                                                daysOfWeek: [e.target.value as TimePeriodType],
+                                                daysOfWeek: daysOfWeek as TimePeriodType[],
                                             });
                                         }}
                                     >
@@ -232,14 +239,16 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                         ampm={false}
                         label={getIntlText('workflow.editor.form_param_expire_time')}
                         value={
-                            data.expirationEpochSecond ? getTime(data.expirationEpochSecond) : null
+                            data.expirationEpochSecond
+                                ? getTime(data.expirationEpochSecond * 1000)
+                                : null
                         }
                         sx={{ width: '100%' }}
                         onChange={time => {
                             setData({
                                 ...data,
                                 executionEpochSecond: undefined,
-                                expirationEpochSecond: getTime(time, true).valueOf(),
+                                expirationEpochSecond: getTime(time, true).unix(),
                             });
                         }}
                     />

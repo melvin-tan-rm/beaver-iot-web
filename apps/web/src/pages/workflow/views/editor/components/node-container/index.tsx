@@ -2,9 +2,11 @@ import React, { Fragment, useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useReactFlow, Position, type NodeProps } from '@xyflow/react';
 import cls from 'classnames';
+import { useDebounceEffect } from 'ahooks';
 import { Menu, MenuItem } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { CheckCircleIcon, ErrorIcon, LoopIcon } from '@milesight/shared/src/components';
+import { Tooltip } from '@/components';
 import { basicNodeConfigs } from '@/pages/workflow/config';
 import useFlowStore from '../../store';
 import Handle from '../handle';
@@ -87,18 +89,29 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
     children,
 }) => {
     const { getIntlText } = useI18n();
-    const status = nodeProps?.data?.$status as WorkflowNodeStatus;
+    const [finalProps, setFinalProps] = useState(nodeProps);
+    const status = finalProps?.data?.$status;
+    const nodeName = finalProps?.data?.nodeName;
+
+    useDebounceEffect(
+        () => {
+            setFinalProps(nodeProps);
+        },
+        [nodeProps],
+        { wait: 300 },
+    );
 
     // ---------- ContextMenu ----------
     const [searchParams] = useSearchParams();
     const isEditing = !!searchParams.get('wid');
+    const isLogMode = useFlowStore(state => state.isLogMode());
     const [contextMenu, setContextMenu] = useState<{
         mouseX: number;
         mouseY: number;
     } | null>(null);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>();
-    const nodeId = nodeProps?.id;
-    const nodeType = nodeProps?.type as WorkflowNodeType;
+    const nodeId = finalProps?.id;
+    const nodeType = finalProps?.type as WorkflowNodeType;
     const isEntryNode = basicNodeConfigs[nodeType]?.category === 'entry';
 
     /**
@@ -120,7 +133,7 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
     const handleContextMenu = (event: React.MouseEvent) => {
         event.preventDefault();
 
-        if (!menuItems.length) {
+        if (!menuItems.length || isLogMode) {
             setContextMenu(null);
             return;
         }
@@ -211,7 +224,7 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
             {handles?.map((handle, index) => <Fragment key={index}>{handle}</Fragment>)}
             <div
                 className={cls('ms-workflow-node', `ms-workflow-node-${type}`, {
-                    [status?.toLocaleLowerCase()]: status,
+                    [status?.toLocaleLowerCase() || '']: status,
                 })}
                 onContextMenu={handleContextMenu}
             >
@@ -285,7 +298,11 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
                     >
                         {icon}
                     </span>
-                    <span className="ms-workflow-node-title">{title}</span>
+                    <Tooltip
+                        autoEllipsis
+                        className="ms-workflow-node-title"
+                        title={nodeName || title}
+                    />
                     {!!status && (
                         <span
                             className={cls('ms-workflow-node-status', {

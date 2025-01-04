@@ -21,6 +21,8 @@ export type FlowNodeTraceInfo = {
     message_id?: string;
     /** Error Message */
     error_message?: string;
+    /** Parent Trace ID */
+    parent_trace_id?: string;
 };
 
 export interface WorkflowAPISchema extends APISchema {
@@ -128,6 +130,8 @@ export interface WorkflowAPISchema extends APISchema {
                 time_cost: number;
                 /** Running status */
                 status: WorkflowNodeStatus;
+                /** Version */
+                version: string;
             }[]
         >;
     };
@@ -280,7 +284,7 @@ export default attachAPI<WorkflowAPISchema>(client, {
         getFlowDesign: `GET ${API_PREFIX}/workflow/flows/:id/design?version=:version`,
         checkFlowDesign: `POST ${API_PREFIX}/workflow/flows/design/validate`,
         saveFlowDesign: `POST ${API_PREFIX}/workflow/flows/design`,
-        testFlow: `POST ${API_PREFIX}/workflow/flows/test`,
+        testFlow: `POST ${API_PREFIX}/workflow/flows/design/test`,
         testSingleNode: `POST ${API_PREFIX}/workflow/flows/node/test`,
         getFlowNodes: `GET ${API_PREFIX}/workflow/components`,
         getNodeForm: `GET ${API_PREFIX}/workflow/components/:id`,

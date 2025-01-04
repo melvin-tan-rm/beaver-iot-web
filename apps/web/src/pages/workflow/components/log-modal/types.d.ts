@@ -13,6 +13,10 @@ export interface LogItemProps {
      * Title
      */
     title: string;
+    /**
+     * Version
+     */
+    version: string;
 }
 
 export type LogListPageType = WorkflowAPISchema['getLogList']['response'];

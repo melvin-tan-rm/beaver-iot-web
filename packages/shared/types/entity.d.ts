@@ -121,6 +121,8 @@ declare interface EntityData {
     entity_value_type: EntityValueDataType;
     /** 实体属性访问类型 */
     entity_access_mod: EntityAccessMode;
+    /** 父实体名称 */
+    entity_parent_name?: string;
 }
 
 /**

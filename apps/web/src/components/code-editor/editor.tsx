@@ -10,21 +10,23 @@ export const CodeEditor = forwardRef<EditorHandlers, EditorProps>((props, ref) =
     const {
         title,
         icon,
-        Header: CustomHeader,
         readOnly = false,
         editable = true,
         height = '100%',
         renderHeader,
         onBlur,
         onFocus,
+        supportLangs,
         theme,
         fontSize,
         ...rest
     } = props;
+    const editorRef = useRef<HTMLDivElement>(null);
     const editorInstanceRef = useRef<ReactCodeMirrorRef>(null);
     const { handleBlur, handleFocus, themeBgColor } = useCssVariable({
         onBlur,
         onFocus,
+        editorRef,
     });
     const { editorTheme } = useEditorTheme({ fontSize });
 
@@ -44,21 +46,20 @@ export const CodeEditor = forwardRef<EditorHandlers, EditorProps>((props, ref) =
     useImperativeHandle(ref, () => handlers);
 
     return (
-        <div className="ms-code-editor">
-            {CustomHeader !== null && (
-                <EditorHeaderComponent
-                    title={title}
-                    icon={icon}
-                    editorHandlers={handlers}
-                    editorLang={editorLang}
-                    editorValue={editorValue}
-                    setEditorLang={setEditorLang}
-                    readOnly={readOnly}
-                    editable={editable}
-                    renderHeader={renderHeader}
-                    style={themeBgColor}
-                />
-            )}
+        <div className="ms-code-editor" ref={editorRef}>
+            <EditorHeaderComponent
+                title={title}
+                icon={icon}
+                editorHandlers={handlers}
+                editorLang={editorLang}
+                editorValue={editorValue}
+                setEditorLang={setEditorLang}
+                readOnly={readOnly}
+                editable={editable}
+                renderHeader={renderHeader}
+                style={themeBgColor}
+                supportLangs={supportLangs}
+            />
             <EditorComponent
                 {...rest}
                 theme={theme || editorTheme}

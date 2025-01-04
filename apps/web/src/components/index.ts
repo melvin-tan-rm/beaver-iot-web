@@ -9,6 +9,13 @@ export { default as DateRangePicker } from './date-range-picker';
 export { default as RouteLoadingIndicator } from './route-loading-indicator';
 export { default as Empty } from './empty';
 export {
+    default as EntitySelect,
+    useEntityStore,
+    type EntityStoreType,
+    type EntitySelectProps,
+    type EntitySelectValueType,
+} from './entity-select';
+export {
     CodeEditor,
     CodeEditorToolbar,
     CodeEditorSelect,

@@ -3,6 +3,7 @@ import { useTime, useVirtualList } from '@milesight/shared/src/hooks';
 import { ErrorIcon, CheckCircleIcon } from '@milesight/shared/src/components';
 import { type WorkflowAPISchema } from '@/services/http';
 import { Empty } from '@/components';
+import type { FlowStore } from '../../store';
 import './style.less';
 
 export type LogType = 'test' | 'run';
@@ -10,7 +11,7 @@ export type LogType = 'test' | 'run';
 export interface LogListProps {
     // type: LogType;
 
-    data: WorkflowAPISchema['getLogList']['response']['content'];
+    data: NonNullable<FlowStore['testLogs']>;
 
     loading?: boolean;
 

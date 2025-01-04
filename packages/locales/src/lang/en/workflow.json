@@ -27,7 +27,6 @@
     "workflow.modal.running_log": "Running Log",
     "workflow.label.design_mode_canvas_name": "Canvas Mode",
     "workflow.label.design_mode_advanced_name": "Advances Mode",
-    "workflow.button.delete_filter": "More Filters",
     "workflow.modal.upload_tips": "Click here or drag file to this area to upload",
     "workflow.editor.logs_popover_title_test": "Test Logs",
     "workflow.editor.logs_popover_title_run": "Run Logs",
@@ -39,8 +38,8 @@
     "workflow.message.delete_tip": "Are you sure you want to delete the workflow? It cannot be restore after deletion.",
     "workflow.label.deletion": "Deletion",
     "workflow.editor.form_param_select_placeholder": "Enter or reference a variable",
-    "workflow.label.branch": "Branch{1}",
-    "workflow.label.parallel": "Parallel{1}",
+    "workflow.label.branch": "BRANCH{1}",
+    "workflow.label.parallel": "PARALLEL{1}",
     "workflow.label.no_log_record": "No log is recorded",
     "workflow.node.trigger_switch_label": "Context",
     "workflow.editor.form_param_timer_type": "Timer Type",
@@ -49,7 +48,6 @@
     "workflow.editor.form_param_expire_time": "Expire Time",
     "workflow.editor.form_param_timer_type_once": "Single Execution",
     "workflow.editor.form_param_timer_type_cycle": "Cycle Execution",
-    "workflow.editor.form_param_timer_period_everyday": "Every Day",
     "workflow.editor.form_param_timer_period_monday": "Monday",
     "workflow.editor.form_param_timer_period_tuesday": "Tuesday",
     "workflow.editor.form_param_timer_period_wednesday": "Wednesday",
@@ -96,7 +94,7 @@
     "workflow.editor.editor_auto_create_service_entity_tip": "系统会自动根据工作流名称创建一个自定义服务实体，你可以在自定义实体列表中查看该实体。",
     "workflow.label.node_min_number_limit_tip": "工作流中至少需要有 {1} 个节点",
     "workflow.valid.required": "The {1} field is required.",
-    "workflow.valid.range_length": "The length of the {1} field value should be greater than or equal to {0} and less than or equal to {1}.",
+    "workflow.valid.range_length": "The length of the {1} field value should be greater than or equal to {2} and less than or equal to {3}.",
     "workflow.valid.node_parameters_required": "The {1} node parameters is required.",
     "workflow.valid.min_length": "The {1} field length of the value you entered should be more than or equal to {0}.",
     "workflow.valid.max_length": "The {1} field length of the value you entered cannot exceed {2} digits.",
@@ -111,5 +109,6 @@
     "workflow.node.input_variables": "Input Variables",
     "workflow.editor.config_panel_test_title": "Test {1}",
     "workflow.valid.invalid_url": "The {1} field value is not a valid URL.",
-    "workflow.valid.invalid_email": "The {1} field value is not a valid email."
+    "workflow.valid.invalid_email": "The {1} field value is not a valid email.",
+    "workflow.editor.node_test_tip": "Test this Node"
 }

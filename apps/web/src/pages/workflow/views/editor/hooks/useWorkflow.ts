@@ -232,9 +232,10 @@ const useWorkflow = () => {
                                 if (!Array.isArray(data)) return;
                                 // TODO: The key may use `identity` to replace `name` ?
                                 data.forEach((item: Record<string, any>) => {
+                                    if (!item?.name || !item?.type) return;
                                     paramData.outputs.push({
-                                        name: item?.name,
-                                        type: item?.type,
+                                        name: item.name,
+                                        type: item.type,
                                         key:
                                             param === 'entityConfigs'
                                                 ? genRefParamKey(id, item.name)
@@ -247,6 +248,7 @@ const useWorkflow = () => {
                             case 'entities': {
                                 if (!Array.isArray(data)) return;
                                 data.forEach(item => {
+                                    if (!item) return;
                                     // TODO: get the entity value type
                                     paramData.outputs.push({
                                         name: item,
@@ -265,7 +267,7 @@ const useWorkflow = () => {
                                 }
                                 if (!isObject(data)) return;
                                 Object.entries(data).forEach(([key, value]) => {
-                                    if (isRefParamKey(value)) return;
+                                    if (!key || !value || isRefParamKey(value)) return;
                                     // TODO: get the entity value type
                                     paramData.outputs.push({
                                         name: key,

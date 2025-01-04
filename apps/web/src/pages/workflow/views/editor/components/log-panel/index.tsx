@@ -32,7 +32,6 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
         logDetail,
         logDetailLoading,
         addTestLog,
-        setTestLogs,
         setOpenLogPanel,
         setLogDetail,
         setLogDetailLoading,
@@ -44,7 +43,6 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
             'logDetail',
             'logDetailLoading',
             'addTestLog',
-            'setTestLogs',
             'setOpenLogPanel',
             'setLogDetail',
             'setLogDetailLoading',
@@ -52,10 +50,6 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
         ]),
     );
     const { updateNodesStatus, checkWorkflowValid } = useWorkflow();
-    const flowData = useMemo(() => {
-        if (!openLogPanel) return;
-        return toObject();
-    }, [openLogPanel, toObject]);
     const title = useMemo(() => {
         switch (logPanelMode) {
             case 'testRun':
@@ -86,11 +80,11 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
         useValidate();
     const [entryInput, setEntryInput] = useState('');
     const hasInput = useMemo(() => {
-        if (!openLogPanel || !flowData || !isTestRunMode) return false;
+        if (!openLogPanel || !isTestRunMode) return false;
         const nodes = getNodes();
 
         return !!nodes.find(({ type }) => type === 'trigger' || type === 'listener');
-    }, [openLogPanel, flowData, isTestRunMode, getNodes]);
+    }, [openLogPanel, isTestRunMode, getNodes]);
 
     const genDemoData = useCallback(() => {
         if (!openLogPanel || !isTestRunMode) return;
@@ -177,7 +171,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
                     {} as NonNullable<Parameters<typeof updateNodesStatus>[0]>,
                 );
 
-                setNodesDataValidResult(nodesCheckResult);
+                setNodesDataValidResult(nodesCheckResult, logPanelMode);
                 updateNodesStatus(statusData);
                 return;
             }
@@ -195,12 +189,12 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
             const [error, resp] = await awaitWrap(
                 workflowAPI.testFlow({ input, design_data: JSON.stringify(designData) }),
             );
+            const data = getResponseData(resp);
             setLogDetailLoading(false);
 
-            if (error || !isRequestSuccess(resp)) return;
-            const data = getResponseData(resp);
+            if (error || !isRequestSuccess(resp) || !data) return;
             const nodeStatus =
-                data?.trace_infos.reduce(
+                data.trace_infos.reduce(
                     (result: Record<string, WorkflowNodeStatus>, { node_id: nodeId, status }) => {
                         result[nodeId] = status;
                         return result;
@@ -208,14 +202,14 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
                     {},
                 ) || null;
 
-            addTestLog({ id: genRandomString(8, { lowerCase: true }), ...data! });
-            setLogDetail(data?.trace_infos);
+            addTestLog({ id: resp.data.request_id, flow_data: toObject(), ...data });
+            setLogDetail({ traceInfos: data.trace_infos });
             updateNodesStatus(nodeStatus);
         },
         {
             manual: true,
             debounceWait: 300,
-            refreshDeps: [openLogPanel, isTestRunMode, entryInput, toObject],
+            refreshDeps: [openLogPanel, logPanelMode, isTestRunMode, entryInput, toObject],
         },
     );
 
@@ -246,7 +240,11 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
         >
             <div className="ms-workflow-panel-log">
                 <div className="ms-workflow-panel-config-header">
-                    <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
+                    <Stack
+                        direction="row"
+                        spacing={2}
+                        sx={{ flex: 1, width: 0, alignItems: 'center' }}
+                    >
                         <span className="title">{title}</span>
                     </Stack>
                     <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
@@ -281,9 +279,12 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
                             </Button>
                         </div>
                     )}
-                    {!!logDetail?.length && flowData ? (
+                    {logDetail?.traceInfos?.length ? (
                         <div className="log-detail-area">
-                            <ActionLog traceData={logDetail!} workflowData={flowData} />
+                            <ActionLog
+                                traceData={logDetail.traceInfos}
+                                workflowData={logDetail.flowData || toObject()}
+                            />
                         </div>
                     ) : (
                         !hasInput && (

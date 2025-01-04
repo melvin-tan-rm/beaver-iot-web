@@ -5,7 +5,7 @@ import { basicNodeConfigs } from '../../config';
 import type { NodesDataValidResult } from './hooks';
 import type { NodeConfigItem } from './typings';
 
-interface FlowStore {
+export interface FlowStore {
     selectedNode?: WorkflowNode;
 
     /** Workflow Node Configs */
@@ -29,16 +29,27 @@ interface FlowStore {
     /**
      * Test Log List
      */
-    testLogs?: WorkflowAPISchema['getLogList']['response']['content'];
+    testLogs?: (PartialOptional<
+        WorkflowAPISchema['getLogList']['response']['content'][number],
+        'version'
+    > & {
+        trace_infos?: FlowNodeTraceInfo[];
+        flow_data?: Pick<WorkflowSchema, 'nodes' | 'edges'>;
+    })[];
 
     /**
      * Run Log List
      */
     runLogs?: WorkflowAPISchema['getLogList']['response']['content'];
 
-    logDetail?: PartialOptional<FlowNodeTraceInfo, 'start_time' | 'time_cost'>[];
+    logDetail?: {
+        flowData?: Pick<WorkflowSchema, 'nodes' | 'edges'>;
+        traceInfos: PartialOptional<FlowNodeTraceInfo, 'start_time' | 'time_cost'>[];
+    };
 
     logDetailLoading?: boolean;
+
+    isLogMode: () => boolean;
 
     setSelectedNode: (node?: FlowStore['selectedNode']) => void;
 
@@ -57,14 +68,26 @@ interface FlowStore {
 
     setLogDetailLoading: (loading: FlowStore['logDetailLoading']) => void;
 
-    setNodesDataValidResult: (data: NodesDataValidResult | null) => void;
+    setNodesDataValidResult: (
+        data: NodesDataValidResult | null,
+        logPanelMode?: FlowStore['logPanelMode'],
+    ) => void;
 }
 
 const useFlowStore = create(
-    immer<FlowStore>(set => ({
+    immer<FlowStore>((set, get) => ({
         nodeConfigs: basicNodeConfigs,
 
         testLogs: [],
+
+        isLogMode: () => {
+            const { openLogPanel, logDetail, logPanelMode } = get();
+            return !!(
+                openLogPanel &&
+                logDetail &&
+                (logPanelMode === 'runLog' || logPanelMode === 'testLog')
+            );
+        },
 
         setSelectedNode: node => set({ selectedNode: node }),
 
@@ -106,20 +129,21 @@ const useFlowStore = create(
         addTestLog: log => {
             set(state => {
                 if (!log) return;
-                state.testLogs?.unshift(log);
+                const testLogs = [log, ...(state.testLogs || [])];
+                return { testLogs };
             });
         },
         setRunLogs: runLogs => set({ runLogs }),
         setLogDetail: detail => set({ logDetail: detail }),
         setLogDetailLoading: loading => set({ logDetailLoading: loading }),
-        setNodesDataValidResult(data) {
+        setNodesDataValidResult(data, logPanelMode = 'feVerify') {
             if (!data) {
                 set({ openLogPanel: false, logPanelMode: undefined, logDetail: undefined });
                 return;
             }
             // console.log(data);
-            const logDetail = Object.entries(data).map(([id, { type, name, label, errMsgs }]) => {
-                const result: NonNullable<FlowStore['logDetail']>[0] = {
+            const traceInfos = Object.entries(data).map(([id, { type, name, label, errMsgs }]) => {
+                const result: NonNullable<FlowStore['logDetail']>['traceInfos'][0] = {
                     node_id: id,
                     node_label: label!,
                     status: 'ERROR',
@@ -129,7 +153,7 @@ const useFlowStore = create(
             });
 
             // console.log(logDetail);
-            set({ openLogPanel: true, logPanelMode: 'feVerify', logDetail });
+            set({ openLogPanel: true, logPanelMode, logDetail: { traceInfos } });
         },
     })),
 );

@@ -169,9 +169,11 @@
     "common.label.output": "Output",
     "common.message.json_format_error": "JSON 格式错误",
     "common.label.tip": "Tip",
+    "common.label.by_device": "By device",
     "common.label.export": "Export",
     "common.label.creator": "Creator",
     "common.label.error": "Error",
     "common.label.success": "Success",
-    "common.label.log": "Log"
+    "common.label.log": "Log",
+    "common.label.no_device_entity": "Entities with no device"
 }

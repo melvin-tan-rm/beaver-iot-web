@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { type ControllerProps } from 'react-hook-form';
 import {
     TextField,
@@ -9,8 +9,8 @@ import {
     Switch,
     MenuItem,
 } from '@mui/material';
-import { useI18n } from '@milesight/shared/src/hooks';
-import { checkRequired } from '@milesight/shared/src/utils/validators';
+// import { useI18n } from '@milesight/shared/src/hooks';
+// import { checkRequired } from '@milesight/shared/src/utils/validators';
 import { NodeFormItemValueType } from '../../../typings';
 import useFlowStore from '../../../store';
 import {
@@ -46,7 +46,12 @@ type NodeFormGroupType = {
  */
 export type NodeFormDataProps = Record<string, any>;
 
-const useNodeFormItems = (node?: WorkflowNode) => {
+interface Props {
+    readonly?: boolean;
+    nodeType?: WorkflowNodeType;
+}
+
+const useNodeFormItems = ({ nodeType, readonly }: Props) => {
     const nodeConfigs = useFlowStore(state => state.nodeConfigs);
     // const { getIntlText } = useI18n();
 
@@ -172,7 +177,14 @@ const useNodeFormItems = (node?: WorkflowNode) => {
                             }
                             case 'codeEditor': {
                                 formItem.render = ({ field: { onChange, value } }) => {
-                                    return <CodeEditor value={value} onChange={onChange} />;
+                                    return (
+                                        <CodeEditor
+                                            readOnly={readonly}
+                                            editable={!readonly}
+                                            value={value}
+                                            onChange={onChange}
+                                        />
+                                    );
                                 };
                                 break;
                             }
@@ -284,7 +296,7 @@ const useNodeFormItems = (node?: WorkflowNode) => {
         return result;
     }, [nodeConfigs]);
 
-    return !node?.type ? [] : formConfigs[node.type as WorkflowNodeType] || [];
+    return !nodeType ? [] : formConfigs[nodeType] || [];
 };
 
 export default useNodeFormItems;

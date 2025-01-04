@@ -1,14 +1,15 @@
 import { useMemo, useCallback } from 'react';
 import { useReactFlow } from '@xyflow/react';
+import { isObject } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 import {
     isEmpty,
-    isRangeValue,
     isMaxLength,
     isURL,
     isMatches,
     isEmail,
+    isRangeLength,
 } from '@milesight/shared/src/utils/validators';
 import { EDGE_TYPE_ADDABLE } from '../constants';
 import useFlowStore from '../store';
@@ -75,40 +76,46 @@ const useValidate = () => {
             };
         };
 
+        const entitiesChecker: Record<string, NodeDataValidator> = {
+            checkRequired(
+                value: NonNullable<ListenerNodeDataType['parameters']>['entities'],
+                fieldName?: string,
+            ) {
+                if (value?.length && value.some(item => !isEmpty(item))) {
+                    return true;
+                }
+                const message = getIntlText(ErrorIntlKey.required, { 1: fieldName });
+                return message;
+            },
+        };
+
         // Note: The `checkRequired` name is fixed and cannot be modified
         const result: Record<string, Record<string, NodeDataValidator>> = {
             nodeName: {
                 checkRequired,
                 checkRangeLength(value) {
-                    if (!isRangeValue(value, 1, 50)) return true;
-
-                    const message = getIntlText(ErrorIntlKey.rangeLength, {
-                        1: getIntlText('common.label.name'),
-                    });
-                    return message;
+                    if (value && !isRangeLength(value, 1, 50)) {
+                        const message = getIntlText(ErrorIntlKey.rangeLength, {
+                            1: getIntlText('common.label.name'),
+                            2: 1,
+                            3: 50,
+                        });
+                        return message;
+                    }
+                    return true;
                 },
             },
             nodeRemark: {
                 checkRangeLength(value) {
-                    if (!isEmpty(value) || !isRangeValue(value, 1, 1000)) return true;
-
-                    const message = getIntlText(ErrorIntlKey.rangeLength, {
-                        1: getIntlText('common.label.remark'),
-                    });
-                    return message;
-                },
-            },
-            // Check listener.entities, select.entities
-            entities: {
-                checkRequired(
-                    value: NonNullable<ListenerNodeDataType['parameters']>['entities'],
-                    fieldName?: string,
-                ) {
-                    if (value?.length && value.some(item => !isEmpty(item))) {
-                        return true;
+                    if (value && !isRangeLength(value || '', 1, 1000)) {
+                        const message = getIntlText(ErrorIntlKey.rangeLength, {
+                            1: getIntlText('common.label.remark'),
+                            2: 1,
+                            3: 1000,
+                        });
+                        return message;
                     }
-                    const message = getIntlText(ErrorIntlKey.required, { 1: fieldName });
-                    return message;
+                    return true;
                 },
             },
             // Check code.inputArguments and webhook.inputArguments
@@ -134,6 +141,9 @@ const useValidate = () => {
                     return true;
                 },
             },
+            // Check listener.entities, select.entities
+            'listener.entities': entitiesChecker,
+            'select.entities': entitiesChecker,
             'trigger.entityConfigs': {
                 checkRequired(
                     value?: NonNullable<TriggerNodeDataType['parameters']>['entityConfigs'],
@@ -222,10 +232,25 @@ const useValidate = () => {
                 },
             },
             'code.expression': {
-                checkRequired,
-                checkMaxLength(value: string, fieldName) {
+                checkRequired(
+                    value: NonNullable<CodeNodeDataType['parameters']>['expression'],
+                    fieldName,
+                ) {
+                    if (!isObject(value) || !value.language || !value.expression) {
+                        return getIntlText(ErrorIntlKey.required, { 1: fieldName });
+                    }
+                    return true;
+                },
+                checkMaxLength(
+                    value: NonNullable<CodeNodeDataType['parameters']>['expression'],
+                    fieldName,
+                ) {
                     const maxLength = 2000;
-                    if (value && value.length > maxLength) {
+                    if (
+                        isObject(value) &&
+                        value.expression &&
+                        value.expression.length > maxLength
+                    ) {
                         return getIntlText(ErrorIntlKey.maxLength, {
                             1: fieldName,
                             2: maxLength,

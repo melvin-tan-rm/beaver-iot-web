@@ -1,14 +1,10 @@
 import { type ReactFlowJsonObject } from '@xyflow/react';
 import { type WorkflowAPISchema } from '@/services/http';
-import { type FlowNodeTraceInfo } from '@/services/http/workflow';
 
 /**
  * Action Log Type
  */
-export interface AccordionLog
-    extends ObjectToCamelCase<
-        Pick<FlowNodeTraceInfo, 'input' | 'output' | 'time_cost' | 'status'>
-    > {
+export interface AccordionLog extends ObjectToCamelCase<WorkflowTraceType> {
     /**
      * Unique ID of web usage
      */
@@ -25,10 +21,6 @@ export interface AccordionLog
      * Custom header render config
      */
     config?: CustomConfigItemType;
-    /**
-     * error message
-     */
-    errorMessage?: string;
     /**
      * Children
      */
@@ -86,4 +78,5 @@ export interface ParallelNodeResult {
 export interface ActionLogProps {
     traceData: WorkflowTraceType[];
     workflowData: WorkflowDataType;
+    logType?: 'validate' | 'test' | 'run';
 }

@@ -12,6 +12,7 @@ import { Stack } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { AddCircleIcon } from '@milesight/shared/src/components';
 import NodeMenu from '../node-menu';
+import useFlowStore from '../../store';
 import './style.less';
 
 export interface Props extends HandleProps {
@@ -27,7 +28,9 @@ export interface Props extends HandleProps {
 const Handle = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & Props>(
     ({ nodeProps, className, ...props }, ref) => {
         const { getIntlHtml } = useI18n();
+        const isLogMode = useFlowStore(state => state.isLogMode());
         const edges = useEdges();
+        const isTargetHandle = props.type === 'target';
         const targetAddEnabled = edges.every(edge => edge.target !== nodeProps.id);
 
         // ---------- Handle Tooltip Open ----------
@@ -36,7 +39,7 @@ const Handle = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> &
         const [showTooltip, setShowTooltip] = useState(false);
         const { run: handleMouseEnter, cancel: cancelHandleMouseEnter } = useDebounceFn(
             () => {
-                if (props.type === 'target' && !targetAddEnabled) return;
+                if (isLogMode || (isTargetHandle && !targetAddEnabled)) return;
                 setShowTooltip(true);
                 // Increase the zIndex of the node to make the tooltip appear on top of other nodes
                 updateNode(nodeProps.id, { zIndex: 1 });
@@ -46,10 +49,14 @@ const Handle = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> &
 
         // ---------- Handle Click Callback ----------
         const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
-        const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-            setAnchorEl(e.currentTarget);
-            e.stopPropagation();
-        }, []);
+        const handleClick = useCallback(
+            (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+                if (isLogMode || (isTargetHandle && !targetAddEnabled)) return;
+                setAnchorEl(e.currentTarget);
+                e.stopPropagation();
+            },
+            [isLogMode, isTargetHandle, targetAddEnabled],
+        );
 
         const closestNodeProps = useMemo(() => {
             return props.type === 'target'
@@ -69,7 +76,8 @@ const Handle = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> &
                     {...props}
                     ref={ref}
                     className={cls('ms-workflow-handle', className, {
-                        'target-enable-add': props.type === 'target' && targetAddEnabled,
+                        addable: !isLogMode,
+                        'target-addable': props.type === 'target' && targetAddEnabled && !isLogMode,
                         'is-menu-open': !!anchorEl,
                     })}
                     onClick={handleClick}

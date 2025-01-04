@@ -10,16 +10,24 @@
 
         .@{prefix}-param-select-item {
             display: flex;
+            align-items: center;
+            width: 100%;
             .text-size(@font-size-base);
 
             .name {
-                max-width: 200px;
+                max-width: 60%;
+            }
+
+            .divider {
+                display: block;
+                margin: 0 @margin-xxs;
+                color: var(--text-color-secondary);
+                .text-size(@font-size-base);
             }
 
             .type {
                 display: inline-block;
                 padding: 0 @padding-xxs;
-                margin-left: @margin-md;
                 color: var(--text-color-tertiary);
                 background-color: var(--component-background-gray);
                 border-radius: @border-radius-base;
@@ -29,32 +37,42 @@
 
     &-menu {
         .@{mui-prefix}Paper-root {
+            max-width: 350px;
             max-height: 450px;
+
+            .@{prefix}-empty-img {
+                width: 96px;
+                height: 96px;;
+            }
         }
     }
 
     .@{mui-prefix}InputBase-root {
         .@{prefix}-param-select-item {
             display: inline-flex;
-            padding: 0 @padding-sm;
+            align-items: center;
+            width: 100%;
+            max-width: 120px;
+            padding: 0 @padding-xs;
             background-color: var(--component-background-gray);
             border-radius: @border-radius-base;
             .text-size(@font-size-base);
 
             .name {
-                max-width: 120px;
+                flex: 1;
+                width: 0;
+            }
+
+            .divider {
+                margin: 0 @margin-xxs;
+                color: var(--text-color-secondary);
             }
 
             .type {
+                flex: 1;
+                width: 0;
                 font-size: @font-size-sm;
-
-                &::before {
-                    display: inline-block;
-                    margin: 0 @margin-xxs;
-                    color: var(--text-color-secondary);
-                    content: '/';
-                    .text-size(@font-size-base);
-                }
+                color: var(--text-color-tertiary);
             }
         }
     }
