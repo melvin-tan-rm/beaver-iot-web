@@ -58,16 +58,15 @@ export interface ModalProps {
      * 外部传入的样式
      */
     sx?: DialogProps['sx'];
+    /**
+     * 确认按钮回调
+     */
+    onOk?: () => void;
 
     /**
      * 取消按钮回调
      */
     onCancel: () => void;
-
-    /**
-     * 确认按钮回调
-     */
-    onOk?: () => void;
 
     /**
      * 挂载节点
@@ -134,7 +133,7 @@ const Modal: React.FC<ModalProps> = ({
 
     const handleOk = useMemoizedFn(async () => {
         setLoading(true);
-        !!onOk && (await onOk());
+        await onOk?.();
         setLoading(false);
     });
 

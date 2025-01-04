@@ -48,6 +48,7 @@ export function useEntitySelectOptions(
             const [error, resp] = await awaitWrap(
                 entityAPI.getList({
                     keyword,
+                    // @ts-ignore TODO: prop type is error, should be EntityType[]
                     entity_type: entityType,
                     entity_value_type: entityValueTypes,
                     entity_access_mod: entityAccessMods,
