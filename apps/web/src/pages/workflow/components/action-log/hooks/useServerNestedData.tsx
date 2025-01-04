@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep, isNil } from 'lodash-es';
 import { generateUUID, objectToCamelCase } from '@milesight/shared/src/utils/tools';
 import type {
     AccordionLog,
@@ -9,6 +9,14 @@ import type {
     WorkflowTraceType,
 } from '../types';
 
+function safeJsonParse(str: string) {
+    try {
+        const result = JSON.parse(str);
+        return JSON.stringify(result, null, 2);
+    } catch (e) {
+        return str;
+    }
+}
 export const useServerNestedData = ({ traceData, workflowData }: ActionLogProps) => {
     /** get unique id */
     const getUniqueId = useCallback((trace: AccordionLog) => {
@@ -41,12 +49,14 @@ export const useServerNestedData = ({ traceData, workflowData }: ActionLogProps)
             const nestNode = cloneDeep(node) as WorkflowNestNode;
             const { type, data } = nestNode || {};
             const { nodeName } = data || {};
-            const traceStruct = objectToCamelCase(trace || {});
+            const { input, output, ...traceStruct } = objectToCamelCase(trace || {});
 
             nestNode.attrs = {
                 $$token: generateUUID(),
                 name: nodeName || '',
                 type: type!,
+                input: !isNil(input) ? safeJsonParse(input!) : void 0,
+                output: !isNil(output) ? safeJsonParse(output!) : void 0,
                 ...(traceStruct || {}),
             };
 

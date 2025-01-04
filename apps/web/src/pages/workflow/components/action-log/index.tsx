@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { Alert } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -8,33 +8,9 @@ import { useNestedData } from './hooks';
 import type { ActionLogProps, WorkflowNestNode } from './types';
 import './style.less';
 
-function safeJsonParse(str: string) {
-    try {
-        const result = JSON.parse(str);
-        return JSON.stringify(result, null, 2);
-    } catch (e) {
-        return str;
-    }
-}
 export default React.memo(({ traceData, workflowData, logType }: ActionLogProps) => {
     const { getIntlText } = useI18n();
     const { roots } = useNestedData({ workflowData, traceData, logType });
-
-    const renderTreeData = useMemo(() => {
-        return (roots || []).map(data => {
-            const { attrs } = data || {};
-            const { input, output } = attrs || {};
-
-            return {
-                ...(data || {}),
-                attrs: {
-                    ...attrs,
-                    input: safeJsonParse(input!),
-                    output: safeJsonParse(output!),
-                },
-            };
-        });
-    }, [roots]);
 
     /** recursive rendering */
     const renderAccordion = (treeData: WorkflowNestNode, title?: string) => {
@@ -89,7 +65,5 @@ export default React.memo(({ traceData, workflowData, logType }: ActionLogProps)
         );
     };
 
-    return (
-        <div className="ms-action-log">{renderTreeData.map(child => renderAccordion(child))}</div>
-    );
+    return <div className="ms-action-log">{roots.map(child => renderAccordion(child))}</div>;
 });
