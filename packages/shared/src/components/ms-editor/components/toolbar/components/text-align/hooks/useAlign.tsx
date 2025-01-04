@@ -22,19 +22,19 @@ export const useAlign = () => {
         isRight: false,
     });
 
-    /** 左对齐 */
+    /** left justification */
     const insertElementLeft = useMemoizedFn(() => {
         editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'left');
     });
-    /** 居中对齐 */
+    /** centre-aligned */
     const insertElementCenter = useMemoizedFn(() => {
         editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'center');
     });
-    /** 右对齐 */
+    /** right-aligned */
     const insertElementRight = useMemoizedFn(() => {
         editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'right');
     });
-    /** 触发对应的文字变更 */
+    /** Trigger corresponding text changes */
     const onDispatch = useMemoizedFn((type: FontAlign) => {
         const strategy: Record<FontAlign, () => void> = {
             left: insertElementLeft,
@@ -45,12 +45,12 @@ export const useAlign = () => {
         const fn = strategy[type];
         return fn && fn();
     });
-    /** 选中时 */
+    /** selected at the time of selection */
     const onClick = useMemoizedFn((type: FontAlign) => {
         onDispatch(type);
     });
 
-    /** 更新工具栏的显示 */
+    /** Updating the display of the toolbar */
     const $updateToolbar = useMemoizedFn(() => {
         const selection = $getSelection();
         if (!$isRangeSelection(selection)) {
@@ -74,13 +74,13 @@ export const useAlign = () => {
     });
     useEffect(() => {
         return mergeRegister(
-            /** 当内容变化时 */
+            /** When content changes */
             editor.registerUpdateListener(({ editorState }) => {
                 editorState.read(() => {
                     $updateToolbar();
                 });
             }),
-            /** 监听选中文字，变化时更新工具栏 */
+            /** Listen for selected text and update the toolbar when it changes. */
             editor.registerCommand(
                 SELECTION_CHANGE_COMMAND,
                 () => {
@@ -93,9 +93,8 @@ export const useAlign = () => {
     }, [editor, $updateToolbar]);
 
     return {
-        /** 位置状态 */
+        /** position state */
         textAlignState,
-        /** 选中时 */
         onClick,
     };
 };

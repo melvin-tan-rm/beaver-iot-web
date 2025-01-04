@@ -8,7 +8,7 @@ type IProps = Pick<IEditorProps, 'onEditableChange'>;
 export const useTransmit = ({ onEditableChange }: IProps) => {
     const [editor] = useLexicalComposerContext();
 
-    /** 获取富文本实例 */
+    /** Get Rich Text editor instance */
     const getEditor = () => {
         return new Proxy(editor, {
             get: (target, prop) => {
@@ -17,7 +17,7 @@ export const useTransmit = ({ onEditableChange }: IProps) => {
             },
         });
     };
-    /** 获取富文本的html结构 */
+    /** Get rich text html structure */
     const getEditorHtml = () => {
         return new Promise<string>(resolve => {
             editor.getEditorState().read(() => {
@@ -26,7 +26,7 @@ export const useTransmit = ({ onEditableChange }: IProps) => {
             });
         });
     };
-    /** 设置富文本内容 */
+    /** Setting Rich Text Content */
     const setEditorContent = (content: string | SerializedEditorState) => {
         editor.setEditorState(editor.parseEditorState(content));
     };

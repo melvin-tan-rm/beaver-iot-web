@@ -6,15 +6,13 @@ import { TableViewIcon } from '../../../../../icons';
 import type { TableItemConfig } from '../../../../types';
 
 interface IProps {
-    /** 是否禁用 */
     disabled: boolean;
-    /** 初始化配置 */
     initConfig?: TableItemConfig['initConfig'];
 }
 export default React.memo(({ disabled, initConfig }: IProps) => {
     const [editor] = useLexicalComposerContext();
 
-    /** 点击插入表格 */
+    /** Click Insert Table */
     const handleTable = () => {
         const { rows = '4', columns = '4', includeHeaders } = initConfig || {};
 

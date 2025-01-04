@@ -9,16 +9,15 @@ import { useAlign } from './hooks';
 import type { TextAlignItemConfig } from '../../../../types';
 
 interface IProps {
-    /** 是否禁用 */
     disabled: boolean;
-    /** 控制显隐的配置 */
+    /** Configuration of the control of show and hide */
     items?: Required<TextAlignItemConfig>['items'];
 }
 export default React.memo(({ disabled, items }: IProps) => {
     const { textAlignState, onClick } = useAlign();
     const { isLeft, isCenter, isRight } = textAlignState || {};
 
-    /** 控制组件显隐 */
+    /** Controlling Component Visibility */
     const { textAlignLeft, textAlignCenter, textAlignRight } = useMemo(() => {
         return (items || []).reduce(
             (pre, cur) => {

@@ -34,7 +34,7 @@ export const useMouseEvent = ({
     const targetRef = useRef<HTMLElement | null>(null);
     const resizerRef = useRef<HTMLDivElement | null>(null);
 
-    /** 设置活动的表格项 */
+    /** Setting up active form items */
     const setupActiveCell = useMemoizedFn((cell: TableDOMCell, target: HTMLElement) => {
         editor.update(() => {
             // 获取最近的表格单元格节点 tableCellNode。
@@ -43,22 +43,22 @@ export const useMouseEvent = ({
                 throw new Error('TableCellResizer: Table cell node not found.');
             }
 
-            // 获取表格节点 tableNode。
+            // Get the most recent table cell node tableCellNode.
             const tableNode = $getTableNodeFromLexicalNodeOrThrow(tableCellNode);
-            // 通过表格节点的键获取表格元素 tableElement。
+            // Get the table element tableElement by the key of the table node.
             const tableElement = editor.getElementByKey(tableNode.getKey());
 
             if (!tableElement) {
                 throw new Error('TableCellResizer: Table element not found.');
             }
 
-            // 并设置新的活动单元格 activeCell
+            // and set a new active cell activeCell
             targetRef.current = target;
             tableRectRef.current = tableElement.getBoundingClientRect();
             updateActiveCell(cell);
         });
     });
-    /** 更新鼠标坐标 */
+    /** Update mouse coordinates */
     const setupMousePos = useMemoizedFn((x: number, y: number) => {
         updateMouseCurrentPos({ x, y });
     });
@@ -67,7 +67,7 @@ export const useMouseEvent = ({
         const onMouseMove = async (event: MouseEvent) => {
             await delay(0);
 
-            // 正在拖拽时，更新位置
+            // Update position while dragging
             if (draggingDirection) {
                 setupMousePos(event.clientX, event.clientY);
                 return;
@@ -75,30 +75,30 @@ export const useMouseEvent = ({
 
             const { target } = event;
 
-            // 更新 `isMouseDown` 状态，用于判断鼠标是否按下
+            // Updates the `isMouseDown` state to determine if the mouse is pressed.
             updateIsMouseDown(isMouseDownOnEvent(event));
             if (resizerRef.current && resizerRef.current.contains(target as Node)) return;
             if (targetRef.current === target) return;
 
-            // 获取目标元素对应的表格单元格 cell
+            // Get the table cell corresponding to the target element cell
             targetRef.current = target as HTMLElement;
             const cell = getDOMCellFromTarget(target as HTMLElement);
 
-            // 如果 cell 存在且与当前活动单元格 activeCell 不同，则使用 editor.update 更新编辑器状态：
+            // If the cell exists and is different from the currently active cell activeCell, use editor.update to update the editor state:
             if (cell && activeCell !== cell) {
                 setupActiveCell(cell, target as HTMLElement);
             } else if (cell == null) {
-                // 如果 cell 为空，则调用 resetState 重置状态
+                // If cell is empty, call resetState to reset the state.
                 resetState();
             }
         };
 
-        // 记录鼠标按下状态
+        // Record mouse press status
         const onMouseDown = async () => {
             await delay(0);
             updateIsMouseDown(true);
         };
-        // 记录鼠标抬起状态
+        // Record mouse up status
         const onMouseUp = async () => {
             await delay(0);
             updateIsMouseDown(false);

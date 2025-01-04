@@ -10,15 +10,15 @@ export const useMutation = ({ tableCellNode, updateTableCellNode }: IProps) => {
     const [editor] = useLexicalComposerContext();
 
     useEffect(() => {
-        // 监听`TableCellNode`类型节点的变化
+        // Listening for changes to nodes of type `TableCellNode`
         return editor.registerMutationListener(
             TableCellNode,
             nodeMutations => {
-                // 检查节点是否更新
+                // Check if the node is updated
                 const nodeUpdated = nodeMutations.get(tableCellNode.getKey()) === 'updated';
                 if (!nodeUpdated) return;
 
-                // 获取最新的 tableCellNode
+                // Get the latest tableCellNode
                 editor.getEditorState().read(() => {
                     updateTableCellNode(tableCellNode.getLatest());
                 });

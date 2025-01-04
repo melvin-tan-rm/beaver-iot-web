@@ -21,11 +21,11 @@ export default ({
 }: TableCellActionMenuProps) => {
     const [tableCellNode, updateTableCellNode] = useState(_tableCellNode);
 
-    // 监听表格节点变化
+    // Listening to table node changes
     useMutation({ tableCellNode, updateTableCellNode });
-    // 菜单集合
+    // Menu Collection
     const menuItems = useMenuItems({ tableCellNode, plugin });
-    // 菜单点击事件
+    // menu click event
     const { handleMenuChange } = useMenuHandler({
         tableCellNode,
         updateTableCellNode,

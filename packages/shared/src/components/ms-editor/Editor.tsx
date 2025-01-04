@@ -17,7 +17,7 @@ import type { EditorHandlers, IEditorProps } from './types';
 import './style.less';
 
 export const LexicalEditor = forwardRef<EditorHandlers, IEditorProps>((props, ref) => {
-    const { mode, placeholder, editorConfig, onSave, onCancel, renderOperator } = props;
+    const { mode, placeholder, editorConfig, onSave, onCancel, renderOperator, autoFocus } = props;
     const { toolbar = true, plugin } = editorConfig || {};
     const { table: tablePlugin } = plugin || {};
     const [isEditable, onEditableChange] = useEditable(props);
@@ -30,7 +30,7 @@ export const LexicalEditor = forwardRef<EditorHandlers, IEditorProps>((props, re
     };
 
     const handler = useTransmit({ onEditableChange });
-    /** 暴露给父组件的方法 */
+    /** expose methods to parent component */
     useImperativeHandle(ref, handler);
 
     return (
@@ -61,7 +61,7 @@ export const LexicalEditor = forwardRef<EditorHandlers, IEditorProps>((props, re
                     ErrorBoundary={LexicalErrorBoundary}
                 />
                 <HistoryPlugin />
-                <AutoFocusPlugin />
+                {autoFocus && <AutoFocusPlugin />}
                 <TablePlugin />
 
                 {floatingAnchorElem && (

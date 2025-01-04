@@ -34,14 +34,14 @@ interface IProps {
 export const useMenuHandler = ({ tableCellNode, updateTableCellNode }: IProps) => {
     const [editor] = useLexicalComposerContext();
 
-    // 清除表格选择的高亮
+    // Clearing the highlighting of a form selection
     const clearTableSelection = useCallback(() => {
         editor.update(() => {
-            //  检查 tableCellNode 是否附加到 DOM 中
+            //  Checks if the tableCellNode is attached to the DOM.
             if (tableCellNode.isAttached()) {
-                // 获取表格节点。
+                // Get the table node.
                 const tableNode = $getTableNodeFromLexicalNodeOrThrow(tableCellNode);
-                // 获取表格元素
+                // Getting Form Elements
                 const tableElement = editor.getElementByKey(
                     tableNode.getKey(),
                 ) as HTMLTableElementWithWithTableSelectionState;
@@ -50,89 +50,89 @@ export const useMenuHandler = ({ tableCellNode, updateTableCellNode }: IProps) =
                     throw new Error('Expected to find tableElement in DOM');
                 }
 
-                // 从表格元素中获取表格选择
+                // Getting form selections from form elements
                 const tableSelection = getTableObserverFromTableElement(tableElement);
                 if (tableSelection !== null) {
-                    //  如果表格选择存在，则清除其高亮。
-                    tableSelection.$clearHighlight();
+                    //  Clears the table selection from highlighting if it exists.
+                    tableSelection.clearHighlight();
                 }
 
-                // 标记表格节点为脏，需要重新渲染
+                // Mark table nodes as dirty and need to be re-rendered
                 tableNode.markDirty();
-                //  更新表格单元格节点的最新状态
+                //  Update the latest status of table cell nodes
                 updateTableCellNode(tableCellNode.getLatest());
             }
 
-            //  获取根节点
+            //  Getting the Root Node
             const rootNode = $getRoot();
-            // 选择根节点的开始位置
+            // Select the start position of the root node
             rootNode.selectStart();
         });
     }, [editor, tableCellNode]);
 
-    /** 合并单元格 */
+    /** Merge Cells */
     const mergeTableCellsAtSelection = () => {
         editor.update(() => {
-            // 获取当前的选择对象
+            // Get the current selection
             const selection = $getSelection();
-            //  检查当前选择是否为表格选择
+            //  Check if the current selection is a table selection
             if (!$isTableSelection(selection)) return;
 
-            // 计算选择的列数和行数:
+            // Calculate the number of columns and rows selected:
             const { columns, rows } = computeSelectionCount(selection);
-            // 获取选择的节点
+            // Get the selected node
             const nodes = selection.getNodes();
 
-            // 遍历选择区域内的所有节点
+            // Iterate over all nodes in the selection area
             let firstCell: null | TableCellNode = null;
             for (let i = 0; i < nodes.length; i++) {
                 const node = nodes[i];
-                // 检查节点是否为表格单元格节点。
+                // Checks if the node is a table cell node.
                 if ($isTableCellNode(node)) {
-                    // 如果 firstCell 为空，则将当前节点设置为第一个单元格节点：
+                    // If firstCell is empty, the current node is set to the first cell node:
                     if (firstCell === null) {
-                        // 设置单元格的列跨度和行跨度。
+                        // Sets the column span and row span of the cell.
                         node.setColSpan(columns).setRowSpan(rows);
                         firstCell = node;
-                        // 检查单元格是否包含空段落。
+                        // Checks if the cell contains empty paragraphs.
                         const isEmpty = $cellContainsEmptyParagraph(node);
                         let firstChild;
-                        // 如果单元格为空且第一个子节点是段落节点，则移除该段落节点。
+                        // If the cell is empty and the first child node is a paragraph node, the paragraph node is removed.
                         // eslint-disable-next-line no-cond-assign
                         if (isEmpty && $isParagraphNode((firstChild = node.getFirstChild()))) {
                             firstChild.remove();
                         }
                     } else if ($isTableCellNode(firstCell)) {
-                        //  检查当前单元格是否包含空段落。
+                        //  Checks if the current cell contains an empty paragraph.
                         const isEmpty = $cellContainsEmptyParagraph(node);
-                        // 如果当前单元格不为空，则将其子节点追加到第一个单元格中。
+                        // If the current cell is not empty, append its children to the first cell.
                         if (!isEmpty) {
                             firstCell.append(...node.getChildren());
                         }
-                        // 除当前单元格节点。
+                        // Remove the current cell node.
                         node.remove();
                     }
                 }
             }
-            // 如果 firstCell 不为空
+            // If firstCell is not empty
             if (firstCell !== null) {
-                // 如果第一个单元格没有子节点，则创建一个新的段落节点并添加到第一个单元格中。
+                // If the first cell has no children, a new paragraph node is created and added to the first cell.
                 if (firstCell.getChildrenSize() === 0) {
                     firstCell.append($createParagraphNode());
                 }
-                // 选择第一个单元格的最后一个子节点。
+                // Select the last child node of the first cell.
                 $selectLastDescendant(firstCell);
             }
         });
     };
-    /** 取消合并单元格 */
+    /** Unmerge Cells */
     const unMergeTableCellsAtSelection = () => {
         editor.update(() => {
             $unmergeCell();
         });
     };
 
-    /** 插入行 */
+    /** insertion line */
     const insertTableRowAtSelection = useCallback(
         (shouldInsertAfter: boolean, count?: number) => {
             const insertCount = count ?? 1;
@@ -145,7 +145,7 @@ export const useMenuHandler = ({ tableCellNode, updateTableCellNode }: IProps) =
         },
         [editor],
     );
-    /** 插入列 */
+    /** Insert column */
     const insertTableColumnAtSelection = useCallback(
         (shouldInsertAfter: boolean, count?: number) => {
             const insertCount = count ?? 1;
@@ -158,19 +158,19 @@ export const useMenuHandler = ({ tableCellNode, updateTableCellNode }: IProps) =
         },
         [editor],
     );
-    /** 删除行 */
+    /** Delete rows */
     const deleteTableRowAtSelection = useCallback(() => {
         editor.update(() => {
             $deleteTableRow();
         });
     }, [editor]);
-    /** 删除列 */
+    /** Delete column */
     const deleteTableColumnAtSelection = useCallback(() => {
         editor.update(() => {
             $deleteTableColumn();
         });
     }, [editor]);
-    /** 删除表格 */
+    /** Delete Form */
     const deleteTableAtSelection = useCallback(() => {
         editor.update(() => {
             const tableNode = $getTableNodeFromLexicalNodeOrThrow(tableCellNode);
@@ -180,7 +180,7 @@ export const useMenuHandler = ({ tableCellNode, updateTableCellNode }: IProps) =
         });
     }, [editor, tableCellNode, clearTableSelection]);
 
-    /** 添加/移除行标题 */
+    /** Add/remove line titles */
     const toggleTableRowIsHeader = useCallback(() => {
         editor.update(() => {
             const tableNode = $getTableNodeFromLexicalNodeOrThrow(tableCellNode);
@@ -201,14 +201,14 @@ export const useMenuHandler = ({ tableCellNode, updateTableCellNode }: IProps) =
                     throw new Error('Expected table cell');
                 }
 
-                // 添加/移除行标题
+                // Add/remove line titles
                 tableCell.toggleHeaderStyle(TableCellHeaderStates.ROW);
             });
 
             clearTableSelection();
         });
     }, [editor, tableCellNode, clearTableSelection]);
-    /** 添加/移除列标题 */
+    /** Adding/Removing Column Headers */
     const toggleTableColumnIsHeader = useCallback(() => {
         editor.update(() => {
             const tableNode = $getTableNodeFromLexicalNodeOrThrow(tableCellNode);
@@ -238,7 +238,7 @@ export const useMenuHandler = ({ tableCellNode, updateTableCellNode }: IProps) =
                     throw new Error('Expected table cell');
                 }
 
-                /** 添加/移除列标题 */
+                /** Adding/Removing Column Headers */
                 tableCell.toggleHeaderStyle(TableCellHeaderStates.COLUMN);
             }
 
@@ -246,7 +246,7 @@ export const useMenuHandler = ({ tableCellNode, updateTableCellNode }: IProps) =
         });
     }, [editor, tableCellNode, clearTableSelection]);
 
-    /** 表格操作 */
+    /** Table Operations */
     const handleMenuChange = useMemoizedFn((item: MenuItemType) => {
         const { key } = item;
 

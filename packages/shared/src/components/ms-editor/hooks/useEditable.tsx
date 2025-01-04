@@ -19,13 +19,13 @@ export const useEditable = (props: IEditorProps) => {
     }, [editor, isEditable]);
 
     return useMemo(() => {
-        // 默认可读可写
+        // Read-write by default
         if (!mode) return [isEditable, setIsEditable] as const;
 
-        // 有写入权限时，富文本可编辑
+        // Rich text editable with write permission
         if (!hasEditable(mode)) return [false, () => void 0] as const;
 
-        // 有只读权限时，富文本只读
+        // Rich text read-only when read-only permission is available
         if (!hasReadOnly(mode)) return [true, () => void 0] as const;
 
         return [isEditable, setIsEditable] as const;

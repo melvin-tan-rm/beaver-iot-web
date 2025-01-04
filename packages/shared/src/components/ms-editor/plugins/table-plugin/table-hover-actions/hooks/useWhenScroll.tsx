@@ -16,7 +16,7 @@ export const useWhenScroll = (fn: (...params: any[]) => any) => {
     );
 
     useEffect(() => {
-        // 滚动的时候，不显示添加按钮
+        // add button no shown when scrolling
         const dom = getEditorContent();
         if (!dom) return;
 

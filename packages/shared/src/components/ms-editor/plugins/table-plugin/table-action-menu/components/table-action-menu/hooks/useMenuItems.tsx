@@ -17,23 +17,23 @@ export const useMenuItems = ({ tableCellNode, plugin }: IProps) => {
     const [canMergeCells, setCanMergeCells] = useState(false);
     const [canUnMergeCell, setCanUnMergeCell] = useState(false);
 
-    // 判断合并/取消合并单元格
+    // Judging merged/unmerged cells
     useEffect(() => {
         editor.getEditorState().read(() => {
-            // 获取当前的选择对象
+            // Get the current selection
             const selection = $getSelection();
 
-            // 检查当前选择是否是表格选择。
+            // Checks if the current selection is a table selection.
             if ($isTableSelection(selection)) {
-                // 计算当前选择的行和列数。
+                // Calculates the number of rows and columns currently selected.
                 const currentSelectionCounts = computeSelectionCount(selection);
-                // 设置是否可以合并单元格的状态
+                // Setting the status of whether cells can be merged
                 setCanMergeCells(
                     isTableSelectionRectangular(selection) &&
                         (currentSelectionCounts.columns > 1 || currentSelectionCounts.rows > 1),
                 );
             }
-            // 取消合并单元格逻辑
+            // Unmerge cell logic
             setCanUnMergeCell($canUnmerge());
         });
     }, [editor]);
@@ -96,7 +96,7 @@ export const useMenuItems = ({ tableCellNode, plugin }: IProps) => {
         ];
 
         if (canMergeCells) {
-            // 合并单元格
+            // Merge Cells
             menus = [
                 {
                     key: 'mergeCells',
@@ -109,7 +109,7 @@ export const useMenuItems = ({ tableCellNode, plugin }: IProps) => {
             ];
         }
         if (canUnMergeCell) {
-            // 拆分单元格
+            // Splitting cells
             menus = [
                 {
                     key: 'unMergeCells',
@@ -124,7 +124,7 @@ export const useMenuItems = ({ tableCellNode, plugin }: IProps) => {
 
         let currentType = '';
         return menus.filter(menu => {
-            // 控制菜单项是否显示
+            // Controls whether menu items are displayed
             if ('key' in menu) {
                 const { key } = menu;
                 const flag = config?.menus?.[key] ?? true;
@@ -132,7 +132,7 @@ export const useMenuItems = ({ tableCellNode, plugin }: IProps) => {
                 return flag;
             }
 
-            // 控制横线是否显示
+            // Controls whether horizontal lines are displayed
             if ('type' in menu) {
                 if (currentType === 'divider') return false;
 

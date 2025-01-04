@@ -33,35 +33,35 @@ export default function ToolbarPlugin({
     const [editor] = useLexicalComposerContext();
     const [getEditableState, updateEditableState] = useSignalState<EditorState | null>(null);
 
-    /** 点击保存/编辑时 */
+    /** When clicking Save/Edit */
     const handleClick = () => {
         const prevIsEditable = isEditable;
 
         if (!prevIsEditable) {
-            // 保存当前快照
+            // Save the current snapshot
             const editorState = editor.getEditorState();
             updateEditableState(editorState);
         } else {
             updateEditableState(null);
         }
 
-        // 更改当前只读/编辑
+        // Change current read-only/edit
         onEditableChange?.(!prevIsEditable);
         if (prevIsEditable) {
-            // 保存
+            // save
             const data = editor.getEditorState().toJSON();
             onSave && onSave(data);
         }
     };
-    /** 取消 */
+    /** cancel */
     const handleCancel = async () => {
         await (onCancel && onCancel());
 
-        // 还原默认内容
+        // Restore default content
         const editableState = getEditableState();
         editableState && editor.setEditorState(editableState);
 
-        // 更改当前只读/编辑
+        // Change current read-only/edit
         onEditableChange?.(!isEditable);
     };
     const ToolbarGroup = useGroup({ editorConfig });

@@ -8,9 +8,9 @@ import {
 } from '../constants';
 
 /**
- * 判断鼠标是否在表格中
- * @returns `isOutside`: 表示鼠标是否在特定元素外。
- * @returns `tableDOMNode`: 是找到的最近的表格单元格节点。
+ * determines if the mouse is in the table
+ * @returns `isOutside`: indicates whether the mouse is outside a specific element.
+ * @returns `tableDOMNode`: is the closest table cell node found
  */
 export const getMouseInfo = (
     event: MouseEvent,

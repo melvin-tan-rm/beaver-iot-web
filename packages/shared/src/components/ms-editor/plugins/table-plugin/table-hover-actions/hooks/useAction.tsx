@@ -27,13 +27,13 @@ export const useAction = ({
 
     useEffect(() => {
         return mergeRegister(
-            // 用于注册一个监听器，以监听 TableNode 类型的节点的变化。
+            // Used to register a listener to listen for changes to nodes of type table node
             editor.registerMutationListener(
                 TableNode,
                 mutations => {
-                    // 读取编辑器的上下文状态
+                    // Read the context state of the editor
                     editor.getEditorState().read(() => {
-                        // 记录表格的增减，`shouldListenMouseMove`维护判断富文本中是否还有表格,
+                        // Record the increase or decrease of a table, `shouldListenMouseMove` maintains the ability to determine if there is still a table in the rich text.
                         for (const [key, type] of mutations) {
                             switch (type) {
                                 case 'created':
@@ -57,7 +57,7 @@ export const useAction = ({
         );
     }, [editor]);
 
-    /** 操作按钮 */
+    /** Operator buttons */
     const insertAction = useMemoizedFn((insertRow: boolean) => {
         editor.update(() => {
             if (tableDOMNodeRef.current) {
@@ -65,11 +65,11 @@ export const useAction = ({
                 maybeTableNode?.selectEnd();
 
                 if (insertRow) {
-                    // 添加行
+                    // Add Row
                     $insertTableRow();
                     setShownRow(false);
                 } else {
-                    // 添加列
+                    // Add Row
                     $insertTableColumn();
                     setShownColumn(false);
                 }

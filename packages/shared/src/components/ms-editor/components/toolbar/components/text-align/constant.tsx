@@ -7,7 +7,7 @@ export const IS_ALIGN_JUSTIFY = 4;
 export const IS_ALIGN_START = 5;
 export const IS_ALIGN_END = 6;
 
-/** 位置映射 */
+/** position map */
 export const ELEMENT_TYPE_TO_FORMAT: Record<Exclude<ElementFormatType, ''>, number> = {
     center: IS_ALIGN_CENTER,
     end: IS_ALIGN_END,

@@ -21,23 +21,19 @@ export const useFormat = () => {
         isStrikethrough: false,
     });
 
-    /** 加粗 */
     const insertBold = useMemoizedFn(() => {
         editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
     });
-    /** 斜体 */
     const insertItalic = useMemoizedFn(() => {
         editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic');
     });
-    /** 下划线 */
     const insertUnderline = useMemoizedFn(() => {
         editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline');
     });
-    /** 删除线 */
     const insertStrikethrough = useMemoizedFn(() => {
         editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough');
     });
-    /** 触发对应的文字变更 */
+    /** Trigger corresponding text changes */
     const onDispatch = useMemoizedFn((type: FontFormat) => {
         const strategy: Record<FontFormat, () => void> = {
             bold: insertBold,
@@ -49,12 +45,12 @@ export const useFormat = () => {
         const fn = strategy[type];
         return fn && fn();
     });
-    /** 选中时 */
+    /** selected at the time of selection */
     const onClick = useMemoizedFn((type: FontFormat) => {
         onDispatch(type);
     });
 
-    /** 更新工具栏的显示 */
+    /** Updating the display of the toolbar */
     const $updateToolbar = useMemoizedFn(() => {
         const selection = $getSelection();
         if (!$isRangeSelection(selection)) {
@@ -75,14 +71,13 @@ export const useFormat = () => {
         });
     });
     useEffect(() => {
+        /** listener register */
         return mergeRegister(
-            /** 当内容变化时 */
             editor.registerUpdateListener(({ editorState }) => {
                 editorState.read(() => {
                     $updateToolbar();
                 });
             }),
-            /** 监听字号变化，变化时，更新工具栏 */
             editor.registerCommand(
                 SELECTION_CHANGE_COMMAND,
                 () => {
@@ -95,9 +90,8 @@ export const useFormat = () => {
     }, [editor, $updateToolbar]);
 
     return {
-        /** 字体状态 */
+        /** font state */
         textFormatState,
-        /** 选中时 */
         onClick,
     };
 };

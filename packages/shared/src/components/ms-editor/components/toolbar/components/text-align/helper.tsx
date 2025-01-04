@@ -2,7 +2,7 @@ import { $isElementNode, ElementFormatType, ElementNode, LexicalNode } from 'lex
 import { $findMatchingParent } from '@lexical/utils';
 import { ELEMENT_TYPE_TO_FORMAT } from './constant';
 
-/** 判断是否包含位置信息 */
+/** Determine if location information is included */
 export const hasAlignFormat = (node: LexicalNode, type: Exclude<ElementFormatType, ''>) => {
     const element = $findMatchingParent(
         node,

@@ -15,12 +15,12 @@ export const useFontColor = () => {
     const [editor] = useLexicalComposerContext();
     const [fontColor, setFontColor] = useState<string>(DEFAULT_FONT_COLOR);
 
-    /** 下拉切换时 */
+    /** When scrolling down to switch */
     const onChange = useMemoizedFn((value: string) => {
         updateFontColorInSelection(value);
     });
 
-    /** 修改内容字体颜色的主要函数 */
+    /** Main functions for modifying content font color */
     const updateFontColorInSelection = useMemoizedFn((newFontColor: string) => {
         editor.update(() => {
             const selection = $getSelection();
@@ -37,7 +37,6 @@ export const useFontColor = () => {
         });
     });
 
-    /** 更新工具栏的显示 */
     const $updateToolbar = useMemoizedFn(() => {
         const selection = $getSelection();
         if (!$isRangeSelection(selection)) {
@@ -45,7 +44,6 @@ export const useFontColor = () => {
             return;
         }
 
-        /** 获取当前字号颜色 */
         const currentFontColor = $getSelectionStyleValueForProperty(
             selection,
             'color',
@@ -73,9 +71,7 @@ export const useFontColor = () => {
     }, [editor, $updateToolbar]);
 
     return {
-        /** 字体颜色 */
         fontColor,
-        /** 下拉切换时 */
         onChange,
     };
 };

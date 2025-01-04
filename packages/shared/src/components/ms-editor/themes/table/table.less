@@ -2,7 +2,7 @@
 
 .@{editor} {
     &__table {
-        // 添加按钮样式
+        // add buttons css
         @keyframes table-controls {
             0% {
                 opacity: 0;
@@ -20,13 +20,11 @@
         border-spacing: 0;
         border-collapse: collapse;
 
-        // 表头
         &-cell-header {
             text-align: start;
             background-color: var(--gray-1);
         }
 
-        // 每个表格格子
         &-cell {
             position: relative;
             width: 75px;
@@ -38,12 +36,10 @@
             outline: none;
         }
 
-        // 表身
         td&-cell {
             background-color: var(--main-background);
         }
 
-        // 选中效果
         &-selection {
             *::selection {
                 color: unset;
@@ -58,13 +54,11 @@
                 animation: table-controls 0.2s ease;
             }
 
-            // 添加列的样式
             &-columns {
                 height: 100%;
                 padding-left: @padding-xxs;
             }
 
-            // 添加行的样式
             &-rows {
                 width: calc(100% - 32px);
                 padding-top: @padding-xxs;

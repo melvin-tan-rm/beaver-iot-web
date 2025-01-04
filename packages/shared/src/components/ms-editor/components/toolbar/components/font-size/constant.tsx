@@ -1,4 +1,4 @@
-/** 字号下拉选项 */
+/** Font size drop-down options */
 export const FontSizeOptions = [
     {
         label: '8px',
@@ -66,5 +66,4 @@ export const FontSizeOptions = [
     },
 ];
 
-/** 默认字号 */
 export const DEFAULT_FONT_SIZE = 14;

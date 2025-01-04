@@ -1,4 +1,4 @@
-/** 字号颜色选项 */
+/** Font color Options */
 export const FontColorOptions = [
     {
         key: 'black',
@@ -34,5 +34,4 @@ export const FontColorOptions = [
     },
 ];
 
-/** 默认字体颜色 */
 export const DEFAULT_FONT_COLOR = '#000';

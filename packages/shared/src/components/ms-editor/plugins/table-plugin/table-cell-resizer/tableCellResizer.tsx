@@ -30,7 +30,7 @@ const TableCellResizer = ({
         null,
     );
 
-    /** 重置状态 */
+    /** reset state */
     const resetState = useCallback(() => {
         updateActiveCell(null);
         targetRef.current = null;
@@ -39,7 +39,7 @@ const TableCellResizer = ({
         tableRectRef.current = null;
     }, []);
 
-    // 监听鼠标事件，获取活动表格
+    // Listen to mouse events to get the active form
     useMouseEvent({
         resetState,
         updateMouseCurrentPos,
@@ -49,7 +49,7 @@ const TableCellResizer = ({
         activeCell,
         updateActiveCell,
     });
-    // 计算拖动的位置
+    // Calculate the position of the drag
     const { getResizes } = useResizeStyle({
         activeCell,
         draggingDirection,

@@ -11,16 +11,15 @@ import { useFormat } from './hooks';
 import type { TextFormatItemConfig } from '../../../../types';
 
 interface IProps {
-    /** 是否禁用 */
     disabled: boolean;
-    /** 控制显隐的配置 */
+    /** Configuration of the control of show and hide */
     items?: Required<TextFormatItemConfig>['items'];
 }
 export default React.memo(({ disabled, items }: IProps) => {
     const { textFormatState, onClick } = useFormat();
     const { isBold, isItalic, isUnderline, isStrikethrough } = textFormatState || {};
 
-    /** 控制组件显隐 */
+    /** Controlling Component Visibility */
     const { fontBold, fontItalic, fontUnderline, fontStrikethrough } = useMemo(() => {
         return (items || []).reduce(
             (pre, cur) => {

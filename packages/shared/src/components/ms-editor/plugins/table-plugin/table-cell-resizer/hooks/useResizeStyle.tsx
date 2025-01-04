@@ -27,12 +27,12 @@ export const useResizeStyle = ({
     const { getCSSVariableValue } = useTheme();
 
     /**
-     * 定义了两个基本样式对象 styles，分别用于调整底部（bottom）和右侧（right）的手柄样式。
+     * Two basic style objects, styles, are defined to adjust the bottom and right handles.
      */
     const initStyles = useMemoizedFn((activeCell: TableDOMCell): IStyle => {
-        // 获取活动单元格的尺寸和位置
+        // Get the size and position of the active cell
         const { height, width, top, left } = activeCell.elem.getBoundingClientRect();
-        const zoneWidth = 4; // 定义了可以拖拽的边缘区域宽度
+        const zoneWidth = 4; // Defines the width of the edge area that can be dragged
 
         const { y: editorElemY, left: editorElemLeft } = anchorElem.getBoundingClientRect();
         return {
@@ -55,7 +55,7 @@ export const useResizeStyle = ({
         };
     });
 
-    /** 根据拖拽方向和位置调整相应的手柄样式 */
+    /** Adjust the handle style according to the dragging direction and position */
     const updateStyle = useMemoizedFn(
         (
             activeCell: TableDOMCell,
@@ -67,14 +67,14 @@ export const useResizeStyle = ({
 
             const { y: editorElemY, left: editorElemLeft } = anchorElem.getBoundingClientRect();
             const zoom = calculateZoomLevel(activeCell!.elem);
-            // 设置拖拽线的宽度
+            // Set the width of the drag line
             const solidWidth = 2;
-            // 设置拖拽线的颜色
+            // Setting the colour of the dragline
             const solidColor = getCSSVariableValue('--border-color-blue');
 
-            // 根据拖拽方向调整相应的手柄样式：
+            // Adjust the handle style accordingly to the direction of dragging:
             if (isHeightChanging(draggingDirection)) {
-                // 如果拖拽方向是调整高度，则更新手柄和竖线的位置
+                // If the drag direction is to adjust the height, update the position of the handle and the vertical line
                 styles[draggingDirection].left = `${
                     window.scrollX - editorElemLeft + tableRect.left
                 }px`;
@@ -84,7 +84,7 @@ export const useResizeStyle = ({
                 styles[draggingDirection].height = `${solidWidth}px`;
                 styles[draggingDirection].width = `${tableRect.width}px`;
             } else {
-                // 如果拖拽方向是调整宽度，则更新手柄和横线的位置
+                // If the drag direction is to adjust the width, update the position of the handle and the horizontal line
                 styles[draggingDirection].top = `${window.scrollY - editorElemY + tableRect.top}px`;
                 styles[draggingDirection].left = `${
                     window.scrollX - editorElemLeft + mouseCurrentPos.x / zoom
@@ -98,10 +98,12 @@ export const useResizeStyle = ({
         },
     );
 
-    /** 用于获取调整手柄的样式。根据活动单元格的位置和尺寸，以及拖拽方向和鼠标当前位置，计算调整手柄的样式。 */
+    /** Used to get the style of the adjustment handle.
+     * The style of the adjustment handle is calculated based on the position
+     * and size of the active cell, as well as the drag direction and the current position of the mouse. */
     const getResizes = useCallback(() => {
         if (!activeCell) {
-            // 没有活动单元格，则返回空对象。
+            // If there is no active cell, an empty object is returned.
             return {
                 bottom: null,
                 left: null,
@@ -110,9 +112,9 @@ export const useResizeStyle = ({
             };
         }
 
-        // 初始化手柄样式
+        // Initial handle style
         const styles = initStyles(activeCell);
-        // 根据拖拽方向和位置调整相应的手柄样式
+        // Adjust the handle style according to the dragging direction and position
         return updateStyle(activeCell, styles, draggingDirection);
     }, [activeCell, draggingDirection, mouseCurrentPos, getCSSVariableValue]);
 

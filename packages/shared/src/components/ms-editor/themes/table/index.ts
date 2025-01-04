@@ -2,7 +2,7 @@ import type { EditorThemeClasses } from 'lexical';
 import { getEditorClass } from '../../helper';
 import './table.less';
 
-/** 表格样式主题定义 */
+/** table css theme define */
 export const TableEditorTheme: EditorThemeClasses = {
     table: getEditorClass('table'),
     tableCell: getEditorClass('table-cell'),

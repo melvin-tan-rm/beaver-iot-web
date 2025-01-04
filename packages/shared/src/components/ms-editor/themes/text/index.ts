@@ -2,7 +2,7 @@ import type { EditorThemeClasses } from 'lexical';
 import { getEditorClass } from '../../helper';
 import './text.less';
 
-/** 文字样式主题定义 */
+/** text theme editor css define */
 export const TextEditorTheme: EditorThemeClasses = {
     text: {
         bold: getEditorClass('text-bold'),

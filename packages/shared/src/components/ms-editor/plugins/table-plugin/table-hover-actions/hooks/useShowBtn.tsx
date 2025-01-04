@@ -38,7 +38,7 @@ export const useShowBtn = ({
     const [position, setPosition] = useState({});
 
     /**
-     * 获取表格节点
+     * get table node
      */
     const getTableNodeElement = useMemoizedFn((tableDOMNode: HTMLElement) => {
         if (!tableDOMNode) return;
@@ -50,29 +50,29 @@ export const useShowBtn = ({
         let tableDOMElement: HTMLElement | null = null;
 
         editor.update(() => {
-            // 获取最近的表格单元格节点。
+            // get the nearest table cell node
             const maybeTableCell = $getNearestNodeFromDOMNode(tableDOMNode);
             if (!$isTableCellNode(maybeTableCell)) return;
 
-            // 查找包含该单元格的表格节点
+            // find included the table cell node
             const table = $findMatchingParent(maybeTableCell, node => $isTableNode(node));
             if (!$isTableNode(table)) return;
 
-            // 获取表格 DOM 元素。
+            // get table node element
             tableDOMElement = editor.getElementByKey(table?.getKey());
             if (!tableDOMElement) return;
 
-            // 获取表格的行数和列数。
+            // get table row and column
             const rowCount = table.getChildrenSize();
             const colCount = (
                 (table as TableNode).getChildAtIndex(0) as TableRowNode
             )?.getChildrenSize();
 
-            // 获取当前单元格的行索引和列索引。
+            // get current table cell row index and column index
             const rowIndex = $getTableRowIndexFromTableCellNode(maybeTableCell);
             const colIndex = $getTableColumnIndexFromTableCellNode(maybeTableCell);
 
-            // 判断当前单元格是否是最后一行或最后一列，并相应地设置 `hoveredRowNode` 或 `hoveredColumnNode。`
+            // determine current cell is the last row or the last column, then set `hoveredRowNode` or `hoveredColumnNode。`
             if (rowIndex === rowCount - 1) {
                 hoveredRowNode = maybeTableCell;
             } else if (colIndex === colCount - 1) {
@@ -88,7 +88,7 @@ export const useShowBtn = ({
     });
 
     /**
-     * 设置按钮的样式
+     * set button style
      */
     const setupBtnStyle = useMemoizedFn(
         (
@@ -98,7 +98,7 @@ export const useShowBtn = ({
         ) => {
             if (!tableDOMElement) return;
 
-            // 获取表格 DOM 元素的位置信息:
+            // get table dom element position information
             const {
                 width: tableElemWidth,
                 y: tableElemY,
@@ -107,10 +107,10 @@ export const useShowBtn = ({
                 bottom: tableElemBottom,
                 height: tableElemHeight,
             } = (tableDOMElement as HTMLTableElement).getBoundingClientRect();
-            // 获取挂载点的位置信息
+            // get the location information of the mount point
             const { y: editorElemY, left: editorElemLeft } = anchorElem.getBoundingClientRect();
 
-            // 根据鼠标悬停的位置更新 UI:
+            //  updates the Ui based on where the mouse is hovering
             if (hoveredRowNode) {
                 setShownColumn(false);
                 setShownRow(true);
@@ -133,13 +133,13 @@ export const useShowBtn = ({
         },
     );
 
-    /** 隐藏添加按钮 */
+    /** hide the add button */
     const hiddenButton = useMemoizedFn(() => {
         setShownRow(false);
         setShownColumn(false);
         cancelDebouncedOnMouseMove();
     });
-    // 滚动时，隐藏按钮
+    // hide button when scrolling
     const { getIsScroll } = useWhenScroll(hiddenButton);
 
     const { run: debouncedOnMouseMove, cancel: cancelDebouncedOnMouseMove } = useDebounceFn(
@@ -149,7 +149,7 @@ export const useShowBtn = ({
             const { isOutside, tableDOMNode } = getMouseInfo(event);
 
             if (isOutside) {
-                // 鼠标不在表格内，不显示增加按钮
+                // Mouse is not in the form, then the add button is not displayed
                 setShownRow(false);
                 setShownColumn(false);
                 return;

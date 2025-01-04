@@ -32,7 +32,7 @@ export const useHandleResize = ({
 }: IProps) => {
     const [editor] = useLexicalComposerContext();
 
-    /** 获取单元格的宽度。 */
+    /** Gets the width of the cell. */
     const getCellNodeWidth = (
         cell: TableCellNode,
         activeEditor: LexicalEditor,
@@ -50,7 +50,7 @@ export const useHandleResize = ({
             parseFloat(computedStyle.paddingRight)
         );
     };
-    /** 获取单元格的高度。 */
+    /** Gets the height of the cell. */
     const getCellNodeHeight = (
         cell: TableCellNode,
         activeEditor: LexicalEditor,
@@ -58,7 +58,7 @@ export const useHandleResize = ({
         const domCellNode = activeEditor.getElementByKey(cell.getKey());
         return domCellNode?.clientHeight;
     };
-    /** 获取单元格在表格中的列索引 */
+    /** Getting the column index of a cell in a table */
     const getCellColumnIndex = (tableCellNode: TableCellNode, tableMap: TableMapType) => {
         for (let row = 0; row < tableMap.length; row++) {
             for (let column = 0; column < tableMap[row].length; column++) {
@@ -69,7 +69,7 @@ export const useHandleResize = ({
         }
     };
 
-    /** 更新表格行的高度 */
+    /** Updating the height of a table row */
     const updateRowHeight = useCallback(
         (heightChange: number) => {
             if (!activeCell) {
@@ -78,42 +78,42 @@ export const useHandleResize = ({
 
             editor.update(
                 () => {
-                    // 获取最近的表格单元格节点 tableCellNode
+                    // Get the nearest table cell node tableCellNode
                     const tableCellNode = $getNearestNodeFromDOMNode(activeCell.elem);
                     if (!$isTableCellNode(tableCellNode)) {
                         throw new Error('TableCellResizer: Table cell node not found.');
                     }
-                    // 取表格节点 tableNode
+                    // Fetch table node tableNode
                     const tableNode = $getTableNodeFromLexicalNodeOrThrow(tableCellNode);
 
-                    // 获取表格单元格所在的行索引 tableRowIndex
+                    // Get the row index of the table cell tableRowIndex
                     const tableRowIndex = $getTableRowIndexFromTableCellNode(tableCellNode);
-                    // 获取表格的所有行 tableRows
+                    // Get all rows of the table tableRows
                     const tableRows = tableNode.getChildren();
 
-                    // 检查 tableRowIndex 是否在有效范围内
+                    // Check if tableRowIndex is in the valid range
                     if (tableRowIndex >= tableRows.length || tableRowIndex < 0) {
                         throw new Error('Expected table cell to be inside of table row.');
                     }
-                    // 获取对应的表格行 tableRow
+                    // Get the corresponding table row tableRow
                     const tableRow = tableRows[tableRowIndex];
 
                     if (!$isTableRowNode(tableRow)) {
                         throw new Error('Expected table row');
                     }
 
-                    // 获取表格行的高度 height
+                    // Get the height of the table row height
                     let height = tableRow.getHeight();
-                    // 如果高度未定义，则获取该行的所有单元格，并计算这些单元格的最小高度。
+                    // If the height is undefined, gets all the cells in the row and calculates the minimum height of those cells.
                     if (height === undefined) {
                         const rowCells = tableRow.getChildren<TableCellNode>();
                         height = Math.min(
                             ...rowCells.map(cell => getCellNodeHeight(cell, editor) ?? Infinity),
                         );
                     }
-                    // 计算新的高度 newHeight，确保其不小于最小行高度 MIN_ROW_HEIGHT。
+                    // Calculate the newHeight newHeight, making sure it is not less than the minimum row height MIN_ROW_HEIGHT.
                     const newHeight = Math.max(height + heightChange, MIN_ROW_HEIGHT);
-                    // 设置表格行的新高度 newHeight。
+                    // Sets the new height of the table rows newHeight.
                     tableRow.setHeight(newHeight);
                 },
                 { tag: 'skip-scroll-into-view' },
@@ -121,7 +121,7 @@ export const useHandleResize = ({
         },
         [activeCell, editor],
     );
-    /** 更新表格列的宽度 */
+    /** Updating the width of table columns */
     const updateColumnWidth = useCallback(
         (widthChange: number) => {
             if (!activeCell) {
@@ -129,40 +129,40 @@ export const useHandleResize = ({
             }
             editor.update(
                 () => {
-                    // 获取最近的表格单元格节点 tableCellNode。
+                    // Get the most recent table cell node tableCellNode.
                     const tableCellNode = $getNearestNodeFromDOMNode(activeCell.elem);
-                    // 检查 tableCellNode 是否为表格单元格节点
+                    // Checks if tableCellNode is a table cell node.
                     if (!$isTableCellNode(tableCellNode)) {
                         throw new Error('TableCellResizer: Table cell node not found.');
                     }
-                    // 获取表格节点 tableNode。
+                    // Gets the table node tableNode.
                     const tableNode = $getTableNodeFromLexicalNodeOrThrow(tableCellNode);
-                    // 计算表格的映射 tableMap
+                    // Compute the table map tableMap
                     const [tableMap] = $computeTableMapSkipCellCheck(tableNode, null, null);
-                    // 获取单元格所在列的索引 columnIndex
+                    // Get the index of the column where the cell is located columnIndex
                     const columnIndex = getCellColumnIndex(tableCellNode, tableMap);
                     if (columnIndex === undefined) {
                         throw new Error('TableCellResizer: Table column not found.');
                     }
 
                     for (let row = 0; row < tableMap.length; row++) {
-                        // 遍历 tableMap 中的每一行，获取当前列的单元格 cell
+                        // Iterate through each row of the tableMap to get the cell in the current column.
                         const cell: TableMapValueType = tableMap[row][columnIndex];
-                        // 检查当前单元格是否为该行的起始单元格，并且是否为该列的最后一个单元格或下一个单元格不同。
+                        // Checks if the current cell is the start cell of the row and if it is different from the last cell or the next cell in the column.
                         if (
                             cell.startRow === row &&
                             (columnIndex === tableMap[row].length - 1 ||
                                 tableMap[row][columnIndex].cell !==
                                     tableMap[row][columnIndex + 1].cell)
                         ) {
-                            // 获取单元格的宽度 width。
+                            // Get the width of the cell width.
                             const width = getCellNodeWidth(cell.cell, editor);
                             if (width === undefined) {
                                 continue;
                             }
-                            // 计算新的宽度 newWidth，确保其不小于最小列宽度 `MIN_COLUMN_WIDTH`
+                            // Calculate the newWidth, making sure it is not less than the minimum column width `MIN_COLUMN_WIDTH`.
                             const newWidth = Math.max(width + widthChange, MIN_COLUMN_WIDTH);
-                            // 设置单元格的新宽度 newWidth
+                            // Set the new width of the cell newWidth
                             cell.cell.setWidth(newWidth);
                         }
                     }
@@ -173,7 +173,7 @@ export const useHandleResize = ({
         [activeCell, editor],
     );
 
-    /** 处理鼠标抬起事件 */
+    /** Handling mouse up events */
     const mouseUpHandler = useCallback(
         (direction: MouseDraggingDirection) => {
             const handler = (event: MouseEvent) => {
@@ -184,19 +184,19 @@ export const useHandleResize = ({
                 }
                 if (!mouseStartPosRef.current) return;
 
-                // 获取鼠标起始位置的 x 和 y 坐标。
+                // Get the x and y coordinates of the mouse start position.
                 const { x, y } = mouseStartPosRef.current;
                 if (activeCell === null) return;
 
-                // 然后计算当前缩放级别 zoom
+                // The current zoom level is then calculated zoom
                 const zoom = calculateZoomLevel(event.target as Element);
 
-                // 如果是调整高度，计算高度变化量 heightChange，然后调用`updateRowHeight`更新行高
+                // If you're adjusting the height, calculate the heightChange and call `updateRowHeight` to update the row height.
                 if (isHeightChanging(direction)) {
                     const heightChange = (event.clientY - y) / zoom;
                     updateRowHeight(heightChange);
                 } else {
-                    // 如果是调整宽度，计算宽度变化量 widthChange，然后调用`updateColumnWidth`更新列宽
+                    // If you are adjusting the width, calculate the widthChange and call `updateColumnWidth` to update the column width.
                     const widthChange = (event.clientX - x) / zoom;
                     updateColumnWidth(widthChange);
                 }
@@ -209,7 +209,7 @@ export const useHandleResize = ({
         [activeCell, resetState, updateColumnWidth, updateRowHeight],
     );
 
-    /** 用于切换调整状态。记录鼠标起始位置并更新拖拽方向，同时添加鼠标抬起事件监听。 */
+    /** Used to toggle the adjustment state. Record the mouse start position and update the drag direction, and add a mouse lift event listener.。 */
     const toggleResize = useCallback(
         (direction: MouseDraggingDirection): MouseEventHandler<HTMLDivElement> =>
             event => {

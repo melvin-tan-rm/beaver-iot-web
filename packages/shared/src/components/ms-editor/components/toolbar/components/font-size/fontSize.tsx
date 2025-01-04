@@ -9,7 +9,6 @@ import { ExpandMoreIcon, CheckIcon } from '../../../../../icons';
 import './style.less';
 
 interface IProps {
-    /** 是否禁用 */
     disabled: boolean;
 }
 export default React.memo(({ disabled }: IProps) => {

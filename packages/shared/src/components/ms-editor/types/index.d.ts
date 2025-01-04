@@ -2,31 +2,27 @@ import type { LexicalEditor, SerializedEditorState, SerializedLexicalNode } from
 import type { InsertTableCommandPayload } from '@lexical/table';
 import { MODE } from '../constant';
 
-/** 编辑器实例类型 */
+/** editor instance type */
 export type MSEditor = LexicalEditor;
 export interface IEditorProps {
-    /** 默认编辑模式 */
+    /** default edit mode */
     defaultEditable?: boolean;
-    /** 是否可编辑 */
+    /** whether editable */
     isEditable?: boolean;
-    /** 更改编辑模式回调 */
     onEditableChange?: (editable: boolean) => void;
-    /** 模式 */
     mode?: MODE;
-    /** 输入提示文字 */
+    /** enter prompt text */
     placeholder?: string;
-    /** 保存函数 */
     onSave?: (content: SerializedEditorState<SerializedLexicalNode>) => void;
-    /** 取消函数 */
     onCancel?: () => Promise<void> | void;
-    /** 富文本配置 */
     editorConfig?: EditorConfig;
-    /** 渲染操作按钮函数 */
+    /** render custom component to operate */
     renderOperator?: (node: React.ReactNode) => React.ReactNode;
+    /** whether auto focus */
+    autoFocus?: boolean;
 }
-/** 富文本配置 */
 export interface EditorConfig {
-    /** 工具栏位置配置 */
+    /** toolbar config */
     toolbar?:
         | (
               | FontSizeItemConfig
@@ -36,7 +32,7 @@ export interface EditorConfig {
               | TableItemConfig
           )[]
         | boolean;
-    /** 插件配置 */
+    /** plugin config */
     plugin?: EditorPlugin;
 }
 
@@ -61,60 +57,56 @@ export interface CellResizeTablePlugin extends EditorTablePlugin<'table-cell-res
 }
 export interface actionMenuTablePlugin extends EditorTablePlugin<'table-action-menu'> {
     config?: {
-        /** 操作菜单显示配置 */
+        /** operation menu display config handle */
         menus: Partial<Record<MenuType, boolean>>;
-        /** 是否显示横线 */
+        /** whether show divider */
         isDivider?: boolean;
     };
 }
 
-/** 工具栏配置 */
+/** toolbar config */
 export interface ToolbarItemConfig<T extends string = string> {
     name: T;
     visible?: boolean;
 }
-/** 文字大小配置 */
+/** font size config */
 export type FontSizeItemConfig = ToolbarItemConfig<'fontSize'>;
 
-/** 文本格式化配置 */
+/** text format config */
 export interface TextFormatItemConfig extends ToolbarItemConfig<'textFormat'> {
     items?: ToolbarItemConfig<'fontBold' | 'fontItalic' | 'fontUnderline' | 'fontStrikethrough'>[];
 }
-/** 文字颜色配置 */
+/** font color config */
 export type FontColorItemConfig = ToolbarItemConfig<'fontColor'>;
 
-/** 文本位置配置 */
+/** text align config */
 export interface TextAlignItemConfig extends ToolbarItemConfig<'textAlign'> {
     items?: ToolbarItemConfig<'textAlignLeft' | 'textAlignCenter' | 'textAlignRight'>[];
 }
-/** 表格配置 */
+/** table config */
 export interface TableItemConfig extends ToolbarItemConfig<'table'> {
     initConfig?: Partial<InsertTableCommandPayload>;
 }
 
 export interface EditorHandlers {
-    /** 获取富文本实例 */
+    /** get editor instance */
     getEditor: () => MSEditor;
-    /** 获取富文本的html结构 */
+    /** get editor html content result */
     getEditorHtml: () => Promise<string>;
-    /** 设置富文本内容 */
     setEditorContent: (content: string | SerializedEditorState) => void;
 }
 
-/** 工具栏组件属性 */
+/** toolbar props */
 export interface ToolbarProps {
-    /** 类名 */
     className?: string;
-    /** 是否禁用 */
     disabled?: boolean;
-    /** 是否选中 */
+    /** whether selected */
     isActive?: boolean;
-    /** 点击事件 */
     onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
     children: React.ReactNode;
 }
 
-/** 表格右键操作菜单项 */
+/** table context menu all type */
 export type MenuType =
     | 'insertAbove'
     | 'insertBelow'
