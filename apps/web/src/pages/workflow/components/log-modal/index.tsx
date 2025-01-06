@@ -50,17 +50,17 @@ export default React.memo(({ visible, data, ...props }: IProps) => {
             {...props}
         >
             <div className="ms-log-container">
-                {isLoading && (
-                    <div className="ms-log-loading">
+                <div style={{ display: isLoading ? 'block' : 'none' }}>
+                    <div className="ms-log-loading ms-log-flotage">
                         <CircularProgress />
                     </div>
-                )}
+                </div>
                 {isEmpty && (
                     <div className="ms-log-empty">
                         <Empty text={getIntlText('workflow.label.no_log_record')} />
                     </div>
                 )}
-                {!isLoading && !isEmpty && (
+                {!isEmpty && (
                     <>
                         <div className="ms-log-left-bar">
                             <div className="ms-log-left-bar__scroll" ref={containerRef}>

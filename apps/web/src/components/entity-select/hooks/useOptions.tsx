@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
-import { DEFAULT_DEVICE_NAME } from '../constant';
+import { DEFAULT_DEVICE_LABEL_KEY } from '../constant';
 import type {
     EntitySelectComponentProps,
     EntitySelectOption,
@@ -87,7 +87,7 @@ export const useOptions = <
                 const { rawData } = entity || {};
                 const { deviceName } = rawData! || {};
                 entityOptions.push(entity);
-                const name = deviceName || DEFAULT_DEVICE_NAME;
+                const name = deviceName || getIntlText(DEFAULT_DEVICE_LABEL_KEY);
 
                 // Create or update device group
                 let deviceGroup = newDeviceMap.get(name);
@@ -127,7 +127,7 @@ export const useOptions = <
             entityOptions,
             deviceOptions: Array.from(deviceMap.values()),
         };
-    }, [optionList, getDescription]);
+    }, [optionList, getIntlText, getDescription]);
 
     /** Get the corresponding drop-down rendering options based on `tabType` */
     const options = useMemo(

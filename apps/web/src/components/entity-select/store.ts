@@ -12,20 +12,22 @@ type EntityFilterParams = Omit<
     ObjectToCamelCase<EntityAPISchema['getList']['request']>,
     'pageSize' | 'pageNumber'
 >;
-interface EntityStore {
+export interface EntityStoreType {
     status: 'ready' | 'loading' | 'finish';
 
-    entityList: EntityAPISchema['getList']['response']['content'];
+    entityList: EntityData[];
 
     entityLoading: boolean;
 
-    getEntityList: (params?: EntityFilterParams) => Promise<EntityStore['entityList']>;
+    getEntityList: (params?: EntityFilterParams) => Promise<EntityData[]>;
 
     initEntityList: (params?: EntityFilterParams) => void;
+
+    getEntityDetailByKey: (entityKey: string) => EntityData | void;
 }
 
 export default create(
-    immer<EntityStore>((set, get) => ({
+    immer<EntityStoreType>((set, get) => ({
         entityList: [],
 
         status: 'ready',
@@ -70,6 +72,12 @@ export default create(
             const data = getResponseData(resp);
 
             return data?.content || [];
+        },
+
+        getEntityDetailByKey: (entityKey: string) => {
+            const { entityList } = get();
+
+            return (entityList || []).find(entity => entity.entity_key === entityKey);
         },
     })),
 );

@@ -1,8 +1,8 @@
 import React, { useMemo, useLayoutEffect, useEffect, useRef, useState } from 'react';
 import { Panel, useReactFlow } from '@xyflow/react';
 import cls from 'classnames';
-import { isEqual } from 'lodash-es';
-import { useThrottleEffect } from 'ahooks';
+import { isEqual, cloneDeep } from 'lodash-es';
+import { useThrottleEffect, useDebounceEffect } from 'ahooks';
 import { Stack, IconButton, Divider } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { useI18n, useStoreShallow } from '@milesight/shared/src/hooks';
@@ -36,12 +36,22 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
     const { selectedNode, nodeConfigs } = useFlowStore(
         useStoreShallow(['selectedNode', 'nodeConfigs']),
     );
-    const openPanel = !!selectedNode;
+    const [finalSelectedNode, setFinalSelectedNode] = useState(selectedNode);
+    const openPanel = !!finalSelectedNode;
     const nodeConfig = useMemo(() => {
-        if (!selectedNode) return;
+        if (!finalSelectedNode) return;
 
-        return nodeConfigs[selectedNode.type as WorkflowNodeType];
-    }, [selectedNode, nodeConfigs]);
+        return nodeConfigs[finalSelectedNode.type as WorkflowNodeType];
+    }, [finalSelectedNode, nodeConfigs]);
+
+    useDebounceEffect(
+        () => {
+            formDataInit.current = false;
+            setFinalSelectedNode(selectedNode);
+        },
+        [selectedNode],
+        { wait: 300 },
+    );
 
     // ---------- Entity List Data Init ----------
     const getEntityList = useConfigPanelStore(state => state.getEntityList);
@@ -52,9 +62,9 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
     }, [openPanel, getEntityList]);
 
     // ---------- Handle Form-related logic ----------
-    const { control, setValue, watch, reset } = useForm<FormDataProps>();
+    const { control, setValue, getValues, watch, reset } = useForm<FormDataProps>();
     const commonFormItems = useCommonFormItems();
-    const nodeFormGroups = useNodeFormItems({ nodeType: selectedNode?.type, readonly });
+    const nodeFormGroups = useNodeFormItems({ nodeType: finalSelectedNode?.type, readonly });
     const allFormData = watch();
     const preFormData = useRef<FormDataProps>();
     const formDataInit = useRef(false);
@@ -70,12 +80,12 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
 
     // Backfill form data
     useEffect(() => {
-        if (!selectedNode) {
+        if (!finalSelectedNode) {
             reset();
             formDataInit.current = false;
             return;
         }
-        const { nodeName, nodeRemark, parameters } = selectedNode.data || {};
+        const { nodeName, nodeRemark, parameters } = cloneDeep(finalSelectedNode.data) || {};
         const data: Record<string, any> = { nodeName, nodeRemark, ...parameters };
 
         reset();
@@ -89,24 +99,24 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
             });
             formDataInit.current = true;
         }, 0);
-    }, [selectedNode, reset, setValue]);
+    }, [finalSelectedNode, reset, setValue, getValues]);
 
     // Save node data
     useThrottleEffect(
         () => {
-            if (!openPanel || !formDataInit.current) return;
+            if (!openPanel || !finalSelectedNode?.id || !formDataInit.current) return;
             const { nodeName, nodeRemark, ...formData } = latestFormData || {};
 
             // console.log({ formData });
-            updateNodeData(selectedNode.id, { nodeName, nodeRemark, parameters: formData });
+            updateNodeData(finalSelectedNode.id, { nodeName, nodeRemark, parameters: formData });
         },
-        [openPanel, selectedNode, latestFormData, updateNodeData],
+        [openPanel, finalSelectedNode?.id, latestFormData, updateNodeData],
         { wait: 200 },
     );
 
     // ---------- Show Test Drawer ----------
     const [drawerOpen, setDrawerOpen] = useState(false);
-    useEffect(() => setDrawerOpen(false), [selectedNode]);
+    useEffect(() => setDrawerOpen(false), [finalSelectedNode]);
     useEffect(() => {
         if (drawerOpen) return;
         setDrawerOpen(false);
@@ -116,7 +126,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
         <Panel
             position="top-right"
             className={cls('ms-workflow-panel-config-root', {
-                hidden: !selectedNode,
+                hidden: !finalSelectedNode,
                 readonly,
             })}
         >
@@ -160,8 +170,8 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                         />
                         <IconButton
                             onClick={() => {
-                                if (!selectedNode) return;
-                                updateNode(selectedNode.id, {
+                                if (!finalSelectedNode) return;
+                                updateNode(finalSelectedNode.id, {
                                     selected: false,
                                 });
                             }}
@@ -236,7 +246,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                 </div>
                 <TestDrawer
                     open={drawerOpen}
-                    node={selectedNode}
+                    node={finalSelectedNode}
                     onClose={() => setDrawerOpen(false)}
                 />
             </div>

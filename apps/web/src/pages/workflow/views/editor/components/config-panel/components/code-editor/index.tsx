@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { CodeEditor as CodeMirror, type EditorProps, type EditorSupportLang } from '@/components';
 import './style.less';
 
-interface CodeEditorData {
+export interface CodeEditorData {
     language: EditorSupportLang;
     expression: string;
 }
@@ -10,7 +10,7 @@ export interface IProps extends Omit<EditorProps, 'value' | 'onChange'> {
     value: CodeEditorData;
     onChange: (value: CodeEditorData) => void;
 }
-const DEFAULT_LANGUAGE = 'js';
+export const DEFAULT_LANGUAGE = 'js';
 /**
  * Code Editor Component
  *

@@ -74,4 +74,6 @@ const EntitySelectApp = <
 };
 export default React.memo(EntitySelectApp) as unknown as typeof EntitySelectApp;
 
+export { default as useEntityStore, type EntityStoreType } from './store';
+
 export type { EntitySelectOption, EntitySelectValueType, EntitySelectProps } from './types';

@@ -3,7 +3,7 @@
  *
  * Note: use in TriggerNode, CodeNode
  */
-import { useLayoutEffect, useMemo } from 'react';
+import { useEffect, useLayoutEffect, useMemo } from 'react';
 import {
     Select,
     Button,
@@ -78,11 +78,13 @@ const ParamInput: React.FC<ParamInputProps> = ({
     const [innerValue, setInnerValue] = useControllableValue<ParamInputValueType[]>(props);
     const { list, remove, getKey, insert, replace, resetList } =
         useDynamicList<ParamInputValueType>(innerValue || []);
+
     useLayoutEffect(() => {
         if (isEqual(innerValue, list)) return;
         resetList(innerValue || []);
     }, [innerValue, resetList]);
-    useLayoutEffect(() => {
+
+    useEffect(() => {
         setInnerValue?.(list);
     }, [list, setInnerValue]);
 

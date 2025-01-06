@@ -21,6 +21,8 @@ export type FlowNodeTraceInfo = {
     message_id?: string;
     /** Error Message */
     error_message?: string;
+    /** Parent Trace ID */
+    parent_trace_id?: string;
 };
 
 export interface WorkflowAPISchema extends APISchema {

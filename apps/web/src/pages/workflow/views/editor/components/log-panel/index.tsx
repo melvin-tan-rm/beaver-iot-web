@@ -282,6 +282,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
                     {logDetail?.traceInfos?.length ? (
                         <div className="log-detail-area">
                             <ActionLog
+                                // logType={logPanelMode === 'feVerify' ? 'validate' : undefined}
                                 traceData={logDetail.traceInfos}
                                 workflowData={logDetail.flowData || toObject()}
                             />

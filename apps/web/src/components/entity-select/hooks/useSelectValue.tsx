@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react';
-import { DEFAULT_DEVICE_NAME } from '../constant';
+import { useI18n } from '@milesight/shared/src/hooks';
+import { DEFAULT_DEVICE_LABEL_KEY } from '../constant';
 import type {
     EntitySelectInnerProps,
     EntitySelectComponentProps,
@@ -27,6 +28,7 @@ export const useSelectValue = <
 >(
     props: IProps<V, M, D>,
 ): SelectedParameterType => {
+    const { getIntlText } = useI18n();
     const { entityOptionMap, value, multiple, onChange, getOptionValue } = props;
 
     const valueList = useMemo<EntityValueType[]>(() => {
@@ -61,14 +63,14 @@ export const useSelectValue = <
             if (!option) return acc;
 
             const { rawData } = option || {};
-            const { deviceName = DEFAULT_DEVICE_NAME } = rawData || {};
+            const { deviceName = getIntlText(DEFAULT_DEVICE_LABEL_KEY) } = rawData || {};
 
             const deviceList = acc.get(deviceName) || [];
             deviceList.push(option);
             acc.set(deviceName, deviceList);
             return acc;
         }, new Map());
-    }, [entityOptionMap, valueList]);
+    }, [entityOptionMap, getIntlText, valueList]);
 
     /** Select/cancel entity selection callback */
     const onEntityChange = useCallback<EntitySelectInnerProps<V, M, D>['onEntityChange']>(

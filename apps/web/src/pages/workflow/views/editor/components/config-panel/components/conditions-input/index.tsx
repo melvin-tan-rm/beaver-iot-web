@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import cls from 'classnames';
 import { isEqual, cloneDeep, merge } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
@@ -25,6 +25,7 @@ import {
 import { genUuid } from '../../../../helper';
 import { logicOperatorMap, conditionOperatorMap } from '../../../../constants';
 import ParamSelect from '../param-select';
+import CodeEditor, { DEFAULT_LANGUAGE, type CodeEditorData } from '../code-editor';
 import './style.less';
 
 export type ConditionsInputValueType = NonNullable<IfElseNodeDataType['parameters']>['choice'];
@@ -52,7 +53,7 @@ const genConditionBlockValue = (): ConditionBlockValueType => {
     };
 };
 
-const DEFAULT_CONDITION_BLOCK_VALUE = genConditionBlockValue();
+// const DEFAULT_CONDITION_BLOCK_VALUE = genConditionBlockValue();
 
 const MAX_CONDITIONS_NUMBER = 5;
 const MAX_CONDITION_BLOCKS_NUMBER = 5;
@@ -73,7 +74,7 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
         insert: insertBlock,
         replace: replaceBlock,
         resetList: resetBlockList,
-    } = useDynamicList<ConditionBlockValueType>([DEFAULT_CONDITION_BLOCK_VALUE]);
+    } = useDynamicList<ConditionBlockValueType>([genConditionBlockValue()]);
 
     // console.log({ blockList });
     const handleExpTypeChange = (block: ConditionBlockValueType, blockIndex: number) => {
@@ -136,13 +137,13 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
     };
 
     useLayoutEffect(() => {
-        if (!data?.when?.length) return;
-        if (isEqual(data.when, blockList)) return;
-        resetBlockList(data.when);
+        // if (!data?.when?.length) return;
+        if (isEqual(data?.when, blockList)) return;
+        resetBlockList(data?.when || [genConditionBlockValue()]);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, resetBlockList]);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         setData(d => {
             const otherwiseId = `${d?.otherwise?.id || ''}` || genUuid('condition');
             const result = {
@@ -179,13 +180,13 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
                             <div className="btns">
                                 <ToggleButtonGroup
                                     size="small"
-                                    value={expressionType}
+                                    value={expressionType === 'condition' ? 'condition' : 'other'}
                                     onChange={() => handleExpTypeChange(block, blockIndex)}
                                 >
                                     <ToggleButton disableRipple value="condition">
                                         <InputIcon />
                                     </ToggleButton>
-                                    <ToggleButton disableRipple value="mvel">
+                                    <ToggleButton disableRipple value="other">
                                         <CodeIcon />
                                     </ToggleButton>
                                 </ToggleButtonGroup>
@@ -196,25 +197,27 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
                                 )}
                             </div>
                         </div>
-                        {expressionType === 'mvel' ? (
+                        {expressionType && expressionType !== 'condition' ? (
                             <div className="ms-conditions-input-item-mvel">
-                                <TextField
-                                    fullWidth
-                                    multiline
-                                    autoComplete="off"
-                                    rows={5}
-                                    sx={{ marginTop: 0 }}
-                                    value={conditions[0]?.expressionValue || ''}
-                                    onChange={e =>
-                                        replaceCondition(
-                                            0,
-                                            {
-                                                expressionValue: e.target.value,
-                                            },
-                                            block,
-                                            blockIndex,
-                                        )
-                                    }
+                                <CodeEditor
+                                    value={{
+                                        language: (expressionType ||
+                                            DEFAULT_LANGUAGE) as CodeEditorData['language'],
+                                        expression: conditions[0]?.expressionValue as string,
+                                    }}
+                                    onChange={value => {
+                                        const condition = conditions[0] || genConditionValue();
+                                        replaceBlock(blockIndex, {
+                                            ...block,
+                                            expressionType: value.language,
+                                            conditions: [
+                                                {
+                                                    ...condition,
+                                                    expressionValue: value.expression,
+                                                },
+                                            ],
+                                        });
+                                    }}
                                 />
                                 <TextField
                                     fullWidth
