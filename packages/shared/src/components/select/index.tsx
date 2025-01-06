@@ -56,7 +56,13 @@ const Select = <T extends ApiKey = ApiKey>(props: SelectProps<T>) => {
                     {label}
                 </InputLabel>
             )}
-            <MuiSelect {...rest} label={label} labelId="select-label" notched>
+            <MuiSelect
+                {...rest}
+                // @ts-ignore
+                notched
+                label={label}
+                labelId="select-label"
+            >
                 {renderOptions
                     ? renderOptions(options)
                     : getMenuItems?.map((item: OptionsProps) => {
