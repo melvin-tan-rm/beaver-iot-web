@@ -77,7 +77,10 @@ export type NodeConfigItemType = {
     /**
      * The keys that can be used in test input
      */
-    testInputKeys?: string[];
+    testInputKeys?: {
+        key: string;
+        type: 'object' | 'array' | 'string';
+    }[];
     /**
      * The keys that can be referenced in downstream node
      */
@@ -96,7 +99,12 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <InputIcon />,
         iconBgColor: '#3491FA',
         category: 'entry',
-        testInputKeys: ['entityConfigs'],
+        testInputKeys: [
+            {
+                key: 'entityConfigs',
+                type: 'array',
+            },
+        ],
         outputKeys: ['entityConfigs'],
     },
     timer: {
@@ -116,7 +124,12 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <HearingIcon />,
         iconBgColor: '#3491FA',
         category: 'entry',
-        testInputKeys: ['entities'],
+        testInputKeys: [
+            {
+                key: 'entities',
+                type: 'array',
+            },
+        ],
         outputKeys: ['entities'],
     },
     ifelse: {
@@ -141,7 +154,12 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <SettingsEthernetIcon />,
         iconBgColor: '#26A69A',
         category: 'action',
-        testInputKeys: ['inputArguments'],
+        testInputKeys: [
+            {
+                key: 'inputArguments',
+                type: 'object',
+            },
+        ],
         outputKeys: ['Payload'],
     },
     assigner: {
@@ -151,7 +169,12 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <EntityIcon />,
         iconBgColor: '#26A69A',
         category: 'action',
-        testInputKeys: ['exchangePayload'],
+        testInputKeys: [
+            {
+                key: 'exchangePayload',
+                type: 'object',
+            },
+        ],
         outputKeys: ['exchangePayload'],
     },
     service: {
@@ -161,7 +184,12 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <RoomServiceIcon />,
         iconBgColor: '#26A69A',
         category: 'action',
-        testInputKeys: ['serviceInvocationSetting.serviceParams'],
+        testInputKeys: [
+            {
+                key: 'serviceInvocationSetting.serviceParams',
+                type: 'object',
+            },
+        ],
         outputKeys: ['serviceInvocationSetting.serviceParams'],
     },
     select: {
@@ -171,7 +199,12 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <FactCheckIcon />,
         iconBgColor: '#26A69A',
         category: 'action',
-        testInputKeys: ['entities'],
+        testInputKeys: [
+            {
+                key: 'entities',
+                type: 'array',
+            },
+        ],
         outputKeys: ['entities'],
     },
     email: {
@@ -181,6 +214,12 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <EmailIcon />,
         iconBgColor: '#7E57C2',
         category: 'external',
+        testInputKeys: [
+            {
+                key: 'content',
+                type: 'string',
+            },
+        ],
     },
     webhook: {
         type: 'webhook',
@@ -189,8 +228,13 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <WebhookIcon />,
         iconBgColor: '#7E57C2',
         category: 'external',
-        testInputKeys: ['inputArguments'],
-        outputKeys: ['inputArguments'],
+        testInputKeys: [
+            {
+                key: 'payload',
+                type: 'object',
+            },
+        ],
+        outputKeys: ['payload'],
     },
 };
 

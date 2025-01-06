@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import cls from 'classnames';
-import { pick, isEmpty, isObject } from 'lodash-es';
+import { pick, isEmpty, isObject, cloneDeep, get as objectGet } from 'lodash-es';
 import { useRequest } from 'ahooks';
 import {
     Backdrop,
@@ -10,6 +10,7 @@ import {
     Divider,
     Alert,
     CircularProgress,
+    TextField,
 } from '@mui/material';
 import { useReactFlow } from '@xyflow/react';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -81,6 +82,16 @@ const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
 
         return getIntlText('workflow.editor.config_panel_test_title', { 1: tit });
     }, [node, nodeConfig, getIntlText]);
+    const testInputKeysMap = useMemo(() => {
+        if (!nodeConfig) return {};
+        return (nodeConfig?.testInputKeys || []).reduce(
+            (acc, item) => {
+                acc[item.key] = item;
+                return acc;
+            },
+            {} as Record<string, NonNullable<typeof nodeConfig.testInputKeys>[0]>,
+        );
+    }, [nodeConfig]);
 
     // ---------- Generate Demo Data ----------
     const [inputData, setInputData] = useState('');
@@ -90,8 +101,12 @@ const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
         const node = getNode(nodeId);
         const { parameters } = node?.data || {};
         const result: Record<string, any> = {};
-        const inputArgs = pick(parameters, nodeConfig.testInputKeys || []);
+        const testInputKeys = Object.keys(testInputKeysMap);
+        const inputArgs = pick(parameters, testInputKeys);
 
+        if (testInputKeys.length === 1 && testInputKeysMap[testInputKeys[0]].type === 'string') {
+            return inputArgs[testInputKeys[0]] || '';
+        }
         if (isEmpty(inputArgs)) return result;
 
         // Use different traversal methods for different param
@@ -104,6 +119,7 @@ const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
                     });
                     break;
                 }
+                case 'payload':
                 case 'inputArguments':
                 case 'serviceInvocationSetting':
                 case 'exchangePayload': {
@@ -120,13 +136,14 @@ const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
                     break;
                 }
                 default: {
+                    result[param] = data || genRandomString(8, { lowerCase: true });
                     break;
                 }
             }
         });
 
         return result;
-    }, [open, nodeId, nodeConfig, getNode]);
+    }, [open, nodeId, nodeConfig, testInputKeysMap, getNode]);
 
     // ---------- Run Test ----------
     const hasInput = nodeConfig?.testable && !!nodeConfig.testInputKeys?.length;
@@ -137,16 +154,47 @@ const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
     } = useRequest(
         async (value?: string) => {
             if (!open || !nodeId) return;
-            let input: Record<string, any>;
+            let input: Record<string, any> = {};
+            // Get the latest node data
+            const node = cloneDeep(getNode(nodeId))!;
+            const testInputKeys = Object.keys(testInputKeysMap) || [];
 
-            try {
-                input = !value ? undefined : JSON.parse(value || '{}');
-            } catch (e) {
-                toast.error({ content: getIntlText('common.message.json_format_error') });
-                return;
+            if (node.type === 'email') {
+                testInputKeys.forEach(key => {
+                    node.data.parameters = node.data.parameters || {};
+                    switch (key) {
+                        case 'content': {
+                            node.data.parameters[key] = value;
+                            break;
+                        }
+                        default: {
+                            break;
+                        }
+                    }
+                });
+            } else {
+                try {
+                    input = !value ? undefined : JSON.parse(value || '{}');
+                } catch (e) {
+                    toast.error({ content: getIntlText('common.message.json_format_error') });
+                    return;
+                }
+
+                testInputKeys.forEach(key => {
+                    const param = objectGet(node?.data?.parameters, key);
+                    const params = Array.isArray(param) ? param : [param];
+
+                    params.forEach(item => {
+                        if (isObject(item)) {
+                            Object.keys(item).forEach(k => {
+                                (item as Record<string, any>)[k] = input[k];
+                            });
+                        }
+                    });
+                });
             }
 
-            const node = getNode(nodeId);
+            // console.log({ input, node });
             const [error, resp] = await awaitWrap(
                 workflowAPI.testSingleNode({ input, node_config: JSON.stringify(node) }),
             );
@@ -157,13 +205,16 @@ const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
         {
             manual: true,
             debounceWait: 300,
-            refreshDeps: [open, nodeId],
+            refreshDeps: [open, nodeId, nodeConfig, testInputKeysMap],
         },
     );
 
     useEffect(() => {
         if (hasInput) {
-            setInputData(JSON.stringify(genDemoData(), null, 2));
+            const demoData = genDemoData();
+            setInputData(
+                typeof demoData === 'string' ? demoData : JSON.stringify(demoData, null, 2),
+            );
             return;
         }
 
@@ -193,12 +244,25 @@ const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
                         <div className="ms-config-panel-test-drawer-body">
                             {hasInput && (
                                 <div className="input-content-area">
-                                    <CodeEditor
-                                        editorLang="json"
-                                        title={getIntlText('common.label.input')}
-                                        value={inputData}
-                                        onChange={setInputData}
-                                    />
+                                    {Object.keys(testInputKeysMap).length === 1 &&
+                                    Object.values(testInputKeysMap)[0].type === 'string' ? (
+                                        <TextField
+                                            multiline
+                                            fullWidth
+                                            rows={8}
+                                            value={inputData}
+                                            onChange={e => setInputData(e.target.value)}
+                                            disabled={loading}
+                                            placeholder={getIntlText('common.label.input')}
+                                        />
+                                    ) : (
+                                        <CodeEditor
+                                            editorLang="json"
+                                            title={getIntlText('common.label.input')}
+                                            value={inputData}
+                                            onChange={setInputData}
+                                        />
+                                    )}
                                     <Button
                                         fullWidth
                                         variant="contained"
@@ -210,7 +274,7 @@ const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
                                     </Button>
                                 </div>
                             )}
-                            {testResult && (
+                            {!!testResult && (
                                 <>
                                     {hasInput && <Divider />}
                                     <div className="output-content-area">
