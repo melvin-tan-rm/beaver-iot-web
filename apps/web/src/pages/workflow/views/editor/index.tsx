@@ -1,7 +1,7 @@
 import { memo, useState, useCallback, useEffect } from 'react';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useRequest } from 'ahooks';
-import { omitBy, merge, isEmpty, isEqual, cloneDeep } from 'lodash-es';
+import { merge, isEmpty, isEqual, cloneDeep } from 'lodash-es';
 import {
     ReactFlow,
     Background,
@@ -13,7 +13,6 @@ import {
     type NodeChange,
     type EdgeChange,
 } from '@xyflow/react';
-import { checkPrivateProperty } from '@milesight/shared/src/utils/tools';
 import { useI18n, useStoreShallow, usePreventLeave } from '@milesight/shared/src/hooks';
 import { InfoIcon, LoadingButton, toast } from '@milesight/shared/src/components';
 import { CodeEditor, useConfirm } from '@/components';
@@ -55,7 +54,7 @@ const edgeTypes: Record<WorkflowEdgeType, React.FC<any>> = {
 const WorkflowEditor = () => {
     const { getIntlText } = useI18n();
     const nodeTypes = useNodeTypes();
-    const { toObject } = useReactFlow<WorkflowNode, WorkflowEdge>();
+    const { toObject, updateNode } = useReactFlow<WorkflowNode, WorkflowEdge>();
     const [nodes, setNodes, onNodesChange] = useNodesState<WorkflowNode>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<WorkflowEdge>([]);
     const { isValidConnection, checkWorkflowValid, updateNodesStatus } = useWorkflow();
@@ -66,8 +65,6 @@ const WorkflowEditor = () => {
     const confirm = useConfirm();
     const {
         logDetail,
-        openLogPanel,
-        logPanelMode,
         setSelectedNode,
         setOpenLogPanel,
         setNodeConfigs,
@@ -77,8 +74,6 @@ const WorkflowEditor = () => {
     } = useFlowStore(
         useStoreShallow([
             'logDetail',
-            'openLogPanel',
-            'logPanelMode',
             'setSelectedNode',
             'setOpenLogPanel',
             'setNodeConfigs',
@@ -427,6 +422,13 @@ const WorkflowEditor = () => {
             if (!proceed) return;
         }
 
+        const selectedNodes = nodes.filter(node => node.selected);
+        if (selectedNodes.length) {
+            selectedNodes.forEach(node => {
+                updateNode(node.id, { selected: false });
+            });
+        }
+
         nodes = normalizeNodes(nodes, FROZEN_NODE_PROPERTY_KEYS);
         edges = normalizeEdges(edges);
 
@@ -441,7 +443,6 @@ const WorkflowEditor = () => {
             }),
         );
 
-        // console.log({ error, resp });
         setSaveLoading(false);
         if (error || !isRequestSuccess(resp)) return;
         const respData = getResponseData(resp);
