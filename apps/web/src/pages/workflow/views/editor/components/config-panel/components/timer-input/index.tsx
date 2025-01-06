@@ -1,4 +1,4 @@
-import React, { useMemo, useLayoutEffect } from 'react';
+import React, { useMemo, useEffect, useLayoutEffect } from 'react';
 import { useDynamicList, useControllableValue } from 'ahooks';
 import { isEqual } from 'lodash-es';
 import {
@@ -118,7 +118,7 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, resetList]);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         setData(d => ({
             ...d,
             rules: list || [],

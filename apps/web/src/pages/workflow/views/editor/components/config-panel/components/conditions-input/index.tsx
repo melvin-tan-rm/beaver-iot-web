@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import cls from 'classnames';
 import { isEqual, cloneDeep, merge } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
@@ -53,7 +53,7 @@ const genConditionBlockValue = (): ConditionBlockValueType => {
     };
 };
 
-const DEFAULT_CONDITION_BLOCK_VALUE = genConditionBlockValue();
+// const DEFAULT_CONDITION_BLOCK_VALUE = genConditionBlockValue();
 
 const MAX_CONDITIONS_NUMBER = 5;
 const MAX_CONDITION_BLOCKS_NUMBER = 5;
@@ -74,7 +74,7 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
         insert: insertBlock,
         replace: replaceBlock,
         resetList: resetBlockList,
-    } = useDynamicList<ConditionBlockValueType>([DEFAULT_CONDITION_BLOCK_VALUE]);
+    } = useDynamicList<ConditionBlockValueType>([genConditionBlockValue()]);
 
     // console.log({ blockList });
     const handleExpTypeChange = (block: ConditionBlockValueType, blockIndex: number) => {
@@ -137,13 +137,13 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
     };
 
     useLayoutEffect(() => {
-        if (!data?.when?.length) return;
-        if (isEqual(data.when, blockList)) return;
-        resetBlockList(data.when);
+        // if (!data?.when?.length) return;
+        if (isEqual(data?.when, blockList)) return;
+        resetBlockList(data?.when || [genConditionBlockValue()]);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, resetBlockList]);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         setData(d => {
             const otherwiseId = `${d?.otherwise?.id || ''}` || genUuid('condition');
             const result = {

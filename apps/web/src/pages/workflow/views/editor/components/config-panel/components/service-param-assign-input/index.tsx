@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { isEqual } from 'lodash-es';
 import { useControllableValue, useDebounceFn, useDynamicList } from 'ahooks';
 import { Divider, IconButton, Tooltip } from '@mui/material';
@@ -127,7 +127,7 @@ const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
         preValueRef.current = innerValue;
         handlerChange(innerValue?.serviceEntity);
     }, [innerValue]);
-    useLayoutEffect(() => {
+    useEffect(() => {
         setInnerValue(pre => {
             const newValue = { ...pre, serviceParams: transformParams(list) };
             preValueRef.current = newValue;

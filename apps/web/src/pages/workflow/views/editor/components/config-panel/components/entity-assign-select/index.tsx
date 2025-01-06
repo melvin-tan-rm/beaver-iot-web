@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import { Button, IconButton } from '@mui/material';
 import { isEqual } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
@@ -56,7 +56,7 @@ const EntityAssignSelect: React.FC<EntityAssignSelectProps> = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, resetList]);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         setData?.(arrayToObject(list));
     }, [list, setData]);
 
