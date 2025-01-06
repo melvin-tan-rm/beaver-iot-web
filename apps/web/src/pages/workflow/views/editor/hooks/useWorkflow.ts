@@ -241,8 +241,8 @@ const useWorkflow = () => {
                                         type: item.type,
                                         key:
                                             param === 'entityConfigs'
-                                                ? genRefParamKey(id, item.name)
-                                                : genRefParamKey(id, item.identify),
+                                                ? genRefParamKey(id, item.identify)
+                                                : genRefParamKey(id, item.name),
                                     });
                                 });
                                 break;
