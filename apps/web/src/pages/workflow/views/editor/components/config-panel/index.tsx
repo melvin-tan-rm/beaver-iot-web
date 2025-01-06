@@ -16,7 +16,6 @@ import {
     type CommonFormDataProps,
     type NodeFormDataProps,
 } from './hooks';
-import useConfigPanelStore from './store';
 import { MoreMenu, TestDrawer } from './components';
 import './style.less';
 
@@ -53,14 +52,6 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
         [selectedNode],
         { wait: 300 },
     );
-
-    // ---------- Entity List Data Init ----------
-    const getEntityList = useConfigPanelStore(state => state.getEntityList);
-
-    useLayoutEffect(() => {
-        if (!openPanel) return;
-        getEntityList(undefined, true);
-    }, [openPanel, getEntityList]);
 
     // ---------- Handle Form-related logic ----------
     const { clearExcessEdges } = useWorkflow();
