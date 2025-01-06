@@ -172,7 +172,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
                 );
 
                 setNodesDataValidResult(nodesCheckResult, logPanelMode);
-                updateNodesStatus(statusData);
+                updateNodesStatus(statusData, { partial: true });
                 return;
             }
 
@@ -204,7 +204,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
 
             addTestLog({ id: resp.data.request_id, flow_data: toObject(), ...data });
             setLogDetail({ traceInfos: data.trace_infos });
-            updateNodesStatus(nodeStatus);
+            updateNodesStatus(nodeStatus, { partial: true });
         },
         {
             manual: true,
@@ -282,7 +282,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
                     {logDetail?.traceInfos?.length ? (
                         <div className="log-detail-area">
                             <ActionLog
-                                // logType={logPanelMode === 'feVerify' ? 'validate' : undefined}
+                                logType={logPanelMode === 'feVerify' ? 'validate' : undefined}
                                 traceData={logDetail.traceInfos}
                                 workflowData={logDetail.flowData || toObject()}
                             />

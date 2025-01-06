@@ -458,6 +458,7 @@ const WorkflowEditor = () => {
         setTimeout(() => navigate('/workflow'), 0);
     };
 
+    // Reset state when leave
     useEffect(() => {
         return () => {
             setOpenLogPanel(false);
