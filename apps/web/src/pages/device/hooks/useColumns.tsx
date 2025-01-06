@@ -2,8 +2,9 @@ import { useMemo } from 'react';
 import { Stack, IconButton } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import { ListAltIcon, DeleteOutlineIcon } from '@milesight/shared/src/components';
-import { Tooltip, type ColumnType } from '@/components';
+import { Tooltip, type ColumnType, PermissionControlHidden } from '@/components';
 import { type DeviceAPISchema } from '@/services/http';
+import { PERMISSIONS } from '@/constants';
 
 type OperationType = 'detail' | 'delete';
 
@@ -69,21 +70,23 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                                     <ListAltIcon sx={{ width: 20, height: 20 }} />
                                 </IconButton>
                             </Tooltip>
-                            <Tooltip title={getIntlText('common.label.delete')}>
-                                <IconButton
-                                    color="error"
-                                    disabled={!row.deletable}
-                                    sx={{
-                                        width: 30,
-                                        height: 30,
-                                        color: 'text.secondary',
-                                        '&:hover': { color: 'error.light' },
-                                    }}
-                                    onClick={() => onButtonClick('delete', row)}
-                                >
-                                    <DeleteOutlineIcon sx={{ width: 20, height: 20 }} />
-                                </IconButton>
-                            </Tooltip>
+                            <PermissionControlHidden permissions={PERMISSIONS.DEVICE_DELETE}>
+                                <Tooltip title={getIntlText('common.label.delete')}>
+                                    <IconButton
+                                        color="error"
+                                        disabled={!row.deletable}
+                                        sx={{
+                                            width: 30,
+                                            height: 30,
+                                            color: 'text.secondary',
+                                            '&:hover': { color: 'error.light' },
+                                        }}
+                                        onClick={() => onButtonClick('delete', row)}
+                                    >
+                                        <DeleteOutlineIcon sx={{ width: 20, height: 20 }} />
+                                    </IconButton>
+                                </Tooltip>
+                            </PermissionControlHidden>
                         </Stack>
                     );
                 },

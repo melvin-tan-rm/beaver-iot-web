@@ -3,10 +3,12 @@ import { Outlet, RouteObject } from 'react-router-dom';
 import {
     DashboardCustomizeIcon,
     DevicesIcon,
-    SettingsIcon,
+    IntegrationInstructionsIcon,
+    Person4Icon,
     EntityIcon,
     WorkflowIcon,
 } from '@milesight/shared/src/components';
+import { PERMISSIONS } from '@/constants';
 import ErrorBoundaryComponent from './error-boundary';
 
 type RouteObjectType = RouteObject & {
@@ -27,6 +29,16 @@ type RouteObjectType = RouteObject & {
         /** 是否无需登录便可访问，默认 `false` (需要登录) */
         authFree?: boolean;
 
+        /**
+         * The page should be accessible based on satisfying one of the functions of the current route
+         * Then satisfying one of the permissions in the array enables the current routing access
+         */
+        permissions?: PERMISSIONS | PERMISSIONS[];
+
+        /**
+         * Whether to hide in the menu bar
+         */
+        hideInMenuBar?: boolean;
         /** 隐藏侧边栏 */
         hideSidebar?: boolean;
     };
@@ -45,6 +57,7 @@ const routes: RouteObjectType[] = [
                 return intl.get('common.label.dashboard');
             },
             icon: <DashboardCustomizeIcon fontSize="medium" />,
+            permissions: PERMISSIONS.DASHBOARD_MODULE,
         },
         async lazy() {
             const { default: Component } = await import('@/pages/dashboard');
@@ -61,6 +74,7 @@ const routes: RouteObjectType[] = [
                 return intl.get('common.label.device');
             },
             icon: <DevicesIcon fontSize="medium" />,
+            permissions: PERMISSIONS.DEVICE_MODULE,
         },
         children: [
             {
@@ -109,26 +123,27 @@ const routes: RouteObjectType[] = [
         ],
     },
     {
-        path: '/setting',
+        path: '/integration',
         element: <Outlet />,
         ErrorBoundary,
         handle: {
             get title() {
-                return intl.get('common.label.setting');
+                return intl.get('common.label.integration');
             },
-            icon: <SettingsIcon fontSize="medium" />,
+            icon: <IntegrationInstructionsIcon fontSize="medium" />,
+            permissions: PERMISSIONS.INTEGRATION_MODULE,
         },
         children: [
             {
                 index: true,
                 async lazy() {
-                    const { default: Component } = await import('@/pages/setting');
+                    const { default: Component } = await import('@/pages/integration');
                     return { Component };
                 },
                 ErrorBoundary,
             },
             {
-                path: 'integration/:integrationId',
+                path: 'detail/:integrationId',
                 handle: {
                     get title() {
                         return intl.get('common.label.integration');
@@ -136,7 +151,7 @@ const routes: RouteObjectType[] = [
                 },
                 async lazy() {
                     const { default: Component } = await import(
-                        '@/pages/setting/views/integration-detail'
+                        '@/pages/integration/views/integration-detail'
                     );
                     return { Component };
                 },
@@ -217,6 +232,33 @@ const routes: RouteObjectType[] = [
                 ErrorBoundary,
             },
         ],
+    },
+    {
+        path: '/user-role',
+        handle: {
+            get title() {
+                return intl.get('user.label.user_role');
+            },
+            icon: <Person4Icon fontSize="medium" />,
+            permissions: PERMISSIONS.USER_ROLE_MODULE,
+        },
+        async lazy() {
+            const { default: Component } = await import('@/pages/user-role');
+            return { Component };
+        },
+        ErrorBoundary,
+    },
+    {
+        path: '/403',
+        handle: {
+            title: '403',
+            hideInMenuBar: true,
+        },
+        async lazy() {
+            const { default: Component } = await import('@/pages/403');
+            return { Component };
+        },
+        ErrorBoundary,
     },
     {
         path: '*',

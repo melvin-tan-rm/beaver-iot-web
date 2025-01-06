@@ -5,7 +5,8 @@ import { useRequest } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
 import { AddIcon, DeleteOutlineIcon, toast } from '@milesight/shared/src/components';
-import { Breadcrumbs, TablePro, useConfirm } from '@/components';
+import { Breadcrumbs, TablePro, useConfirm, PermissionControlHidden } from '@/components';
+import { PERMISSIONS } from '@/constants';
 import { deviceAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import { useColumns, type UseColumnsProps, type TableRowDataType } from './hooks';
 import { AddModal } from './components';
@@ -83,24 +84,28 @@ export default () => {
     const toolbarRender = useMemo(() => {
         return (
             <Stack className="ms-operations-btns" direction="row" spacing="12px">
-                <Button
-                    variant="contained"
-                    sx={{ height: 36, textTransform: 'none' }}
-                    startIcon={<AddIcon />}
-                    onClick={() => setModalOpen(true)}
-                >
-                    {getIntlText('common.label.add')}
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="error"
-                    disabled={!selectedIds.length}
-                    sx={{ height: 36, textTransform: 'none' }}
-                    startIcon={<DeleteOutlineIcon />}
-                    onClick={() => handleDeleteConfirm()}
-                >
-                    {getIntlText('common.label.delete')}
-                </Button>
+                <PermissionControlHidden permissions={PERMISSIONS.DEVICE_ADD}>
+                    <Button
+                        variant="contained"
+                        sx={{ height: 36, textTransform: 'none' }}
+                        startIcon={<AddIcon />}
+                        onClick={() => setModalOpen(true)}
+                    >
+                        {getIntlText('common.label.add')}
+                    </Button>
+                </PermissionControlHidden>
+                <PermissionControlHidden permissions={PERMISSIONS.DEVICE_DELETE}>
+                    <Button
+                        variant="outlined"
+                        color="error"
+                        disabled={!selectedIds.length}
+                        sx={{ height: 36, textTransform: 'none' }}
+                        startIcon={<DeleteOutlineIcon />}
+                        onClick={() => handleDeleteConfirm()}
+                    >
+                        {getIntlText('common.label.delete')}
+                    </Button>
+                </PermissionControlHidden>
             </Stack>
         );
     }, [getIntlText, handleDeleteConfirm, selectedIds]);
