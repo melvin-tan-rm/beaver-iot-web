@@ -9,6 +9,7 @@ import { useI18n, useStoreShallow } from '@milesight/shared/src/hooks';
 import { CloseIcon, PlayArrowIcon, HelpIcon } from '@milesight/shared/src/components';
 import { Tooltip } from '@/components';
 import useFlowStore from '../../store';
+import useWorkflow from '../../hooks/useWorkflow';
 import {
     useCommonFormItems,
     useNodeFormItems,
@@ -62,6 +63,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
     }, [openPanel, getEntityList]);
 
     // ---------- Handle Form-related logic ----------
+    const { clearExcessEdges } = useWorkflow();
     const { control, setValue, getValues, watch, reset } = useForm<FormDataProps>();
     const commonFormItems = useCommonFormItems();
     const nodeFormGroups = useNodeFormItems({ nodeType: finalSelectedNode?.type, readonly });
@@ -82,6 +84,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
     useEffect(() => {
         if (!finalSelectedNode) {
             reset();
+            clearExcessEdges();
             formDataInit.current = false;
             return;
         }
@@ -117,10 +120,6 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
     // ---------- Show Test Drawer ----------
     const [drawerOpen, setDrawerOpen] = useState(false);
     useEffect(() => setDrawerOpen(false), [finalSelectedNode]);
-    useEffect(() => {
-        if (drawerOpen) return;
-        setDrawerOpen(false);
-    }, [drawerOpen]);
 
     return (
         <Panel

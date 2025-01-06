@@ -380,7 +380,7 @@ const useWorkflow = () => {
 
     // Clear excess edges
     const clearExcessEdges = useCallback(
-        (nodes: WorkflowNode[], edges: WorkflowEdge[]) => {
+        (nodes?: WorkflowNode[], edges?: WorkflowEdge[]) => {
             nodes = nodes || getNodes();
             edges = cloneDeep(edges || getEdges());
 
@@ -403,15 +403,17 @@ const useWorkflow = () => {
 
             const newEdges = edges.filter(({ source, target, sourceHandle, targetHandle }) => {
                 return (
-                    !ids.includes(source) ||
-                    !ids.includes(target) ||
-                    (sourceHandle && !ids.includes(sourceHandle)) ||
-                    (targetHandle && !ids.includes(targetHandle))
+                    ids.includes(source) &&
+                    ids.includes(target) &&
+                    (!sourceHandle || ids.includes(sourceHandle)) &&
+                    (!targetHandle || ids.includes(targetHandle))
                 );
             });
 
             if (edges.length === newEdges.length) return;
             setEdges(newEdges);
+
+            return newEdges;
         },
         [getNodes, getEdges, setEdges],
     );
