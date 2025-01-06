@@ -102,8 +102,16 @@ export {
     Sync as SyncIcon,
     MoreHoriz as MoreHorizIcon,
     Help as HelpIcon,
-    MoreVert as MoreVertIcon,
     EventNote as EventNoteIcon,
+    IntegrationInstructions as IntegrationInstructionsIcon,
+    Person4 as Person4Icon,
+    PermIdentity as PermIdentityIcon,
+    MoreVert as MoreVertIcon,
+    RemoveCircleOutline as RemoveCircleOutlineIcon,
+    Sort as SortIcon,
+    North as NorthIcon,
+    South as SouthIcon,
+    Cached as CachedIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';

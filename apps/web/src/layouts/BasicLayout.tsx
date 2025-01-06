@@ -12,19 +12,11 @@ import routes from '@/routes/routes';
 import { useUserStore } from '@/stores';
 import { globalAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import { Sidebar, RouteLoadingIndicator } from '@/components';
+import { useUserPermissions } from '@/hooks';
+import { useRoutePermission } from './hooks';
 
 function BasicLayout() {
     const { lang } = useI18n();
-    const menus = useMemo(() => {
-        return routes
-            .filter(route => route.path && route.handle?.layout !== 'blank')
-            .map(route => ({
-                name: route.handle?.title || '',
-                path: route.path || '',
-                icon: route.handle?.icon,
-            }));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [lang]);
 
     // ---------- 用户信息&鉴权&跳转相关处理逻辑 ----------
     const navigate = useNavigate();
@@ -67,6 +59,40 @@ function BasicLayout() {
         },
     );
 
+    /**
+     * @description hooks
+     * Determine whether the user has permission to access the current page.
+     * No permission to jump directly to 403
+     */
+    const { hasPathPermission } = useRoutePermission(loading);
+
+    /**
+     * @description hooks
+     * confirmation of permission
+     */
+    const { hasPermission } = useUserPermissions();
+
+    /**
+     * menus bar
+     */
+    const menus = useMemo(() => {
+        return routes
+            .filter(
+                route =>
+                    route.path &&
+                    route.handle?.layout !== 'blank' &&
+                    !route.handle?.hideInMenuBar &&
+                    hasPermission(route.handle?.permissions),
+            )
+            .map(route => ({
+                name: route.handle?.title || '',
+                path: route.path || '',
+                icon: route.handle?.icon,
+            }));
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [lang, hasPermission, loading]);
+
     return (
         <section className="ms-layout">
             <RouteLoadingIndicator />
@@ -82,9 +108,7 @@ function BasicLayout() {
             ) : (
                 <>
                     <Sidebar menus={menus} />
-                    <main className="ms-layout-right">
-                        <Outlet />
-                    </main>
+                    <main className="ms-layout-right">{hasPathPermission ? <Outlet /> : null}</main>
                 </>
             )}
         </section>

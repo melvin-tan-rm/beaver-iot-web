@@ -1,5 +1,7 @@
 import { client, attachAPI, API_PREFIX } from './client';
 
+import { type UserType, type UserMenuType } from './user';
+
 export interface GlobalAPISchema extends APISchema {
     /** 登录 */
     oauthLogin: {
@@ -61,6 +63,10 @@ export interface GlobalAPISchema extends APISchema {
             user_id: ApiKey;
             email: string;
             nickname: string;
+            is_super_admin: boolean;
+            roles: UserType['roles'];
+            created_at: number;
+            menus: UserMenuType[];
         };
     };
 }

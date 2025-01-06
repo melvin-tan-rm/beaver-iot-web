@@ -14,6 +14,10 @@
             flex: 1;
             align-items: center;
         }
+
+        .@{table-pro}__topbar-sort {
+            padding-left: @padding-xs;
+        }
     }
 
     & &__body {
@@ -31,12 +35,20 @@
         // 覆盖 Mui 样式：避免 focus 时 Header 中的分隔线被隐藏
         .@{mui-prefix}DataGrid-columnHeader:focus .@{mui-prefix}DataGrid-columnSeparator,
         .@{mui-prefix}DataGrid-columnHeader:focus-within .@{mui-prefix}DataGrid-columnSeparator,
-        .@{mui-prefix}DataGrid-columnHeader:has(+ .@{mui-prefix}DataGrid-columnHeader:focus) .@{mui-prefix}DataGrid-columnSeparator,
-        .@{mui-prefix}DataGrid-columnHeader:has(+ .@{mui-prefix}DataGrid-columnHeader:focus-within) .@{mui-prefix}DataGrid-columnSeparator,
+        .@{mui-prefix}DataGrid-columnHeader:has(+ .@{mui-prefix}DataGrid-columnHeader:focus)
+            .@{mui-prefix}DataGrid-columnSeparator,
+        .@{mui-prefix}DataGrid-columnHeader:has(+ .@{mui-prefix}DataGrid-columnHeader:focus-within)
+            .@{mui-prefix}DataGrid-columnSeparator,
         .@{mui-prefix}DataGrid-columnHeader--withLeftBorder .@{mui-prefix}DataGrid-columnSeparator,
         .@{mui-prefix}DataGrid-columnHeader--withRightBorder .@{mui-prefix}DataGrid-columnSeparator,
-        .@{mui-prefix}DataGrid-columnHeader:has(+ .@{mui-prefix}DataGrid-filler + .@{mui-prefix}DataGrid-columnHeader--withLeftBorder) .@{mui-prefix}DataGrid-columnSeparator,
-        .@{mui-prefix}DataGrid-virtualScroller--hasScrollX .@{mui-prefix}DataGrid-columnHeader--last .@{mui-prefix}DataGrid-columnSeparator {
+        .@{mui-prefix}DataGrid-columnHeader:has(
+                + .@{mui-prefix}DataGrid-filler
+                    + .@{mui-prefix}DataGrid-columnHeader--withLeftBorder
+            )
+            .@{mui-prefix}DataGrid-columnSeparator,
+        .@{mui-prefix}DataGrid-virtualScroller--hasScrollX
+            .@{mui-prefix}DataGrid-columnHeader--last
+            .@{mui-prefix}DataGrid-columnSeparator {
             opacity: 1;
         }
 

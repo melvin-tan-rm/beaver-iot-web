@@ -2,8 +2,9 @@ import { useCallback, useMemo, useState, forwardRef, useImperativeHandle } from 
 import { Stack, IconButton } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import { EditIcon } from '@milesight/shared/src/components';
-import { Descriptions, Tooltip } from '@/components';
+import { Descriptions, Tooltip, PermissionControlDisabled } from '@/components';
 import { type DeviceAPISchema } from '@/services/http';
+import { PERMISSIONS } from '@/constants';
 import EditDialog from './edit-dialog';
 
 interface Props {
@@ -43,14 +44,16 @@ const BasicTable = (
                         sx={{ alignItems: 'center', justifyContent: 'space-between' }}
                     >
                         <Tooltip autoEllipsis title={data?.name} />
-                        <IconButton
-                            sx={{ width: 22, height: 22 }}
-                            onClick={() => {
-                                setDialogOpen(true);
-                            }}
-                        >
-                            <EditIcon sx={{ fontSize: 16 }} />
-                        </IconButton>
+                        <PermissionControlDisabled permissions={PERMISSIONS.DEVICE_EDIT}>
+                            <IconButton
+                                sx={{ width: 22, height: 22 }}
+                                onClick={() => {
+                                    setDialogOpen(true);
+                                }}
+                            >
+                                <EditIcon sx={{ fontSize: 16 }} />
+                            </IconButton>
+                        </PermissionControlDisabled>
                     </Stack>
                 ),
             },
