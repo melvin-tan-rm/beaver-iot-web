@@ -125,16 +125,16 @@ const IfElseNode: React.FC<NodeProps<IfElseNode>> = props => {
         }
 
         if (!when?.length || !otherwise) return;
-        let edges = [...getEdges()];
-        const handleIds = when
-            .map(item => item.id)
-            .concat(otherwise.id, DEFAULT_IF_SOURCE_HANDLE_ID, DEFAULT_ELSE_SOURCE_HANDLE_ID);
+        const edges = [...getEdges()];
+        // const handleIds = when
+        //     .map(item => item.id)
+        //     .concat(otherwise.id, DEFAULT_IF_SOURCE_HANDLE_ID, DEFAULT_ELSE_SOURCE_HANDLE_ID);
 
-        edges = edges.filter(edge => {
-            if (edge.source !== nodeId) return true;
-            if (handleIds.includes(edge.sourceHandle!)) return true;
-            return false;
-        });
+        // edges = edges.filter(edge => {
+        //     if (edge.source !== nodeId) return true;
+        //     if (handleIds.includes(edge.sourceHandle!)) return true;
+        //     return false;
+        // });
 
         edges.map(edge => {
             let { sourceHandle } = edge;
@@ -159,6 +159,7 @@ const IfElseNode: React.FC<NodeProps<IfElseNode>> = props => {
             return edge;
         });
 
+        // console.log({ nodeId, selected, when, otherwise });
         setEdges(edges);
         updateNodeInternals(nodeId);
     }, [nodeId, when, otherwise, selected, getEdges, setEdges, updateNodeInternals]);

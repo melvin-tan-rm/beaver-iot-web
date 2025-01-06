@@ -1,4 +1,4 @@
-import { memo, useLayoutEffect } from 'react';
+import { memo, useEffect, useLayoutEffect } from 'react';
 import { Button, IconButton, type SelectProps } from '@mui/material';
 import { isEqual } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
@@ -52,7 +52,7 @@ const EntityMultipleSelect: React.FC<EntityFilterSelectProps> = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [innerValue, resetList]);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         setInnerValue?.(list || ['']);
     }, [list, setInnerValue]);
 

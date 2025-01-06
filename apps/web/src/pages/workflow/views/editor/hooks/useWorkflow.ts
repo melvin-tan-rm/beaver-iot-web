@@ -40,7 +40,10 @@ const entryNodeTypes = Object.values(basicNodeConfigs)
     .map(item => item.type);
 
 const useWorkflow = () => {
-    const { getNodes, getEdges, setNodes, fitView } = useReactFlow<WorkflowNode, WorkflowEdge>();
+    const { getNodes, getEdges, setNodes, setEdges, fitView } = useReactFlow<
+        WorkflowNode,
+        WorkflowEdge
+    >();
     const { getIntlText } = useI18n();
     const { selectedNode, nodeConfigs } = useFlowStore(
         useStoreShallow(['selectedNode', 'nodeConfigs']),
@@ -375,6 +378,44 @@ const useWorkflow = () => {
         [getNodes, setNodes, fitView],
     );
 
+    // Clear excess edges
+    const clearExcessEdges = useCallback(
+        (nodes: WorkflowNode[], edges: WorkflowEdge[]) => {
+            nodes = nodes || getNodes();
+            edges = cloneDeep(edges || getEdges());
+
+            const ids = nodes.reduce((acc, node) => {
+                acc.push(node.id);
+
+                if (node.type === 'ifelse') {
+                    const { choice } =
+                        (node.data.parameters as IfElseNodeDataType['parameters']) || {};
+                    const { when, otherwise } = choice || {};
+
+                    if (when?.length) {
+                        acc.push(...when.map(item => `${item.id}`));
+                    }
+                    if (otherwise?.id) acc.push(`${otherwise.id}`);
+                }
+
+                return acc;
+            }, [] as string[]);
+
+            const newEdges = edges.filter(({ source, target, sourceHandle, targetHandle }) => {
+                return (
+                    !ids.includes(source) ||
+                    !ids.includes(target) ||
+                    (sourceHandle && !ids.includes(sourceHandle)) ||
+                    (targetHandle && !ids.includes(targetHandle))
+                );
+            });
+
+            if (edges.length === newEdges.length) return;
+            setEdges(newEdges);
+        },
+        [getNodes, getEdges, setEdges],
+    );
+
     return {
         isValidConnection,
         checkParallelLimit,
@@ -385,6 +426,7 @@ const useWorkflow = () => {
         getUpstreamNodes,
         getUpstreamNodeParams,
         updateNodesStatus,
+        clearExcessEdges,
     };
 };
 

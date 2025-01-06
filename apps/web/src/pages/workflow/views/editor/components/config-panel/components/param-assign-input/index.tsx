@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import { Button, IconButton, TextField } from '@mui/material';
 import { isEqual } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
@@ -57,7 +57,7 @@ const ParamAssignInput: React.FC<ParamAssignInputProps> = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, resetList]);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         setData?.(arrayToObject(list));
     }, [list, setData]);
 
