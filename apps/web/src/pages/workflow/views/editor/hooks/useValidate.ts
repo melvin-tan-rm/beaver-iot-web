@@ -249,7 +249,7 @@ const useValidate = () => {
                     value: NonNullable<CodeNodeDataType['parameters']>['expression'],
                     fieldName,
                 ) {
-                    const maxLength = 2000;
+                    const maxLength = 64000;
                     if (
                         isObject(value) &&
                         value.expression &&

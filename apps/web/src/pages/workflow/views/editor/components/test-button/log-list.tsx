@@ -54,7 +54,7 @@ const LogList: React.FC<LogListProps> = ({ data, loading, onSelect }) => {
                             </div>
                             <div className="ms-workflow-com-log-list-item__right">
                                 <div className="ms-workflow-com-log-list-item__title">
-                                    {getTimeFormat(record.start_time)}
+                                    {getTimeFormat(record.start_time, 'fullDateTimeSecondFormat')}
                                 </div>
                                 {/* <div className="ms-workflow-com-log-list-item__time">
                                     {getTimeFormat(record.start_time)}

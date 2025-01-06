@@ -5,7 +5,6 @@ import {
     type EntitySelectProps as EntitySelectComponentProps,
 } from '@/components';
 import { type EntityAPISchema } from '@/services/http';
-import { type EntityFilterParams } from '../../store';
 import './style.less';
 
 export type EntitySelectValueType = ApiKey;
@@ -28,6 +27,20 @@ export type EntitySelectOptionType = {
 };
 
 type WorkflowEntitySelectProps = EntitySelectComponentProps<EntitySelectValueType, false, false>;
+
+export type EntityFilterParams = {
+    /** Search Keyword */
+    keyword?: string;
+    /** Entity Type */
+    type?: EntityType | EntityType[];
+    /** Entity Value Type */
+    valueType?: EntityValueDataType | EntityValueDataType[];
+    /** Entity Access Mode */
+    accessMode?: EntityAccessMode | EntityAccessMode[];
+    /** Exclude Children */
+    excludeChildren?: boolean;
+};
+
 export interface EntitySelectProps
     extends Omit<EntitySelectComponentProps<EntitySelectValueType, false, false>, 'onChange'> {
     /**
