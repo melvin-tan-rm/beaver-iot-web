@@ -35,6 +35,13 @@ export type FlattenNodeParamType = {
     valueKey: string;
 };
 
+export type UpdateNodeStatusOptions = {
+    /**
+     * If only render the given nodes (Default is `false`, render all nodes)
+     */
+    partial?: boolean;
+};
+
 const entryNodeTypes = Object.values(basicNodeConfigs)
     .filter(item => item.category === 'entry')
     .map(item => item.type);
@@ -352,7 +359,7 @@ const useWorkflow = () => {
 
     // Update node status
     const updateNodesStatus = useCallback(
-        (data: Record<string, WorkflowNodeStatus> | null) => {
+        (data: Record<string, WorkflowNodeStatus> | null, options?: UpdateNodeStatusOptions) => {
             const nodes = cloneDeep(getNodes());
 
             if (!data) {
@@ -362,9 +369,11 @@ const useWorkflow = () => {
             } else {
                 nodes.forEach(node => {
                     let status: WorkflowNodeStatus = data[node.id];
-                    if (!status) {
-                        status = 'SUCCESS';
+
+                    if (!options?.partial) {
+                        status = status || 'SUCCESS';
                     }
+
                     node.data = {
                         ...node.data,
                         $status: status,
@@ -380,7 +389,7 @@ const useWorkflow = () => {
 
     // Clear excess edges
     const clearExcessEdges = useCallback(
-        (nodes: WorkflowNode[], edges: WorkflowEdge[]) => {
+        (nodes?: WorkflowNode[], edges?: WorkflowEdge[]) => {
             nodes = nodes || getNodes();
             edges = cloneDeep(edges || getEdges());
 
@@ -403,15 +412,17 @@ const useWorkflow = () => {
 
             const newEdges = edges.filter(({ source, target, sourceHandle, targetHandle }) => {
                 return (
-                    !ids.includes(source) ||
-                    !ids.includes(target) ||
-                    (sourceHandle && !ids.includes(sourceHandle)) ||
-                    (targetHandle && !ids.includes(targetHandle))
+                    ids.includes(source) &&
+                    ids.includes(target) &&
+                    (!sourceHandle || ids.includes(sourceHandle)) &&
+                    (!targetHandle || ids.includes(targetHandle))
                 );
             });
 
             if (edges.length === newEdges.length) return;
             setEdges(newEdges);
+
+            return newEdges;
         },
         [getNodes, getEdges, setEdges],
     );

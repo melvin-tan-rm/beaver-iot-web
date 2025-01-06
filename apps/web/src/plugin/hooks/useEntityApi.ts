@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { awaitWrap, entityAPI, getResponseData, isRequestSuccess } from '@/services/http';
 
 export type GetEntityChildrenType = {
@@ -11,7 +12,7 @@ export type CallServiceType = {
 
 export const useEntityApi = () => {
     // 获取子实体
-    const getEntityChildren = async (params: GetEntityChildrenType) => {
+    const getEntityChildren = useCallback(async (params: GetEntityChildrenType) => {
         const [error, res]: any = await awaitWrap(entityAPI.getChildrenEntity(params));
         if (isRequestSuccess(res)) {
             return {
@@ -20,7 +21,7 @@ export const useEntityApi = () => {
             };
         }
         return { error };
-    };
+    }, []);
 
     // 下发服务
     const callService = async (params: CallServiceType) => {

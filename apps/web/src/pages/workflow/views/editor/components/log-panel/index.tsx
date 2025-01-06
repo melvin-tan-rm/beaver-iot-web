@@ -1,9 +1,9 @@
-import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Stack, IconButton, Button, CircularProgress } from '@mui/material';
 import { Panel, useReactFlow } from '@xyflow/react';
 import cls from 'classnames';
 import { useRequest } from 'ahooks';
-import { merge, isEmpty } from 'lodash-es';
+import { merge, isEmpty, cloneDeep } from 'lodash-es';
 import { genRandomString } from '@milesight/shared/src/utils/tools';
 import { useI18n, useStoreShallow } from '@milesight/shared/src/hooks';
 import { CloseIcon, PlayArrowIcon, toast } from '@milesight/shared/src/components';
@@ -13,6 +13,8 @@ import { workflowAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/ser
 import useWorkflow from '../../hooks/useWorkflow';
 import useValidate from '../../hooks/useValidate';
 import useFlowStore from '../../store';
+import { FROZEN_NODE_PROPERTY_KEYS } from '../../constants';
+import { normalizeNodes, normalizeEdges } from '../../helper';
 import { type DesignMode } from '../../typings';
 import './style.less';
 
@@ -172,7 +174,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
                 );
 
                 setNodesDataValidResult(nodesCheckResult, logPanelMode);
-                updateNodesStatus(statusData);
+                updateNodesStatus(statusData, { partial: true });
                 return;
             }
 
@@ -185,7 +187,11 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
                 toast.error({ content: getIntlText('common.message.json_format_error') });
                 return;
             }
-            const designData = toObject();
+            const designData = cloneDeep(toObject());
+
+            designData.nodes = normalizeNodes(designData.nodes, FROZEN_NODE_PROPERTY_KEYS);
+            designData.edges = normalizeEdges(designData.edges);
+
             const [error, resp] = await awaitWrap(
                 workflowAPI.testFlow({ input, design_data: JSON.stringify(designData) }),
             );
@@ -204,7 +210,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
 
             addTestLog({ id: resp.data.request_id, flow_data: toObject(), ...data });
             setLogDetail({ traceInfos: data.trace_infos });
-            updateNodesStatus(nodeStatus);
+            updateNodesStatus(nodeStatus, { partial: true });
         },
         {
             manual: true,
@@ -282,7 +288,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
                     {logDetail?.traceInfos?.length ? (
                         <div className="log-detail-area">
                             <ActionLog
-                                // logType={logPanelMode === 'feVerify' ? 'validate' : undefined}
+                                logType={logPanelMode === 'feVerify' ? 'validate' : undefined}
                                 traceData={logDetail.traceInfos}
                                 workflowData={logDetail.flowData || toObject()}
                             />
