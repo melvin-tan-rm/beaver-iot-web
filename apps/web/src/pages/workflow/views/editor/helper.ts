@@ -76,6 +76,7 @@ export const normalizeNodes = (nodes: WorkflowNode[], excludeKeys?: string[]): W
  */
 export const normalizeEdges = (edges: WorkflowEdge[]) => {
     return edges.map(edge => {
+        delete edge.selected;
         edge.data = omitBy(edge.data, (_, key) => checkPrivateProperty(key));
         return edge;
     });
