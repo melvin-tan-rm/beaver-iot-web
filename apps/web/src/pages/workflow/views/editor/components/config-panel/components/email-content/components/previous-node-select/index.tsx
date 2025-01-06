@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useMemoizedFn } from 'ahooks';
 
 import { IconButton, Popover } from '@mui/material';
-import { AddCircleIcon } from '@milesight/shared/src/components';
+import { AddCircleOutlineIcon } from '@milesight/shared/src/components';
 import UpstreamNodeList from '../../../upstream-node-list';
 
 export interface PreviousNodeSelectProps {
@@ -37,7 +37,7 @@ const PreviousNodeSelect: React.FC<PreviousNodeSelectProps> = props => {
                     borderRadius: '4px',
                 }}
             >
-                <AddCircleIcon />
+                <AddCircleOutlineIcon />
             </IconButton>
             <Popover
                 id={id}

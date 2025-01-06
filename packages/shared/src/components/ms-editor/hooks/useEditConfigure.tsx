@@ -1,22 +1,39 @@
 import { useMemo } from 'react';
-import type { Klass, LexicalNode } from 'lexical';
+import { TextNode, ParagraphNode } from 'lexical';
+import { HeadingNode } from '@lexical/rich-text';
+import { type InitialConfigType } from '@lexical/react/LexicalComposer';
 
-import { TableNodes, HeadingNode } from '../nodes';
+import { TableNodes, ExtendedTextNode } from '../nodes';
 import { NAMESPACE } from '../constant';
 import { EditorTheme } from '../themes';
+import { exportMap } from '../helper';
 
 /**
  * editor global configuration
  */
 export const useEditConfigure = () => {
-    return useMemo(() => {
+    return useMemo((): InitialConfigType => {
         return {
             namespace: NAMESPACE,
-            nodes: [...TableNodes, HeadingNode] as Array<Klass<LexicalNode>>,
+            nodes: [
+                ...TableNodes,
+                HeadingNode,
+                ParagraphNode,
+                TextNode,
+                ExtendedTextNode,
+                {
+                    replace: TextNode,
+                    with: (node: TextNode) => new ExtendedTextNode(node.__text),
+                    withKlass: ExtendedTextNode,
+                },
+            ],
             onError(error: Error) {
                 throw error;
             },
             theme: EditorTheme,
+            html: {
+                export: exportMap,
+            },
         };
     }, []);
 };

@@ -1,10 +1,4 @@
-import {
-    $getSelection,
-    $isElementNode,
-    $isParagraphNode,
-    $isRangeSelection,
-    $isTextNode,
-} from 'lexical';
+import { $getSelection, $isElementNode, $isParagraphNode, $isRangeSelection } from 'lexical';
 import {
     $getNodeTriplet,
     $isTableCellNode,
@@ -13,6 +7,7 @@ import {
     TableSelection,
 } from '@lexical/table';
 import type { ElementNode } from 'lexical';
+import { $isExtendedTextNode } from '../../../../../nodes/ExtendedTextNode';
 
 export const computeSelectionCount = (
     selection: TableSelection,
@@ -89,7 +84,7 @@ export const $cellContainsEmptyParagraph = (cell: TableCellNode): boolean => {
 
 export const $selectLastDescendant = (node: ElementNode): void => {
     const lastDescendant = node.getLastDescendant();
-    if ($isTextNode(lastDescendant)) {
+    if ($isExtendedTextNode(lastDescendant)) {
         lastDescendant.select();
     } else if ($isElementNode(lastDescendant)) {
         lastDescendant.selectEnd();

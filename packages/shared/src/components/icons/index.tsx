@@ -110,6 +110,7 @@ export {
     FormatColorText as FormatColorTextIcon,
     TableView as TableViewIcon,
     OpenInFull as OpenInFullIcon,
+    AddCircleOutline as AddCircleOutlineIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';
