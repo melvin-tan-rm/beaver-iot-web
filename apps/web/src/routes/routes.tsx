@@ -93,7 +93,7 @@ const routes: RouteObjectType[] = [
         ErrorBoundary,
         handle: {
             get title() {
-                return intl.get('common.label.device');
+                return intl.get('common.label.entity');
             },
             icon: <EntityIcon fontSize="medium" />,
         },

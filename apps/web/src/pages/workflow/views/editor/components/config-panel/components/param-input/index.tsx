@@ -22,6 +22,7 @@ import { genRandomString } from '@milesight/shared/src/utils/tools';
 import { DeleteOutlineIcon, AddIcon } from '@milesight/shared/src/components';
 import './style.less';
 import { isEqual } from 'lodash-es';
+import { entityTypeOptions } from '@/constant';
 
 export type ParamInputValueType = NonNullable<
     TriggerNodeDataType['parameters']
@@ -46,24 +47,6 @@ const DEFAULT_EMPTY_VALUE: ParamInputValueType = {
     name: '',
     type: '' as EntityValueDataType,
 };
-const typeOptions = [
-    {
-        label: 'INT',
-        value: 'LONG',
-    },
-    {
-        label: 'FLOAT',
-        value: 'DOUBLE',
-    },
-    {
-        label: 'BOOLEAN',
-        value: 'BOOLEAN',
-    },
-    {
-        label: 'STRING',
-        value: 'STRING',
-    },
-];
 const ParamInput: React.FC<ParamInputProps> = ({
     required,
     disabled,
@@ -132,9 +115,9 @@ const ParamInput: React.FC<ParamInputProps> = ({
                                 handleChange(index, item, 'type', e.target.value as string)
                             }
                         >
-                            {typeOptions.map(item => (
+                            {entityTypeOptions.map(item => (
                                 <MenuItem key={item.value} value={item.value}>
-                                    {item.label}
+                                    {getIntlText(item.label)}
                                 </MenuItem>
                             ))}
                         </Select>

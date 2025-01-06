@@ -3,7 +3,7 @@ import { ToggleButtonGroup, ToggleButton, Button } from '@mui/material';
 import { v4 } from 'uuid';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { UseFormItemsProps } from '@milesight/shared/src/components';
-import { ENTITY_AEECSS_MODE } from '@/constant';
+import { ENTITY_AEECSS_MODE, entityTypeOptions } from '@/constant';
 import { TableRowDataType } from '../../hooks/useColumns';
 
 interface FormProps {
@@ -97,24 +97,12 @@ const useForm = (props: FormProps) => {
                 componentProps: {
                     fullWidth: true,
                 },
-                options: [
-                    {
-                        label: getIntlText('entity.label.entity_type_of_string'),
-                        value: 'STRING',
-                    },
-                    {
-                        label: getIntlText('entity.label.entity_type_of_int'),
-                        value: 'LONG',
-                    },
-                    {
-                        label: getIntlText('entity.label.entity_type_of_float'),
-                        value: 'DOUBLE',
-                    },
-                    {
-                        label: getIntlText('entity.label.entity_type_of_boolean'),
-                        value: 'BOOLEAN',
-                    },
-                ],
+                options: entityTypeOptions.map(item => {
+                    return {
+                        label: getIntlText(item.label),
+                        value: item.value,
+                    };
+                }),
             },
         },
     ];

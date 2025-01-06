@@ -21,3 +21,22 @@ export enum ENTITY_VALUE_TYPE {
     OBJECT = 'OBJECT',
     ENUM = 'ENUM',
 }
+
+export const entityTypeOptions = [
+    {
+        label: 'entity.label.entity_type_of_int',
+        value: 'LONG',
+    },
+    {
+        label: 'entity.label.entity_type_of_float',
+        value: 'DOUBLE',
+    },
+    {
+        label: 'entity.label.entity_type_of_boolean',
+        value: 'BOOLEAN',
+    },
+    {
+        label: 'entity.label.entity_type_of_string',
+        value: 'STRING',
+    },
+];
