@@ -27,12 +27,12 @@ function BasicLayout() {
 
     useRequest(
         async () => {
-            if (!token) {
-                // 判断客户端是否已注册，若已注册则跳转登录页，否则跳转注册页
-                const target = iotLocalStorage.getItem(REGISTERED_KEY)
-                    ? '/auth/login'
-                    : '/auth/register';
+            // 判断客户端是否已注册，若已注册则跳转登录页，否则跳转注册页
+            const target = iotLocalStorage.getItem(REGISTERED_KEY)
+                ? '/auth/login'
+                : '/auth/register';
 
+            if (!token) {
                 navigate(target, { replace: true });
                 return;
             }
@@ -46,7 +46,11 @@ function BasicLayout() {
             const [error, resp] = await awaitWrap(globalAPI.getUserInfo());
             setLoading(false);
 
-            if (error || !isRequestSuccess(resp)) return;
+            if (error || !isRequestSuccess(resp)) {
+                navigate(target, { replace: true });
+                return;
+            }
+
             setUserInfo(getResponseData(resp));
         },
         {

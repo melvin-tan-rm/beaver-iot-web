@@ -1,0 +1,70 @@
+.@{prefix}-param-input-select {
+    position: relative;
+
+    .@{mui-prefix}FormControl-root {
+        margin: 0;
+    }
+
+    .@{mui-prefix}InputBase-root {
+        padding-right: @padding-xxs;
+    }
+
+    & &-chip {
+        position: absolute;
+        top: @margin-xs;
+        left: @margin-sm;
+        max-width: calc(100% - 54px);
+        border-radius: @border-radius-base;
+
+        .@{mui-prefix}Chip-label {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            .text-size(@font-size-base);
+
+            .name {
+                min-width: 8px;
+                max-width: calc(50% - 28px);
+            }
+
+            .divider {
+                display: block;
+                margin: 0 @margin-xxs;
+                color: var(--text-color-secondary);
+            }
+
+            .type {
+                font-size: @font-size-sm;
+                color: var(--text-color-tertiary);
+            }
+        }
+    }
+
+    &-option-groupname.@{mui-prefix}ListSubheader-root {
+        .text-size(@font-size-sm);
+
+        margin-top: @margin-xs;
+    }
+
+    &-option.@{mui-prefix}MenuItem-root {
+        padding: @padding-xs @padding-md;
+
+        .@{prefix}-param-input-select-item {
+            display: flex;
+            .text-size(@font-size-base);
+
+            .name {
+                max-width: 200px;
+            }
+
+            .type {
+                display: inline-block;
+                padding: 0 @padding-xxs;
+                margin-left: @margin-md;
+                color: var(--text-color-tertiary);
+                background-color: var(--component-background-gray);
+                border-radius: @border-radius-base;
+            }
+        }
+    }
+}

@@ -5,6 +5,8 @@ import {
     DevicesIcon,
     IntegrationInstructionsIcon,
     Person4Icon,
+    EntityIcon,
+    WorkflowIcon,
 } from '@milesight/shared/src/components';
 import { PERMISSIONS } from '@/constants';
 import ErrorBoundaryComponent from './error-boundary';
@@ -37,6 +39,8 @@ type RouteObjectType = RouteObject & {
          * Whether to hide in the menu bar
          */
         hideInMenuBar?: boolean;
+        /** 隐藏侧边栏 */
+        hideSidebar?: boolean;
     };
 
     /** 子路由 */
@@ -98,6 +102,27 @@ const routes: RouteObjectType[] = [
         ],
     },
     {
+        path: '/entity',
+        element: <Outlet />,
+        ErrorBoundary,
+        handle: {
+            get title() {
+                return intl.get('common.label.device');
+            },
+            icon: <EntityIcon fontSize="medium" />,
+        },
+        children: [
+            {
+                index: true,
+                async lazy() {
+                    const { default: Component } = await import('@/pages/entity');
+                    return { Component };
+                },
+                ErrorBoundary,
+            },
+        ],
+    },
+    {
         path: '/integration',
         element: <Outlet />,
         ErrorBoundary,
@@ -128,6 +153,41 @@ const routes: RouteObjectType[] = [
                     const { default: Component } = await import(
                         '@/pages/integration/views/integration-detail'
                     );
+                    return { Component };
+                },
+                ErrorBoundary,
+            },
+        ],
+    },
+    {
+        path: '/workflow',
+        element: <Outlet />,
+        ErrorBoundary,
+        handle: {
+            get title() {
+                return intl.get('common.label.workflow');
+            },
+            icon: <WorkflowIcon />,
+        },
+        children: [
+            {
+                index: true,
+                async lazy() {
+                    const { default: Component } = await import('@/pages/workflow');
+                    return { Component };
+                },
+                ErrorBoundary,
+            },
+            {
+                path: 'editor',
+                handle: {
+                    get title() {
+                        return intl.get('common.label.editor');
+                    },
+                    hideSidebar: true,
+                },
+                async lazy() {
+                    const { default: Component } = await import('@/pages/workflow/views/editor');
                     return { Component };
                 },
                 ErrorBoundary,
