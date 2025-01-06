@@ -27,8 +27,8 @@ const EmailContent: React.FC<EmailContentProps> = props => {
         value: value || '',
         onChange,
     });
-    const { modalVisible, showModal, hiddenModal, editorRef, smallEditorContent } =
-        useEmailContent(content);
+    const { modalVisible, showModal, hiddenModal, editorRef, handleSmallEditorChange } =
+        useEmailContent(content, setContent);
 
     const renderToolbar = () => {
         return (
@@ -45,14 +45,16 @@ const EmailContent: React.FC<EmailContentProps> = props => {
         <div className={styles['email-content']}>
             <MSRichtextEditor
                 ref={editorRef}
+                autoFocus={false}
                 isEditable
                 editorConfig={{
                     toolbar: false,
                 }}
                 renderToolbar={renderToolbar()}
+                onChange={handleSmallEditorChange}
             />
             <RichTextModal
-                data={smallEditorContent}
+                data={content}
                 visible={modalVisible}
                 onCancel={hiddenModal}
                 onOk={hiddenModal}

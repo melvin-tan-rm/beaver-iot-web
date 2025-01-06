@@ -1,5 +1,11 @@
 import { useMemoizedFn } from 'ahooks';
-import { SerializedEditorState, $getSelection, $getRoot, $insertNodes } from 'lexical';
+import {
+    SerializedEditorState,
+    $getSelection,
+    $getRoot,
+    $insertNodes,
+    $setSelection,
+} from 'lexical';
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 
@@ -50,7 +56,7 @@ export const useTransmit = ({ onEditableChange }: IProps) => {
     /**
      * HTML -> Lexical
      */
-    const setEditorHtmlContent = (htmlString: string) => {
+    const setEditorHtmlContent = (htmlString: string, isFocus?: boolean) => {
         editor.update(() => {
             const root = $getRoot();
 
@@ -65,6 +71,11 @@ export const useTransmit = ({ onEditableChange }: IProps) => {
 
                 /** clear all */
                 root.clear();
+
+                /**
+                 * Remove focus from the editor
+                 */
+                if (!isFocus) $setSelection(null);
                 return;
             }
 
@@ -93,6 +104,11 @@ export const useTransmit = ({ onEditableChange }: IProps) => {
              * Insert them at a selection
              */
             $insertNodes(nodes);
+
+            /**
+             * Remove focus from the editor
+             */
+            if (!isFocus) $setSelection(null);
         });
     };
 

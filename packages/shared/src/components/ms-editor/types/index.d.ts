@@ -24,6 +24,8 @@ export interface IEditorProps {
     renderToolbar?: React.ReactNode;
     /** extra custom toolbar */
     extraToolbar?: React.ReactNode;
+    /** the editor state change callbacks */
+    onChange?: (editorState: EditorState, editor: LexicalEditor, tags: Set<string>) => void;
 }
 export interface EditorConfig {
     /** toolbar config */
@@ -101,7 +103,7 @@ export interface EditorHandlers {
     /** insert text content to current selection */
     insertTextContent: (text: string) => void;
     /** HTML -> Lexical */
-    setEditorHtmlContent: (htmlString: string) => void;
+    setEditorHtmlContent: (htmlString: string, isFocus?: boolean) => void;
 }
 
 /** toolbar props */

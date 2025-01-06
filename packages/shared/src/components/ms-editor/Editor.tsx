@@ -8,6 +8,7 @@ import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
+import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 
 import { Toolbar } from './components';
 import { TableHoverActionsPlugin, TableActionMenuPlugin, TableCellResizerPlugin } from './plugins';
@@ -27,6 +28,7 @@ export const LexicalEditor = forwardRef<EditorHandlers, IEditorProps>((props, re
         autoFocus,
         renderToolbar,
         extraToolbar,
+        onChange,
     } = props;
     const { toolbar = true, plugin } = editorConfig || {};
     const { table: tablePlugin } = plugin || {};
@@ -77,8 +79,10 @@ export const LexicalEditor = forwardRef<EditorHandlers, IEditorProps>((props, re
                 />
                 <HistoryPlugin />
                 {autoFocus && <AutoFocusPlugin />}
-                <TablePlugin />
+                {/* { lexical editor state on change callbacks } */}
+                <OnChangePlugin onChange={(...args) => onChange?.(...args)} />
 
+                <TablePlugin />
                 {floatingAnchorElem && (
                     <>
                         <TableHoverActionsPlugin

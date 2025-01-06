@@ -30,7 +30,7 @@ const RichTextModal: React.FC<RichTextModalProps> = props => {
     const handleOk = useMemoizedFn(async () => {
         try {
             const richTextContent = await editorRef.current?.getEditorHtml();
-            if (richTextContent) onSave?.(richTextContent);
+            onSave?.(richTextContent || '');
         } finally {
             onOk?.();
         }
@@ -40,7 +40,7 @@ const RichTextModal: React.FC<RichTextModalProps> = props => {
         if (visible) {
             /** waiting the editor render ok */
             setTimeout(() => {
-                editorRef.current?.setEditorHtmlContent(data || '');
+                editorRef.current?.setEditorHtmlContent(data || '', true);
             }, 150);
         }
     }, [visible, data]);
