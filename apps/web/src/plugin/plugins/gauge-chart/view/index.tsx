@@ -59,7 +59,7 @@ const View = (props: Props) => {
 
             // Replace it into qualified data
             const { minValue: min, maxValue: max, currentValue: value } = datasets || {};
-            const currentValue = value || 0;
+            let currentValue = value || 0;
             const minValue = min || 0;
             const maxValue = max
                 ? Math.max(max, currentValue)
@@ -86,6 +86,12 @@ const View = (props: Props) => {
                 data = [currentValue, DEFAULT_RANGE];
             } else {
                 data = [currentValue, tickMaxValue];
+            }
+            if (currentValue) {
+                const match = currentValue.toString().match(/\.(\d+)/);
+                if (match?.length >= 2) {
+                    currentValue = parseFloat(currentValue.toFixed(1));
+                }
             }
             // 渲染图表
             const circumference = 216; // Define the length of the dashboard
