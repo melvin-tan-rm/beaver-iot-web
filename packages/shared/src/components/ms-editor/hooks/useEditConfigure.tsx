@@ -19,7 +19,6 @@ export const useEditConfigure = () => {
                 ...TableNodes,
                 HeadingNode,
                 ParagraphNode,
-                TextNode,
                 ExtendedTextNode,
                 {
                     replace: TextNode,

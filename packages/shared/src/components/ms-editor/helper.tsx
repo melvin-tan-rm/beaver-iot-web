@@ -9,6 +9,8 @@ import {
     ParagraphNode,
     TextNode,
 } from 'lexical';
+import { HeadingNode } from '@lexical/rich-text';
+import { ExtendedTextNode } from './nodes';
 
 /* eslint-disable no-bitwise */
 import { MODE, THEME_PREFIX } from './constant';
@@ -76,7 +78,8 @@ export const exportMap: Map<
     (editor: LexicalEditor, target: LexicalNode) => DOMExportOutput
 > = new Map<Klass<LexicalNode>, (editor: LexicalEditor, target: LexicalNode) => DOMExportOutput>([
     [ParagraphNode, removeStylesExportDOM],
-    [TextNode, removeStylesExportDOM],
+    [ExtendedTextNode, removeStylesExportDOM],
+    [HeadingNode, removeStylesExportDOM],
 ]);
 
 /**

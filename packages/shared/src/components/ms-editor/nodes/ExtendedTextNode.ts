@@ -24,8 +24,15 @@ function patchStyleConversion(
             return originalOutput;
         }
 
-        const { backgroundColor, color, fontFamily, fontWeight, fontSize, textDecoration } =
-            node.style || {};
+        const {
+            backgroundColor,
+            color,
+            fontFamily,
+            fontWeight,
+            fontSize,
+            textDecoration,
+            whiteSpace,
+        } = node.style || {};
 
         return {
             ...originalOutput,
@@ -40,6 +47,7 @@ function patchStyleConversion(
                         fontWeight ? `font-weight: ${fontWeight}` : null,
                         fontSize ? `font-size: ${fontSize}` : null,
                         textDecoration ? `text-decoration: ${textDecoration}` : null,
+                        whiteSpace ? `white-space: ${whiteSpace}` : null,
                     ]
                         .filter(value => value != null)
                         .join('; ');

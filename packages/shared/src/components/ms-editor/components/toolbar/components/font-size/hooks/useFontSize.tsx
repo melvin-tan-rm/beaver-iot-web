@@ -52,8 +52,13 @@ export const useFontSize = () => {
             'font-size',
             `${DEFAULT_FONT_SIZE}px`,
         );
-        setFontSize(currentFontSize ? Number(currentFontSize.slice(0, -2)) : DEFAULT_FONT_SIZE);
+
+        const numFontSize = Number(currentFontSize.slice(0, -2));
+        const newFontSize = Number.isNaN(numFontSize) ? DEFAULT_FONT_SIZE : numFontSize;
+
+        setFontSize(currentFontSize ? newFontSize : DEFAULT_FONT_SIZE);
     });
+
     useEffect(() => {
         /** listener change */
         return mergeRegister(
