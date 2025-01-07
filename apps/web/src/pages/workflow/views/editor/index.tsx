@@ -1,6 +1,6 @@
 import { memo, useState, useCallback, useEffect } from 'react';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
-import { useRequest } from 'ahooks';
+import { useRequest, useDebounceEffect } from 'ahooks';
 import { merge, isEmpty, isEqual, cloneDeep } from 'lodash-es';
 import {
     ReactFlow,
@@ -15,7 +15,7 @@ import {
 } from '@xyflow/react';
 import { useI18n, useStoreShallow, usePreventLeave } from '@milesight/shared/src/hooks';
 import { InfoIcon, LoadingButton, toast } from '@milesight/shared/src/components';
-import { CodeEditor, useConfirm } from '@/components';
+import { CodeEditor, useConfirm, useEntityStore } from '@/components';
 import {
     workflowAPI,
     awaitWrap,
@@ -230,6 +230,20 @@ const WorkflowEditor = () => {
             debounceWait: 300,
             refreshDeps: [wid, version],
         },
+    );
+
+    // ---------- Fetch Entity List ----------
+    const { status, initEntityList } = useEntityStore(
+        useStoreShallow(['status', 'entityList', 'initEntityList']),
+    );
+
+    useDebounceEffect(
+        () => {
+            if (status !== 'ready') return;
+            initEntityList();
+        },
+        [status, initEntityList],
+        { wait: 300 },
     );
 
     // ---------- Handle Import Data ----------
