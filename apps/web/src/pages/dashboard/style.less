@@ -4,7 +4,7 @@
     padding: 0;
 
     .@{prefix}-tabs {
-        flex: 1;
+        // flex: 1;
     }
 
     .@{prefix}-tab-content {
@@ -43,11 +43,9 @@
     }
 
     &-add {
-        height: 100%;
-        padding: 24px 20px 0 0;
+        display: inline-block;
         line-height: 1;
         background: var(--component-background);
-        border-bottom: 1px solid var(--border-color-base);
         cursor: pointer;
 
         &:hover &-icon {
@@ -56,6 +54,13 @@
 
         &-icon {
             font-size: @font-size-xxl;
+        }
+
+        &-contain {
+            flex: 1;
+            height: 100%;
+            padding: 24px 20px 0 0;
+            border-bottom: 1px solid var(--border-color-base);
         }
     }
 
