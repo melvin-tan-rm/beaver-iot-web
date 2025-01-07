@@ -147,6 +147,10 @@ declare type WorkflowLogicOperator = 'AND' | 'OR';
  * @param NE not equal
  * @param IS_EMPTY is empty
  * @param IS_NOT_EMPTY is not empty
+ * @param GT greater than
+ * @param GE greater than or equal
+ * @param LT less than
+ * @param LE less than or equal
  */
 declare type WorkflowFilterOperator =
     | 'CONTAINS'
@@ -156,7 +160,11 @@ declare type WorkflowFilterOperator =
     | 'EQ'
     | 'NE'
     | 'IS_EMPTY'
-    | 'IS_NOT_EMPTY';
+    | 'IS_NOT_EMPTY'
+    | 'GT'
+    | 'GE'
+    | 'LT'
+    | 'LE';
 
 /**
  * IfElse Node Parameters
