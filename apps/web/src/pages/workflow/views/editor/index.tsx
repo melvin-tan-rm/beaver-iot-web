@@ -545,7 +545,7 @@ const WorkflowEditor = () => {
                             vertical={helperLineVertical}
                         />
                         <LogPanel designMode={designMode} />
-                        <ConfigPanel readonly={isLogMode} />
+                        <ConfigPanel key={selectedNodeType} readonly={isLogMode} />
                         <EntryPanel isEditing={!!wid} loading={flowDataLoading} />
                     </ReactFlow>
                     {designMode === 'advanced' && (

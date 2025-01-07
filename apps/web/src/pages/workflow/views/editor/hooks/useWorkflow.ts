@@ -220,6 +220,7 @@ const useWorkflow = () => {
         [getNodes, getEdges, selectedNode],
     );
 
+    // Get the parameters of the upstream nodes of the current node
     const getUpstreamNodeParams = useCallback(
         (
             currentNode?: WorkflowNode,
