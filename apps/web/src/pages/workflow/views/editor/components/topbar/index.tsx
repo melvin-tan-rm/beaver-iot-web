@@ -101,7 +101,6 @@ const Topbar: React.FC<TopbarProps> = ({
                         variant="outlined"
                         className="btn-back"
                         startIcon={<ArrowBackIcon />}
-                        disabled={disabled || loading}
                         onClick={() => navigate('/workflow', { replace: true })}
                     >
                         {getIntlText('common.label.back')}
