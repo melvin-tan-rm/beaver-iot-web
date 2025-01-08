@@ -17,6 +17,7 @@ import {
     API_PREFIX,
 } from '@/services/http';
 import { PERMISSIONS } from '@/constants';
+import { useUserPermissions } from '@/hooks';
 import useColumns, {
     type UseColumnsProps,
     type TableRowDataType,
@@ -28,6 +29,7 @@ import ExportModal from '../export-modal';
 export default () => {
     const navigate = useNavigate();
     const { getIntlText } = useI18n();
+    const { hasPermission } = useUserPermissions();
 
     const [keyword, setKeyword] = useState<string>();
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
@@ -181,7 +183,7 @@ export default () => {
     return (
         <div className="ms-main">
             <TablePro<TableRowDataType>
-                checkboxSelection
+                checkboxSelection={hasPermission(PERMISSIONS.ENTITY_DATA_EXPORT)}
                 loading={loading}
                 columns={columns}
                 getRowId={record => record.entityId}

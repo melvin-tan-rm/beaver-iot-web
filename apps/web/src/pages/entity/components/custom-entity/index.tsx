@@ -8,6 +8,7 @@ import { AddIcon, DeleteOutlineIcon, NoteAddIcon, toast } from '@milesight/share
 import { TablePro, useConfirm, PermissionControlHidden } from '@/components';
 import { entityAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import { ENTITY_TYPE, PERMISSIONS } from '@/constants';
+import { useUserPermissions } from '@/hooks';
 import { useColumns, type UseColumnsProps, type TableRowDataType } from '../../hooks';
 import AddModal from '../add-modal';
 import AddFromWorkflow from '../add-from-workflow';
@@ -15,6 +16,7 @@ import AddFromWorkflow from '../add-from-workflow';
 export default () => {
     const navigate = useNavigate();
     const { getIntlText } = useI18n();
+    const { hasPermission } = useUserPermissions();
 
     const [keyword, setKeyword] = useState<string>();
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
@@ -171,7 +173,7 @@ export default () => {
     return (
         <div className="ms-main">
             <TablePro<TableRowDataType>
-                checkboxSelection
+                checkboxSelection={hasPermission(PERMISSIONS.ENTITY_CUSTOM_DELETE)}
                 loading={loading}
                 columns={columns}
                 getRowId={record => record.entityId}

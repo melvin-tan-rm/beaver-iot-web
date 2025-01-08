@@ -11,7 +11,7 @@ import {
     ErrorIcon,
     toast,
 } from '@milesight/shared/src/components';
-import { Breadcrumbs, TablePro, useConfirm } from '@/components';
+import { Breadcrumbs, TablePro, useConfirm, PermissionControlHidden } from '@/components';
 import {
     WorkflowAPISchema,
     awaitWrap,
@@ -21,12 +21,15 @@ import {
 } from '@/services/http';
 import { type FormDataProps as ImportFormDataProps } from '@/pages/workflow/components/import-modal/hook/useImportFormItems';
 import { ImportModal, LogModal } from '@/pages/workflow/components';
+import { PERMISSIONS } from '@/constants';
+import { useUserPermissions } from '@/hooks';
 import { useColumns, type UseColumnsProps, type TableRowDataType } from './hooks';
 import './style.less';
 
 const Workflow = () => {
     const navigate = useNavigate();
     const { getIntlText } = useI18n();
+    const { hasPermission } = useUserPermissions();
 
     // ---------- Fetch Workflow List ----------
     const [keyword, setKeyword] = useState<string>();
@@ -191,32 +194,38 @@ const Workflow = () => {
     const toolbarRender = useMemo(() => {
         return (
             <Stack className="ms-operations-btns" direction="row" spacing="12px">
-                <Button
-                    variant="contained"
-                    sx={{ height: 36, textTransform: 'none' }}
-                    startIcon={<AddIcon />}
-                    onClick={() => navigate('/workflow/editor')}
-                >
-                    {getIntlText('common.label.add')}
-                </Button>
-                <Button
-                    variant="outlined"
-                    sx={{ height: 36, textTransform: 'none' }}
-                    startIcon={<SystemUpdateAltIcon />}
-                    onClick={() => handlerImportModal(true)}
-                >
-                    {getIntlText('workflow.button.label_import_from_dsl')}
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="error"
-                    disabled={!selectedIds.length}
-                    sx={{ height: 36, textTransform: 'none' }}
-                    startIcon={<DeleteOutlineIcon />}
-                    onClick={() => handleDeleteConfirm()}
-                >
-                    {getIntlText('common.label.delete')}
-                </Button>
+                <PermissionControlHidden permissions={PERMISSIONS.WORKFLOW_ADD}>
+                    <Button
+                        variant="contained"
+                        sx={{ height: 36, textTransform: 'none' }}
+                        startIcon={<AddIcon />}
+                        onClick={() => navigate('/workflow/editor')}
+                    >
+                        {getIntlText('common.label.add')}
+                    </Button>
+                </PermissionControlHidden>
+                <PermissionControlHidden permissions={PERMISSIONS.WORKFLOW_ADD}>
+                    <Button
+                        variant="outlined"
+                        sx={{ height: 36, textTransform: 'none' }}
+                        startIcon={<SystemUpdateAltIcon />}
+                        onClick={() => handlerImportModal(true)}
+                    >
+                        {getIntlText('workflow.button.label_import_from_dsl')}
+                    </Button>
+                </PermissionControlHidden>
+                <PermissionControlHidden permissions={PERMISSIONS.WORKFLOW_DELETE}>
+                    <Button
+                        variant="outlined"
+                        color="error"
+                        disabled={!selectedIds.length}
+                        sx={{ height: 36, textTransform: 'none' }}
+                        startIcon={<DeleteOutlineIcon />}
+                        onClick={() => handleDeleteConfirm()}
+                    >
+                        {getIntlText('common.label.delete')}
+                    </Button>
+                </PermissionControlHidden>
             </Stack>
         );
     }, [getIntlText, navigate, handleDeleteConfirm, handlerImportModal, selectedIds]);
@@ -227,7 +236,7 @@ const Workflow = () => {
             <div className="ms-view ms-view-workflow">
                 <div className="ms-view__inner">
                     <TablePro<TableRowDataType>
-                        checkboxSelection
+                        checkboxSelection={hasPermission(PERMISSIONS.WORKFLOW_DELETE)}
                         loading={loading}
                         columns={columns}
                         rows={workflowList?.content}
@@ -239,6 +248,10 @@ const Workflow = () => {
                         onPaginationModelChange={setPaginationModel}
                         onRowSelectionModelChange={setSelectedIds}
                         onRowDoubleClick={({ row }) => {
+                            if (!hasPermission(PERMISSIONS.WORKFLOW_EDIT)) {
+                                return;
+                            }
+
                             navigate(`/workflow/editor?wid=${row.id}`);
                         }}
                         onSearch={setKeyword}
