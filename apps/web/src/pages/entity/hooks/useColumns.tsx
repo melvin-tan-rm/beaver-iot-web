@@ -2,8 +2,9 @@ import { useMemo } from 'react';
 import { Stack, IconButton, Chip, type ChipProps } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import { ListAltIcon, DeleteOutlineIcon } from '@milesight/shared/src/components';
-import { Tooltip, type ColumnType } from '@/components';
+import { Tooltip, type ColumnType, PermissionControlDisabled } from '@/components';
 import { type EntityAPISchema } from '@/services/http';
+import { PERMISSIONS } from '@/constants';
 
 type OperationType = 'edit' | 'delete';
 
@@ -95,29 +96,35 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                             spacing="4px"
                             sx={{ height: '100%', alignItems: 'center', justifyContent: 'end' }}
                         >
-                            <Tooltip title={getIntlText('common.label.detail')}>
-                                <IconButton
-                                    sx={{ width: 30, height: 30 }}
-                                    onClick={() => onButtonClick('edit', row)}
-                                >
-                                    <ListAltIcon sx={{ width: 20, height: 20 }} />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title={getIntlText('common.label.delete')}>
-                                <IconButton
-                                    color="error"
-                                    // disabled={!row.deletable}
-                                    sx={{
-                                        width: 30,
-                                        height: 30,
-                                        color: 'text.secondary',
-                                        '&:hover': { color: 'error.light' },
-                                    }}
-                                    onClick={() => onButtonClick('delete', row)}
-                                >
-                                    <DeleteOutlineIcon sx={{ width: 20, height: 20 }} />
-                                </IconButton>
-                            </Tooltip>
+                            <PermissionControlDisabled permissions={PERMISSIONS.ENTITY_CUSTOM_EDIT}>
+                                <Tooltip title={getIntlText('common.label.detail')}>
+                                    <IconButton
+                                        sx={{ width: 30, height: 30 }}
+                                        onClick={() => onButtonClick('edit', row)}
+                                    >
+                                        <ListAltIcon sx={{ width: 20, height: 20 }} />
+                                    </IconButton>
+                                </Tooltip>
+                            </PermissionControlDisabled>
+                            <PermissionControlDisabled
+                                permissions={PERMISSIONS.ENTITY_CUSTOM_DELETE}
+                            >
+                                <Tooltip title={getIntlText('common.label.delete')}>
+                                    <IconButton
+                                        color="error"
+                                        // disabled={!row.deletable}
+                                        sx={{
+                                            width: 30,
+                                            height: 30,
+                                            color: 'text.secondary',
+                                            '&:hover': { color: 'error.light' },
+                                        }}
+                                        onClick={() => onButtonClick('delete', row)}
+                                    >
+                                        <DeleteOutlineIcon sx={{ width: 20, height: 20 }} />
+                                    </IconButton>
+                                </Tooltip>
+                            </PermissionControlDisabled>
                         </Stack>
                     );
                 },

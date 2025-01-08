@@ -7,7 +7,7 @@ import { objectToCamelCase, xhrDownload } from '@milesight/shared/src/utils/tool
 import { getCurrentComponentLang } from '@milesight/shared/src/services/i18n';
 import { getAuthorizationToken } from '@milesight/shared/src/utils/request/utils';
 import { IosShareIcon, toast } from '@milesight/shared/src/components';
-import { TablePro, useConfirm } from '@/components';
+import { TablePro, useConfirm, PermissionControlHidden } from '@/components';
 import { DateRangePickerValueType } from '@/components/date-range-picker';
 import {
     entityAPI,
@@ -16,6 +16,7 @@ import {
     isRequestSuccess,
     API_PREFIX,
 } from '@/services/http';
+import { PERMISSIONS } from '@/constants';
 import useColumns, {
     type UseColumnsProps,
     type TableRowDataType,
@@ -143,14 +144,16 @@ export default () => {
     const toolbarRender = useMemo(() => {
         return (
             <Stack className="ms-operations-btns" direction="row" spacing="12px">
-                <Button
-                    variant="outlined"
-                    sx={{ height: 36, textTransform: 'none' }}
-                    startIcon={<IosShareIcon />}
-                    onClick={handleShowExport}
-                >
-                    {getIntlText('common.label.export')}
-                </Button>
+                <PermissionControlHidden permissions={PERMISSIONS.ENTITY_DATA_EXPORT}>
+                    <Button
+                        variant="outlined"
+                        sx={{ height: 36, textTransform: 'none' }}
+                        startIcon={<IosShareIcon />}
+                        onClick={handleShowExport}
+                    >
+                        {getIntlText('common.label.export')}
+                    </Button>
+                </PermissionControlHidden>
             </Stack>
         );
     }, [getIntlText, handleExportConfirm, selectedIds]);

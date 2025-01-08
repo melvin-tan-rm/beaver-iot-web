@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 import { Stack, IconButton, Chip, type ChipProps } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import { ListAltIcon, EditIcon } from '@milesight/shared/src/components';
-import { Tooltip, type ColumnType } from '@/components';
+import { Tooltip, type ColumnType, PermissionControlHidden } from '@/components';
+import { PERMISSIONS } from '@/constants';
 import { type EntityAPISchema } from '@/services/http';
 
 type OperationType = 'detail' | 'edit';
@@ -97,17 +98,19 @@ const useEntityColumns = <T extends TableRowDataType>({ onButtonClick }: UseColu
                                     <ListAltIcon sx={{ width: 20, height: 20 }} />
                                 </IconButton>
                             </Tooltip>
-                            <Tooltip title={getIntlText('common.button.edit')}>
-                                <IconButton
-                                    sx={{
-                                        width: 30,
-                                        height: 30,
-                                    }}
-                                    onClick={() => onButtonClick('edit', row)}
-                                >
-                                    <EditIcon sx={{ width: 20, height: 20 }} />
-                                </IconButton>
-                            </Tooltip>
+                            <PermissionControlHidden permissions={PERMISSIONS.ENTITY_DATA_EDIT}>
+                                <Tooltip title={getIntlText('common.button.edit')}>
+                                    <IconButton
+                                        sx={{
+                                            width: 30,
+                                            height: 30,
+                                        }}
+                                        onClick={() => onButtonClick('edit', row)}
+                                    >
+                                        <EditIcon sx={{ width: 20, height: 20 }} />
+                                    </IconButton>
+                                </Tooltip>
+                            </PermissionControlHidden>
                         </Stack>
                     );
                 },
