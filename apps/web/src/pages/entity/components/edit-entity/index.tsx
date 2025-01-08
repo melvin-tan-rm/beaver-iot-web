@@ -47,7 +47,7 @@ const EditEntity = (props: IProps) => {
             visible
             onCancel={handleClose}
             onOk={handleOk}
-            title={getIntlText('common.label.edit')}
+            title={getIntlText('common.button.edit')}
         >
             <Form<{ entityName: string }> ref={formRef} formItems={formItems} onOk={handleSubmit} />
         </Modal>

@@ -169,6 +169,7 @@ const routes: RouteObjectType[] = [
                 return intl.get('common.label.workflow');
             },
             icon: <WorkflowIcon />,
+            permissions: PERMISSIONS.WORKFLOW_MODULE,
         },
         children: [
             {

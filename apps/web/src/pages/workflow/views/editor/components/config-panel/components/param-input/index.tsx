@@ -22,7 +22,7 @@ import { genRandomString } from '@milesight/shared/src/utils/tools';
 import { DeleteOutlineIcon, AddIcon } from '@milesight/shared/src/components';
 import './style.less';
 import { isEqual } from 'lodash-es';
-import { entityTypeOptions } from '@/constant';
+import { entityTypeOptions } from '@/constants';
 
 export type ParamInputValueType = NonNullable<
     TriggerNodeDataType['parameters']

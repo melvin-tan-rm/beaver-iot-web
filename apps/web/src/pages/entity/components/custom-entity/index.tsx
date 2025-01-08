@@ -7,7 +7,7 @@ import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
 import { AddIcon, DeleteOutlineIcon, NoteAddIcon, toast } from '@milesight/shared/src/components';
 import { TablePro, useConfirm } from '@/components';
 import { entityAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
-import { ENTITY_TYPE } from '@/constant';
+import { ENTITY_TYPE } from '@/constants';
 import { useColumns, type UseColumnsProps, type TableRowDataType } from '../../hooks';
 import AddModal from '../add-modal';
 import AddFromWorkflow from '../add-from-workflow';

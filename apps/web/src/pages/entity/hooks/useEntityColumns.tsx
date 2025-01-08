@@ -97,7 +97,7 @@ const useEntityColumns = <T extends TableRowDataType>({ onButtonClick }: UseColu
                                     <ListAltIcon sx={{ width: 20, height: 20 }} />
                                 </IconButton>
                             </Tooltip>
-                            <Tooltip title={getIntlText('common.label.edit')}>
+                            <Tooltip title={getIntlText('common.button.edit')}>
                                 <IconButton
                                     sx={{
                                         width: 30,

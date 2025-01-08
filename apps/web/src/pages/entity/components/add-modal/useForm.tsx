@@ -3,7 +3,7 @@ import { ToggleButtonGroup, ToggleButton, Button } from '@mui/material';
 import { v4 } from 'uuid';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { UseFormItemsProps } from '@milesight/shared/src/components';
-import { ENTITY_AEECSS_MODE, entityTypeOptions } from '@/constant';
+import { ENTITY_AEECSS_MODE, entityTypeOptions } from '@/constants';
 import { TableRowDataType } from '../../hooks/useColumns';
 
 interface FormProps {
