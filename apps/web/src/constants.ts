@@ -24,6 +24,7 @@ export enum PERMISSIONS {
      * custom entity module
      */
     ENTITY_MODULE = 'entity',
+    ENTITY_CUSTOM_MODULE = 'entity_custom',
     ENTITY_CUSTOM_VIEW = 'entity_custom.view',
     ENTITY_CUSTOM_ADD = 'entity_custom.add',
     ENTITY_CUSTOM_EDIT = 'entity_custom.edit',
@@ -31,6 +32,7 @@ export enum PERMISSIONS {
     /**
      * entity data module
      */
+    ENTITY_DATA_MODULE = 'entity_data',
     ENTITY_DATA_VIEW = 'entity_data.view',
     ENTITY_DATA_EDIT = 'entity_data.edit',
     ENTITY_DATA_EXPORT = 'entity_data.export',

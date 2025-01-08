@@ -2,7 +2,7 @@ import intl from 'react-intl-universal';
 import { Outlet, RouteObject } from 'react-router-dom';
 import {
     DashboardCustomizeIcon,
-    DevicesIcon,
+    DevicesFilledIcon,
     IntegrationInstructionsIcon,
     Person4Icon,
     EntityIcon,
@@ -73,7 +73,7 @@ const routes: RouteObjectType[] = [
             get title() {
                 return intl.get('common.label.device');
             },
-            icon: <DevicesIcon fontSize="medium" />,
+            icon: <DevicesFilledIcon fontSize="medium" />,
             permissions: PERMISSIONS.DEVICE_MODULE,
         },
         children: [
@@ -95,27 +95,6 @@ const routes: RouteObjectType[] = [
                 },
                 async lazy() {
                     const { default: Component } = await import('@/pages/device/views/detail');
-                    return { Component };
-                },
-                ErrorBoundary,
-            },
-        ],
-    },
-    {
-        path: '/entity',
-        element: <Outlet />,
-        ErrorBoundary,
-        handle: {
-            get title() {
-                return intl.get('common.label.entity');
-            },
-            icon: <EntityIcon fontSize="medium" />,
-        },
-        children: [
-            {
-                index: true,
-                async lazy() {
-                    const { default: Component } = await import('@/pages/entity');
                     return { Component };
                 },
                 ErrorBoundary,
@@ -160,6 +139,28 @@ const routes: RouteObjectType[] = [
         ],
     },
     {
+        path: '/entity',
+        element: <Outlet />,
+        ErrorBoundary,
+        handle: {
+            get title() {
+                return intl.get('common.label.entity');
+            },
+            icon: <EntityIcon fontSize="medium" />,
+            permissions: PERMISSIONS.ENTITY_MODULE,
+        },
+        children: [
+            {
+                index: true,
+                async lazy() {
+                    const { default: Component } = await import('@/pages/entity');
+                    return { Component };
+                },
+                ErrorBoundary,
+            },
+        ],
+    },
+    {
         path: '/workflow',
         element: <Outlet />,
         ErrorBoundary,
@@ -193,6 +194,33 @@ const routes: RouteObjectType[] = [
                 ErrorBoundary,
             },
         ],
+    },
+    {
+        path: '/user-role',
+        handle: {
+            get title() {
+                return intl.get('user.label.user_role');
+            },
+            icon: <Person4Icon fontSize="medium" />,
+            permissions: PERMISSIONS.USER_ROLE_MODULE,
+        },
+        async lazy() {
+            const { default: Component } = await import('@/pages/user-role');
+            return { Component };
+        },
+        ErrorBoundary,
+    },
+    {
+        path: '/403',
+        handle: {
+            title: '403',
+            hideInMenuBar: true,
+        },
+        async lazy() {
+            const { default: Component } = await import('@/pages/403');
+            return { Component };
+        },
+        ErrorBoundary,
     },
     {
         path: '/auth',
@@ -232,33 +260,6 @@ const routes: RouteObjectType[] = [
                 ErrorBoundary,
             },
         ],
-    },
-    {
-        path: '/user-role',
-        handle: {
-            get title() {
-                return intl.get('user.label.user_role');
-            },
-            icon: <Person4Icon fontSize="medium" />,
-            permissions: PERMISSIONS.USER_ROLE_MODULE,
-        },
-        async lazy() {
-            const { default: Component } = await import('@/pages/user-role');
-            return { Component };
-        },
-        ErrorBoundary,
-    },
-    {
-        path: '/403',
-        handle: {
-            title: '403',
-            hideInMenuBar: true,
-        },
-        async lazy() {
-            const { default: Component } = await import('@/pages/403');
-            return { Component };
-        },
-        ErrorBoundary,
     },
     {
         path: '*',

@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState, forwardRef, useImperativeHandle } from 
 import { Stack, IconButton } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import { EditIcon } from '@milesight/shared/src/components';
-import { Descriptions, Tooltip, PermissionControlDisabled } from '@/components';
+import { Descriptions, Tooltip, PermissionControlHidden } from '@/components';
 import { type DeviceAPISchema } from '@/services/http';
 import { PERMISSIONS } from '@/constants';
 import EditDialog from './edit-dialog';
@@ -44,7 +44,7 @@ const BasicTable = (
                         sx={{ alignItems: 'center', justifyContent: 'space-between' }}
                     >
                         <Tooltip autoEllipsis title={data?.name} />
-                        <PermissionControlDisabled permissions={PERMISSIONS.DEVICE_EDIT}>
+                        <PermissionControlHidden permissions={PERMISSIONS.DEVICE_EDIT}>
                             <IconButton
                                 sx={{ width: 22, height: 22 }}
                                 onClick={() => {
@@ -53,7 +53,7 @@ const BasicTable = (
                             >
                                 <EditIcon sx={{ fontSize: 16 }} />
                             </IconButton>
-                        </PermissionControlDisabled>
+                        </PermissionControlHidden>
                     </Stack>
                 ),
             },

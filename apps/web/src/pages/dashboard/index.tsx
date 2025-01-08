@@ -4,7 +4,8 @@ import { AddIcon, toast } from '@milesight/shared/src/components';
 import { useI18n, usePreventLeave } from '@milesight/shared/src/hooks';
 import { dashboardAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import { DashboardDetail } from '@/services/http/dashboard';
-import { TabPanel, useConfirm } from '@/components';
+import { TabPanel, useConfirm, PermissionControlHidden } from '@/components';
+import { PERMISSIONS } from '@/constants';
 import DashboardContent from './components/dashboard-content';
 import AddDashboard from './components/add-dashboard';
 import './style.less';
@@ -111,9 +112,11 @@ export default () => {
                             );
                         })}
                     </Tabs>
-                    <div className="dashboard-add" onClick={showAddDashboard}>
-                        <AddIcon className="dashboard-add-icon" />
-                    </div>
+                    <PermissionControlHidden permissions={PERMISSIONS.DASHBOARD_ADD}>
+                        <div className="dashboard-add" onClick={showAddDashboard}>
+                            <AddIcon className="dashboard-add-icon" />
+                        </div>
+                    </PermissionControlHidden>
                 </Toolbar>
                 <div className="ms-tab-content">
                     {tabs?.map(tabItem => {

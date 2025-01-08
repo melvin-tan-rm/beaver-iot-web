@@ -14,7 +14,8 @@ import { cloneDeep } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { dashboardAPI, awaitWrap, isRequestSuccess } from '@/services/http';
 import { DashboardDetail, WidgetDetail } from '@/services/http/dashboard';
-import { useConfirm } from '@/components';
+import { useConfirm, PermissionControlHidden } from '@/components';
+import { PERMISSIONS } from '@/constants';
 import { useGetPluginConfigs } from '../../hooks';
 import AddWidget from '../add-widget';
 import PluginList from '../plugin-list';
@@ -226,9 +227,15 @@ export default (props: DashboardContentProps) => {
                             </Button> */}
                         </>
                     ) : (
-                        <Button startIcon={<Edit />} variant="contained" onClick={changeEditStatus}>
-                            {getIntlText('common.button.edit')}
-                        </Button>
+                        <PermissionControlHidden permissions={PERMISSIONS.DASHBOARD_EDIT}>
+                            <Button
+                                startIcon={<Edit />}
+                                variant="contained"
+                                onClick={changeEditStatus}
+                            >
+                                {getIntlText('common.button.edit')}
+                            </Button>
+                        </PermissionControlHidden>
                     )}
                 </div>
                 {isEdit ? (
