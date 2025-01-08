@@ -4,15 +4,10 @@ import { Button, Stack, Menu, MenuItem } from '@mui/material';
 import { useRequest } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
-import {
-    AddIcon,
-    DeleteOutlineIcon,
-    NoteAddIcon,
-    CalculateIcon,
-    toast,
-} from '@milesight/shared/src/components';
+import { AddIcon, DeleteOutlineIcon, NoteAddIcon, toast } from '@milesight/shared/src/components';
 import { TablePro, useConfirm } from '@/components';
 import { entityAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
+import { ENTITY_TYPE } from '@/constant';
 import { useColumns, type UseColumnsProps, type TableRowDataType } from '../../hooks';
 import AddModal from '../add-modal';
 import AddFromWorkflow from '../add-from-workflow';
@@ -51,6 +46,13 @@ export default () => {
                     page_size: pageSize,
                     page_number: page + 1,
                     customized: true,
+                    entity_type: [ENTITY_TYPE.PROPERTY],
+                    sorts: [
+                        {
+                            direction: 'ASC',
+                            property: 'key',
+                        },
+                    ],
                 }),
             );
             const data = getResponseData(resp);
@@ -104,17 +106,22 @@ export default () => {
         setDetail(null);
     };
 
+    const handleShowAddOnly = () => {
+        setModalOpen(true);
+        handleClose();
+    };
+
     const toolbarRender = useMemo(() => {
         return (
             <Stack className="ms-operations-btns" direction="row" spacing="12px">
                 <Button
                     variant="contained"
                     sx={{ height: 36, textTransform: 'none' }}
-                    aria-controls={open ? 'add-menu' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? 'true' : undefined}
+                    // aria-controls={open ? 'add-menu' : undefined}
+                    // aria-haspopup="true"
+                    // aria-expanded={open ? 'true' : undefined}
                     startIcon={<AddIcon />}
-                    onClick={handleClick}
+                    onClick={handleShowAddOnly}
                 >
                     {getIntlText('common.label.add')}
                 </Button>
@@ -130,7 +137,7 @@ export default () => {
                 </Button>
             </Stack>
         );
-    }, [getIntlText, handleDeleteConfirm, selectedIds]);
+    }, [getIntlText, handleDeleteConfirm, selectedIds, handleShowAddOnly]);
 
     const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useCallback(
         (type, record) => {
@@ -151,11 +158,6 @@ export default () => {
         [navigate, handleDeleteConfirm],
     );
     const columns = useColumns<TableRowDataType>({ onButtonClick: handleTableBtnClick });
-
-    const handleShowAddOnly = () => {
-        setModalOpen(true);
-        handleClose();
-    };
 
     const handleAddFromWorkflow = () => {
         setWorkflowModalOpen(true);

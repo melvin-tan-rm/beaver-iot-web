@@ -31,7 +31,7 @@ export default () => {
             if (!tabKey) {
                 setTabKey(data?.[0]?.dashboard_id || '');
             } else {
-                // 已选中判断当前选中是否还存在不存在默认选中第一个
+                // 已选中判断当前选中是否还存在，不存在默认选中第一个
                 const isExist = data?.some((item: DashboardDetail) => item.dashboard_id === tabKey);
                 if (!isExist) {
                     setTabKey(data?.[0]?.dashboard_id || '');
@@ -113,8 +113,10 @@ export default () => {
                         })}
                     </Tabs>
                     <PermissionControlHidden permissions={PERMISSIONS.DASHBOARD_ADD}>
-                        <div className="dashboard-add" onClick={showAddDashboard}>
-                            <AddIcon className="dashboard-add-icon" />
+                        <div className="dashboard-add-contain">
+                            <div className="dashboard-add" onClick={showAddDashboard}>
+                                <AddIcon className="dashboard-add-icon" />
+                            </div>
                         </div>
                     </PermissionControlHidden>
                 </Toolbar>

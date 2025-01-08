@@ -65,16 +65,27 @@ const AddEntity = (props: IProps) => {
                 resultValues[key] = values[key];
             }
         });
-        const fun = data?.entityId ? entityAPI.editCustomEntity : entityAPI.createCustomEntity;
-        const [err, res] = await awaitWrap(
-            fun({
-                ...(resultValues as any),
-                type: ENTITY_TYPE.PROPERTY,
-                entityId: data?.entityId,
-            }),
-        );
-        if (!err && isRequestSuccess(res)) {
-            onOk(resultValues);
+        if (data?.entityId) {
+            const [err, res] = await awaitWrap(
+                entityAPI.editEntity({
+                    name: resultValues.name,
+                    id: data?.entityId,
+                }),
+            );
+            if (!err && isRequestSuccess(res)) {
+                onOk(resultValues);
+            }
+        } else {
+            const [err, res] = await awaitWrap(
+                entityAPI.createCustomEntity({
+                    ...(resultValues as any),
+                    type: ENTITY_TYPE.PROPERTY,
+                    entityId: data?.entityId,
+                }),
+            );
+            if (!err && isRequestSuccess(res)) {
+                onOk(resultValues);
+            }
         }
     };
 

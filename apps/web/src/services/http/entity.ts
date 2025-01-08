@@ -152,19 +152,6 @@ export interface EntityAPISchema extends APISchema {
         response: unknown;
     };
 
-    /** 编辑实体 */
-    editCustomEntity: {
-        request: {
-            name: string;
-            access_mod: EntityAccessMode;
-            value_type: EntityValueDataType;
-            value_attribute: Record<string, any>;
-            type: EntityType;
-            entityId: ApiKey;
-        };
-        response: unknown;
-    };
-
     /** 导出实体历史数据 */
     exportEntityHistory: {
         request: {
@@ -195,7 +182,6 @@ export default attachAPI<EntityAPISchema>(client, {
         deleteEntities: `POST ${API_PREFIX}/entity/delete`,
         editEntity: `PUT ${API_PREFIX}/entity/:id`,
         createCustomEntity: `POST ${API_PREFIX}/entity`,
-        editCustomEntity: `PUT ${API_PREFIX}/entity/:entityId`,
         exportEntityHistory: `GET ${API_PREFIX}/entity/export`,
     },
 });

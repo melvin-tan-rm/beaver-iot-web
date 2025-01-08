@@ -176,6 +176,8 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
             hour: 'HH:mm',
             day: format,
             week: format,
+            month: 'yyyy-MM',
+            year: 'yyyy',
         };
     }, [format]);
 
