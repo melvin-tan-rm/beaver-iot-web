@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useMemoizedFn, useRequest } from 'ahooks';
+import { isEqual } from 'lodash-es';
 
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
 import { toast } from '@milesight/shared/src/components';
@@ -27,8 +28,12 @@ const useFunctions = () => {
     const { activeRole } = useUserRoleStore();
 
     const [isEditing, setIsEditing] = useState(false);
+    /** all permissions data */
     const [permissions, setPermissions] = useState<ObjectToCamelCase<UserMenuType[]>>([]);
+    /** user checked permissions */
     const [checkedPermissions, setCheckedPermissions] = useState<ApiKey[]>([]);
+
+    const cacheCheckedRef = useRef<ApiKey[]>([]);
 
     const { loading } = useRequest(
         async () => {
@@ -83,11 +88,19 @@ const useFunctions = () => {
         return 1 + children.length;
     });
 
-    const openEditing = useMemoizedFn(() => {
+    const handleEdit = useMemoizedFn(() => {
+        // save cache checked permissions
+        cacheCheckedRef.current = checkedPermissions;
+
         setIsEditing(true);
     });
 
-    const closeEditing = useMemoizedFn(() => {
+    const handleCancel = useMemoizedFn(() => {
+        // restore cache checked permissions
+        if (cacheCheckedRef.current && !isEqual(cacheCheckedRef.current, checkedPermissions)) {
+            setCheckedPermissions(cacheCheckedRef.current);
+        }
+
         setIsEditing(false);
     });
 
@@ -243,14 +256,14 @@ const useFunctions = () => {
             return;
         }
 
-        closeEditing();
+        setIsEditing(false);
         toast.success(getIntlText('common.message.operation_success'));
     });
 
     return {
         isEditing,
-        openEditing,
-        closeEditing,
+        handleEdit,
+        handleCancel,
         permissions,
         getModelTableRowSpan,
         loading,

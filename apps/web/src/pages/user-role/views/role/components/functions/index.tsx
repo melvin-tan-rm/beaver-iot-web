@@ -26,8 +26,8 @@ const FunctionsTable = () => {
     const { getIntlText } = useI18n();
     const {
         isEditing,
-        openEditing,
-        closeEditing,
+        handleEdit,
+        handleCancel,
         permissions,
         getModelTableRowSpan,
         loading,
@@ -73,7 +73,7 @@ const FunctionsTable = () => {
                         {getIntlText('common.button.save')}
                     </Button>
                     <Button
-                        onClick={closeEditing}
+                        onClick={handleCancel}
                         variant="outlined"
                         startIcon={<CloseIcon />}
                         {...btnSx}
@@ -85,7 +85,7 @@ const FunctionsTable = () => {
         }
 
         return (
-            <Button onClick={openEditing} variant="contained" startIcon={<EditIcon />} {...btnSx}>
+            <Button onClick={handleEdit} variant="contained" startIcon={<EditIcon />} {...btnSx}>
                 {getIntlText('common.button.edit')}
             </Button>
         );
