@@ -14,7 +14,7 @@ import { cloneDeep } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { dashboardAPI, awaitWrap, isRequestSuccess } from '@/services/http';
 import { DashboardDetail, WidgetDetail } from '@/services/http/dashboard';
-import { useConfirm, PermissionControlHidden } from '@/components';
+import { useConfirm, PermissionControlHidden, PermissionControlDisabled } from '@/components';
 import { PERMISSIONS } from '@/constants';
 import { useGetPluginConfigs } from '../../hooks';
 import AddWidget from '../add-widget';
@@ -297,15 +297,17 @@ export default (props: DashboardContentProps) => {
                 />
             )}
             {!widgets?.length && !loading ? (
-                <div className="dashboard-content-empty">
-                    <div className="dashboard-content-empty-title">
-                        {getIntlText('dashboard.empty_text')}
+                <PermissionControlDisabled permissions={PERMISSIONS.DASHBOARD_EDIT}>
+                    <div className="dashboard-content-empty">
+                        <div className="dashboard-content-empty-title">
+                            {getIntlText('dashboard.empty_text')}
+                        </div>
+                        <div className="dashboard-content-empty-description">
+                            {getIntlText('dashboard.empty_description')}
+                        </div>
+                        <PluginList onSelect={handleSelectPlugin} />
                     </div>
-                    <div className="dashboard-content-empty-description">
-                        {getIntlText('dashboard.empty_description')}
-                    </div>
-                    <PluginList onSelect={handleSelectPlugin} />
-                </div>
+                </PermissionControlDisabled>
             ) : (
                 <div className="dashboard-content-main" ref={mainRef}>
                     <Widgets

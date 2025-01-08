@@ -12,6 +12,13 @@
         padding: @padding-lg 0;
         overflow: hidden;
         background: var(--gray-color-2);
+
+        &__empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 56px - 60px);
+        }
     }
 
     .@{prefix}-tabpanel {
@@ -60,7 +67,6 @@
             flex: 1;
             height: 100%;
             padding: 24px 20px 0 0;
-            border-bottom: 1px solid var(--border-color-base);
         }
     }
 
