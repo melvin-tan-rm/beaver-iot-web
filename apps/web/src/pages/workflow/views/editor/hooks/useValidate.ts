@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from 'react';
 import { useReactFlow } from '@xyflow/react';
-import { isObject } from 'lodash-es';
+import { isObject, isNil } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 import {
@@ -216,7 +216,7 @@ const useValidate = () => {
                                         return !key || !operator;
                                     }
 
-                                    return !key || !operator || !value;
+                                    return !key || !operator || isNil(value);
                                 });
 
                                 return hasEmpty;

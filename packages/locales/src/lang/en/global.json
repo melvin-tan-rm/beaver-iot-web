@@ -175,5 +175,7 @@
     "common.label.error": "Error",
     "common.label.success": "Success",
     "common.label.log": "Log",
-    "common.label.no_device_entity": "Entities with no device"
+    "common.label.no_device_entity": "Entities with no device",
+    "common.label.true": "True",
+    "common.label.false": "False"
 }

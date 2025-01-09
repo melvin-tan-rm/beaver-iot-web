@@ -24,6 +24,10 @@ export type NodeParamType = {
         name: string;
         type?: string;
         key: string;
+        enums?: {
+            key: string;
+            label?: string;
+        }[];
     }[];
 };
 
@@ -34,6 +38,10 @@ export type FlattenNodeParamType = {
     valueName: string;
     valueType?: string;
     valueKey: string;
+    enums?: {
+        key: string;
+        label?: string;
+    }[];
 };
 
 export type UpdateNodeStatusOptions = {
@@ -46,6 +54,17 @@ export type UpdateNodeStatusOptions = {
 const entryNodeTypes = Object.values(basicNodeConfigs)
     .filter(item => item.category === 'entry')
     .map(item => item.type);
+
+const BOOLEAN_DATA_ENUMS = [
+    {
+        key: 'true',
+        labelIntlKey: 'common.label.true',
+    },
+    {
+        key: 'false',
+        labelIntlKey: 'common.label.false',
+    },
+];
 
 const useWorkflow = () => {
     const { getNodes, getEdges, setNodes, setEdges, fitView } = useReactFlow<
@@ -255,9 +274,15 @@ const useWorkflow = () => {
                             case 'entityConfigs':
                             case 'payload': {
                                 if (!Array.isArray(data)) return;
-                                // TODO: The key may use `identity` to replace `name` ?
                                 data.forEach((item: Record<string, any>) => {
                                     if (!item?.name || !item?.type) return;
+                                    const enums =
+                                        item.type !== 'BOOLEAN'
+                                            ? undefined
+                                            : BOOLEAN_DATA_ENUMS.map(item => ({
+                                                  key: item.key,
+                                                  label: getIntlText(item.labelIntlKey),
+                                              }));
                                     paramData.outputs.push({
                                         name: item.name,
                                         type: item.type,
@@ -265,6 +290,7 @@ const useWorkflow = () => {
                                             param === 'entityConfigs'
                                                 ? genRefParamKey(id, item.identify)
                                                 : genRefParamKey(id, item.name),
+                                        enums,
                                     });
                                 });
                                 break;
@@ -275,11 +301,18 @@ const useWorkflow = () => {
                                 data.forEach(item => {
                                     if (!item) return;
                                     const entity = getEntityDetail(item);
+                                    const enums = (entity?.entity_value_attribute as any)?.enum;
 
                                     paramData.outputs.push({
                                         name: entity?.entity_name || item,
                                         type: entity?.entity_value_type,
                                         key: genRefParamKey(id, item),
+                                        enums: isEmpty(enums)
+                                            ? undefined
+                                            : Object.entries(enums)?.map(([key, value]) => ({
+                                                  key,
+                                                  label: value as string | undefined,
+                                              })),
                                     });
                                 });
                                 break;
@@ -296,10 +329,19 @@ const useWorkflow = () => {
                                     if (!key || !value || isRefParamKey(value)) return;
                                     const entity = getEntityDetail(key);
 
+                                    if (!entity) return;
+                                    const enums = (entity?.entity_value_attribute as any)?.enum;
+
                                     paramData.outputs.push({
                                         name: entity?.entity_name || key,
                                         type: entity?.entity_value_type,
                                         key: genRefParamKey(id, key),
+                                        enums: isEmpty(enums)
+                                            ? undefined
+                                            : Object.entries(enums)?.map(([key, value]) => ({
+                                                  key,
+                                                  label: value as string | undefined,
+                                              })),
                                     });
                                 });
                                 break;
@@ -321,6 +363,7 @@ const useWorkflow = () => {
                         valueName: output.name,
                         valueType: output.type,
                         valueKey: output.key,
+                        enums: output.enums,
                     })),
                 );
                 return acc;
@@ -337,6 +380,18 @@ const useWorkflow = () => {
             getIntlText,
             getEntityDetail,
         ],
+    );
+
+    // Get the detail of the reference parameter
+    const getReferenceParamDetail = useCallback(
+        (key?: ApiKey) => {
+            if (!key) return;
+            const [, nodeParams] = getUpstreamNodeParams();
+            const result = nodeParams?.find(item => item.valueKey === key);
+
+            return result;
+        },
+        [getUpstreamNodeParams],
     );
 
     // Check if there is a node that is not connected to an entry node
@@ -459,8 +514,10 @@ const useWorkflow = () => {
         checkNodeNumberLimit,
         checkFreeNodeLimit,
         checkWorkflowValid,
+        getEntityDetail,
         getUpstreamNodes,
         getUpstreamNodeParams,
+        getReferenceParamDetail,
         updateNodesStatus,
         clearExcessEdges,
     };
