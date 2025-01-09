@@ -12,6 +12,13 @@
         padding: @padding-lg 0;
         overflow: hidden;
         background: var(--gray-color-2);
+
+        &__empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 56px - 60px);
+        }
     }
 
     .@{prefix}-tabpanel {
@@ -60,7 +67,6 @@
             flex: 1;
             height: 100%;
             padding: 24px 20px 0 0;
-            border-bottom: 1px solid var(--border-color-base);
         }
     }
 
@@ -98,12 +104,10 @@
 
         &-operate {
             display: flex;
+            align-items: center;
+            justify-content: space-between;
             padding: 0 @padding-lg;
             margin-bottom: @margin-md;
-
-            &-left {
-                flex: 1;
-            }
         }
 
         &-empty {
@@ -148,7 +152,7 @@
                     padding: @padding-xxs;
                     margin-left: @margin-xs;
                     line-height: 0;
-                    color: rgba(0,0,0,.54);
+                    color: rgba(0, 0, 0, 0.54);
                     border: @border-base;
                     border-radius: 50%;
                     cursor: pointer;
@@ -172,7 +176,7 @@
     &-custom-resizable-handle {
         position: absolute;
         z-index: 10;
-            box-sizing: border-box;
+        box-sizing: border-box;
         width: 20px;
         height: 20px;
         padding: 0 3px 3px 0;

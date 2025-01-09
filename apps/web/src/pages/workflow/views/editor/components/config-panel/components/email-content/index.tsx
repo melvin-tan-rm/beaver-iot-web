@@ -1,13 +1,18 @@
 import React from 'react';
 import { useControllableValue } from 'ahooks';
+import { IconButton } from '@mui/material';
 
-import { CodeEditor } from '@/components';
+import { MSRichtextEditor, OpenInFullIcon } from '@milesight/shared/src/components';
+import { useI18n } from '@milesight/shared/src/hooks';
 
-import { ContentHeader } from './components';
+import { RichTextModal } from './components';
+import { useEmailContent } from './hooks';
 
 import styles from './style.module.less';
 
 export interface EmailContentProps {
+    /** Whether rich text can select upstream nodes */
+    upstreamNodeSelectable?: boolean;
     value?: string;
     onChange: (value: string) => void;
 }
@@ -17,20 +22,46 @@ export interface EmailContentProps {
  * The Email Content Enter Component
  */
 const EmailContent: React.FC<EmailContentProps> = props => {
-    const { value, onChange } = props;
+    const { upstreamNodeSelectable = true, value, onChange } = props;
 
-    const [content, setContent] = useControllableValue({
+    const { getIntlText } = useI18n();
+    const [content, setContent] = useControllableValue<string>({
         value: value || '',
         onChange,
     });
+    const { modalVisible, showModal, hiddenModal, editorRef, handleSmallEditorChange } =
+        useEmailContent(content, setContent);
+
+    const renderToolbar = () => {
+        return (
+            <div className={styles['email-content__toolbar']}>
+                <div className={styles.text}>{getIntlText('common.label.content')}</div>
+                <IconButton onClick={showModal}>
+                    <OpenInFullIcon />
+                </IconButton>
+            </div>
+        );
+    };
 
     return (
         <div className={styles['email-content']}>
-            <CodeEditor
-                editorLang="text"
-                value={content}
-                renderHeader={ContentHeader}
-                onChange={setContent}
+            <MSRichtextEditor
+                ref={editorRef}
+                autoFocus={false}
+                isEditable
+                editorConfig={{
+                    toolbar: false,
+                }}
+                renderToolbar={renderToolbar()}
+                onChange={handleSmallEditorChange}
+            />
+            <RichTextModal
+                data={content}
+                visible={modalVisible}
+                onCancel={hiddenModal}
+                onOk={hiddenModal}
+                onSave={setContent}
+                upstreamNodeSelectable={upstreamNodeSelectable}
             />
         </div>
     );

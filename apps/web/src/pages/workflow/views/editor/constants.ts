@@ -110,6 +110,18 @@ export const conditionOperatorMap: Partial<
     IS_NOT_EMPTY: {
         labelIntlKey: 'workflow.label.condition_operator_is_not_empty',
     },
+    GT: {
+        labelIntlKey: 'workflow.label.condition_operator_greater_than',
+    },
+    GE: {
+        labelIntlKey: 'workflow.label.condition_operator_greater_than_or_equal',
+    },
+    LT: {
+        labelIntlKey: 'workflow.label.condition_operator_less_than',
+    },
+    LE: {
+        labelIntlKey: 'workflow.label.condition_operator_less_than_or_equal',
+    },
 };
 
 /**

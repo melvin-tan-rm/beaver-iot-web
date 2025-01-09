@@ -203,7 +203,7 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                                             ? getTime(Date.now())
                                                   .hour(item.hour)
                                                   .minute(item.minute)
-                                            : null
+                                            : getTime(Date.now()).hour(9).minute(0)
                                     }
                                     onChange={time => {
                                         const date = getTime(time, true);
@@ -241,7 +241,7 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                         value={
                             data.expirationEpochSecond
                                 ? getTime(data.expirationEpochSecond * 1000)
-                                : null
+                                : getTime('2035/01/01 00:00:00')
                         }
                         sx={{ width: '100%' }}
                         onChange={time => {

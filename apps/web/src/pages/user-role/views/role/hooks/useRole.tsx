@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useMemoizedFn, useRequest } from 'ahooks';
 
-import { toast } from '@milesight/shared/src/components';
+import { toast, ErrorIcon } from '@milesight/shared/src/components';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
 
@@ -158,6 +158,10 @@ export function useRole() {
                 0: activeRole?.name || '',
             }),
             confirmButtonText: getIntlText('common.label.delete'),
+            confirmButtonProps: {
+                color: 'error',
+            },
+            icon: <ErrorIcon sx={{ color: 'var(--orange-base)' }} />,
             onConfirm: async () => {
                 if (!activeRole?.roleId) return;
 

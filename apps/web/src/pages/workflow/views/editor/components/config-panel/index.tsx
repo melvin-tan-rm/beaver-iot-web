@@ -1,4 +1,4 @@
-import React, { useMemo, useLayoutEffect, useEffect, useRef, useState } from 'react';
+import React, { useMemo, useEffect, useRef, useState } from 'react';
 import { Panel, useReactFlow } from '@xyflow/react';
 import cls from 'classnames';
 import { isEqual, cloneDeep } from 'lodash-es';
@@ -10,6 +10,7 @@ import { CloseIcon, PlayArrowIcon, HelpIcon } from '@milesight/shared/src/compon
 import { Tooltip } from '@/components';
 import useFlowStore from '../../store';
 import useWorkflow from '../../hooks/useWorkflow';
+import { DEFAULT_VALUES } from './constants';
 import {
     useCommonFormItems,
     useNodeFormItems,
@@ -79,10 +80,11 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
             formDataInit.current = false;
             return;
         }
+        const defaultValue = cloneDeep(DEFAULT_VALUES[finalSelectedNode.type!]);
         const { nodeName, nodeRemark, parameters } = cloneDeep(finalSelectedNode.data) || {};
         const data: Record<string, any> = { nodeName, nodeRemark, ...parameters };
 
-        reset();
+        reset(defaultValue);
         /**
          * Since node form items are rendered dynamically, `SetTimeout` is used here to
          * ensure that the initial data is filled in after the rendering is complete.
@@ -93,7 +95,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
             });
             formDataInit.current = true;
         }, 0);
-    }, [finalSelectedNode, reset, setValue, getValues]);
+    }, [finalSelectedNode, reset, setValue, getValues, clearExcessEdges]);
 
     // Save node data
     useThrottleEffect(
@@ -105,7 +107,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
             updateNodeData(finalSelectedNode.id, { nodeName, nodeRemark, parameters: formData });
         },
         [openPanel, finalSelectedNode?.id, latestFormData, updateNodeData],
-        { wait: 200 },
+        { wait: 100 },
     );
 
     // ---------- Show Test Drawer ----------
@@ -223,7 +225,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                                             return (
                                                 <Controller<NodeFormDataProps>
                                                     {...restProps}
-                                                    key={restProps.name}
+                                                    key={`${restProps.name}-${groupName || ''}`}
                                                     control={control}
                                                 />
                                             );

@@ -5,7 +5,7 @@
     border: 1px solid var(--component-background);
     border-radius: @border-radius-base;
     cursor: pointer;
-    transition: .3s;
+    transition: 0.3s;
 
     &:hover {
         border: 1px solid var(--border-color-main);
@@ -65,5 +65,12 @@
             margin-right: @margin-xs;
             font-size: @font-size-xl;
         }
+    }
+
+    &__empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: calc(100vh - 45px - 56px - 60px);
     }
 }

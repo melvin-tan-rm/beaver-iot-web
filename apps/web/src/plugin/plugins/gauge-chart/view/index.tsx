@@ -89,7 +89,7 @@ const View = (props: Props) => {
             }
             if (currentValue) {
                 const match = currentValue.toString().match(/\.(\d+)/);
-                if (match?.length >= 2) {
+                if (match?.length && match.length >= 2) {
                     currentValue = parseFloat(currentValue.toFixed(1));
                 }
             }

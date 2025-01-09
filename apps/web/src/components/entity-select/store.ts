@@ -1,17 +1,9 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import {
-    entityAPI,
-    awaitWrap,
-    getResponseData,
-    isRequestSuccess,
-    type EntityAPISchema,
-} from '@/services/http';
+import { entityAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
+import type { FilterParameters } from './types';
 
-type EntityFilterParams = Omit<
-    ObjectToCamelCase<EntityAPISchema['getList']['request']>,
-    'pageSize' | 'pageNumber'
->;
+export type EntityFilterParams = FilterParameters & { keyword?: string };
 export interface EntityStoreType {
     status: 'ready' | 'loading' | 'finish';
 
@@ -23,7 +15,7 @@ export interface EntityStoreType {
 
     initEntityList: (params?: EntityFilterParams) => void;
 
-    getEntityDetailByKey: (entityKey: string) => EntityData | void;
+    getEntityDetailByKey: (entityKey: string) => Promise<EntityData | void>;
 }
 
 export default create(
@@ -74,9 +66,14 @@ export default create(
             return data?.content || [];
         },
 
-        getEntityDetailByKey: (entityKey: string) => {
-            const { entityList } = get();
+        getEntityDetailByKey: async (entityKey: string) => {
+            const { status, initEntityList } = get();
 
+            if (status === 'ready') {
+                await initEntityList();
+            }
+
+            const { entityList } = get();
             return (entityList || []).find(entity => entity.entity_key === entityKey);
         },
     })),

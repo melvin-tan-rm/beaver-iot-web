@@ -207,10 +207,6 @@ const useValidate = () => {
                     if (!when?.length) return message;
                     const hasEmptyCondition = when.some(({ expressionType, conditions }) => {
                         switch (expressionType) {
-                            case 'mvel': {
-                                const { expressionValue, expressionDescription } = conditions[0];
-                                return !expressionValue || !expressionDescription;
-                            }
                             case 'condition': {
                                 const hasEmpty = conditions.some(({ expressionValue }) => {
                                     if (typeof expressionValue === 'string') return true;
@@ -226,7 +222,8 @@ const useValidate = () => {
                                 return hasEmpty;
                             }
                             default: {
-                                return true;
+                                const { expressionValue, expressionDescription } = conditions[0];
+                                return !expressionValue || !expressionDescription;
                             }
                         }
                     });
@@ -263,9 +260,9 @@ const useValidate = () => {
                     return true;
                 },
             },
-            'code.Payload': {
+            'code.payload': {
                 checkMaxLength(
-                    value: NonNullable<CodeNodeDataType['parameters']>['Payload'],
+                    value: NonNullable<CodeNodeDataType['parameters']>['payload'],
                     fieldName,
                 ) {
                     if (value.length) {

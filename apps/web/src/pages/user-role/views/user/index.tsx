@@ -81,7 +81,10 @@ const Users: React.FC = () => {
         confirm({
             title: title(),
             description: description(),
-            confirmButtonText: getIntlText('common.label.remove'),
+            confirmButtonText: getIntlText('common.label.delete'),
+            confirmButtonProps: {
+                color: 'error',
+            },
             onConfirm: async () => {
                 const [err, resp] = await awaitWrap(
                     userAPI.deleteUsers({
@@ -95,7 +98,7 @@ const Users: React.FC = () => {
 
                 getAllUsers();
                 setSelectedIds([]);
-                toast.success(getIntlText('common.message.remove_success'));
+                toast.success(getIntlText('common.message.delete_success'));
             },
         });
     });
@@ -131,7 +134,7 @@ const Users: React.FC = () => {
                     startIcon={<RemoveCircleOutlineIcon />}
                     onClick={() => handleDeleteConfirm()}
                 >
-                    {getIntlText('common.label.remove')}
+                    {getIntlText('common.label.delete')}
                 </Button>
             </Stack>
         );

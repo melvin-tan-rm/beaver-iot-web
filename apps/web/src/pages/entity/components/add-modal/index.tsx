@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Modal, Form } from '@milesight/shared/src/components';
 import { entityAPI, awaitWrap, isRequestSuccess } from '@/services/http';
-import { ENTITY_TYPE } from '@/constant';
+import { ENTITY_TYPE } from '@/constants';
 import { TableRowDataType } from '../../hooks/useColumns';
 import useForm from './useForm';
 

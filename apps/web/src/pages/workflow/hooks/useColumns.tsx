@@ -8,7 +8,14 @@ import {
     IosShareIcon,
     EventNoteIcon,
 } from '@milesight/shared/src/components';
-import { Tooltip, type ColumnType } from '@/components';
+import {
+    Tooltip,
+    type ColumnType,
+    PermissionControlDisabled,
+    PermissionControlHidden,
+} from '@/components';
+import { PERMISSIONS } from '@/constants';
+import { useUserPermissions } from '@/hooks';
 import { type WorkflowAPISchema } from '@/services/http';
 
 type OperationType = 'log' | 'delete' | 'edit' | 'enable' | 'export';
@@ -27,6 +34,8 @@ export interface UseColumnsProps<T> {
 const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsProps<T>) => {
     const { getIntlText } = useI18n();
     const { getTimeFormat } = useTime();
+    const { hasPermission } = useUserPermissions();
+
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [popoverId, setPopoverId] = useState<string>('');
     const handlerPopoverClose = useCallback(() => {
@@ -97,10 +106,12 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 minWidth: 150,
                 renderCell({ row }) {
                     return (
-                        <Switch
-                            checked={row.enabled}
-                            onChange={() => onButtonClick('enable', row)}
-                        />
+                        <PermissionControlDisabled permissions={PERMISSIONS.WORKFLOW_EDIT}>
+                            <Switch
+                                checked={row.enabled}
+                                onChange={() => onButtonClick('enable', row)}
+                            />
+                        </PermissionControlDisabled>
                     );
                 },
             },
@@ -116,14 +127,16 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                             spacing="4px"
                             sx={{ height: '100%', alignItems: 'center', justifyContent: 'end' }}
                         >
-                            <Tooltip title={getIntlText('common.button.edit')}>
-                                <IconButton
-                                    sx={{ width: 30, height: 30 }}
-                                    onClick={() => onButtonClick('edit', row)}
-                                >
-                                    <EditIcon sx={{ width: 20, height: 20 }} />
-                                </IconButton>
-                            </Tooltip>
+                            <PermissionControlHidden permissions={PERMISSIONS.WORKFLOW_EDIT}>
+                                <Tooltip title={getIntlText('common.button.edit')}>
+                                    <IconButton
+                                        sx={{ width: 30, height: 30 }}
+                                        onClick={() => onButtonClick('edit', row)}
+                                    >
+                                        <EditIcon sx={{ width: 20, height: 20 }} />
+                                    </IconButton>
+                                </Tooltip>
+                            </PermissionControlHidden>
                             <Tooltip title={getIntlText('common.label.log')}>
                                 <IconButton
                                     sx={{ width: 30, height: 30 }}
@@ -166,7 +179,9 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                                     </span>
                                 </MenuItem>
                                 <MenuItem
-                                    disabled={row.enabled}
+                                    disabled={
+                                        row.enabled || !hasPermission(PERMISSIONS.WORKFLOW_DELETE)
+                                    }
                                     onClick={() => {
                                         handlerPopoverClose();
                                         onButtonClick('delete', row);
@@ -195,6 +210,7 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
         onButtonClick,
         handlerPopoverOpen,
         handlerPopoverClose,
+        hasPermission,
     ]);
 
     return columns;

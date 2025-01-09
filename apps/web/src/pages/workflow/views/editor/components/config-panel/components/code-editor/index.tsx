@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { CodeEditor as CodeMirror, type EditorProps, type EditorSupportLang } from '@/components';
+import { CODE_EXPRESSION_DEFAULT_VALUE } from '../../constants';
 import './style.less';
 
 export interface CodeEditorData {
@@ -7,6 +8,9 @@ export interface CodeEditorData {
     expression: string;
 }
 export interface IProps extends Omit<EditorProps, 'value' | 'onChange'> {
+    /** Whether to automatically fill in the default value when language change. */
+    autoFillDefaultValue?: boolean;
+    defaultValues?: Partial<Record<EditorSupportLang, string>>;
     value: CodeEditorData;
     onChange: (value: CodeEditorData) => void;
 }
@@ -16,7 +20,13 @@ export const DEFAULT_LANGUAGE = 'js';
  *
  * Note: Use in CodeNode, IfelseNode
  */
-const CodeEditor: React.FC<IProps> = ({ value, onChange, ...props }) => {
+const CodeEditor: React.FC<IProps> = ({
+    autoFillDefaultValue,
+    defaultValues = CODE_EXPRESSION_DEFAULT_VALUE,
+    value,
+    onChange,
+    ...props
+}) => {
     const { language = DEFAULT_LANGUAGE, expression } = value || {};
 
     /** Actual form change callbacks */
@@ -35,9 +45,18 @@ const CodeEditor: React.FC<IProps> = ({ value, onChange, ...props }) => {
     /** Callback function triggered when the language changes. */
     const handleEditorLangChange = useCallback(
         (language: EditorSupportLang) => {
-            handleChange?.({ language, expression });
+            let expression = '';
+
+            if (autoFillDefaultValue && defaultValues[language]) {
+                expression = defaultValues[language] || '';
+            }
+
+            handleChange?.({
+                language,
+                expression,
+            });
         },
-        [expression, handleChange],
+        [autoFillDefaultValue, defaultValues, handleChange],
     );
     /** Callback function triggered when the content value changes. */
     const handleEditorValueChange = useCallback(

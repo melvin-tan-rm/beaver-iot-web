@@ -179,6 +179,7 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
                                 formItem.render = ({ field: { onChange, value } }) => {
                                     return (
                                         <CodeEditor
+                                            autoFillDefaultValue={nodeType === 'code'}
                                             readOnly={readonly}
                                             editable={!readonly}
                                             value={value}

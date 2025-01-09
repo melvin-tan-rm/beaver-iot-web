@@ -7,6 +7,7 @@ import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
 import { AddIcon, DeleteOutlineIcon, toast } from '@milesight/shared/src/components';
 import { Breadcrumbs, TablePro, useConfirm, PermissionControlHidden } from '@/components';
 import { PERMISSIONS } from '@/constants';
+import { useUserPermissions } from '@/hooks';
 import { deviceAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import { useColumns, type UseColumnsProps, type TableRowDataType } from './hooks';
 import { AddModal } from './components';
@@ -15,6 +16,7 @@ import './style.less';
 export default () => {
     const navigate = useNavigate();
     const { getIntlText } = useI18n();
+    const { hasPermission } = useUserPermissions();
 
     // ---------- 列表数据相关 ----------
     const [keyword, setKeyword] = useState<string>();
@@ -137,7 +139,7 @@ export default () => {
             <div className="ms-view ms-view-device">
                 <div className="ms-view__inner">
                     <TablePro<TableRowDataType>
-                        checkboxSelection
+                        checkboxSelection={hasPermission(PERMISSIONS.DEVICE_DELETE)}
                         loading={loading}
                         columns={columns}
                         rows={deviceData?.content}

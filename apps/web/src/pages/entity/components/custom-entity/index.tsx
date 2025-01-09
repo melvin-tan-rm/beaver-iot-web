@@ -5,9 +5,10 @@ import { useRequest } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
 import { AddIcon, DeleteOutlineIcon, NoteAddIcon, toast } from '@milesight/shared/src/components';
-import { TablePro, useConfirm } from '@/components';
+import { TablePro, useConfirm, PermissionControlHidden } from '@/components';
 import { entityAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
-import { ENTITY_TYPE } from '@/constant';
+import { ENTITY_TYPE, PERMISSIONS } from '@/constants';
+import { useUserPermissions } from '@/hooks';
 import { useColumns, type UseColumnsProps, type TableRowDataType } from '../../hooks';
 import AddModal from '../add-modal';
 import AddFromWorkflow from '../add-from-workflow';
@@ -15,6 +16,7 @@ import AddFromWorkflow from '../add-from-workflow';
 export default () => {
     const navigate = useNavigate();
     const { getIntlText } = useI18n();
+    const { hasPermission } = useUserPermissions();
 
     const [keyword, setKeyword] = useState<string>();
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
@@ -114,27 +116,31 @@ export default () => {
     const toolbarRender = useMemo(() => {
         return (
             <Stack className="ms-operations-btns" direction="row" spacing="12px">
-                <Button
-                    variant="contained"
-                    sx={{ height: 36, textTransform: 'none' }}
-                    // aria-controls={open ? 'add-menu' : undefined}
-                    // aria-haspopup="true"
-                    // aria-expanded={open ? 'true' : undefined}
-                    startIcon={<AddIcon />}
-                    onClick={handleShowAddOnly}
-                >
-                    {getIntlText('common.label.add')}
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="error"
-                    disabled={!selectedIds.length}
-                    sx={{ height: 36, textTransform: 'none' }}
-                    startIcon={<DeleteOutlineIcon />}
-                    onClick={() => handleDeleteConfirm()}
-                >
-                    {getIntlText('common.label.delete')}
-                </Button>
+                <PermissionControlHidden permissions={PERMISSIONS.ENTITY_CUSTOM_ADD}>
+                    <Button
+                        variant="contained"
+                        sx={{ height: 36, textTransform: 'none' }}
+                        // aria-controls={open ? 'add-menu' : undefined}
+                        // aria-haspopup="true"
+                        // aria-expanded={open ? 'true' : undefined}
+                        startIcon={<AddIcon />}
+                        onClick={handleShowAddOnly}
+                    >
+                        {getIntlText('common.label.add')}
+                    </Button>
+                </PermissionControlHidden>
+                <PermissionControlHidden permissions={PERMISSIONS.ENTITY_CUSTOM_DELETE}>
+                    <Button
+                        variant="outlined"
+                        color="error"
+                        disabled={!selectedIds.length}
+                        sx={{ height: 36, textTransform: 'none' }}
+                        startIcon={<DeleteOutlineIcon />}
+                        onClick={() => handleDeleteConfirm()}
+                    >
+                        {getIntlText('common.label.delete')}
+                    </Button>
+                </PermissionControlHidden>
             </Stack>
         );
     }, [getIntlText, handleDeleteConfirm, selectedIds, handleShowAddOnly]);
@@ -167,7 +173,7 @@ export default () => {
     return (
         <div className="ms-main">
             <TablePro<TableRowDataType>
-                checkboxSelection
+                checkboxSelection={hasPermission(PERMISSIONS.ENTITY_CUSTOM_DELETE)}
                 loading={loading}
                 columns={columns}
                 getRowId={record => record.entityId}

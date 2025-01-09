@@ -4,6 +4,7 @@ import { uniqBy, omit, cloneDeep, pick, isEmpty, isObject } from 'lodash-es';
 import { useI18n, useStoreShallow } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 import { basicNodeConfigs } from '@/pages/workflow/config';
+import { useEntityStore } from '@/components';
 import useFlowStore from '../store';
 import {
     PARALLEL_LIMIT,
@@ -54,6 +55,19 @@ const useWorkflow = () => {
     const { getIntlText } = useI18n();
     const { selectedNode, nodeConfigs } = useFlowStore(
         useStoreShallow(['selectedNode', 'nodeConfigs']),
+    );
+
+    // Fetch Entity List
+    const { entityList } = useEntityStore(
+        useStoreShallow(['status', 'entityList', 'initEntityList']),
+    );
+
+    const getEntityDetail = useCallback(
+        (key?: ApiKey) => {
+            if (!key) return;
+            return entityList.find(item => item.entity_key === key);
+        },
+        [entityList],
     );
 
     // Check node number limit
@@ -206,6 +220,7 @@ const useWorkflow = () => {
         [getNodes, getEdges, selectedNode],
     );
 
+    // Get the parameters of the upstream nodes of the current node
     const getUpstreamNodeParams = useCallback(
         (
             currentNode?: WorkflowNode,
@@ -238,7 +253,7 @@ const useWorkflow = () => {
                         switch (param) {
                             // Data Type: { identify?: string; name: string; type: string }[]
                             case 'entityConfigs':
-                            case 'Payload': {
+                            case 'payload': {
                                 if (!Array.isArray(data)) return;
                                 // TODO: The key may use `identity` to replace `name` ?
                                 data.forEach((item: Record<string, any>) => {
@@ -259,10 +274,11 @@ const useWorkflow = () => {
                                 if (!Array.isArray(data)) return;
                                 data.forEach(item => {
                                     if (!item) return;
-                                    // TODO: get the entity value type
+                                    const entity = getEntityDetail(item);
+
                                     paramData.outputs.push({
-                                        name: item,
-                                        // type: ??,
+                                        name: entity?.entity_name || item,
+                                        type: entity?.entity_value_type,
                                         key: genRefParamKey(id, item),
                                     });
                                 });
@@ -278,10 +294,11 @@ const useWorkflow = () => {
                                 if (!isObject(data)) return;
                                 Object.entries(data).forEach(([key, value]) => {
                                     if (!key || !value || isRefParamKey(value)) return;
-                                    // TODO: get the entity value type
+                                    const entity = getEntityDetail(key);
+
                                     paramData.outputs.push({
-                                        name: key,
-                                        // type: ??,
+                                        name: entity?.entity_name || key,
+                                        type: entity?.entity_value_type,
                                         key: genRefParamKey(id, key),
                                     });
                                 });
@@ -311,7 +328,15 @@ const useWorkflow = () => {
 
             return [result, flattenResult];
         },
-        [nodeConfigs, selectedNode, getNodes, getEdges, getUpstreamNodes, getIntlText],
+        [
+            nodeConfigs,
+            selectedNode,
+            getNodes,
+            getEdges,
+            getUpstreamNodes,
+            getIntlText,
+            getEntityDetail,
+        ],
     );
 
     // Check if there is a node that is not connected to an entry node

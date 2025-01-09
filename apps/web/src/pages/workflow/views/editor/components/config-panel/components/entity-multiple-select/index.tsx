@@ -15,6 +15,7 @@ export interface EntityFilterSelectProps {
     multiple?: boolean;
     error?: boolean;
     helperText?: React.ReactNode;
+    defaultValue?: EntityMultipleSelectValueType[];
     value?: EntityMultipleSelectValueType[];
     onChange?: (value: EntityMultipleSelectValueType[]) => void;
     typeSelectProps?: SelectProps;
@@ -37,12 +38,8 @@ const EntityMultipleSelect: React.FC<EntityFilterSelectProps> = ({
     ...props
 }) => {
     const { getIntlText } = useI18n();
-    const [innerValue, setInnerValue] = useControllableValue<EntityMultipleSelectValueType[]>(
-        props,
-        {
-            defaultValue: [],
-        },
-    );
+    const [innerValue, setInnerValue] =
+        useControllableValue<EntityMultipleSelectValueType[]>(props);
     const { list, remove, getKey, insert, replace, resetList } =
         useDynamicList<EntityMultipleSelectValueType>(innerValue || []);
 
