@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { Position, useReactFlow, useUpdateNodeInternals, type NodeProps } from '@xyflow/react';
-import { isString } from 'lodash-es';
+import { isString, isNil } from 'lodash-es';
 import { useDebounceEffect } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Tooltip } from '@/components';
@@ -208,8 +208,10 @@ const IfElseNode: React.FC<NodeProps<IfElseNode>> = props => {
                                 );
 
                                 let isEmpty = true;
+                                let valueLabel: string | undefined;
                                 if (isString(expressionValue)) {
                                     isEmpty = !expressionValue || !expressionDescription;
+                                    valueLabel = expressionValue;
                                 } else {
                                     const operator = expressionValue?.operator;
                                     if (operator === 'IS_EMPTY' || operator === 'IS_NOT_EMPTY') {
@@ -219,8 +221,17 @@ const IfElseNode: React.FC<NodeProps<IfElseNode>> = props => {
                                         isEmpty =
                                             !expressionValue?.key ||
                                             !expressionValue?.operator ||
-                                            !expressionValue?.value;
+                                            isNil(expressionValue?.value);
+                                        valueLabel = expressionValue?.value?.toString();
                                     }
+                                }
+
+                                if (param?.enums) {
+                                    const enumItem = param?.enums.find(
+                                        item => item.key === valueLabel,
+                                    );
+
+                                    valueLabel = enumItem?.label || valueLabel;
                                 }
 
                                 return (
@@ -254,7 +265,7 @@ const IfElseNode: React.FC<NodeProps<IfElseNode>> = props => {
                                                 <Tooltip
                                                     autoEllipsis
                                                     className="value"
-                                                    title={expressionValue?.value}
+                                                    title={valueLabel}
                                                 />
                                             </>
                                         )}

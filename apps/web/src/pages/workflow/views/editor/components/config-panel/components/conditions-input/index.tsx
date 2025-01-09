@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo } from 'react';
 import cls from 'classnames';
 import { isEqual, cloneDeep, merge } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
@@ -24,6 +24,7 @@ import {
 } from '@milesight/shared/src/components';
 import { genUuid } from '../../../../helper';
 import { logicOperatorMap, conditionOperatorMap } from '../../../../constants';
+import useWorkflow from '../../../../hooks/useWorkflow';
 import ParamSelect from '../param-select';
 import CodeEditor, { DEFAULT_LANGUAGE, type CodeEditorData } from '../code-editor';
 import './style.less';
@@ -39,6 +40,15 @@ export type ConditionsInputProps = {
     defaultValue?: ConditionsInputValueType;
     onChange?: (value: ConditionsInputValueType) => void;
 };
+
+type RefParamDetailType = Record<
+    ApiKey,
+    {
+        key: ApiKey;
+        type?: EntityValueDataType;
+        options?: React.ReactNode[];
+    }
+>;
 
 const genConditionValue = (): ConditionValueType => {
     return { id: genUuid('subcondition') };
@@ -155,6 +165,35 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
             return result;
         });
     }, [blockList, setData]);
+
+    // ---------- Render the value options ----------
+    const { getReferenceParamDetail } = useWorkflow();
+    const refParamDetails = useMemo(() => {
+        const result = blockList.reduce((acc, block) => {
+            const { expressionType, conditions } = block;
+
+            if (expressionType !== 'condition') return acc;
+            conditions.forEach(({ id, expressionValue }) => {
+                if (typeof expressionValue === 'string') return;
+                const detail = getReferenceParamDetail(expressionValue?.key);
+
+                if (!detail) return;
+                acc[id] = {
+                    key: detail.valueKey,
+                    type: detail.valueType,
+                    options: detail.enums?.map(({ key, label }) => (
+                        <MenuItem key={key} value={key}>
+                            {label}
+                        </MenuItem>
+                    )),
+                };
+            });
+
+            return acc;
+        }, {} as RefParamDetailType);
+
+        return result;
+    }, [blockList, getReferenceParamDetail]);
 
     return (
         <div className="ms-conditions-input">
@@ -273,6 +312,8 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
                                 )}
                                 {conditions.map((condition, index) => {
                                     const { expressionValue } = condition;
+                                    const detail = refParamDetails[condition.id];
+                                    const options = detail?.options;
 
                                     if (typeof expressionValue === 'string') return null;
                                     return (
@@ -332,24 +373,56 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
                                                         )}
                                                     </Select>
                                                 </div>
-                                                <TextField
-                                                    fullWidth
-                                                    autoComplete="off"
-                                                    placeholder={getIntlText('common.label.value')}
-                                                    value={expressionValue?.value || ''}
-                                                    onChange={e => {
-                                                        replaceCondition(
-                                                            index,
-                                                            {
-                                                                expressionValue: {
-                                                                    value: e.target.value,
+                                                {options?.length ? (
+                                                    <Select
+                                                        fullWidth
+                                                        defaultValue=""
+                                                        IconComponent={KeyboardArrowDownIcon}
+                                                        value={
+                                                            expressionValue?.value?.toString() || ''
+                                                        }
+                                                        onChange={e => {
+                                                            let value: string | boolean =
+                                                                e.target?.value;
+
+                                                            if (detail.type === 'BOOLEAN') {
+                                                                value = e.target.value === 'true';
+                                                            }
+
+                                                            replaceCondition(
+                                                                index,
+                                                                {
+                                                                    expressionValue: { value },
                                                                 },
-                                                            },
-                                                            block,
-                                                            blockIndex,
-                                                        );
-                                                    }}
-                                                />
+                                                                block,
+                                                                blockIndex,
+                                                            );
+                                                        }}
+                                                    >
+                                                        {options}
+                                                    </Select>
+                                                ) : (
+                                                    <TextField
+                                                        fullWidth
+                                                        autoComplete="off"
+                                                        placeholder={getIntlText(
+                                                            'common.label.value',
+                                                        )}
+                                                        value={expressionValue?.value || ''}
+                                                        onChange={e => {
+                                                            replaceCondition(
+                                                                index,
+                                                                {
+                                                                    expressionValue: {
+                                                                        value: e.target.value,
+                                                                    },
+                                                                },
+                                                                block,
+                                                                blockIndex,
+                                                            );
+                                                        }}
+                                                    />
+                                                )}
                                             </div>
                                             {isMultipleConditions && (
                                                 <IconButton

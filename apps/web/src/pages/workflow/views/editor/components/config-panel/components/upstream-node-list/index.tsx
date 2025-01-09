@@ -49,7 +49,7 @@ const UpstreamNodeList: React.FC<UpstreamNodeListProps> = props => {
                     >
                         <div className="ms-upstream-node-list-item">
                             <Tooltip autoEllipsis className="name" title={output.name} />
-                            {output.type && <span className="type">{output.type}</span>}
+                            {output.typeLabel && <span className="type">{output.typeLabel}</span>}
                         </div>
                     </MenuItem>,
                 );

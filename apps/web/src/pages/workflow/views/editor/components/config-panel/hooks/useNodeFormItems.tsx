@@ -60,7 +60,8 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
 
         // console.log({ nodeConfigs });
         const result: Partial<Record<WorkflowNodeType, NodeFormGroupType[]>> = {};
-        Object.entries(nodeConfigs).forEach(([nodeType, nodeConfig]) => {
+        Object.entries(nodeConfigs).forEach(([_, nodeConfig]) => {
+            const nodeType = nodeConfig.type;
             const { properties = {}, outputProperties = {} } = nodeConfig.schema || {};
             const formConfigs = Object.entries(properties)
                 .filter(([_, item]) => !item.autowired)
@@ -133,7 +134,13 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
                         switch (uiComponent) {
                             case 'paramDefineInput': {
                                 formItem.render = ({ field: { onChange, value } }) => {
-                                    return <ParamInput value={value} onChange={onChange} />;
+                                    return (
+                                        <ParamInput
+                                            isOutput={nodeType === 'code'}
+                                            value={value}
+                                            onChange={onChange}
+                                        />
+                                    );
                                 };
                                 break;
                             }

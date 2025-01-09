@@ -16,12 +16,12 @@ import {
     type SelectProps,
     type TextFieldProps,
 } from '@mui/material';
+import { isEqual, cloneDeep } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { genRandomString } from '@milesight/shared/src/utils/tools';
 import { DeleteOutlineIcon, AddIcon } from '@milesight/shared/src/components';
 import './style.less';
-import { isEqual } from 'lodash-es';
 import { entityTypeOptions } from '@/constants';
 
 export type ParamInputValueType = NonNullable<
@@ -37,6 +37,7 @@ export interface ParamInputProps {
     showSwitch?: boolean;
     typeSelectProps?: SelectProps;
     nameInputProps?: TextFieldProps;
+    isOutput?: boolean;
     maxAddNum?: number;
     value?: ParamInputValueType[];
     onChange?: (value: ParamInputValueType[]) => void;
@@ -54,6 +55,7 @@ const ParamInput: React.FC<ParamInputProps> = ({
     showSwitch,
     typeSelectProps,
     nameInputProps,
+    isOutput = false,
     maxAddNum,
     ...props
 }) => {
@@ -79,16 +81,32 @@ const ParamInput: React.FC<ParamInputProps> = ({
     ) => {
         replace(index, { ...rowItem, [key]: value });
     };
+
     const disabledAdd = useMemo(() => {
         return maxAddNum !== undefined && Number.isInteger(maxAddNum) && list.length >= maxAddNum;
     }, [list]);
-    const handlerAdd = () => {
+
+    const handleAdd = () => {
         if (disabledAdd) return;
         insert(list.length, {
             ...DEFAULT_EMPTY_VALUE,
             identify: `param_${genRandomString(8, { lowerCase: true })}`,
         });
     };
+
+    const typeOptions = useMemo(() => {
+        const result = cloneDeep(entityTypeOptions);
+
+        if (isOutput) {
+            result.push({
+                value: 'OTHER',
+                label: getIntlText('workflow.label.param_type_other'),
+            });
+        }
+
+        return result;
+    }, [isOutput, getIntlText]);
+
     return (
         <div className="ms-param-input">
             {list.map((item, index) => (
@@ -115,7 +133,7 @@ const ParamInput: React.FC<ParamInputProps> = ({
                                 handleChange(index, item, 'type', e.target.value as string)
                             }
                         >
-                            {entityTypeOptions.map(item => (
+                            {typeOptions.map(item => (
                                 <MenuItem key={item.value} value={item.value}>
                                     {getIntlText(item.label)}
                                 </MenuItem>
@@ -155,7 +173,7 @@ const ParamInput: React.FC<ParamInputProps> = ({
                 className="ms-param-input-add-btn"
                 startIcon={<AddIcon />}
                 disabled={disabledAdd}
-                onClick={handlerAdd}
+                onClick={handleAdd}
             >
                 {getIntlText('common.label.add')}
             </Button>

@@ -127,13 +127,13 @@ const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
                             <Tooltip autoEllipsis className="name" title={selectValue.valueName} />
                             {/* <span className="divider">/</span> */}
                             {/* <Tooltip autoEllipsis className="type" title="BOOLEAN" /> */}
-                            {selectValue.valueType && (
+                            {selectValue.valueTypeLabel && (
                                 <>
                                     <span className="divider">/</span>
                                     <Tooltip
                                         autoEllipsis
                                         className="type"
-                                        title={selectValue.valueType}
+                                        title={selectValue.valueTypeLabel}
                                     />
                                 </>
                             )}

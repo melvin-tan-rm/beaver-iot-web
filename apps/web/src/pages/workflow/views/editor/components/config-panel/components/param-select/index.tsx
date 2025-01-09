@@ -46,7 +46,7 @@ const ParamSelect: React.FC<ParamSelectProps> = ({ label, required, disabled, ..
                             <div className="ms-param-select-item">
                                 <Tooltip autoEllipsis className="name" title={output.name} />
                                 <span className="divider">/</span>
-                                <Tooltip autoEllipsis className="type" title={output.type} />
+                                <Tooltip autoEllipsis className="type" title={output.typeLabel} />
                                 {/* <span className="type">{output.type}</span> */}
                             </div>
                         </MenuItem>
