@@ -153,11 +153,14 @@ export function useRole() {
          */
         if (!activeRole) return;
         confirm({
-            title: getIntlText('common.label.delete'),
+            title: getIntlText('common.label.deletion'),
             description: getIntlText('user.role.delete_tip', {
                 0: activeRole?.name || '',
             }),
             confirmButtonText: getIntlText('common.label.delete'),
+            confirmButtonProps: {
+                color: 'error',
+            },
             onConfirm: async () => {
                 if (!activeRole?.roleId) return;
 

@@ -58,7 +58,7 @@ const Users: React.FC = () => {
 
         const title = () => {
             if (idsToDelete?.length === 1) {
-                return getIntlText('common.label.delete');
+                return getIntlText('common.label.deletion');
             }
 
             return getIntlText('common.label.bulk_deletion');
@@ -82,6 +82,9 @@ const Users: React.FC = () => {
             title: title(),
             description: description(),
             confirmButtonText: getIntlText('common.label.delete'),
+            confirmButtonProps: {
+                color: 'error',
+            },
             onConfirm: async () => {
                 const [err, resp] = await awaitWrap(
                     userAPI.deleteUsers({
