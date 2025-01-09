@@ -253,7 +253,7 @@ const useWorkflow = () => {
                         switch (param) {
                             // Data Type: { identify?: string; name: string; type: string }[]
                             case 'entityConfigs':
-                            case 'Payload': {
+                            case 'payload': {
                                 if (!Array.isArray(data)) return;
                                 // TODO: The key may use `identity` to replace `name` ?
                                 data.forEach((item: Record<string, any>) => {
