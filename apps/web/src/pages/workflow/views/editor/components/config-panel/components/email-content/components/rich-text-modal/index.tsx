@@ -14,6 +14,7 @@ import PreviousNodeSelect from '../previous-node-select';
 import './style.less';
 
 export interface RichTextModalProps extends ModalProps {
+    upstreamNodeSelectable?: boolean;
     data?: string;
     onSave?: (data: string) => void;
 }
@@ -22,7 +23,7 @@ export interface RichTextModalProps extends ModalProps {
  * rich text Modal
  */
 const RichTextModal: React.FC<RichTextModalProps> = props => {
-    const { visible, data, onSave, onOk, ...restProps } = props;
+    const { visible, data, onSave, onOk, upstreamNodeSelectable = true, ...restProps } = props;
 
     const { getIntlText } = useI18n();
     const editorRef = useRef<EditorHandlers>(null);
@@ -44,6 +45,22 @@ const RichTextModal: React.FC<RichTextModalProps> = props => {
             }, 150);
         }
     }, [visible, data]);
+
+    const renderExtraToolbar = () => {
+        if (upstreamNodeSelectable) {
+            return (
+                <PreviousNodeSelect
+                    onSelect={nodeKey => {
+                        if (!nodeKey) return;
+
+                        editorRef.current?.insertTextContent(nodeKey);
+                    }}
+                />
+            );
+        }
+
+        return null;
+    };
 
     const renderModal = () => {
         if (visible) {
@@ -78,15 +95,7 @@ const RichTextModal: React.FC<RichTextModalProps> = props => {
                                     },
                                 ],
                             }}
-                            extraToolbar={
-                                <PreviousNodeSelect
-                                    onSelect={nodeKey => {
-                                        if (!nodeKey) return;
-
-                                        editorRef.current?.insertTextContent(nodeKey);
-                                    }}
-                                />
-                            }
+                            extraToolbar={renderExtraToolbar()}
                         />
                     </div>
                 </Modal>

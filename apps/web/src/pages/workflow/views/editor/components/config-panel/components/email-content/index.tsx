@@ -11,6 +11,8 @@ import { useEmailContent } from './hooks';
 import styles from './style.module.less';
 
 export interface EmailContentProps {
+    /** Whether rich text can select upstream nodes */
+    upstreamNodeSelectable?: boolean;
     value?: string;
     onChange: (value: string) => void;
 }
@@ -20,7 +22,7 @@ export interface EmailContentProps {
  * The Email Content Enter Component
  */
 const EmailContent: React.FC<EmailContentProps> = props => {
-    const { value, onChange } = props;
+    const { upstreamNodeSelectable = true, value, onChange } = props;
 
     const { getIntlText } = useI18n();
     const [content, setContent] = useControllableValue<string>({
@@ -59,6 +61,7 @@ const EmailContent: React.FC<EmailContentProps> = props => {
                 onCancel={hiddenModal}
                 onOk={hiddenModal}
                 onSave={setContent}
+                upstreamNodeSelectable={upstreamNodeSelectable}
             />
         </div>
     );
