@@ -4,6 +4,7 @@ import { uniqBy, omit, cloneDeep, pick, isEmpty, isObject } from 'lodash-es';
 import { useI18n, useStoreShallow } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 import { basicNodeConfigs } from '@/pages/workflow/config';
+import { entityTypeOptions } from '@/constants';
 import { useEntityStore } from '@/components';
 import useFlowStore from '../store';
 import {
@@ -22,7 +23,8 @@ export type NodeParamType = {
     nodeLabel?: string;
     outputs: {
         name: string;
-        type?: string;
+        type?: EntityValueDataType;
+        typeLabel?: string;
         key: string;
         enums?: {
             key: string;
@@ -36,7 +38,8 @@ export type FlattenNodeParamType = {
     nodeName?: string;
     nodeType?: WorkflowNodeType;
     valueName: string;
-    valueType?: string;
+    valueType?: EntityValueDataType;
+    valueTypeLabel?: string;
     valueKey: string;
     enums?: {
         key: string;
@@ -277,15 +280,21 @@ const useWorkflow = () => {
                                 data.forEach((item: Record<string, any>) => {
                                     if (!item?.name || !item?.type) return;
                                     const enums =
-                                        item.type !== 'BOOLEAN'
+                                        (item.type as EntityValueDataType) !== 'BOOLEAN'
                                             ? undefined
                                             : BOOLEAN_DATA_ENUMS.map(item => ({
                                                   key: item.key,
                                                   label: getIntlText(item.labelIntlKey),
                                               }));
+                                    const typeOption = entityTypeOptions.find(
+                                        it => it.value === item.type,
+                                    );
                                     paramData.outputs.push({
                                         name: item.name,
                                         type: item.type,
+                                        typeLabel: !typeOption?.label
+                                            ? item.type
+                                            : getIntlText(typeOption.label),
                                         key:
                                             param === 'entityConfigs'
                                                 ? genRefParamKey(id, item.identify)
@@ -302,10 +311,16 @@ const useWorkflow = () => {
                                     if (!item) return;
                                     const entity = getEntityDetail(item);
                                     const enums = (entity?.entity_value_attribute as any)?.enum;
+                                    const typeOption = entityTypeOptions.find(
+                                        it => it.value === entity?.entity_value_type,
+                                    );
 
                                     paramData.outputs.push({
                                         name: entity?.entity_name || item,
                                         type: entity?.entity_value_type,
+                                        typeLabel: !typeOption?.label
+                                            ? entity?.entity_value_type
+                                            : getIntlText(typeOption.label),
                                         key: genRefParamKey(id, item),
                                         enums: isEmpty(enums)
                                             ? undefined
@@ -331,10 +346,16 @@ const useWorkflow = () => {
 
                                     if (!entity) return;
                                     const enums = (entity?.entity_value_attribute as any)?.enum;
+                                    const typeOption = entityTypeOptions.find(
+                                        it => it.value === entity?.entity_value_type,
+                                    );
 
                                     paramData.outputs.push({
                                         name: entity?.entity_name || key,
                                         type: entity?.entity_value_type,
+                                        typeLabel: !typeOption?.label
+                                            ? entity?.entity_value_type
+                                            : getIntlText(typeOption.label),
                                         key: genRefParamKey(id, key),
                                         enums: isEmpty(enums)
                                             ? undefined
@@ -362,6 +383,7 @@ const useWorkflow = () => {
                         nodeType: item.nodeType,
                         valueName: output.name,
                         valueType: output.type,
+                        valueTypeLabel: output.typeLabel,
                         valueKey: output.key,
                         enums: output.enums,
                     })),

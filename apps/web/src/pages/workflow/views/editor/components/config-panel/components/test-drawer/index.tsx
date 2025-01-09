@@ -249,6 +249,7 @@ const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
                                     Object.values(testInputKeysMap)[0].type === 'string' ? (
                                         node?.type === 'email' ? (
                                             <EmailContent
+                                                upstreamNodeSelectable={false}
                                                 value={inputData}
                                                 onChange={setInputData}
                                             />

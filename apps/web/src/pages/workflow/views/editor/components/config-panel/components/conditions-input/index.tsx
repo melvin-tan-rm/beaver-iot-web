@@ -45,7 +45,7 @@ type RefParamDetailType = Record<
     ApiKey,
     {
         key: ApiKey;
-        type?: string;
+        type?: EntityValueDataType;
         options?: React.ReactNode[];
     }
 >;

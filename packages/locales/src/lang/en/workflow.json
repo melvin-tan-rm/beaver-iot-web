@@ -115,5 +115,6 @@
     "workflow.label.condition_operator_greater_than": "Greater Than",
     "workflow.label.condition_operator_greater_than_or_equal": "Greater Equals",
     "workflow.label.condition_operator_less_than": "Less Than",
-    "workflow.label.condition_operator_less_than_or_equal": "Less Equals"
+    "workflow.label.condition_operator_less_than_or_equal": "Less Equals",
+    "workflow.label.param_type_other": "OTHER"
 }

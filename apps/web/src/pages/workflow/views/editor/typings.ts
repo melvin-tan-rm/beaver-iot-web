@@ -59,3 +59,10 @@ export type NodeConfigItem = NodeConfigItemType & {
     /** The backend node schema */
     schema?: NodeConfigSchema;
 };
+
+/**
+ * The custom entity value type in workflow
+ */
+export type CustomEntityValueType =
+    | Extract<EntityValueDataType, 'LONG' | 'DOUBLE' | 'BOOLEAN' | 'STRING'>
+    | 'OTHER';
