@@ -26,6 +26,7 @@ import { CodeEditor, Tooltip } from '@/components';
 import { workflowAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import useFlowStore from '../../../../store';
 import { isRefParamKey } from '../../../../helper';
+import EmailContent from '../email-content';
 import './style.less';
 
 export interface TestDrawerProps {
@@ -246,15 +247,22 @@ const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
                                 <div className="input-content-area">
                                     {Object.keys(testInputKeysMap).length === 1 &&
                                     Object.values(testInputKeysMap)[0].type === 'string' ? (
-                                        <TextField
-                                            multiline
-                                            fullWidth
-                                            rows={8}
-                                            value={inputData}
-                                            onChange={e => setInputData(e.target.value)}
-                                            disabled={loading}
-                                            placeholder={getIntlText('common.label.input')}
-                                        />
+                                        node?.type === 'email' ? (
+                                            <EmailContent
+                                                value={inputData}
+                                                onChange={setInputData}
+                                            />
+                                        ) : (
+                                            <TextField
+                                                multiline
+                                                fullWidth
+                                                rows={8}
+                                                value={inputData}
+                                                onChange={e => setInputData(e.target.value)}
+                                                disabled={loading}
+                                                placeholder={getIntlText('common.label.input')}
+                                            />
+                                        )
                                     ) : (
                                         <CodeEditor
                                             editorLang="json"
@@ -266,6 +274,7 @@ const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
                                     <Button
                                         fullWidth
                                         variant="contained"
+                                        className="ms-config-panel-test-drawer-btn"
                                         disabled={loading}
                                         startIcon={<PlayArrowIcon />}
                                         onClick={() => testSingleNode(inputData)}

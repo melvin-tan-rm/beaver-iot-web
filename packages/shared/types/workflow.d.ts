@@ -188,7 +188,7 @@ declare type IfElseNodeDataType = BaseNodeDataType<{
                     | {
                           key?: ApiKey;
                           operator?: WorkflowFilterOperator;
-                          value?: string;
+                          value?: string | boolean;
                       };
                 /** Remark */
                 expressionDescription?: string;
