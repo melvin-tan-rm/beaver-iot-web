@@ -83,6 +83,7 @@
     "workflow.email.label_smtp_config_encryption_method": "Encryption Method",
     "workflow.email.label_smtp_config_encryption_none": "None",
     "workflow.email.label_smtp_config_encryption_start_tls": "StartTLS",
+    "workflow.email.content_modal_title": "Edit Email Content",
     "workflow.editor.valid.condition_not_setup": "Condition not setup",
     "workflow.label.node_id": "Node ID",
     "workflow.label.abnormal_edge_tip": "节点嵌套错误，请检查重试",
@@ -110,5 +111,9 @@
     "workflow.editor.config_panel_test_title": "Test {1}",
     "workflow.valid.invalid_url": "The {1} field value is not a valid URL.",
     "workflow.valid.invalid_email": "The {1} field value is not a valid email.",
-    "workflow.editor.node_test_tip": "Test this Node"
+    "workflow.editor.node_test_tip": "Test this Node",
+    "workflow.label.condition_operator_greater_than": "Greater Than",
+    "workflow.label.condition_operator_greater_than_or_equal": "Greater Equals",
+    "workflow.label.condition_operator_less_than": "Less Than",
+    "workflow.label.condition_operator_less_than_or_equal": "Less Equals"
 }

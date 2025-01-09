@@ -83,9 +83,9 @@ const EntitySelect: React.FC<EntitySelectProps> = ({
             accessMode && (Array.isArray(accessMode) ? accessMode : [accessMode]);
 
         return {
-            type: filterType,
-            valueType: filterValueType,
-            accessMode: filterAccessMode,
+            entityType: filterType,
+            entityValueType: filterValueType,
+            entityAccessMod: filterAccessMode,
             excludeChildren,
         };
     }, [filterModel]);

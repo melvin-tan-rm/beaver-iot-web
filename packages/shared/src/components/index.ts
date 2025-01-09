@@ -15,3 +15,9 @@ export * as MUIForm from './mui-form';
 export { default as LoadingButton } from './loading-button';
 export { default as MuiSelect } from './select';
 export { default as LoadingWrapper } from './loading-wrapper';
+export {
+    MSRichtextEditor,
+    type EditorHandlers,
+    type MSEditor,
+    type IEditorProps,
+} from './ms-editor';

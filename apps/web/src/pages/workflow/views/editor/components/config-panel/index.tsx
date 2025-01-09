@@ -1,4 +1,4 @@
-import React, { useMemo, useLayoutEffect, useEffect, useRef, useState } from 'react';
+import React, { useMemo, useEffect, useRef, useState } from 'react';
 import { Panel, useReactFlow } from '@xyflow/react';
 import cls from 'classnames';
 import { isEqual, cloneDeep } from 'lodash-es';
@@ -93,7 +93,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
             });
             formDataInit.current = true;
         }, 0);
-    }, [finalSelectedNode, reset, setValue, getValues]);
+    }, [finalSelectedNode, reset, setValue, getValues, clearExcessEdges]);
 
     // Save node data
     useThrottleEffect(
@@ -105,7 +105,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
             updateNodeData(finalSelectedNode.id, { nodeName, nodeRemark, parameters: formData });
         },
         [openPanel, finalSelectedNode?.id, latestFormData, updateNodeData],
-        { wait: 200 },
+        { wait: 50 },
     );
 
     // ---------- Show Test Drawer ----------
@@ -223,7 +223,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                                             return (
                                                 <Controller<NodeFormDataProps>
                                                     {...restProps}
-                                                    key={restProps.name}
+                                                    key={`${restProps.name}-${groupName || ''}`}
                                                     control={control}
                                                 />
                                             );
