@@ -4,7 +4,12 @@ import { useRequest, useMemoizedFn } from 'ahooks';
 import { Button, Stack } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
-import { toast, AddIcon, RemoveCircleOutlineIcon } from '@milesight/shared/src/components';
+import {
+    toast,
+    AddIcon,
+    RemoveCircleOutlineIcon,
+    ErrorIcon,
+} from '@milesight/shared/src/components';
 import { TablePro, useConfirm } from '@/components';
 import { userAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import useUserRoleStore from '@/pages/user-role/store';
@@ -88,6 +93,7 @@ const Devices: React.FC = () => {
             title: title(),
             description: description(),
             confirmButtonText: getIntlText('common.label.remove'),
+            icon: <ErrorIcon sx={{ color: 'var(--orange-base)' }} />,
             onConfirm: async () => {
                 if (!activeRole) return;
 
