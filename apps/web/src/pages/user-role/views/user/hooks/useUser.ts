@@ -52,7 +52,7 @@ const useUser = (getAllUsers?: () => void) => {
         setUserModalVisible(false);
     });
 
-    const handleAddUser = useMemoizedFn(async (params: OperateUserProps) => {
+    const handleAddUser = useMemoizedFn(async (params: OperateUserProps, callback: () => void) => {
         const { nickname, email, password } = params || {};
         if (!nickname || !email || !password) return;
 
@@ -69,11 +69,12 @@ const useUser = (getAllUsers?: () => void) => {
         }
 
         getAllUsers?.();
+        callback?.();
         setUserModalVisible(false);
         toast.success(getIntlText('common.message.add_success'));
     });
 
-    const handleEditUser = useMemoizedFn(async (params: OperateUserProps) => {
+    const handleEditUser = useMemoizedFn(async (params: OperateUserProps, callback: () => void) => {
         const { nickname, email } = params || {};
         const { userId } = editUserInfo || {};
         if (!nickname || !email || !userId) return;
@@ -91,43 +92,49 @@ const useUser = (getAllUsers?: () => void) => {
         }
 
         getAllUsers?.();
+        callback?.();
         setUserModalVisible(false);
         toast.success(getIntlText('common.message.operation_success'));
     });
 
-    const handleResetUserPassword = useMemoizedFn(async (params: OperateUserProps) => {
-        const { password } = params || {};
-        const { userId } = editUserInfo || {};
-        if (!password || !userId) return;
+    const handleResetUserPassword = useMemoizedFn(
+        async (params: OperateUserProps, callback: () => void) => {
+            const { password } = params || {};
+            const { userId } = editUserInfo || {};
+            if (!password || !userId) return;
 
-        const [err, resp] = await awaitWrap(
-            userAPI.resetUserPassword({
-                user_id: userId,
-                password,
-            }),
-        );
+            const [err, resp] = await awaitWrap(
+                userAPI.resetUserPassword({
+                    user_id: userId,
+                    password,
+                }),
+            );
 
-        if (err || !isRequestSuccess(resp)) {
-            return;
-        }
+            if (err || !isRequestSuccess(resp)) {
+                return;
+            }
 
-        setUserModalVisible(false);
-        toast.success(getIntlText('common.message.operation_success'));
-    });
+            callback?.();
+            setUserModalVisible(false);
+            toast.success(getIntlText('common.message.operation_success'));
+        },
+    );
 
-    const handleUserFormSubmit = useMemoizedFn(async (params: OperateUserProps) => {
-        if (operateModalType === 'edit') {
-            await handleEditUser(params);
-            return;
-        }
+    const handleUserFormSubmit = useMemoizedFn(
+        async (params: OperateUserProps, callback: () => void) => {
+            if (operateModalType === 'edit') {
+                await handleEditUser(params, callback);
+                return;
+            }
 
-        if (operateModalType === 'resetPassword') {
-            await handleResetUserPassword(params);
-            return;
-        }
+            if (operateModalType === 'resetPassword') {
+                await handleResetUserPassword(params, callback);
+                return;
+            }
 
-        await handleAddUser(params);
-    });
+            await handleAddUser(params, callback);
+        },
+    );
 
     return {
         operateModalType,

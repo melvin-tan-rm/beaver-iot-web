@@ -11,7 +11,7 @@ import { useI18n } from '@milesight/shared/src/hooks';
 interface Props extends Omit<ModalProps, 'onOk'> {
     data?: string;
     /** on form submit */
-    onFormSubmit: (name: string) => Promise<void>;
+    onFormSubmit: (name: string, callback: () => void) => Promise<void>;
 }
 
 export interface AddRoleProps {
@@ -54,9 +54,9 @@ const AddRoleModal: React.FC<Props> = props => {
     }, [getIntlText]);
 
     const onSubmit: SubmitHandler<AddRoleProps> = async params => {
-        await onFormSubmit(params.name);
-
-        reset();
+        await onFormSubmit(params.name, () => {
+            reset();
+        });
     };
 
     const handleCancel = useMemoizedFn(() => {

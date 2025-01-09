@@ -88,40 +88,46 @@ export function useRole() {
         getRoleList();
     }, [getRoleList]);
 
-    const handleAddRole = useMemoizedFn(async (name: string): Promise<void> => {
-        const [err, resp] = await awaitWrap(
-            userAPI.addRole({
-                name,
-            }),
-        );
+    const handleAddRole = useMemoizedFn(
+        async (name: string, callback: () => void): Promise<void> => {
+            const [err, resp] = await awaitWrap(
+                userAPI.addRole({
+                    name,
+                }),
+            );
 
-        if (err || !isRequestSuccess(resp)) {
-            return;
-        }
+            if (err || !isRequestSuccess(resp)) {
+                return;
+            }
 
-        setAddModalVisible(false);
-        getRoleList();
-        toast.success(getIntlText('common.message.add_success'));
-    });
+            getRoleList();
+            callback?.();
+            setAddModalVisible(false);
+            toast.success(getIntlText('common.message.add_success'));
+        },
+    );
 
-    const handleEditRole = useMemoizedFn(async (name: string): Promise<void> => {
-        if (!activeRole) return;
+    const handleEditRole = useMemoizedFn(
+        async (name: string, callback: () => void): Promise<void> => {
+            if (!activeRole) return;
 
-        const [err, resp] = await awaitWrap(
-            userAPI.editRole({
-                role_id: activeRole.roleId,
-                name,
-            }),
-        );
+            const [err, resp] = await awaitWrap(
+                userAPI.editRole({
+                    role_id: activeRole.roleId,
+                    name,
+                }),
+            );
 
-        if (err || !isRequestSuccess(resp)) {
-            return;
-        }
+            if (err || !isRequestSuccess(resp)) {
+                return;
+            }
 
-        setAddModalVisible(false);
-        getRoleList();
-        toast.success(getIntlText('common.message.add_success'));
-    });
+            getRoleList();
+            callback?.();
+            setAddModalVisible(false);
+            toast.success(getIntlText('common.message.operation_success'));
+        },
+    );
 
     const showAddModal = useMemoizedFn((type: MODAL_TYPE) => {
         setModalType(type);

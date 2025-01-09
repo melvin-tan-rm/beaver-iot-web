@@ -21,7 +21,7 @@ export type OperateModalType = 'add' | 'edit' | 'resetPassword';
 interface Props extends Omit<ModalProps, 'onOk'> {
     operateType: OperateModalType;
     /** on form submit */
-    onFormSubmit: (data: OperateUserProps) => Promise<void>;
+    onFormSubmit: (data: OperateUserProps, callback: () => void) => Promise<void>;
     data?: OperateUserProps;
 }
 
@@ -174,9 +174,9 @@ const OperateUserModal: React.FC<Props> = props => {
     }, [getIntlText, operateType]);
 
     const onSubmit: SubmitHandler<OperateUserProps> = async params => {
-        await onFormSubmit(params);
-
-        reset();
+        await onFormSubmit(params, () => {
+            reset();
+        });
     };
 
     const handleCancel = useMemoizedFn(() => {
