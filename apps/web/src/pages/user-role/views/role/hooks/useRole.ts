@@ -153,7 +153,7 @@ export function useRole() {
          */
         if (!activeRole) return;
         confirm({
-            title: getIntlText('common.label.deletion'),
+            title: getIntlText('common.label.delete'),
             description: getIntlText('user.role.delete_tip', {
                 0: activeRole?.name || '',
             }),
