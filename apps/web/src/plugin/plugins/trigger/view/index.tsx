@@ -64,9 +64,13 @@ const View = (props: Props) => {
         });
         const entityType = config?.entity?.rawData?.entityType;
         if (!error) {
-            if (res?.length) {
+            const children =
+                res?.filter((childrenItem: EntityData) => {
+                    return childrenItem.entity_access_mod.indexOf('W') > -1;
+                }) || [];
+            if (children?.length) {
                 setEntities(
-                    res.map((item: EntityData, index: number) => {
+                    children.map((item: EntityData, index: number) => {
                         tempRef.current[`tempTemp-${index}`] = item.entity_key;
                         return {
                             ...item,
