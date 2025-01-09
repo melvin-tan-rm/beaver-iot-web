@@ -123,6 +123,7 @@ export {
     TableView as TableViewIcon,
     OpenInFull as OpenInFullIcon,
     AddCircleOutline as AddCircleOutlineIcon,
+    Logout as LogoutIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';

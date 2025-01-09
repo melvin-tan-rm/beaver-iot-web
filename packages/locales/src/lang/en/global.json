@@ -191,5 +191,6 @@
     "common.label.bulk_deletion": "Bulk Deletion",
     "common.label.creator": "Creator",
     "common.label.403_forbidden": "403 Forbidden",
-    "common.label.no_permissions": "No Permissions!"
+    "common.label.no_permissions": "No Permissions!",
+    "common.label.sign_out": "Sign out"
 }
