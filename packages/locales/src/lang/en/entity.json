@@ -17,9 +17,9 @@
     "entity.label.entity_type_of_access_read_and_write": "RW",
     "entity.label.entity_type_of_access_write": "W",
     "entity.label.entity_type_of_string": "STRING",
-    "entity.label.entity_type_of_int": "INT",
+    "entity.label.entity_type_of_long": "LONG",
     "entity.label.entity_type_of_boolean": "BOOLEAN",
-    "entity.label.entity_type_of_float": "FLOAT",
+    "entity.label.entity_type_of_double": "DOUBLE",
     "entity.label.set_enumeration_items": "Set Enumeration Items",
     "entity.label.set_value": "Set Value"
 }

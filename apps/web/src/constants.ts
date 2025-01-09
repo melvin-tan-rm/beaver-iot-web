@@ -84,11 +84,11 @@ export enum ENTITY_VALUE_TYPE {
 
 export const entityTypeOptions = [
     {
-        label: 'entity.label.entity_type_of_int',
+        label: 'entity.label.entity_type_of_long',
         value: 'LONG',
     },
     {
-        label: 'entity.label.entity_type_of_float',
+        label: 'entity.label.entity_type_of_double',
         value: 'DOUBLE',
     },
     {
