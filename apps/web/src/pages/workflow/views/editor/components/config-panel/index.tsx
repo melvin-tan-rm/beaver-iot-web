@@ -107,7 +107,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
             updateNodeData(finalSelectedNode.id, { nodeName, nodeRemark, parameters: formData });
         },
         [openPanel, finalSelectedNode?.id, latestFormData, updateNodeData],
-        { wait: 50 },
+        { wait: 100 },
     );
 
     // ---------- Show Test Drawer ----------
