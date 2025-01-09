@@ -10,6 +10,7 @@ import { CloseIcon, PlayArrowIcon, HelpIcon } from '@milesight/shared/src/compon
 import { Tooltip } from '@/components';
 import useFlowStore from '../../store';
 import useWorkflow from '../../hooks/useWorkflow';
+import { DEFAULT_VALUES } from './constants';
 import {
     useCommonFormItems,
     useNodeFormItems,
@@ -79,10 +80,11 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
             formDataInit.current = false;
             return;
         }
+        const defaultValue = cloneDeep(DEFAULT_VALUES[finalSelectedNode.type!]);
         const { nodeName, nodeRemark, parameters } = cloneDeep(finalSelectedNode.data) || {};
         const data: Record<string, any> = { nodeName, nodeRemark, ...parameters };
 
-        reset();
+        reset(defaultValue);
         /**
          * Since node form items are rendered dynamically, `SetTimeout` is used here to
          * ensure that the initial data is filled in after the rendering is complete.

@@ -224,7 +224,7 @@ declare type CodeNodeDataType = BaseNodeDataType<{
     /** Input Arguments */
     inputArguments: Record<ApiKey, string>;
     /** Output */
-    Payload: {
+    payload: {
         name: ApiKey;
         type: EntityValueDataType;
     }[];

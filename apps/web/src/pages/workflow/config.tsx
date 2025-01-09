@@ -160,7 +160,7 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
                 type: 'object',
             },
         ],
-        outputKeys: ['Payload'],
+        outputKeys: ['payload'],
     },
     assigner: {
         type: 'assigner',
