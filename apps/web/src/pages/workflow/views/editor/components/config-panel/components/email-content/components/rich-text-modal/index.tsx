@@ -82,10 +82,6 @@ const RichTextModal: React.FC<RichTextModalProps> = props => {
                             editorConfig={{
                                 toolbar: [
                                     {
-                                        name: 'table',
-                                        visible: false,
-                                    },
-                                    {
                                         name: 'textAlign',
                                         visible: false,
                                     },

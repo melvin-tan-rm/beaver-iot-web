@@ -8,15 +8,19 @@ import { NAMESPACE } from '../constant';
 import { EditorTheme } from '../themes';
 import { exportMap } from '../helper';
 
+import type { IEditorProps } from '../types';
+
 /**
  * editor global configuration
  */
-export const useEditConfigure = () => {
+export const useEditConfigure = (props: IEditorProps) => {
+    const { enableTable = false } = props || {};
+
     return useMemo((): InitialConfigType => {
         return {
             namespace: NAMESPACE,
             nodes: [
-                ...TableNodes,
+                ...(enableTable ? TableNodes : []),
                 HeadingNode,
                 ParagraphNode,
                 ExtendedTextNode,
@@ -34,5 +38,5 @@ export const useEditConfigure = () => {
                 export: exportMap,
             },
         };
-    }, []);
+    }, [enableTable]);
 };
