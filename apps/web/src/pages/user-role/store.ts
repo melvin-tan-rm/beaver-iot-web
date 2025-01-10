@@ -7,7 +7,7 @@ interface UserRoleStore {
     /** current selected role */
     activeRole?: ObjectToCamelCase<RoleType>;
     /** update current selected role data */
-    updateActiveRole: (role: ObjectToCamelCase<RoleType>) => void;
+    updateActiveRole: (role?: ObjectToCamelCase<RoleType>) => void;
 }
 
 /**

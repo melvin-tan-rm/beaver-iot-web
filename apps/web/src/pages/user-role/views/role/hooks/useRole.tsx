@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useMemoizedFn, useRequest } from 'ahooks';
 
 import { toast, ErrorIcon } from '@milesight/shared/src/components';
@@ -44,7 +44,9 @@ export function useRole() {
      * get all roles list data
      */
     const { run: getRoleList } = useRequest(
-        async (keyword?: string) => {
+        async (props?: { keyword?: string; isAdd?: boolean }) => {
+            const { keyword, isAdd } = props || {};
+
             try {
                 setLoading(true);
                 setSearchKeyword(keyword);
@@ -67,7 +69,7 @@ export function useRole() {
                 );
                 setRoleData(newList);
 
-                if (newList?.[0] && !activeRole) {
+                if (newList?.[0] && (!activeRole || isAdd)) {
                     updateActiveRole(newList[0]);
                 }
             } finally {
@@ -75,18 +77,10 @@ export function useRole() {
             }
         },
         {
-            manual: true,
             refreshDeps: [],
             debounceWait: 300,
         },
     );
-
-    /**
-     * initial get roles
-     */
-    useEffect(() => {
-        getRoleList();
-    }, [getRoleList]);
 
     const handleAddRole = useMemoizedFn(
         async (name: string, callback: () => void): Promise<void> => {
@@ -100,7 +94,9 @@ export function useRole() {
                 return;
             }
 
-            getRoleList();
+            getRoleList({
+                isAdd: true,
+            });
             callback?.();
             setAddModalVisible(false);
             toast.success(getIntlText('common.message.add_success'));
@@ -141,7 +137,9 @@ export function useRole() {
     });
 
     const handleSearch = useMemoizedFn((value: string) => {
-        getRoleList(value);
+        getRoleList({
+            keyword: value,
+        });
     });
 
     const handleRoleClick = useMemoizedFn((role: ObjectToCamelCase<RoleType>) => {
@@ -181,6 +179,7 @@ export function useRole() {
                     return;
                 }
 
+                updateActiveRole(undefined);
                 getRoleList();
                 toast.success(getIntlText('common.message.delete_success'));
             },
