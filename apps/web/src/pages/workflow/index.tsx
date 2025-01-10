@@ -73,7 +73,7 @@ const Workflow = () => {
         (ids?: ApiKey[]) => {
             const idsToDelete = ids || [...selectedIds];
             confirm({
-                title: getIntlText('workflow.label.deletion'),
+                title: getIntlText('common.label.deletion'),
                 icon: <ErrorIcon className="ms-workflowIcon modal-waringIcon" />,
                 description: getIntlText('workflow.message.delete_tip'),
                 onConfirm: async () => {
