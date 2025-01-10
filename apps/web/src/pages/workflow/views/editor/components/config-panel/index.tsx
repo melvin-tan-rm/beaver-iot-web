@@ -59,18 +59,40 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
     const { control, setValue, getValues, watch, reset } = useForm<FormDataProps>();
     const commonFormItems = useCommonFormItems();
     const nodeFormGroups = useNodeFormItems({ nodeType: finalSelectedNode?.type, readonly });
-    const allFormData = watch();
-    const preFormData = useRef<FormDataProps>();
     const formDataInit = useRef(false);
-    // Use ref value to avoid unnecessary re-renders
-    const latestFormData = useMemo(() => {
-        if (isEqual(preFormData.current, allFormData)) {
-            return preFormData.current;
-        }
+    const fields = useMemo(() => {
+        const result: string[] = [];
 
-        preFormData.current = allFormData;
-        return allFormData;
-    }, [allFormData]);
+        commonFormItems.forEach(item => {
+            result.push(item.name);
+        });
+
+        nodeFormGroups.forEach(group => {
+            group.children?.forEach(item => {
+                result.push(item.name);
+            });
+        });
+
+        return result;
+    }, [commonFormItems, nodeFormGroups]);
+    const formDataArr = watch(fields);
+    const [latestFormData, setLatestFormData] = useState<Record<string, any>>();
+
+    useEffect(() => {
+        setLatestFormData(data => {
+            const formData = fields.reduce(
+                (acc, field, index) => {
+                    acc[field] = formDataArr[index];
+                    return acc;
+                },
+                {} as Record<string, any>,
+            );
+            if (isEqual(formData, data)) {
+                return data;
+            }
+            return formData;
+        });
+    }, [fields, formDataArr]);
 
     // Backfill form data
     useEffect(() => {
@@ -103,10 +125,10 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
             if (!openPanel || !finalSelectedNode?.id || !formDataInit.current) return;
             const { nodeName, nodeRemark, ...formData } = latestFormData || {};
 
-            // console.log({ formData });
+            // console.log(finalSelectedNode?.id, { formData });
             updateNodeData(finalSelectedNode.id, { nodeName, nodeRemark, parameters: formData });
         },
-        [openPanel, finalSelectedNode?.id, latestFormData, updateNodeData],
+        [openPanel, latestFormData, updateNodeData],
         { wait: 100 },
     );
 
@@ -142,9 +164,6 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                                     : getIntlText(nodeConfig?.labelIntlKey))
                             }
                         />
-                        {/* {!!nodeConfig?.labelIntlKey && (
-                            <span className="title">{getIntlText(nodeConfig.labelIntlKey)}</span>
-                        )} */}
                     </Stack>
                     <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                         {nodeConfig?.testable && !readonly && (
@@ -217,7 +236,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                                             if (
                                                 shouldRender &&
                                                 typeof shouldRender === 'function' &&
-                                                !shouldRender(allFormData)
+                                                !shouldRender(getValues())
                                             ) {
                                                 return null;
                                             }
