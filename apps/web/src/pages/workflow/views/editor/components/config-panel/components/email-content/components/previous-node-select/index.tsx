@@ -52,6 +52,11 @@ const PreviousNodeSelect: React.FC<PreviousNodeSelectProps> = props => {
                     vertical: 'top',
                     horizontal: 'left',
                 }}
+                sx={{
+                    '& .MuiList-root': {
+                        minWidth: 230,
+                    },
+                }}
             >
                 <UpstreamNodeList
                     onChange={node => {
