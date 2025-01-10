@@ -14,6 +14,7 @@ import {
 import { Logo, FormatIndentDecreaseIcon, ExpandMoreIcon } from '@milesight/shared/src/components';
 import { useUserStore } from '@/stores';
 import Tooltip from '../tooltip';
+import { MoreUserInfo } from './components';
 import './style.less';
 
 interface Props {
@@ -111,7 +112,8 @@ const Sidebar: React.FC<Props> = memo(({ menus, logoLinkTo = '/' }) => {
                             })}
                             // onClick={e => setUserMenuAnchorEl(e.currentTarget)}
                         >
-                            <Avatar {...stringAvatar(userInfo.nickname || '')} />
+                            {/* <Avatar {...stringAvatar(userInfo.nickname || '')} /> */}
+                            <MoreUserInfo userInfo={userInfo} />
                             <Tooltip autoEllipsis className="ms-name" title={userInfo.nickname} />
                             {/* <ExpandMoreIcon className="ms-icon" /> */}
                         </Stack>

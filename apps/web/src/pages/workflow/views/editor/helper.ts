@@ -5,7 +5,7 @@ import {
     checkRangeLength,
     type Validate,
 } from '@milesight/shared/src/utils/validators';
-import { PARAM_REFERENCE_PATTERN, PARAM_REFERENCE_DIVIDER } from './constants';
+import { PARAM_REFERENCE_PATTERN } from './constants';
 
 /**
  * Node Data Validators Config

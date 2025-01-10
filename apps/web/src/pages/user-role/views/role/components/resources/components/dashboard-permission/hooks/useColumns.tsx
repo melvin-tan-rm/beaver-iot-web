@@ -26,7 +26,7 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
         return [
             {
                 field: 'dashboardName',
-                headerName: getIntlText('user.role.dashboard_name_table_title'),
+                headerName: getIntlText('dashboard.dashboard_name'),
                 flex: 1,
                 minWidth: 150,
                 ellipsis: true,
