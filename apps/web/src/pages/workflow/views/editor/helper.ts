@@ -39,7 +39,7 @@ export const isRefParamKey = (key?: string) => {
  */
 export const parseRefParamKey = (key?: string) => {
     if (!key || !isRefParamKey(key)) return;
-    const matches = key.match(/^#\{properties\.([^'[\]]+)\['([^']+)'\]\}$/);
+    const matches = key.match(PARAM_REFERENCE_PATTERN);
 
     if (!matches) return;
     const [, nodeId, valueKey] = matches;

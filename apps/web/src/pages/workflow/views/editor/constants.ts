@@ -54,9 +54,14 @@ export const NODE_SPACING_X = 48;
 export const NODE_SPACING_Y = 48;
 
 /**
+ * Global parameter reference pattern string
+ */
+export const PARAM_REFERENCE_PATTERN_STRING = `#\\{properties\\.([^'\\[\\]]+)\\['([^']+)'\\]\\}`;
+
+/**
  * Global parameter reference pattern
  */
-export const PARAM_REFERENCE_PATTERN = /^#\{([^{}]+)\}$/;
+export const PARAM_REFERENCE_PATTERN = new RegExp(`^${PARAM_REFERENCE_PATTERN_STRING}$`);
 
 /**
  * Logic operator map
