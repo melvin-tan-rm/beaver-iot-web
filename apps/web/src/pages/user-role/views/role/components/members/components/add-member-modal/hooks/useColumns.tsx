@@ -14,7 +14,7 @@ const useColumns = <T extends TableRowDataType>() => {
         return [
             {
                 field: 'nickname',
-                headerName: getIntlText('user.role.user_nickname'),
+                headerName: getIntlText('user.label.user_name_table_title'),
                 flex: 1,
                 minWidth: 150,
                 ellipsis: true,

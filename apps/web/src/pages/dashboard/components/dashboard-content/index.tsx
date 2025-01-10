@@ -253,7 +253,7 @@ export default (props: DashboardContentProps) => {
                             sx={{ marginLeft: '20px' }}
                             startIcon={<Edit />}
                         >
-                            {getIntlText('dashboard.label_rename')}
+                            {getIntlText('common.label.rename')}
                         </Button>
                         <Button
                             variant="outlined"

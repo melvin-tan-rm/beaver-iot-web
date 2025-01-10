@@ -11,6 +11,7 @@ import styles from './style.module.less';
 export enum SmtpEncryptionMethod {
     NONE = 'NONE',
     STARTTLS = 'STARTTLS',
+    TLS = 'TLS',
 }
 
 export interface SmtpProps {
@@ -65,6 +66,10 @@ const SmtpForm: React.FC<SmtpFormProps> = props => {
             {
                 value: SmtpEncryptionMethod.STARTTLS,
                 label: getIntlText('workflow.email.label_smtp_config_encryption_start_tls'),
+            },
+            {
+                value: SmtpEncryptionMethod.TLS,
+                label: getIntlText('workflow.email.label_smtp_config_encryption_tls'),
             },
         ],
         [getIntlText],

@@ -67,7 +67,7 @@ const MoreUserInfo: React.FC<MoreUserInfoProps> = props => {
         <PopupState variant="popover" popupId="user-info-menu">
             {state => (
                 <div className="ms-user-info">
-                    <Avatar {...stringAvatar(userInfo.nickname || '')} {...bindTrigger(state)} />
+                    <Avatar {...stringAvatar(userInfo?.nickname || '')} {...bindTrigger(state)} />
                     <Menu
                         {...bindMenu(state)}
                         anchorOrigin={{
@@ -81,11 +81,11 @@ const MoreUserInfo: React.FC<MoreUserInfoProps> = props => {
                     >
                         <ListItem sx={{ width: 230 }} alignItems="center">
                             <ListItemAvatar>
-                                <Avatar {...stringAvatar(userInfo.nickname || '')} />
+                                <Avatar {...stringAvatar(userInfo?.nickname || '')} />
                             </ListItemAvatar>
                             <ListItemText
-                                primary={<Tooltip title={userInfo.nickname} autoEllipsis />}
-                                secondary={<Tooltip title={userInfo.email} autoEllipsis />}
+                                primary={<Tooltip title={userInfo?.nickname || ''} autoEllipsis />}
+                                secondary={<Tooltip title={userInfo?.email || ''} autoEllipsis />}
                             />
                         </ListItem>
                         <Divider sx={{ marginBottom: '8px' }} />
