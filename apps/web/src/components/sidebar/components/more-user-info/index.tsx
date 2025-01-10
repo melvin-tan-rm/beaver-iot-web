@@ -17,6 +17,7 @@ import { iotLocalStorage, TOKEN_CACHE_KEY } from '@milesight/shared/src/utils/st
 import { useI18n } from '@milesight/shared/src/hooks';
 
 import Tooltip from '@/components/tooltip';
+import { useUserStore } from '@/stores';
 import { type GlobalAPISchema } from '@/services/http';
 
 function stringToColor(string: string) {
@@ -62,6 +63,7 @@ const MoreUserInfo: React.FC<MoreUserInfoProps> = props => {
 
     const navigate = useNavigate();
     const { getIntlText } = useI18n();
+    const { setUserInfo } = useUserStore();
 
     return (
         <PopupState variant="popover" popupId="user-info-menu">
@@ -94,6 +96,7 @@ const MoreUserInfo: React.FC<MoreUserInfoProps> = props => {
                                 state.close();
 
                                 /** Sign out logic */
+                                setUserInfo(null);
                                 iotLocalStorage.removeItem(TOKEN_CACHE_KEY);
                                 navigate('/auth/login');
                             }}

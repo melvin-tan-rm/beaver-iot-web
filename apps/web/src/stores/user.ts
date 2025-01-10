@@ -13,7 +13,7 @@ interface UserStore {
      *
      * @param userInfo 用户信息
      */
-    setUserInfo: (userInfo: UserStore['userInfo']) => void;
+    setUserInfo: (userInfo: UserStore['userInfo'] | null) => void;
 }
 
 const useUserStore = create(
