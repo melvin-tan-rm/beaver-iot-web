@@ -32,6 +32,7 @@ const View = (props: Props) => {
             exchange: data,
         } as CallServiceType);
         if (!error) {
+            setVisible(false);
             toast.success({
                 key: 'callService',
                 container: mainRef.current,
