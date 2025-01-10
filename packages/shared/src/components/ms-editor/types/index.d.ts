@@ -26,6 +26,8 @@ export interface IEditorProps {
     extraToolbar?: React.ReactNode;
     /** the editor state change callbacks */
     onChange?: (editorState: EditorState, editor: LexicalEditor, tags: Set<string>) => void;
+    /** enable table functions */
+    enableTable?: boolean;
 }
 export interface EditorConfig {
     /** toolbar config */

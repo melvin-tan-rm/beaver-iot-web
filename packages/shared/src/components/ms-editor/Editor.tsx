@@ -28,6 +28,7 @@ export const LexicalEditor = forwardRef<EditorHandlers, IEditorProps>((props, re
         autoFocus,
         renderToolbar,
         extraToolbar,
+        enableTable = false,
         onChange,
     } = props;
     const { toolbar = true, plugin } = editorConfig || {};
@@ -61,6 +62,7 @@ export const LexicalEditor = forwardRef<EditorHandlers, IEditorProps>((props, re
                     editorConfig={editorConfig}
                     renderOperator={renderOperator}
                     extraToolbar={extraToolbar}
+                    enableTable={enableTable}
                 />
             )}
 
@@ -82,8 +84,8 @@ export const LexicalEditor = forwardRef<EditorHandlers, IEditorProps>((props, re
                 {/* { lexical editor state on change callbacks } */}
                 <OnChangePlugin onChange={(...args) => onChange?.(...args)} />
 
-                <TablePlugin />
-                {floatingAnchorElem && (
+                {enableTable && <TablePlugin />}
+                {enableTable && floatingAnchorElem && (
                     <>
                         <TableHoverActionsPlugin
                             anchorElem={floatingAnchorElem!}
@@ -95,7 +97,7 @@ export const LexicalEditor = forwardRef<EditorHandlers, IEditorProps>((props, re
                         />
                     </>
                 )}
-                <TableActionMenuPlugin plugins={tablePlugin} />
+                {enableTable && <TableActionMenuPlugin plugins={tablePlugin} />}
             </div>
         </div>
     );
@@ -103,7 +105,7 @@ export const LexicalEditor = forwardRef<EditorHandlers, IEditorProps>((props, re
 
 export default React.memo(
     forwardRef<EditorHandlers, IEditorProps>((props, ref) => {
-        const editorConfigure = useEditConfigure();
+        const editorConfigure = useEditConfigure(props);
 
         return (
             <LexicalComposer initialConfig={editorConfigure}>

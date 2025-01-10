@@ -19,6 +19,7 @@ type IProps = Pick<
     | 'editorConfig'
     | 'renderOperator'
     | 'extraToolbar'
+    | 'enableTable'
 >;
 const Divider = () => <div className="ms-toolbar__divider" />;
 export default function ToolbarPlugin({
@@ -30,6 +31,7 @@ export default function ToolbarPlugin({
     onCancel,
     renderOperator,
     extraToolbar,
+    enableTable,
 }: IProps) {
     const { getIntlText } = useI18n();
     const [editor] = useLexicalComposerContext();
@@ -66,7 +68,7 @@ export default function ToolbarPlugin({
         // Change current read-only/edit
         onEditableChange?.(!isEditable);
     };
-    const ToolbarGroup = useGroup({ editorConfig });
+    const ToolbarGroup = useGroup({ editorConfig, enableTable });
 
     const saveBtnNode = (
         <Stack

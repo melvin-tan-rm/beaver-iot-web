@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 import { FontSize, FontColor, TextFormat, TextAlign, TablePart, BlockFormat } from '../components';
 import type { IEditorProps, TextAlignItemConfig, TextFormatItemConfig } from '../../../types';
 
-type IProps = Pick<IEditorProps, 'editorConfig'>;
-export const useGroup = ({ editorConfig }: IProps) => {
+type IProps = Pick<IEditorProps, 'editorConfig' | 'enableTable'>;
+export const useGroup = ({ editorConfig, enableTable = false }: IProps) => {
     const groupList = useMemo(() => {
         return [
             {
@@ -38,12 +38,16 @@ export const useGroup = ({ editorConfig }: IProps) => {
                     });
                 },
             },
-            {
-                type: 'table',
-                Component: TablePart,
-            },
+            ...(enableTable
+                ? [
+                      {
+                          type: 'table',
+                          Component: TablePart,
+                      },
+                  ]
+                : []),
         ];
-    }, []);
+    }, [enableTable]);
 
     return useMemo(() => {
         const { toolbar = true } = editorConfig || {};
