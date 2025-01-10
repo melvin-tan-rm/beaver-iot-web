@@ -6,6 +6,8 @@ import { useI18n } from '@milesight/shared/src/hooks';
 import { TextField } from '@mui/material';
 import { KeyboardArrowDownIcon, MuiSelect } from '@milesight/shared/src/components';
 
+import { PasswordInput } from '@/components';
+
 import styles from './style.module.less';
 
 export enum SmtpEncryptionMethod {
@@ -33,7 +35,7 @@ export interface SmtpFormProps {
 export interface ItemProps {
     name: keyof SmtpProps;
     label: string;
-    type: 'TextField' | 'Select';
+    type: 'TextField' | 'Select' | 'Password';
 }
 
 export const defaultSmtpValue: SmtpProps = {
@@ -103,6 +105,19 @@ const SmtpForm: React.FC<SmtpFormProps> = props => {
                         }}
                     />
                 );
+            case 'Password':
+                return (
+                    <PasswordInput
+                        required
+                        fullWidth
+                        autoComplete="new-password"
+                        label={label}
+                        value={getValue(name)}
+                        onChange={e => {
+                            setValue(name, e.target.value);
+                        }}
+                    />
+                );
             case 'Select':
                 return (
                     <MuiSelect
@@ -149,7 +164,7 @@ const SmtpForm: React.FC<SmtpFormProps> = props => {
             {
                 label: getIntlText('workflow.email.label_smtp_config_password'),
                 name: 'password',
-                type: 'TextField',
+                type: 'Password',
             },
             {
                 label: getIntlText('workflow.email.label_smtp_config_encryption_method'),

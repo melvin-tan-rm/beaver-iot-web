@@ -54,7 +54,7 @@ const PreviousNodeSelect: React.FC<PreviousNodeSelectProps> = props => {
                 }}
                 sx={{
                     '& .MuiList-root': {
-                        minWidth: 230,
+                        width: 230,
                     },
                 }}
             >
