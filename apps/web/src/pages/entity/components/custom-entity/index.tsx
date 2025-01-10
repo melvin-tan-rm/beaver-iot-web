@@ -185,9 +185,6 @@ export default () => {
                 toolbarRender={toolbarRender}
                 onPaginationModelChange={setPaginationModel}
                 onRowSelectionModelChange={setSelectedIds}
-                onRowDoubleClick={({ row }) => {
-                    navigate(`/device/detail/${row.entityId}`, { state: row });
-                }}
                 onSearch={setKeyword}
                 onRefreshButtonClick={getList}
             />

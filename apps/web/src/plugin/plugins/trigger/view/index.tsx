@@ -64,10 +64,11 @@ const View = (props: Props) => {
         });
         const entityType = config?.entity?.rawData?.entityType;
         if (!error) {
-            const children =
-                res?.filter((childrenItem: EntityData) => {
-                    return childrenItem.entity_access_mod.indexOf('W') > -1;
-                }) || [];
+            const children = res?.length
+                ? res?.filter((childrenItem: EntityData) => {
+                      return childrenItem?.entity_access_mod?.indexOf('W') > -1;
+                  }) || []
+                : [];
             if (children?.length) {
                 setEntities(
                     children.map((item: EntityData, index: number) => {
