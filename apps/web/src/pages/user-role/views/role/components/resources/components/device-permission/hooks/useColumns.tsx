@@ -60,8 +60,9 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
             {
                 field: '$operation',
                 headerName: getIntlText('common.label.operation'),
-                flex: 2,
-                minWidth: 100,
+                width: 100,
+                align: 'left',
+                headerAlign: 'left',
                 renderCell({ row }) {
                     const isDisabledRemove = Boolean(row?.roleIntegration);
                     const tip = isDisabledRemove
