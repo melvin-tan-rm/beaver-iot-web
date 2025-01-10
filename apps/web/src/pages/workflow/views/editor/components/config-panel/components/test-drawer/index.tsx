@@ -26,6 +26,7 @@ import { CodeEditor, Tooltip } from '@/components';
 import { workflowAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import useFlowStore from '../../../../store';
 import { isRefParamKey } from '../../../../helper';
+import { PARAM_REFERENCE_PATTERN_STRING } from '../../../../constants';
 import EmailContent from '../email-content';
 import './style.less';
 
@@ -106,7 +107,10 @@ const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
         const inputArgs = pick(parameters, testInputKeys);
 
         if (testInputKeys.length === 1 && testInputKeysMap[testInputKeys[0]].type === 'string') {
-            return inputArgs[testInputKeys[0]] || '';
+            const originalValue = inputArgs[testInputKeys[0]];
+            const regexp = new RegExp(PARAM_REFERENCE_PATTERN_STRING, 'g');
+
+            return originalValue?.replace(regexp, '') || '';
         }
         if (isEmpty(inputArgs)) return result;
 
