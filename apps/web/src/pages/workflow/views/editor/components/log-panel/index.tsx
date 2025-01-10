@@ -51,7 +51,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
             'setNodesDataValidResult',
         ]),
     );
-    const { updateNodesStatus, checkWorkflowValid } = useWorkflow();
+    const { updateNodesStatus, checkWorkflowValid, getEntityDetail } = useWorkflow();
     const title = useMemo(() => {
         switch (logPanelMode) {
             case 'testRun':
@@ -129,7 +129,23 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
 
                 if (!inputArgs) return result;
                 inputArgs.forEach((key: string) => {
-                    result[key] = genRandomString(8, { lowerCase: true });
+                    const detail = getEntityDetail(key);
+
+                    switch (detail?.entity_value_type) {
+                        case 'BOOLEAN': {
+                            result[key] = Math.random() > 0.5;
+                            break;
+                        }
+                        case 'LONG':
+                        case 'DOUBLE': {
+                            result[key] = Math.floor(Math.random() * 100);
+                            break;
+                        }
+                        default: {
+                            result[key] = genRandomString(8, { lowerCase: true });
+                            break;
+                        }
+                    }
                 });
                 break;
             }
@@ -139,7 +155,44 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
         }
 
         return result;
-    }, [openLogPanel, isTestRunMode, getNodes]);
+    }, [openLogPanel, isTestRunMode, getNodes, getEntityDetail]);
+
+    const parseInputData = useCallback(
+        (value?: string) => {
+            const nodes = getNodes();
+            const triggerNode = nodes.find(({ type }) => type === 'trigger') as
+                | WorkflowNode<'trigger'>
+                | undefined;
+
+            let result: Record<string, any>;
+            try {
+                result = JSON.parse(value || '{}');
+            } catch (e) {
+                toast.error({ content: getIntlText('common.message.json_format_error') });
+                return;
+            }
+
+            if (triggerNode && !isEmpty(result)) {
+                const { entityConfigs } = triggerNode?.data?.parameters || {};
+                const keyMap = new Map();
+                entityConfigs?.forEach(({ name, identify }) => {
+                    if (!name) return;
+                    keyMap.set(name, identify);
+                });
+
+                Object.keys(result).forEach(key => {
+                    const id = keyMap.get(key);
+
+                    if (!id) return;
+                    result[id] = cloneDeep(result[key]);
+                    delete result[key];
+                });
+            }
+
+            return result;
+        },
+        [getIntlText, getNodes],
+    );
 
     const { run: runFlowTest } = useRequest(
         async (value?: string) => {
@@ -178,20 +231,15 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
                 return;
             }
 
-            setLogDetailLoading(true);
+            const input = parseInputData(value);
 
-            let input: Record<string, any>;
-            try {
-                input = !value ? undefined : JSON.parse(value || '{}');
-            } catch (e) {
-                toast.error({ content: getIntlText('common.message.json_format_error') });
-                return;
-            }
+            if (!input) return;
             const designData = cloneDeep(toObject());
 
             designData.nodes = normalizeNodes(designData.nodes, FROZEN_NODE_PROPERTY_KEYS);
             designData.edges = normalizeEdges(designData.edges);
 
+            setLogDetailLoading(true);
             const [error, resp] = await awaitWrap(
                 workflowAPI.testFlow({ input, design_data: JSON.stringify(designData) }),
             );
@@ -215,7 +263,14 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
         {
             manual: true,
             debounceWait: 300,
-            refreshDeps: [openLogPanel, logPanelMode, isTestRunMode, entryInput, toObject],
+            refreshDeps: [
+                openLogPanel,
+                logPanelMode,
+                isTestRunMode,
+                entryInput,
+                toObject,
+                parseInputData,
+            ],
         },
     );
 
