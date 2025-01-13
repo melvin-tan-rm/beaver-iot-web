@@ -137,6 +137,8 @@ const useInteractions = () => {
             const prevNode = nodes.find(node => node.id === prevNodeId);
             const nextNode = nodes.find(node => node.id === nextNodeId);
             const nodeConfig = basicNodeConfigs[nodeType] || {};
+            const sameTypeNodes = nodes.filter(item => item.type === nodeType);
+            const defaultNodeName = `${getIntlText(nodeConfig.labelIntlKey)}${!sameTypeNodes.length ? '' : ` ${sameTypeNodes.length + 1}`}`;
             const newNode: WorkflowNode = {
                 id: genUuid('node'),
                 type: nodeType,
@@ -145,7 +147,9 @@ const useInteractions = () => {
                     x: 0,
                     y: 0,
                 },
-                data: {},
+                data: {
+                    nodeName: defaultNodeName,
+                },
             };
 
             if (prevNode && nextNode) {
@@ -286,6 +290,7 @@ const useInteractions = () => {
             setNodes,
             setEdges,
             fitView,
+            getIntlText,
             flowToScreenPosition,
             checkParallelLimit,
             checkNestedParallelLimit,
