@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useRef, useState } from 'react';
 import { Panel, useReactFlow } from '@xyflow/react';
 import cls from 'classnames';
-import { isEqual, cloneDeep } from 'lodash-es';
+import { isEqual, isEmpty, cloneDeep } from 'lodash-es';
 import { useThrottleEffect, useDebounceEffect } from 'ahooks';
 import { Stack, IconButton, Divider } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
@@ -10,6 +10,7 @@ import { CloseIcon, PlayArrowIcon, HelpIcon } from '@milesight/shared/src/compon
 import { Tooltip } from '@/components';
 import useFlowStore from '../../store';
 import useWorkflow from '../../hooks/useWorkflow';
+import useValidate from '../../hooks/useValidate';
 import { DEFAULT_VALUES } from './constants';
 import {
     useCommonFormItems,
@@ -31,7 +32,7 @@ interface Props {
  */
 const ConfigPanel: React.FC<Props> = ({ readonly }) => {
     const { getIntlText } = useI18n();
-    const { updateNode, updateNodeData } = useReactFlow();
+    const { getNode, updateNode, updateNodeData } = useReactFlow<WorkflowNode, WorkflowEdge>();
 
     // ---------- Handle Node-related logic ----------
     const { selectedNode, nodeConfigs } = useFlowStore(
@@ -133,6 +134,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
     );
 
     // ---------- Show Test Drawer ----------
+    const { checkNodesData } = useValidate();
     const [drawerOpen, setDrawerOpen] = useState(false);
     useEffect(() => setDrawerOpen(false), [finalSelectedNode]);
 
@@ -168,7 +170,18 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                     <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                         {nodeConfig?.testable && !readonly && (
                             <Tooltip title={getIntlText('workflow.editor.node_test_tip')}>
-                                <IconButton onClick={() => setDrawerOpen(true)}>
+                                <IconButton
+                                    onClick={() => {
+                                        if (!finalSelectedNode) return;
+                                        const node = getNode(finalSelectedNode.id)!;
+                                        const result = checkNodesData([node], {
+                                            validateFirst: true,
+                                        });
+
+                                        if (!isEmpty(result)) return;
+                                        setDrawerOpen(true);
+                                    }}
+                                >
                                     <PlayArrowIcon />
                                 </IconButton>
                             </Tooltip>
