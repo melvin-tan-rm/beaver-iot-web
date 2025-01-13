@@ -108,16 +108,19 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
         const data: Record<string, any> = { nodeName, nodeRemark, ...parameters };
 
         reset(defaultValue);
+        Object.keys(data).forEach(key => {
+            setValue(key, data[key]);
+        });
         /**
          * Since node form items are rendered dynamically, `SetTimeout` is used here to
          * ensure that the initial data is filled in after the rendering is complete.
          */
         setTimeout(() => {
-            Object.keys(data).forEach(key => {
-                setValue(key, data[key]);
-            });
+            // Object.keys(data).forEach(key => {
+            //     setValue(key, data[key]);
+            // });
             formDataInit.current = true;
-        }, 0);
+        }, 100);
     }, [finalSelectedNode, reset, setValue, getValues, clearExcessEdges]);
 
     // Save node data
@@ -126,11 +129,10 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
             if (!openPanel || !finalSelectedNode?.id || !formDataInit.current) return;
             const { nodeName, nodeRemark, ...formData } = latestFormData || {};
 
-            // console.log(finalSelectedNode?.id, { formData });
             updateNodeData(finalSelectedNode.id, { nodeName, nodeRemark, parameters: formData });
         },
         [openPanel, latestFormData, updateNodeData],
-        { wait: 100 },
+        { wait: 50 },
     );
 
     // ---------- Show Test Drawer ----------

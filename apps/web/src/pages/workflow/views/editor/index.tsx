@@ -133,10 +133,16 @@ const WorkflowEditor = () => {
                         const { id: nodeId, data: nodeData } = change.item;
                         const { nodeName, nodeRemark } = nodeData;
                         const node = nodes.find(item => item.id === nodeId);
+                        const {
+                            nodeName: originNodeName,
+                            nodeRemark: originNodeRemark,
+                            parameters: originParameters,
+                        } = node?.data || {};
                         const isEq =
-                            node?.data?.nodeName === nodeName &&
-                            node?.data?.nodeRemark === nodeRemark &&
-                            isEqual(node?.data.parameters, nodeData.parameters);
+                            ((!originNodeName && !nodeName) || originNodeName === nodeName) &&
+                            ((!originNodeRemark && !nodeRemark) ||
+                                originNodeRemark === nodeRemark) &&
+                            isEqual(originParameters, nodeData.parameters);
 
                         return !isEq;
                     }
