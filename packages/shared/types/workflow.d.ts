@@ -327,16 +327,16 @@ declare type WorkflowEdge = ReactFlowEdge<
  * Workflow Schema
  */
 declare type WorkflowSchema = {
-    /** 版本号 */
+    /** Version */
     version: string;
-    /** 名称 */
+    /** Name */
     name: string;
-    /** 描述 */
+    /** Description */
     remark?: string;
-    /** 节点 */
+    /** Nodes */
     nodes: WorkflowNode[];
-    /** 边 */
+    /** Edges */
     edges: WorkflowEdge[];
-    /** 视口 */
+    /** Viewport */
     viewport: ReactFlowViewport;
 };

@@ -1,33 +1,38 @@
 /**
- * 构建时注入的环境变量
+ * Environment variables injected during build
  */
 interface ImportMetaEnv {
     /**
-     * 应用运行的模式
-     * @param development 本地开发环境
-     * @param production  CI 构建环境
+     * Runtime mode of application
+     * @param development development
+     * @param production  production
      */
     readonly MODE: 'development' | 'production';
 
     /**
-     *  部署应用时的基本 URL，有 Vite 配置文件中的 `base` 配置项决定
+     * The basic URL for deploying an application is determined by the `base` config
+     * item in the Vite configuration file
      */
     readonly BASE_URL: string;
 
     /**
-     * 应用是否运行在生产环境
+     * Is running in a production environment
      */
     readonly PROD: boolean;
 
     /**
-     * 应用是否运行在开发环境
+     * Is running in a development environment
      */
     readonly DEV: boolean;
 }
-// 定义一个模块类型
+
+/**
+ * Module Type
+ */
 type ModuleType = {
     [key: string]: () => Promise<any>;
 };
+
 interface ImportMeta {
     readonly env: ImportMetaEnv;
     readonly glob: (pattern: string, options?: Record<string, any>) => ModuleType;
@@ -35,26 +40,26 @@ interface ImportMeta {
 
 interface Window {
     $metaEnv: {
-        /** 构建时间 */
+        /** Build timestamp */
         buildTime?: string | Date;
-        /** 构建时的 Commit Hash */
+        /** The latest commit hash when building */
         latestGitHash?: string;
     };
 }
 
-/** 应用版本 */
+/** App version */
 declare const __APP_VERSION__: string;
-/** 应用接口 Origin */
+/** App API origin */
 declare const __APP_API_ORIGIN__: string;
 /** Websocket Host */
 declare const __APP_WS_HOST__: string;
-/** 应用 OAuth Client ID */
+/** OAuth Client ID */
 declare const __APP_OAUTH_CLIENT_ID__: string;
-/** 应用 OAuth Client Secret */
+/** OAuth Client Secret */
 declare const __APP_OAUTH_CLIENT_SECRET__: string;
-/** 应用打包时间戳 */
+/** Build timestamp */
 declare const __BUILD_TIMESTAMP__: number;
-/** 应用打包分支 */
+/** The branch when building */
 declare const __GIT_BRANCH__: string;
-/** 应用打包时的 commit hash */
+/** The latest commit hash when building */
 declare const __LATEST_COMMIT_HASH__: string;

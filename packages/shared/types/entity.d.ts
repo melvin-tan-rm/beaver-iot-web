@@ -1,21 +1,21 @@
 /**
- * 实体访问模式
- * @param R 只读
- * @param W 只写
- * @param RW 读写
+ * Entity Access Mode
+ * @param R Readonly
+ * @param W Writable
+ * @param RW Readable and writable
  */
 declare type EntityAccessMode = 'R' | 'W' | 'RW';
 
 /**
- * 实体类型
- * @param SERVICE 服务
- * @param PROPERTY 属性
- * @param EVENT 事件
+ * Entity Type
+ * @param SERVICE Service
+ * @param PROPERTY Property
+ * @param EVENT Event
  */
 declare type EntityType = 'SERVICE' | 'PROPERTY' | 'EVENT';
 
 /**
- * 物模型属性数据类型
+ * Entity Value Data Type
  */
 declare type EntityValueDataType =
     | 'STRING'
@@ -27,108 +27,112 @@ declare type EntityValueDataType =
     | 'ENUM';
 
 /**
- * 数据聚合类型
- * @param LAST 最新一条
- * @param MIN 最小值
- * @param MAX 最大值
- * @param AVG 平均值
- * @param SUM 累计值
- * @param COUNT 统计条数
+ * Data Aggregate Type
+ * @param LAST Last
+ * @param MIN Minimum
+ * @param MAX Maximum
+ * @param AVG Average
+ * @param SUM Sum
+ * @param COUNT Count
  */
 declare type DataAggregateType = 'LAST' | 'MIN' | 'MAX' | 'AVG' | 'SUM' | 'COUNT';
 
 /**
- * 实体数据模型
+ * Entity Data Model
  */
 declare interface EntitySchema {
-    /** 实体 ID */
+    /** Entity ID */
     id: ApiKey;
 
-    /** 实体 Key */
+    /** Entity Key */
     key: ApiKey;
 
-    /** 实体名称 */
+    /** Entity Name */
     name: string;
 
-    /** 实体类型 */
+    /** Entity Type */
     type: EntityType;
 
-    /** 访问模式 */
+    /** Access mode */
     access_mod: EntityAccessMode;
 
-    /** 是否同步调用服务 */
+    /** Whether to synchronously call the service */
     sync_call: boolean;
 
-    /** 父节点 ID */
+    /** Parent ID */
     parent_id: ApiKey;
 
-    /** 隶属对象 */
+    /** Attach Target */
     attach_target: string;
 
-    /** 隶属对象 ID */
+    /** Attach Target ID */
     attach_target_id: ApiKey;
 
-    /** 实体值属性 */
+    /** Value Attribute */
     value_attribute: any;
 
-    /** 实体值类型 */
+    /** Value Type */
     value_type: string;
 
-    /** 创建时间 */
+    /** Creation Time (ms) */
     create_at: number;
 
-    /** 更新时间 */
+    /** Update Time (ms) */
     update_at: number;
 }
 
-/** 实体属性类型 */
+/**
+ * Entity Value Attribute Type
+ */
 declare interface EntityValueAttributeType {
-    /** 单位 */
+    /** Unit */
     unit: string;
-    /** 最大值 */
+    /** Maximum */
     max: number;
-    /** 最小值 */
+    /** Minimum */
     min: number;
-    /** 最大长度 */
+    /** Max Length */
     max_length: number;
-    /** 最小长度 */
+    /** Min Length */
     min_length: number;
-    /** 枚举 */
+    /** Enums */
     enum: Record<string, string>;
-    /** 格式 */
+    /** Format */
     format: string;
-    /** 精度 */
+    /** Fraction Digits */
     fraction_digits: number;
 }
 
-/** 实体数据 */
+/**
+ * Entity Data
+ */
 declare interface EntityData {
-    /** 实体 id */
+    /** Entity ID */
     entity_id: ApiKey;
-    /** 设备名称 */
+    /** Device Name */
     device_name: string;
-    /** 集成名称 */
+    /** Integration Name */
     integration_name: string;
-    /** 实体key */
+    /** Entity Key */
     entity_key: string;
-    /** 实体名称 */
+    /** Entity Name */
     entity_name: string;
     /** Entity Type */
     entity_type: EntityType;
-    /** 实体值属性 */
+    /** Entity Value Attribute */
     entity_value_attribute: Record<string, any>;
-    /** 实体值类型 */
+    /** Entity Value Type */
     entity_value_type: EntityValueDataType;
-    /** 实体属性访问类型 */
+    /** Entity Access Mode */
     entity_access_mod: EntityAccessMode;
-    /** 唯一表示 */
+    /** Identifier */
     identifier: string;
-    /** 父实体名称 */
+    /** Entity Parent Name */
     entity_parent_name?: string;
 }
 
 /**
- * 实体历史数据
+ * Entity History Data
  */
 declare interface EntityHistoryData {
     value: any;

@@ -1,16 +1,16 @@
 /**
- * 应用类型
- * @param web Web 应用
+ * App type
+ * @param web Web Application
  */
 type AppType = 'web';
 
 /**
- * 请求参数通用 key 类型（通常用于 id, key 等字段）
+ * Universal key type (Usually used for fields such as `id`, `key`, etc.)
  */
 declare type ApiKey = string | number;
 
 /**
- * 接口返回的通用数据结构类型
+ * Common API response type
  */
 declare type ApiResponse<T = any> = {
     data: T;
@@ -22,7 +22,7 @@ declare type ApiResponse<T = any> = {
 };
 
 /**
- * API 基础类型定义
+ * API basic type definition
  */
 declare type APISchema = Record<
     string,
@@ -33,14 +33,14 @@ declare type APISchema = Record<
 >;
 
 /**
- * 数据排序类型
- * @param ASC 升序
- * @param DESC 降序
+ * Data sort type
+ * @param ASC ascending order
+ * @param DESC descending order
  */
 declare type SortType = 'ASC' | 'DESC';
 
 /**
- * 数据排序属性
+ * Data sort props
  */
 declare type SortsProps = {
     property?: string | number;
@@ -48,56 +48,56 @@ declare type SortsProps = {
 };
 
 /**
- * 查询接口请求参数数据结构
+ * Request data type for search API
  */
 declare type SearchRequestType = {
-    /** 单页数据量 */
+    /** Data count in single page */
     page_size?: number | null;
 
-    /** 分页页码 */
+    /** Page number */
     page_number?: number | null;
 
-    /** 排序字段 */
+    /** Data sort props */
     sorts?: SortsProps[];
 };
 
 /**
- * 查询接口响应数据结构
+ * Response data type for search API
  */
 declare type SearchResponseType<T = any[]> = {
-    /** 单页数据量 */
+    /** Data count in single page */
     page_size: number;
-    /** 分页页码 */
+    /** Page number */
     page_number: number;
-    /** 数据总量 */
+    /** total number */
     total: number;
-    /** 分页列表数据 */
+    /** Paging list data */
     content: T;
 };
 
 /**
- * 将类型 T 中的部分字段映射为可选字段，其他字段保持原样
+ * Map some fields in type T to optional fields, while keeping the other fields as they are
  */
 declare type PartialOptional<T, K extends keyof T> = Omit<T, K> & {
     [P in K]?: T[P];
 };
 
 /**
- * 将类型 T 中的部分字段映射为必填字段，其他字段保持原样
+ * Map some fields in type T to mandatory fields, while keeping the other fields as they are
  */
 declare type RequiredOptional<T, K extends keyof T> = Omit<T, K> & {
     [P in K]-?: T[P];
 };
 
 /**
- * 将下划线转为驼峰命名
+ * Convert underline to camel hump naming
  * @deprecated
  */
 declare type SnakeToCamelCase<S extends string> = S extends `${infer T}_${infer U}`
     ? `${T}${Capitalize<SnakeToCamelCase<U>>}`
     : S;
 /**
- * 递归将对象中的所有属性名从下划线命名转换为驼峰命名
+ * Recursive conversion of all attribute names in an object from underline naming to camel hump naming
  * @deprecated
  */
 declare type ConvertKeysToCamelCase<T> = {
@@ -107,7 +107,7 @@ declare type ConvertKeysToCamelCase<T> = {
 };
 
 /**
- * 将字符串类型从下划线命名转换为驼峰命名
+ * Convert string type from underline naming to camel hump naming
  */
 declare type ToCamelCase<S extends string | number | symbol> = S extends string
     ? S extends `${infer Head}_${infer Tail}`
@@ -116,7 +116,8 @@ declare type ToCamelCase<S extends string | number | symbol> = S extends string
     : never;
 
 /**
- * 递归将对象中的所有属性名从下划线命名转换为驼峰命名
+ * Recursive conversion of all attribute names in an object from
+ * underline naming to camel hump naming
  */
 declare type ObjectToCamelCase<T extends object | undefined | null> = T extends undefined
     ? undefined
@@ -150,7 +151,7 @@ declare interface OptionsProps<T extends string | number = string | number> {
 }
 
 /**
- * forwardRef 定义 Hack
+ * forwardRef definition hack
  *
  * Inspired by: https://fettblog.eu/typescript-react-generic-forward-refs/
  */
