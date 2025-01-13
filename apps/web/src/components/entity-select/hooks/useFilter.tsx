@@ -54,6 +54,7 @@ export const useFilter = (props: FilterParameters & { hasFilterParams: boolean }
         },
         {
             refreshDeps: [entityType, entityAccessMod, excludeChildren, entityValueType],
+            debounceWait: 300,
         },
     );
 
