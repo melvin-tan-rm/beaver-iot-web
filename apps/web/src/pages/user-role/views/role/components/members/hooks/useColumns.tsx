@@ -41,6 +41,7 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 field: '$operation',
                 headerName: getIntlText('common.label.operation'),
                 width: 100,
+                display: 'flex',
                 align: 'left',
                 headerAlign: 'left',
                 renderCell({ row }) {
