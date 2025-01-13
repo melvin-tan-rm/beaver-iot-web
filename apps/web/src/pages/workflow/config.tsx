@@ -230,11 +230,11 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         category: 'external',
         testInputKeys: [
             {
-                key: 'payload',
+                key: 'inputArguments',
                 type: 'object',
             },
         ],
-        outputKeys: ['payload'],
+        outputKeys: ['inputArguments'],
     },
 };
 
