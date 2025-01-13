@@ -25,6 +25,7 @@ import {
 import { CodeEditor, Tooltip } from '@/components';
 import { workflowAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import useFlowStore from '../../../../store';
+import useWorkflow from '../../../../hooks/useWorkflow';
 import { isRefParamKey } from '../../../../helper';
 import { PARAM_REFERENCE_PATTERN_STRING } from '../../../../constants';
 import EmailContent from '../email-content';
@@ -96,6 +97,7 @@ const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
     }, [nodeConfig]);
 
     // ---------- Generate Demo Data ----------
+    const { getReferenceParamDetail } = useWorkflow();
     const [inputData, setInputData] = useState('');
     const genDemoData = useCallback(() => {
         if (!open || !nodeId || !nodeConfig) return;
@@ -133,10 +135,29 @@ const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
                     }
                     Object.entries(data).forEach(([key, value]) => {
                         if (!key) return;
-                        result[key] =
-                            value && !isRefParamKey(value as string)
-                                ? value
-                                : genRandomString(8, { lowerCase: true });
+                        if (!isRefParamKey(value as string)) {
+                            result[key] = value || genRandomString(8, { lowerCase: true });
+                            return;
+                        }
+
+                        const detail = getReferenceParamDetail(value as string);
+                        const valueType = detail?.valueType;
+
+                        switch (valueType) {
+                            case 'BOOLEAN': {
+                                result[key] = Math.random() > 0.5;
+                                break;
+                            }
+                            case 'LONG':
+                            case 'DOUBLE': {
+                                result[key] = Math.floor(Math.random() * 100);
+                                break;
+                            }
+                            default: {
+                                result[key] = genRandomString(8, { lowerCase: true });
+                                break;
+                            }
+                        }
                     });
                     break;
                 }
@@ -148,7 +169,7 @@ const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
         });
 
         return result;
-    }, [open, nodeId, nodeConfig, testInputKeysMap, getNode]);
+    }, [open, nodeId, nodeConfig, testInputKeysMap, getNode, getReferenceParamDetail]);
 
     // ---------- Run Test ----------
     const hasInput = nodeConfig?.testable && !!nodeConfig.testInputKeys?.length;
