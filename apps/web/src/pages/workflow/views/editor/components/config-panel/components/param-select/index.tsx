@@ -35,7 +35,10 @@ const ParamSelect: React.FC<ParamSelectProps> = ({ label, required, disabled, ..
 
                 return [
                     <ListSubheader className="ms-param-select-option-groupname" key={item.nodeId}>
-                        {item.nodeType}
+                        <Tooltip
+                            autoEllipsis
+                            title={`${item.nodeName || item.nodeId} (${item.nodeLabel})`}
+                        />
                     </ListSubheader>,
                     item.outputs.map(output => (
                         <MenuItem

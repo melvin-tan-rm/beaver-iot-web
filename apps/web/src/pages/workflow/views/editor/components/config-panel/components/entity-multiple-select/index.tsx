@@ -1,5 +1,5 @@
 import { memo, useEffect, useLayoutEffect } from 'react';
-import { Button, IconButton, type SelectProps } from '@mui/material';
+import { Button, IconButton } from '@mui/material';
 import { isEqual } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -9,7 +9,7 @@ import './style.less';
 
 export type EntityMultipleSelectValueType = ApiKey;
 
-export interface EntityFilterSelectProps {
+export interface EntityMultipleSelectProps {
     required?: boolean;
     disabled?: boolean;
     multiple?: boolean;
@@ -18,8 +18,7 @@ export interface EntityFilterSelectProps {
     defaultValue?: EntityMultipleSelectValueType[];
     value?: EntityMultipleSelectValueType[];
     onChange?: (value: EntityMultipleSelectValueType[]) => void;
-    typeSelectProps?: SelectProps;
-    entitySelectProps?: EntitySelectProps;
+    filterModel?: EntitySelectProps['filterModel'];
 }
 
 const MAX_VALUE_LENGTH = 10;
@@ -27,14 +26,13 @@ const MAX_VALUE_LENGTH = 10;
 /**
  * Entity Filter Select Component
  */
-const EntityMultipleSelect: React.FC<EntityFilterSelectProps> = ({
+const EntityMultipleSelect: React.FC<EntityMultipleSelectProps> = ({
     required,
     disabled,
     multiple = true,
     error,
     helperText,
-    typeSelectProps,
-    entitySelectProps,
+    filterModel,
     ...props
 }) => {
     const { getIntlText } = useI18n();
@@ -57,35 +55,12 @@ const EntityMultipleSelect: React.FC<EntityFilterSelectProps> = ({
         <div className="ms-entity-filter-select">
             {list.map((item, index) => (
                 <div className="ms-entity-filter-select-item" key={getKey(index) || index}>
-                    {/* <FormControl required={required} disabled={disabled}>
-                        <InputLabel id="entity-filter-select-type-label">
-                            {typeSelectProps?.label || getIntlText('common.label.type')}
-                        </InputLabel>
-                        <Select<EntityType>
-                            notched
-                            labelId="entity-filter-select-type-label"
-                            label={typeSelectProps?.label || getIntlText('common.label.type')}
-                            IconComponent={KeyboardArrowDownIcon}
-                            value={item.entityType || ''}
-                            onChange={e =>
-                                replace(index, {
-                                    ...item,
-                                    entityType: e.target.value as EntityType,
-                                })
-                            }
-                        >
-                            {entityTypes.map(type => (
-                                <MenuItem key={type} value={type}>
-                                    {type}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl> */}
                     <EntitySelect
                         label=""
                         placeholder={getIntlText('common.label.entity')}
                         required={required}
                         disabled={disabled}
+                        filterModel={filterModel}
                         value={item}
                         onChange={value => {
                             replace(index, value);

@@ -4,7 +4,7 @@ import { isEqual } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { DeleteOutlineIcon, AddIcon } from '@milesight/shared/src/components';
-import EntitySelect from '../entity-select';
+import EntitySelect, { type EntitySelectProps } from '../entity-select';
 import ParamInputSelect from '../param-input-select';
 import './style.less';
 
@@ -22,6 +22,7 @@ export interface EntityAssignSelectProps {
     value?: EntityAssignInputValueType;
     defaultValue?: EntityAssignInputValueType;
     onChange?: (value: EntityAssignInputValueType) => void;
+    filterModel?: EntitySelectProps['filterModel'];
 }
 
 const MAX_VALUE_LENGTH = 10;
@@ -43,6 +44,7 @@ const EntityAssignSelect: React.FC<EntityAssignSelectProps> = ({
     label,
     required = true,
     multiple = true,
+    filterModel,
     ...props
 }) => {
     const { getIntlText } = useI18n();
@@ -65,6 +67,7 @@ const EntityAssignSelect: React.FC<EntityAssignSelectProps> = ({
             {list.map((item, index) => (
                 <div className="ms-entity-assign-select-item" key={getKey(index)}>
                     <EntitySelect
+                        filterModel={filterModel}
                         value={item?.[0] || ''}
                         onChange={value => {
                             replace(index, [`${value || ''}`, item?.[1] || '']);

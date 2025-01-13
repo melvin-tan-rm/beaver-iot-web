@@ -1,6 +1,9 @@
 export { default as CodeEditor } from './code-editor';
 export { default as ConditionsInput } from './conditions-input';
-export { default as EntityAssignSelect } from './entity-assign-select';
+export {
+    default as EntityAssignSelect,
+    type EntityAssignSelectProps,
+} from './entity-assign-select';
 export {
     default as EntitySelect,
     type EntitySelectProps,
@@ -13,6 +16,7 @@ export { default as ParamInputSelect, type ParamInputSelectProps } from './param
 export { default as TimerInput } from './timer-input';
 export {
     default as EntityMultipleSelect,
+    type EntityMultipleSelectProps,
     type EntityMultipleSelectValueType,
 } from './entity-multiple-select';
 export { default as ParamAssignInput, type ParamAssignInputValueType } from './param-assign-input';

@@ -26,6 +26,8 @@ import {
     ServiceParamAssignInput,
     EmailSendSource,
     EmailRecipients,
+    type EntityAssignSelectProps,
+    type EntityMultipleSelectProps,
 } from '../components';
 
 type NodeFormGroupType = {
@@ -50,6 +52,16 @@ interface Props {
     readonly?: boolean;
     nodeType?: WorkflowNodeType;
 }
+
+const selectNodeEntityFilterModel: EntityMultipleSelectProps['filterModel'] = {
+    type: ['PROPERTY'],
+    accessMode: ['R', 'RW'],
+};
+
+const assignerNodeEntityFilterModel: EntityAssignSelectProps['filterModel'] = {
+    type: ['PROPERTY'],
+    accessMode: ['W', 'RW'],
+};
 
 const useNodeFormItems = ({ nodeType, readonly }: Props) => {
     const nodeConfigs = useFlowStore(state => state.nodeConfigs);
@@ -158,15 +170,33 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
                             }
                             case 'entityMultipleSelect': {
                                 formItem.render = ({ field: { onChange, value } }) => {
+                                    const filterModel =
+                                        nodeType !== 'select'
+                                            ? undefined
+                                            : selectNodeEntityFilterModel;
                                     return (
-                                        <EntityMultipleSelect value={value} onChange={onChange} />
+                                        <EntityMultipleSelect
+                                            filterModel={filterModel}
+                                            value={value}
+                                            onChange={onChange}
+                                        />
                                     );
                                 };
                                 break;
                             }
                             case 'entityAssignSelect': {
                                 formItem.render = ({ field: { onChange, value } }) => {
-                                    return <EntityAssignSelect value={value} onChange={onChange} />;
+                                    const filterModel =
+                                        nodeType !== 'assigner'
+                                            ? undefined
+                                            : assignerNodeEntityFilterModel;
+                                    return (
+                                        <EntityAssignSelect
+                                            filterModel={filterModel}
+                                            value={value}
+                                            onChange={onChange}
+                                        />
+                                    );
                                 };
                                 break;
                             }

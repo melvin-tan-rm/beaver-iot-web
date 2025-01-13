@@ -6,7 +6,7 @@ import { HelpIcon } from '@milesight/shared/src/components';
 import { useEntityApi } from '@/plugin/hooks';
 import { Tooltip, Empty, useEntityStore } from '@/components';
 import ParamInputSelect from '../param-input-select';
-import EntitySelect from '../entity-select';
+import EntitySelect, { type EntityFilterParams } from '../entity-select';
 import './style.less';
 
 type InputParamListType = {
@@ -33,22 +33,19 @@ type ServiceParamAssignInputProps = {
     value?: ServiceParamAssignInputValueType;
     defaultValue?: ServiceParamAssignInputValueType;
     onChange?: (value: ServiceParamAssignInputValueType) => void;
+    filterModel?: EntityFilterParams;
 };
 
 const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
     required,
     disabled,
     helperText,
+    filterModel = { type: ['SERVICE'], excludeChildren: true },
     ...props
 }) => {
     const { getIntlText } = useI18n();
     const [innerValue, setInnerValue] =
         useControllableValue<ServiceParamAssignInputValueType>(props);
-    const filterModel = useMemo(() => {
-        return {
-            type: 'SERVICE' as EntityType,
-        };
-    }, []);
 
     const handleEntityChange = useCallback(
         (key?: ApiKey) => {

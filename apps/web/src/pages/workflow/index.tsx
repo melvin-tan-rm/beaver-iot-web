@@ -55,10 +55,7 @@ const Workflow = () => {
             );
             const data = getResponseData(resp);
 
-            // console.log({ error, resp });
             if (error || !data || !isRequestSuccess(resp)) return;
-
-            console.log('data ? ', data);
             return objectToCamelCase(data);
         },
         {
