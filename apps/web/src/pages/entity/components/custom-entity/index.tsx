@@ -49,12 +49,6 @@ export default () => {
                     page_number: page + 1,
                     customized: true,
                     entity_type: [ENTITY_TYPE.PROPERTY],
-                    sorts: [
-                        {
-                            direction: 'ASC',
-                            property: 'key',
-                        },
-                    ],
                 }),
             );
             const data = getResponseData(resp);

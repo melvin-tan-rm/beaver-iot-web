@@ -51,6 +51,12 @@ export default () => {
                     keyword,
                     page_size: pageSize,
                     page_number: page + 1,
+                    sorts: [
+                        {
+                            direction: 'ASC',
+                            property: 'key',
+                        },
+                    ],
                 }),
             );
             const data = getResponseData(resp);
