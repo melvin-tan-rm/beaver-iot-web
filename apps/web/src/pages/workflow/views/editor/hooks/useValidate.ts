@@ -144,24 +144,21 @@ const useValidate = () => {
             // Check listener.entities, select.entities
             'listener.entities': entitiesChecker,
             'select.entities': entitiesChecker,
-            'trigger.entityConfigs': {
-                checkRequired(
-                    value?: NonNullable<TriggerNodeDataType['parameters']>['entityConfigs'],
-                    fieldName?: string,
-                ) {
-                    if (
-                        value?.length &&
-                        value.every(item => Object.values(item).every(it => !!it))
-                    ) {
-                        return true;
-                    }
-                    const message = getIntlText(ErrorIntlKey.required, { 1: fieldName });
-                    return message;
-                },
-                // checkType(value, fieldName) {
-                //     return true;
-                // },
-            },
+            // 'trigger.entityConfigs': {
+            //     checkRequired(
+            //         value?: NonNullable<TriggerNodeDataType['parameters']>['entityConfigs'],
+            //         fieldName?: string,
+            //     ) {
+            //         if (
+            //             value?.length &&
+            //             value.every(item => Object.values(item).every(it => !!it))
+            //         ) {
+            //             return true;
+            //         }
+            //         const message = getIntlText(ErrorIntlKey.required, { 1: fieldName });
+            //         return message;
+            //     },
+            // },
             'timer.timerSettings': {
                 checkRequired(
                     value?: NonNullable<TimerNodeDataType['parameters']>['timerSettings'],
