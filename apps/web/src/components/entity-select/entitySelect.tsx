@@ -55,6 +55,7 @@ const EntitySelect = <
         onChange,
         entityOptionMap,
         getOptionValue,
+        onSearch,
     });
 
     /**
