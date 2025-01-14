@@ -36,14 +36,14 @@ const useEntityColumns = <T extends TableRowDataType>({ onButtonClick }: UseColu
                 field: 'entityName',
                 headerName: getIntlText('device.label.param_entity_name'),
                 flex: 1,
-                minWidth: 150,
+                minWidth: 250,
                 ellipsis: true,
             },
             {
                 field: 'entityKey',
                 headerName: getIntlText('device.label.param_entity_id'),
                 flex: 1,
-                minWidth: 200,
+                minWidth: 300,
                 ellipsis: true,
             },
             {

@@ -28,8 +28,8 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
             {
                 field: 'name',
                 headerName: getIntlText('device.label.param_device_name'),
-                flex: 1,
-                minWidth: 150,
+                flex: 2,
+                minWidth: 350,
                 ellipsis: true,
                 // disableColumnMenu: false,
             },
@@ -37,7 +37,7 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 field: 'createdAt',
                 headerName: getIntlText('common.label.create_time'),
                 flex: 1,
-                minWidth: 150,
+                minWidth: 200,
                 ellipsis: true,
                 renderCell({ value }) {
                     return getTimeFormat(value);
@@ -47,8 +47,8 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 field: 'integrationName',
                 headerName: getIntlText('device.label.param_source'),
                 ellipsis: true,
-                flex: 2,
-                minWidth: 200,
+                flex: 1,
+                minWidth: 300,
             },
             {
                 field: '$operation',

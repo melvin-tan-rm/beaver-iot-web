@@ -36,21 +36,21 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 field: 'entityName',
                 headerName: getIntlText('device.label.param_entity_name'),
                 flex: 1,
-                minWidth: 150,
+                minWidth: 250,
                 ellipsis: true,
             },
             {
                 field: 'entityKey',
                 headerName: getIntlText('device.label.param_entity_id'),
                 flex: 1,
-                minWidth: 150,
+                minWidth: 300,
                 ellipsis: true,
             },
             {
                 field: 'entityType',
                 headerName: getIntlText('common.label.type'),
                 flex: 1,
-                minWidth: 150,
+                minWidth: 200,
                 renderCell({ value }) {
                     return (
                         <Chip
@@ -68,14 +68,14 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 align: 'left',
                 headerAlign: 'left',
                 flex: 1,
-                minWidth: 150,
+                minWidth: 200,
                 ellipsis: true,
             },
             {
                 field: 'entityCreatedAt',
                 headerName: getIntlText('common.label.create_time'),
                 flex: 1,
-                minWidth: 150,
+                minWidth: 200,
                 ellipsis: true,
                 renderCell({ value }) {
                     if (!value) {
