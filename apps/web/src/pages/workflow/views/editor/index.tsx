@@ -319,7 +319,9 @@ const WorkflowEditor = () => {
                 const newEdges = normalizeEdges(edges);
 
                 if (!checkWorkflowValid(newNodes, newEdges)) return;
+                const selectedNode = nodes.find(node => node.selected);
 
+                if (selectedNode) updateNode(selectedNode.id, { selected: false });
                 setEditorFlowData(JSON.stringify({ nodes: newNodes, edges: newEdges }, null, 2));
             } else if (mode === 'canvas') {
                 let data: Pick<WorkflowSchema, 'nodes' | 'edges'>;
@@ -360,6 +362,7 @@ const WorkflowEditor = () => {
             checkEdgesType,
             setNodes,
             setEdges,
+            updateNode,
             setOpenLogPanel,
             getIntlText,
         ],
