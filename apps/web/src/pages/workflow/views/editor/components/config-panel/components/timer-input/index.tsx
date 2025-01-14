@@ -84,6 +84,9 @@ const periodConfigs: Record<
 };
 
 const MAX_VALUE_LENGTH = 10;
+const DEFAULT_SCHEDULE_HOUR = 9;
+const DEFAULT_SCHEDULE_MINUTE = 0;
+const DEFAULT_SCHEDULE_EXPIRATION = '2035/01/01 00:00:00';
 
 /**
  * Timer Input Component
@@ -138,7 +141,27 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                     value={data?.type || ''}
                     onChange={e => {
                         const type = e.target.value as TimerInputValueType['type'];
-                        setData({ type, timezone, rules: type === 'SCHEDULE' ? [{}] : undefined });
+                        const result: TimerInputValueType = { type, timezone };
+
+                        switch (type) {
+                            case 'SCHEDULE': {
+                                result.rules = [
+                                    {
+                                        hour: DEFAULT_SCHEDULE_HOUR,
+                                        minute: DEFAULT_SCHEDULE_MINUTE,
+                                    },
+                                ];
+                                result.expirationEpochSecond = getTime(
+                                    DEFAULT_SCHEDULE_EXPIRATION,
+                                ).unix();
+                                break;
+                            }
+                            default: {
+                                break;
+                            }
+                        }
+
+                        setData(result);
                     }}
                 >
                     {typeOptions}
@@ -198,13 +221,9 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                                     ampm={false}
                                     sx={{ width: '100%' }}
                                     label={getIntlText('common.label.time')}
-                                    value={
-                                        item.hour && item.minute
-                                            ? getTime(Date.now())
-                                                  .hour(item.hour)
-                                                  .minute(item.minute)
-                                            : getTime(Date.now()).hour(9).minute(0)
-                                    }
+                                    value={getTime(Date.now())
+                                        .hour(item.hour || 0)
+                                        .minute(item.minute || 0)}
                                     onChange={time => {
                                         const date = getTime(time, true);
                                         replace(index, {
@@ -229,7 +248,10 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                             disabled={list.length >= MAX_VALUE_LENGTH}
                             onClick={() => {
                                 if (list.length >= MAX_VALUE_LENGTH) return;
-                                insert(list.length, {});
+                                insert(list.length, {
+                                    hour: DEFAULT_SCHEDULE_HOUR,
+                                    minute: DEFAULT_SCHEDULE_MINUTE,
+                                });
                             }}
                         >
                             {getIntlText('common.label.add')}
@@ -241,7 +263,7 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                         value={
                             data.expirationEpochSecond
                                 ? getTime(data.expirationEpochSecond * 1000)
-                                : getTime('2035/01/01 00:00:00')
+                                : null
                         }
                         sx={{ width: '100%' }}
                         onChange={time => {
