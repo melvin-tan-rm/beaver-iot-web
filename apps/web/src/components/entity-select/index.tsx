@@ -37,6 +37,7 @@ const EntitySelectApp = <
 
     const {
         entityList,
+        sourceList,
         onSearch,
         loading: sourceLoading,
     } = useSourceData({
@@ -51,6 +52,7 @@ const EntitySelectApp = <
     const { options, entityOptionMap } = useOptions<Value, Multiple, DisableClearable>({
         tabType,
         entityList,
+        sourceList,
         fieldName,
         filterOption,
     });

@@ -13,7 +13,7 @@ export interface EntityStoreType {
 
     getEntityList: (params?: EntityFilterParams) => Promise<EntityData[]>;
 
-    initEntityList: (params?: EntityFilterParams) => void;
+    initEntityList: (params?: EntityFilterParams) => Promise<void>;
 
     getEntityDetailByKey: (entityKey: string) => Promise<EntityData | void>;
 }

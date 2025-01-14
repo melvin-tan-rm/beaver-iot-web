@@ -20,6 +20,7 @@ interface IProps<
     > {
     tabType: TabType;
     entityList: EntityData[];
+    sourceList: EntityData[];
 }
 export const useOptions = <
     Value extends EntitySelectValueType = EntitySelectValueType,
@@ -28,6 +29,7 @@ export const useOptions = <
 >({
     tabType,
     entityList,
+    sourceList,
     fieldName,
     filterOption,
 }: IProps<Value, Multiple, DisableClearable>) => {
@@ -63,6 +65,16 @@ export const useOptions = <
         },
         [fieldName, getDescription],
     );
+
+    const sourceOptionsList = useMemo(() => {
+        const result = (sourceList || []).map(entity => {
+            // Convert entity data to camel case
+            const entityData = objectToCamelCase(entity || {});
+
+            return getOptionValue(entityData);
+        });
+        return filterOption ? filterOption(result) : result;
+    }, [sourceList, filterOption, getOptionValue]);
 
     const optionList = useMemo(() => {
         const result = (entityList || []).map(entity => {
@@ -136,13 +148,13 @@ export const useOptions = <
     );
 
     const entityOptionMap = useMemo(() => {
-        return (optionList || []).reduce((acc, option) => {
+        return (sourceOptionsList || []).reduce((acc, option) => {
             const { value } = option;
 
             acc.set(value, option);
             return acc;
         }, new Map<EntityValueType, EntitySelectOption<EntityValueType>>());
-    }, [optionList]);
+    }, [sourceOptionsList]);
 
     return {
         options,

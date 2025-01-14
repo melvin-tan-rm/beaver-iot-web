@@ -17,7 +17,7 @@ interface IProps<
     D extends boolean | undefined = false,
 > extends Pick<
         EntitySelectComponentProps<V, M, D>,
-        'value' | 'multiple' | 'onChange' | 'getOptionValue'
+        'value' | 'multiple' | 'onChange' | 'getOptionValue' | 'onSearch'
     > {
     entityOptionMap: Map<EntityValueType, EntitySelectOption<EntityValueType>>;
 }
@@ -29,7 +29,7 @@ export const useSelectValue = <
     props: IProps<V, M, D>,
 ): SelectedParameterType => {
     const { getIntlText } = useI18n();
-    const { entityOptionMap, value, multiple, onChange, getOptionValue } = props;
+    const { entityOptionMap, value, multiple, onChange, getOptionValue, onSearch } = props;
 
     const valueList = useMemo<EntityValueType[]>(() => {
         const valueList = (Array.isArray(value) ? value : [value]) as unknown as V[];
@@ -78,6 +78,9 @@ export const useSelectValue = <
             const { value } = selectedItem || {};
             if (!value) return;
 
+            // When elected, clear the search content
+            onSearch?.('');
+
             if (!multiple) {
                 const onSingleChange = onChange as EntitySelectProps<V, false, D>['onChange'];
                 // single select
@@ -95,7 +98,7 @@ export const useSelectValue = <
             const onMultipleChange = onChange as EntitySelectProps<V, true, D>['onChange'];
             onMultipleChange?.(Array.from(selectedEntityMap.values()));
         },
-        [multiple, onChange, selectedEntityMap],
+        [multiple, onChange, onSearch, selectedEntityMap],
     );
 
     return {
