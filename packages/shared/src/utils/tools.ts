@@ -616,6 +616,26 @@ export function objectToCamelCase<T extends object>(obj: T): ObjectToCamelCase<T
 }
 
 /**
+ * 将驼峰转换为下划线
+ * @param str 要转换的字符串
+ * @returns 转换为下划线名法后的字符串
+ */
+export function camelToSnake<T extends string>(str: T): ToCamelCase<T> {
+    return str.replace(/([A-Z])/g, function (match) {
+        return `_${match.toLowerCase()}`;
+    }) as ToCamelCase<T>;
+}
+
+/**
+ * 将对象的所有属性名转换为下划线名法
+ * @param obj 要转换的对象
+ * @returns 转换为下划线名法后的对象
+ */
+export function objectToCamelToSnake<T extends object>(obj: T): ObjectToCamelCase<T> {
+    return convertObjectCase(obj, camelToSnake);
+}
+
+/**
  * 将嵌套的对象展开为扁平化的对象，其中嵌套的键通过点号连接。
  *
  * @template T 输入对象的类型，它必须是一个 Record<string, any>。

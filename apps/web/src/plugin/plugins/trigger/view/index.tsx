@@ -1,8 +1,9 @@
 import { useState, useRef } from 'react';
 import { Modal, EntityForm, toast } from '@milesight/shared/src/components';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { flattenObject } from '@milesight/shared/src/utils/tools';
+import { flattenObject, objectToCamelToSnake } from '@milesight/shared/src/utils/tools';
 import { useConfirm } from '@/components';
+import { ENTITY_VALUE_TYPE } from '@/constants';
 import { useEntityApi, type CallServiceType } from '../../../hooks';
 import { RenderView } from '../../../render';
 import { ViewConfigProps } from './typings';
@@ -64,12 +65,16 @@ const View = (props: Props) => {
             id: (config?.entity as any)?.value as ApiKey,
         });
         const entityType = config?.entity?.rawData?.entityType;
+        const valueType = config?.entity?.rawData?.entityValueType;
         if (!error) {
-            const children = res?.length
-                ? res?.filter((childrenItem: EntityData) => {
-                      return childrenItem?.entity_access_mod?.indexOf('W') > -1;
-                  }) || []
-                : [];
+            let list = res || [];
+            if (valueType !== ENTITY_VALUE_TYPE.OBJECT && !list.length) {
+                list = [objectToCamelToSnake(config?.entity?.rawData)];
+            }
+            const children =
+                list?.filter((childrenItem: EntityData) => {
+                    return childrenItem?.entity_access_mod?.indexOf('W') > -1;
+                }) || [];
             if (children?.length) {
                 setEntities(
                     children.map((item: EntityData, index: number) => {
@@ -91,13 +96,15 @@ const View = (props: Props) => {
                     confirmButtonText: getIntlText('common.button.confirm'),
                     onConfirm: async () => {
                         const entityKey = (config?.entity as any).rawData?.entityKey;
+                        // If the entity itself is the object default is {}, otherwise it is null
+                        const resultValue = valueType === ENTITY_VALUE_TYPE.OBJECT ? {} : null;
                         if (entityType === 'SERVICE') {
                             handleCallService({
-                                [entityKey]: null,
+                                [entityKey]: resultValue,
                             });
                         } else if (entityType === 'PROPERTY') {
                             handleUpdateProperty({
-                                [entityKey]: null,
+                                [entityKey]: resultValue,
                             });
                         }
                     },
