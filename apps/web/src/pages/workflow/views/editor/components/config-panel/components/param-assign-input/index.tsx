@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect } from 'react';
 import { Button, IconButton, TextField } from '@mui/material';
-import { isEqual } from 'lodash-es';
+import { isEqual, isNil } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { DeleteOutlineIcon, AddIcon } from '@milesight/shared/src/components';
@@ -77,7 +77,7 @@ const ParamAssignInput: React.FC<ParamAssignInputProps> = ({
                         required={required}
                         value={item?.[1]}
                         onChange={data => {
-                            replace(index, [item?.[0] || '', data || '']);
+                            replace(index, [item?.[0] || '', isNil(data) ? '' : `${data}`]);
                         }}
                     />
                     <IconButton onClick={() => remove(index)}>
