@@ -246,7 +246,7 @@ declare type ServiceNodeDataType = BaseNodeDataType<{
  * Entity Assigner Node Parameters
  */
 declare type AssignerNodeDataType = BaseNodeDataType<{
-    exchangePayload: Record<ApiKey, string>;
+    exchangePayload: Record<ApiKey, string | boolean>;
 }>;
 
 /**

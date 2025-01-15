@@ -1,9 +1,11 @@
-import React, { useEffect, useLayoutEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo } from 'react';
 import { Button, IconButton } from '@mui/material';
 import { isEqual, isNil } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { DeleteOutlineIcon, AddIcon } from '@milesight/shared/src/components';
+import useWorkflow from '../../../../hooks/useWorkflow';
+import { DEFAULT_BOOLEAN_DATA_ENUMS } from '../../../../constants';
 import EntitySelect, { type EntitySelectProps } from '../entity-select';
 import ParamInputSelect from '../param-input-select';
 import './style.less';
@@ -11,7 +13,7 @@ import './style.less';
 export type EntityAssignInputValueType =
     | NonNullable<AssignerNodeDataType['parameters']>['exchangePayload']
     | undefined;
-export type EntityAssignInputInnerValueType = [string, string] | undefined;
+export type EntityAssignInputInnerValueType = [string, string | boolean] | undefined;
 
 export interface EntityAssignSelectProps {
     label?: string[];
@@ -24,6 +26,12 @@ export interface EntityAssignSelectProps {
     onChange?: (value: EntityAssignInputValueType) => void;
     filterModel?: EntitySelectProps['filterModel'];
 }
+
+type CustomEntityItemType = {
+    key: ApiKey;
+    type: EntityValueDataType;
+    enums: Record<string, any>;
+};
 
 const MAX_VALUE_LENGTH = 10;
 const arrayToObject = (arr: EntityAssignInputInnerValueType[]) => {
@@ -48,9 +56,39 @@ const EntityAssignSelect: React.FC<EntityAssignSelectProps> = ({
     ...props
 }) => {
     const { getIntlText } = useI18n();
+    const { getEntityDetail } = useWorkflow();
     const [data, setData] = useControllableValue<EntityAssignInputValueType>(props);
     const { list, remove, getKey, insert, replace, resetList } =
         useDynamicList<EntityAssignInputInnerValueType>(Object.entries(data || {}));
+    const entityDetails = useMemo(() => {
+        const result: (CustomEntityItemType | undefined)[] = [];
+
+        list?.forEach(item => {
+            const key = item?.[0];
+            const detail = getEntityDetail(key);
+
+            if (!key || !detail) {
+                result.push(undefined);
+                return;
+            }
+
+            const type = detail.entity_value_type;
+            const enums =
+                detail.entity_value_attribute?.enum ||
+                (type !== 'BOOLEAN'
+                    ? undefined
+                    : DEFAULT_BOOLEAN_DATA_ENUMS.reduce(
+                          (acc, item) => {
+                              acc[item.key] = getIntlText(item.labelIntlKey);
+                              return acc;
+                          },
+                          {} as Record<string, any>,
+                      ));
+            result.push({ key, type, enums });
+        });
+
+        return result;
+    }, [list, getEntityDetail, getIntlText]);
 
     useLayoutEffect(() => {
         if (isEqual(data, arrayToObject(list))) return;
@@ -76,8 +114,10 @@ const EntityAssignSelect: React.FC<EntityAssignSelectProps> = ({
                     />
                     <ParamInputSelect
                         value={item?.[1]}
+                        valueType={entityDetails[index]?.type}
+                        enums={entityDetails[index]?.enums}
                         onChange={data => {
-                            replace(index, [item?.[0] || '', isNil(data) ? '' : `${data}`]);
+                            replace(index, [item?.[0] || '', isNil(data) ? '' : data]);
                         }}
                     />
                     <IconButton onClick={() => remove(index)}>
