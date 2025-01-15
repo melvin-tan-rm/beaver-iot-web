@@ -1,8 +1,18 @@
-import { useLayoutEffect, useState, useRef, useCallback } from 'react';
+import { useLayoutEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { isEmpty, isNil } from 'lodash-es';
 import { useControllableValue, useSize } from 'ahooks';
-import { TextField, IconButton, Chip, Popover } from '@mui/material';
+import {
+    TextField,
+    IconButton,
+    Chip,
+    Popover,
+    Divider,
+    Menu,
+    MenuItem,
+    type PopoverProps,
+} from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { SettingsOutlinedIcon } from '@milesight/shared/src/components';
+import { SettingsOutlinedIcon, KeyboardArrowDownIcon } from '@milesight/shared/src/components';
 import { Tooltip } from '@/components';
 import useWorkflow, {
     type FlattenNodeParamType,
@@ -11,7 +21,7 @@ import { isRefParamKey } from '@/pages/workflow/views/editor/helper';
 import UpstreamNodeList from '../upstream-node-list';
 import './style.less';
 
-type ParamInputSelectValueType = string | undefined;
+type ParamInputSelectValueType = string | boolean | undefined;
 
 export interface ParamInputSelectProps {
     label?: string;
@@ -24,6 +34,10 @@ export interface ParamInputSelectProps {
     placeholder?: string;
 
     value?: ParamInputSelectValueType;
+
+    valueType?: EntityValueDataType;
+
+    enums?: Record<string, any>;
 
     defaultValue?: ParamInputSelectValueType;
 
@@ -39,18 +53,75 @@ const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
     label,
     required = true,
     placeholder,
+    valueType,
+    enums,
     ...props
 }) => {
     const { getIntlText } = useI18n();
+
+    // ---------- Render Upstream Param Options ----------
     const { getUpstreamNodeParams } = useWorkflow();
     const [, options] = getUpstreamNodeParams();
     const containerRef = useRef<HTMLDivElement>(null);
+    const { width: containerWidth } = useSize(containerRef) || {};
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+    const commonPopoverProps = useMemo<
+        Pick<PopoverProps, 'anchorOrigin' | 'transformOrigin' | 'sx'>
+    >(
+        () => ({
+            anchorOrigin: {
+                vertical: 'bottom',
+                horizontal: 'right',
+            },
+            transformOrigin: {
+                vertical: 'top',
+                horizontal: 'right',
+            },
+            sx: {
+                '& .MuiList-root': {
+                    width: containerWidth,
+                    minWidth: 300,
+                    maxHeight: 420,
+                },
+            },
+        }),
+        [containerWidth],
+    );
+
+    // ---------- Render Enum Options ----------
+    const isEnumValue = enums && !isEmpty(enums);
+    const endAdornment = useMemo(() => {
+        const result = [
+            <IconButton
+                onClick={e => {
+                    e.stopPropagation();
+                    setAnchorEl(containerRef.current);
+                }}
+            >
+                <SettingsOutlinedIcon />
+            </IconButton>,
+        ];
+
+        if (isEnumValue) {
+            result.unshift(
+                <KeyboardArrowDownIcon sx={{ color: 'text.tertiary' }} />,
+                <Divider
+                    variant="middle"
+                    orientation="vertical"
+                    sx={{ height: 16, marginLeft: 0.5 }}
+                />,
+            );
+        }
+
+        return result;
+    }, [isEnumValue]);
+    const [enumsAnchorEl, setEnumsAnchorEl] = useState<HTMLElement | null>(null);
+
+    // ---------- Data Interaction ----------
     const [data, setData] = useControllableValue<ParamInputSelectValueType>(props);
     const [inputValue, setInputValue] = useState<string>('');
     const [selectValue, setSelectValue] = useState<FlattenNodeParamType>();
-    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-    const { width: containerWidth } = useSize(containerRef) || {};
-
+    const [focused, setFocused] = useState(false);
     const handleInputChange = useCallback<React.ChangeEventHandler<HTMLInputElement>>(
         e => {
             const { value } = e.target;
@@ -73,10 +144,29 @@ const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
         [options, setData],
     );
 
+    const handleEnumChange = useCallback(
+        (key: ApiKey, label: string) => {
+            setFocused(false);
+            setEnumsAnchorEl(null);
+            setInputValue(label);
+
+            if (valueType === 'BOOLEAN') {
+                setData(key === 'true');
+            } else {
+                setData(`${key}`);
+            }
+        },
+        [valueType, setData],
+    );
+
     useLayoutEffect(() => {
         // Direct input value
-        if (!isRefParamKey(data)) {
-            setInputValue(data || '');
+        if (!isRefParamKey(`${data}`)) {
+            if (isEnumValue) {
+                setInputValue(enums?.[`${data}`] || '');
+            } else {
+                setInputValue(!isNil(data) ? `${data}` : '');
+            }
             setSelectValue(undefined);
             return;
         }
@@ -91,12 +181,13 @@ const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
             }
             return option;
         });
-    }, [data, options]);
+    }, [data, options, enums, isEnumValue]);
 
     return (
         <div className="ms-param-input-select" ref={containerRef}>
             <TextField
                 fullWidth
+                color="primary"
                 autoComplete="off"
                 label={label || getIntlText('common.label.value')}
                 required={required}
@@ -108,36 +199,49 @@ const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
                 }
                 slotProps={{
                     input: {
-                        readOnly: !!selectValue,
-                        endAdornment: (
-                            <IconButton onClick={() => setAnchorEl(containerRef.current)}>
-                                <SettingsOutlinedIcon />
-                            </IconButton>
-                        ),
+                        readOnly: !!selectValue || isEnumValue,
+                        endAdornment,
                     },
                 }}
                 value={inputValue}
                 onChange={handleInputChange}
+                focused={focused || !!anchorEl || !!enumsAnchorEl}
+                onClick={() => {
+                    if (!isEnumValue) return;
+                    setEnumsAnchorEl(containerRef.current);
+                }}
+                onFocus={() => setFocused(true)}
+                onBlur={() => setFocused(false)}
             />
+            {isEnumValue && (
+                <Menu
+                    className="ms-param-input-enums-menu"
+                    open={!!enumsAnchorEl}
+                    anchorEl={enumsAnchorEl}
+                    onClose={() => {
+                        setFocused(false);
+                        setEnumsAnchorEl(null);
+                    }}
+                    {...commonPopoverProps}
+                >
+                    {Object.entries(enums!).map(([key, label]) => (
+                        <MenuItem
+                            key={key}
+                            selected={key === `${data}`}
+                            onClick={() => handleEnumChange(key, label)}
+                        >
+                            {label}
+                        </MenuItem>
+                    ))}
+                </Menu>
+            )}
             {!!selectValue && (
                 <Chip
                     className="ms-param-input-select-chip"
                     label={
-                        <>
-                            <Tooltip autoEllipsis className="name" title={selectValue.valueName} />
-                            {/* <span className="divider">/</span> */}
-                            {/* <Tooltip autoEllipsis className="type" title="BOOLEAN" /> */}
-                            {selectValue.valueTypeLabel && (
-                                <>
-                                    <span className="divider">/</span>
-                                    <Tooltip
-                                        autoEllipsis
-                                        className="type"
-                                        title={selectValue.valueTypeLabel}
-                                    />
-                                </>
-                            )}
-                        </>
+                        <Tooltip title={`${selectValue.valueName} / ${selectValue.valueTypeLabel}`}>
+                            <span className="name">{selectValue.valueName}</span>
+                        </Tooltip>
                     }
                     onDelete={() => setData(undefined)}
                 />
@@ -146,25 +250,15 @@ const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
                 className="ms-param-input-select-menu"
                 open={!!anchorEl}
                 anchorEl={anchorEl}
-                onClose={() => setAnchorEl(null)}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
+                onClose={() => {
+                    setFocused(false);
+                    setAnchorEl(null);
                 }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                }}
-                sx={{
-                    '& .MuiList-root': {
-                        width: containerWidth,
-                        minWidth: 300,
-                        maxHeight: 420,
-                    },
-                }}
+                {...commonPopoverProps}
             >
                 <UpstreamNodeList
                     onChange={node => {
+                        setFocused(false);
                         setAnchorEl(null);
                         setData(node.valueKey);
                     }}

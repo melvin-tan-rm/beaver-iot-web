@@ -75,6 +75,17 @@ export const logicOperatorMap: Partial<Record<WorkflowLogicOperator, { labelIntl
     },
 };
 
+export const DEFAULT_BOOLEAN_DATA_ENUMS = [
+    {
+        key: 'true',
+        labelIntlKey: 'common.label.true',
+    },
+    {
+        key: 'false',
+        labelIntlKey: 'common.label.false',
+    },
+];
+
 /**
  * Condition operator map
  */

@@ -12,6 +12,7 @@ import {
     PARALLEL_DEPTH_LIMIT,
     NODE_MIN_NUMBER_LIMIT,
     ENTRY_NODE_NUMBER_LIMIT,
+    DEFAULT_BOOLEAN_DATA_ENUMS,
 } from '../constants';
 import { genRefParamKey, isRefParamKey } from '../helper';
 import { getParallelInfo } from './utils';
@@ -57,17 +58,6 @@ export type UpdateNodeStatusOptions = {
 const entryNodeTypes = Object.values(basicNodeConfigs)
     .filter(item => item.category === 'entry')
     .map(item => item.type);
-
-const BOOLEAN_DATA_ENUMS = [
-    {
-        key: 'true',
-        labelIntlKey: 'common.label.true',
-    },
-    {
-        key: 'false',
-        labelIntlKey: 'common.label.false',
-    },
-];
 
 const useWorkflow = () => {
     const { getNodes, getEdges, setNodes, setEdges, fitView } = useReactFlow<
@@ -282,7 +272,7 @@ const useWorkflow = () => {
                                     const enums =
                                         (item.type as EntityValueDataType) !== 'BOOLEAN'
                                             ? undefined
-                                            : BOOLEAN_DATA_ENUMS.map(item => ({
+                                            : DEFAULT_BOOLEAN_DATA_ENUMS.map(item => ({
                                                   key: item.key,
                                                   label: getIntlText(item.labelIntlKey),
                                               }));

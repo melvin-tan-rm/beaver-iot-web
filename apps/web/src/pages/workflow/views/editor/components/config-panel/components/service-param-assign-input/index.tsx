@@ -7,23 +7,19 @@ import { useEntityApi } from '@/plugin/hooks';
 import { Tooltip, Empty, useEntityStore } from '@/components';
 import ParamInputSelect from '../param-input-select';
 import EntitySelect, { type EntityFilterParams } from '../entity-select';
+import { DEFAULT_BOOLEAN_DATA_ENUMS } from '../../../../constants';
 import './style.less';
 
 type InputParamListType = {
     key: ApiKey;
-    name: ApiKey;
-    type: ApiKey;
+    name: string;
+    type: EntityValueDataType;
+    enums?: Record<string, any>;
 };
 
 type ServiceParamAssignInputValueType = {
     serviceEntity?: ApiKey;
-    serviceParams: Record<string, string | undefined>;
-};
-
-type EntityItem = {
-    entity_key: ApiKey;
-    entity_name: ApiKey;
-    entity_value_type: ApiKey;
+    serviceParams: Record<string, string | boolean | undefined>;
 };
 
 type ServiceParamAssignInputProps = {
@@ -65,7 +61,7 @@ const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
     const { entityList } = useEntityStore(useStoreShallow(['entityList']));
     const [subEntityList, setSubEntityList] = useState<InputParamListType[]>([]);
     const handleSubEntityChange = useCallback(
-        (key: ApiKey, value?: string) => {
+        (key: ApiKey, value?: string | boolean) => {
             setInnerValue(data => {
                 const params = { ...data?.serviceParams };
                 params[key] = value;
@@ -95,6 +91,8 @@ const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
                                 </div>
                                 <ParamInputSelect
                                     required={required}
+                                    valueType={item.type}
+                                    enums={item.enums}
                                     value={serviceParams?.[item.key]}
                                     onChange={data => {
                                         handleSubEntityChange(item.key, data);
@@ -121,11 +119,24 @@ const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
                 });
 
                 if (error) return;
-                const list = res.map((item: EntityItem) => {
+                const list = res.map((item: EntityData) => {
+                    const type = item.entity_value_type;
+                    const enums =
+                        item.entity_value_attribute?.enum ||
+                        (type !== 'BOOLEAN'
+                            ? undefined
+                            : DEFAULT_BOOLEAN_DATA_ENUMS.reduce(
+                                  (acc, item) => {
+                                      acc[item.key] = getIntlText(item.labelIntlKey);
+                                      return acc;
+                                  },
+                                  {} as Record<string, any>,
+                              ));
                     return {
                         key: item.entity_key,
                         name: item.entity_name,
-                        type: item.entity_value_type,
+                        type,
+                        enums,
                     };
                 });
                 setSubEntityList(list);
