@@ -148,6 +148,7 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
                                 formItem.render = ({ field: { onChange, value } }) => {
                                     return (
                                         <ParamInput
+                                            // required={required}
                                             isOutput={nodeType === 'code'}
                                             value={value}
                                             onChange={onChange}
@@ -158,13 +159,25 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
                             }
                             case 'paramAssignInput': {
                                 formItem.render = ({ field: { onChange, value } }) => {
-                                    return <ParamAssignInput value={value} onChange={onChange} />;
+                                    return (
+                                        <ParamAssignInput
+                                            required={required}
+                                            value={value}
+                                            onChange={onChange}
+                                        />
+                                    );
                                 };
                                 break;
                             }
                             case 'EntitySelect': {
                                 formItem.render = ({ field: { onChange, value } }) => {
-                                    return <EntitySelect value={value} onChange={onChange} />;
+                                    return (
+                                        <EntitySelect
+                                            required={required}
+                                            value={value}
+                                            onChange={onChange}
+                                        />
+                                    );
                                 };
                                 break;
                             }
@@ -176,6 +189,7 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
                                             : selectNodeEntityFilterModel;
                                     return (
                                         <EntityMultipleSelect
+                                            required={required}
                                             filterModel={filterModel}
                                             value={value}
                                             onChange={onChange}
@@ -192,6 +206,7 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
                                             : assignerNodeEntityFilterModel;
                                     return (
                                         <EntityAssignSelect
+                                            required={required}
                                             filterModel={filterModel}
                                             value={value}
                                             onChange={onChange}
@@ -202,7 +217,13 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
                             }
                             case 'timerSettings': {
                                 formItem.render = ({ field: { onChange, value } }) => {
-                                    return <TimerInput value={value} onChange={onChange} />;
+                                    return (
+                                        <TimerInput
+                                            required={required}
+                                            value={value}
+                                            onChange={onChange}
+                                        />
+                                    );
                                 };
                                 break;
                             }
@@ -230,6 +251,7 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
                                 formItem.render = ({ field: { onChange, value } }) => {
                                     return (
                                         <ServiceParamAssignInput
+                                            required={required}
                                             value={value}
                                             onChange={onChange}
                                         />

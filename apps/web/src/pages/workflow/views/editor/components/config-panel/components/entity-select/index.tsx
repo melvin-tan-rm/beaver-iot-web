@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { useControllableValue } from 'ahooks';
+import { useI18n } from '@milesight/shared/src/hooks';
 import {
     EntitySelect as EntitySelectComponent,
     type EntitySelectProps as EntitySelectComponentProps,
@@ -65,6 +66,7 @@ const EntitySelect: React.FC<EntitySelectProps> = ({
     fieldName = 'entityKey',
     ...props
 }) => {
+    const { getIntlText } = useI18n();
     const [value, setValue] = useControllableValue<EntitySelectValueType | undefined>(props);
 
     const handleChange = useCallback<Required<WorkflowEntitySelectProps>['onChange']>(
@@ -92,6 +94,7 @@ const EntitySelect: React.FC<EntitySelectProps> = ({
 
     return (
         <EntitySelectComponent
+            label={getIntlText('common.label.entity')}
             {...props}
             {...filterModelValue}
             value={value}

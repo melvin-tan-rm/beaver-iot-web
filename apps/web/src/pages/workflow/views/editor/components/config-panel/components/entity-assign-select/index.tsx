@@ -105,6 +105,7 @@ const EntityAssignSelect: React.FC<EntityAssignSelectProps> = ({
             {list.map((item, index) => (
                 <div className="ms-entity-assign-select-item" key={getKey(index)}>
                     <EntitySelect
+                        required={required}
                         filterModel={filterModel}
                         value={item?.[0] || ''}
                         onChange={value => {
@@ -113,6 +114,7 @@ const EntityAssignSelect: React.FC<EntityAssignSelectProps> = ({
                         dropdownMatchSelectWidth={400}
                     />
                     <ParamInputSelect
+                        required={required}
                         value={item?.[1]}
                         valueType={entityDetails[index]?.type}
                         enums={entityDetails[index]?.enums}

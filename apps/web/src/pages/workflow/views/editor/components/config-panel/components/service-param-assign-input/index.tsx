@@ -151,6 +151,7 @@ const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
     return (
         <div className="ms-service-invocation-setting">
             <EntitySelect
+                label={getIntlText('common.label.service')}
                 filterModel={filterModel}
                 value={innerValue?.serviceEntity || ''}
                 onChange={handleEntityChange}
