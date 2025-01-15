@@ -80,7 +80,7 @@ const AddEntity = (props: ConfigPluginProps) => {
             visible
             onCancel={handleClose}
             onOk={handleOk}
-            onOkText={getIntlText('common.label.create')}
+            onOkText={getIntlText('common.button.save')}
             title={getIntlText('entity.label.create_entity_from_workflow')}
             size="lg"
         >
