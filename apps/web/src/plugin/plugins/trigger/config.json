@@ -21,7 +21,7 @@
                     "componentProps": {
                         "size": "small",
                         "entityType": ["SERVICE", "PROPERTY"],
-                        "accessMods": ["W", "RW"],
+                        "entityAccessMods": ["W", "RW"],
                         "entityExcludeChildren": true
                     },
                     "rules": {
