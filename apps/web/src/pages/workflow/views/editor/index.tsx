@@ -239,16 +239,15 @@ const WorkflowEditor = () => {
     );
 
     // ---------- Fetch Entity List ----------
-    const { status, initEntityList } = useEntityStore(
+    const { initEntityList } = useEntityStore(
         useStoreShallow(['status', 'entityList', 'initEntityList']),
     );
 
     useDebounceEffect(
         () => {
-            if (status !== 'ready') return;
             initEntityList();
         },
-        [status, initEntityList],
+        [initEntityList],
         { wait: 300 },
     );
 
@@ -392,14 +391,13 @@ const WorkflowEditor = () => {
 
         let { nodes, edges } = flowData;
 
-        // console.log({ nodes, edges });
         if (!checkWorkflowValid(nodes, edges)) return;
 
+        // Check edges and nodes
         const edgesCheckResult = merge(
             checkEdgesId(edges, nodes, { validateFirst: true }),
             checkEdgesType(edges, nodes, { validateFirst: true }),
         );
-        // console.log({ edgesCheckResult });
         if (!isEmpty(edgesCheckResult)) return;
 
         const nodesCheckResult = merge(
@@ -407,7 +405,6 @@ const WorkflowEditor = () => {
             checkNodesType(nodes, { validateFirst: isAdvanceMode }),
             checkNodesData(nodes, { validateFirst: isAdvanceMode }),
         );
-        // console.log({ nodesCheckResult });
         if (!isEmpty(nodesCheckResult)) {
             if (isAdvanceMode) return;
             const statusData = Object.entries(nodesCheckResult).reduce(
@@ -427,8 +424,11 @@ const WorkflowEditor = () => {
 
         if (!basicData?.name) return;
 
-        const hasTriggerNode = nodes.find(node => node.type === 'trigger');
+        // Clear selected status
+        const selectedNode = nodes.find(node => node.selected);
+        if (selectedNode) updateNode(selectedNode.id, { selected: false });
 
+        const hasTriggerNode = nodes.find(node => node.type === 'trigger');
         // If has a trigger node and it is the first time to create, show tip
         if (!wid && hasTriggerNode) {
             let proceed = false;
@@ -445,13 +445,7 @@ const WorkflowEditor = () => {
             if (!proceed) return;
         }
 
-        const selectedNodes = nodes.filter(node => node.selected);
-        if (selectedNodes.length) {
-            selectedNodes.forEach(node => {
-                updateNode(node.id, { selected: false });
-            });
-        }
-
+        // Remove selected, dragging, hovering and `$xxx` property
         nodes = normalizeNodes(nodes, FROZEN_NODE_PROPERTY_KEYS);
         edges = normalizeEdges(edges);
 
@@ -470,7 +464,6 @@ const WorkflowEditor = () => {
         if (error || !isRequestSuccess(resp)) return;
         const respData = getResponseData(resp);
 
-        // console.log(data);
         setBasicData(data => {
             const result = data || {};
             result.version = respData?.version ? respData.version : result.version;
