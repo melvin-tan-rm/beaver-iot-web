@@ -89,6 +89,29 @@ const useValidate = () => {
             },
         };
 
+        const inputArgumentsChecker: Record<string, NodeDataValidator> = {
+            checkMaxLength(
+                value: NonNullable<CodeNodeDataType['parameters']>['inputArguments'],
+                fieldName,
+            ) {
+                if (value && Object.keys(value).length) {
+                    const maxLength = 50;
+                    const hasOverLength = Object.keys(value).some(key => {
+                        if (key && !isMaxLength(key, maxLength)) return true;
+                        return false;
+                    });
+
+                    if (!hasOverLength) return true;
+                    return getIntlText(ErrorIntlKey.maxLength, {
+                        1: fieldName,
+                        2: maxLength,
+                    });
+                }
+
+                return true;
+            },
+        };
+
         // Note: The `checkRequired` name is fixed and cannot be modified
         const result: Record<string, Record<string, NodeDataValidator>> = {
             nodeName: {
@@ -118,16 +141,31 @@ const useValidate = () => {
                     return true;
                 },
             },
-            // Check code.inputArguments and webhook.inputArguments
-            inputArguments: {
+            // Check listener.entities, select.entities
+            'listener.entities': entitiesChecker,
+            'select.entities': entitiesChecker,
+            'trigger.entityConfigs': {
+                // checkRequired(
+                //     value?: NonNullable<TriggerNodeDataType['parameters']>['entityConfigs'],
+                //     fieldName?: string,
+                // ) {
+                //     if (
+                //         value?.length &&
+                //         value.every(item => Object.values(item).every(it => !!it))
+                //     ) {
+                //         return true;
+                //     }
+                //     const message = getIntlText(ErrorIntlKey.required, { 1: fieldName });
+                //     return message;
+                // },
                 checkMaxLength(
-                    value: NonNullable<CodeNodeDataType['parameters']>['inputArguments'],
-                    fieldName,
+                    value?: NonNullable<TriggerNodeDataType['parameters']>['entityConfigs'],
+                    fieldName?: string,
                 ) {
-                    if (value && Object.keys(value).length) {
+                    if (value?.length) {
                         const maxLength = 50;
-                        const hasOverLength = Object.keys(value).some(key => {
-                            if (key && !isMaxLength(key, maxLength)) return true;
+                        const hasOverLength = value.some(item => {
+                            if (item.name && !isMaxLength(item.name, maxLength)) return true;
                             return false;
                         });
 
@@ -137,28 +175,9 @@ const useValidate = () => {
                             2: maxLength,
                         });
                     }
-
                     return true;
                 },
             },
-            // Check listener.entities, select.entities
-            'listener.entities': entitiesChecker,
-            'select.entities': entitiesChecker,
-            // 'trigger.entityConfigs': {
-            //     checkRequired(
-            //         value?: NonNullable<TriggerNodeDataType['parameters']>['entityConfigs'],
-            //         fieldName?: string,
-            //     ) {
-            //         if (
-            //             value?.length &&
-            //             value.every(item => Object.values(item).every(it => !!it))
-            //         ) {
-            //             return true;
-            //         }
-            //         const message = getIntlText(ErrorIntlKey.required, { 1: fieldName });
-            //         return message;
-            //     },
-            // },
             'timer.timerSettings': {
                 checkRequired(
                     value?: NonNullable<TimerNodeDataType['parameters']>['timerSettings'],
@@ -213,7 +232,7 @@ const useValidate = () => {
                                         return !key || !operator;
                                     }
 
-                                    return !key || !operator || isNil(value);
+                                    return !key || !operator || isNil(value) || value === '';
                                 });
 
                                 return hasEmpty;
@@ -228,6 +247,96 @@ const useValidate = () => {
                     if (hasEmptyCondition) return message;
                     return true;
                 },
+                checkMaxLength(
+                    value: NonNullable<IfElseNodeDataType['parameters']>['choice'],
+                    fieldName,
+                ) {
+                    const { when } = value || {};
+
+                    if (when.length) {
+                        const maxValueLength = 1000;
+                        const maxCodeLength = 64000;
+                        const maxDescriptionLength = 30;
+                        let message = '';
+
+                        for (let i = 0; i < when.length; i++) {
+                            const block = when[i];
+                            const { expressionType, conditions } = block;
+
+                            switch (expressionType) {
+                                case 'condition': {
+                                    for (let j = 0; j < conditions.length; j++) {
+                                        const { expressionValue } = conditions[j];
+
+                                        if (typeof expressionValue === 'string') break;
+                                        if (
+                                            !isMaxLength(
+                                                isNil(expressionValue?.value)
+                                                    ? ''
+                                                    : `${expressionValue?.value}`,
+                                                maxValueLength,
+                                            )
+                                        ) {
+                                            message = getIntlText(ErrorIntlKey.maxLength, {
+                                                1: 'value',
+                                                2: maxValueLength,
+                                            });
+                                        }
+                                    }
+                                    break;
+                                }
+                                default: {
+                                    const { expressionValue, expressionDescription } =
+                                        conditions?.[0] || {};
+
+                                    if (
+                                        !isMaxLength(
+                                            (expressionValue as string) || '',
+                                            maxCodeLength,
+                                        )
+                                    ) {
+                                        message = getIntlText(ErrorIntlKey.maxLength, {
+                                            1: 'expressionValue',
+                                            2: maxCodeLength,
+                                        });
+                                    } else if (
+                                        !isMaxLength(
+                                            expressionDescription || '',
+                                            maxDescriptionLength,
+                                        )
+                                    ) {
+                                        message = getIntlText(ErrorIntlKey.maxLength, {
+                                            1: 'expressionDescription',
+                                            2: maxDescriptionLength,
+                                        });
+                                    }
+                                    break;
+                                }
+                            }
+
+                            if (message) return message;
+                        }
+                    }
+
+                    return true;
+                },
+            },
+            'code.inputArguments': {
+                checkRequired(
+                    value: NonNullable<CodeNodeDataType['parameters']>['inputArguments'],
+                    fieldName,
+                ) {
+                    if (
+                        value &&
+                        Object.keys(value).length &&
+                        Object.values(value).every(val => !!val)
+                    ) {
+                        return true;
+                    }
+                    const message = getIntlText(ErrorIntlKey.required, { 1: fieldName });
+                    return message;
+                },
+                ...inputArgumentsChecker,
             },
             'code.expression': {
                 checkRequired(
@@ -259,12 +368,12 @@ const useValidate = () => {
             },
             'code.payload': {
                 checkMaxLength(
-                    value: NonNullable<CodeNodeDataType['parameters']>['payload'],
-                    fieldName,
+                    value?: NonNullable<CodeNodeDataType['parameters']>['payload'],
+                    fieldName?: string,
                 ) {
-                    if (value.length) {
+                    if (value?.length) {
                         const maxLength = 50;
-                        const hasOverLength = value.some(item => {
+                        const hasOverLength = value?.some(item => {
                             if (item.name && !isMaxLength(`${item.name}`, maxLength)) return true;
                             return false;
                         });
@@ -320,8 +429,10 @@ const useValidate = () => {
                 ) {
                     if (
                         !value ||
-                        !Object.keys(value).filter(Boolean).length ||
-                        !Object.values(value).filter(Boolean).length
+                        !Object.keys(value).length ||
+                        Object.entries(value).some(
+                            ([key, value]) => !key || isNil(value) || value === '',
+                        )
                     ) {
                         return getIntlText(ErrorIntlKey.required, { 1: fieldName });
                     }
@@ -335,7 +446,11 @@ const useValidate = () => {
                     if (value && Object.values(value).filter(Boolean).length) {
                         const maxLength = 1000;
                         const hasOverLength = Object.values(value).some(val => {
-                            if (val && !isRefParamKey(val) && !isMaxLength(val, maxLength)) {
+                            if (
+                                val &&
+                                !isRefParamKey(`${val}`) &&
+                                !isMaxLength(`${val}`, maxLength)
+                            ) {
                                 return true;
                             }
                             return false;
@@ -356,11 +471,7 @@ const useValidate = () => {
                     fieldName,
                 ) {
                     const { provider, smtpConfig } = value || {};
-                    if (
-                        !provider ||
-                        !smtpConfig ||
-                        !Object.values(smtpConfig).filter(Boolean).length
-                    ) {
+                    if (!provider || !smtpConfig || Object.values(smtpConfig).some(item => !item)) {
                         return getIntlText(ErrorIntlKey.required, { 1: fieldName });
                     }
                     return true;
@@ -371,10 +482,11 @@ const useValidate = () => {
                 ) {
                     const { smtpConfig } = value || {};
 
-                    if (smtpConfig && Object.values(smtpConfig).filter(Boolean).length) {
+                    if (smtpConfig && Object.values(smtpConfig).every(item => !!item)) {
                         const maxLength = 50;
                         const hasOverLength = Object.entries(smtpConfig).some(([key, val]) => {
                             if (key !== 'encryption' && val && !isMaxLength(`${val}`, maxLength)) {
+                                fieldName = `SMTP ${key}`;
                                 return true;
                             }
                             return false;
@@ -399,7 +511,7 @@ const useValidate = () => {
                     value: NonNullable<EmailNodeDataType['parameters']>['recipients'],
                     fieldName,
                 ) {
-                    if (!value || !value.filter(Boolean).length) {
+                    if (!value || !value.length) {
                         return getIntlText(ErrorIntlKey.required, { 1: fieldName });
                     }
                     return true;
@@ -408,7 +520,7 @@ const useValidate = () => {
                     value: NonNullable<EmailNodeDataType['parameters']>['recipients'],
                     fieldName,
                 ) {
-                    if (value && value.filter(Boolean).length) {
+                    if (value && value.length) {
                         const hasInvalidEmail = value.some(val => !isEmail(val));
 
                         if (!hasInvalidEmail) return true;
@@ -431,7 +543,7 @@ const useValidate = () => {
                     return true;
                 },
             },
-            // 'webhook.secretKey': {},
+            'webhook.inputArguments': inputArgumentsChecker,
         };
         return result;
     }, [getIntlText]);
@@ -671,7 +783,7 @@ const useValidate = () => {
                 const { id, type, data } = nodes[i];
                 const nodeType = type as WorkflowNodeType;
                 const config = nodeConfigs[nodeType];
-                const { nodeName, nodeRemark, parameters } = data || {};
+                const { nodeName, nodeRemark, parameters = {} } = data || {};
                 let tempResult = result[id];
 
                 if (!tempResult) {
@@ -701,41 +813,21 @@ const useValidate = () => {
                     }
                 });
 
-                // console.log({ id, type, parameters });
-                // Node parameters check
-                if (!parameters || !Object.keys(parameters).length) {
-                    tempResult.errMsgs.push(
-                        getIntlText('workflow.valid.parameter_required', {
-                            1: nodeName || `${getIntlText(config.labelIntlKey)} (ID: ${id})`,
-                        }),
-                    );
-                } else {
-                    const nodeCheckers = Object.keys(dataValidators).filter(key =>
-                        key.startsWith(`${type}.`),
-                    );
-                    nodeCheckers?.forEach(checker => {
-                        const key = checker.replace(`${type}.`, '');
-                        const checkRequired = dataValidators[key]?.checkRequired;
+                const nodeCheckers = Object.keys(dataValidators).filter(key =>
+                    key.startsWith(`${type}.`),
+                );
 
-                        if (parameters[key] || !checkRequired) return;
-                        const result = checkRequired(parameters[key], key);
+                nodeCheckers?.forEach(name => {
+                    const key = name.replace(`${type}.`, '');
+                    const validators = dataValidators[name] || dataValidators[key] || {};
+
+                    Object.values(validators).forEach(validator => {
+                        const result = validator(parameters[key], key);
                         if (result && result !== true) {
                             tempResult.errMsgs.push(result);
                         }
                     });
-                    // Node parameters data check
-                    Object.entries(parameters).forEach(([key, value]) => {
-                        const validKey = `${type}.${key}`;
-                        const validators = dataValidators[validKey] || dataValidators[key] || {};
-
-                        Object.values(validators).forEach(validator => {
-                            const result = validator(value, key);
-                            if (result && result !== true) {
-                                tempResult.errMsgs.push(result);
-                            }
-                        });
-                    });
-                }
+                });
 
                 if (options?.validateFirst && tempResult.errMsgs.length) {
                     toast.error({ key: 'node-validate', content: tempResult.errMsgs[0] });

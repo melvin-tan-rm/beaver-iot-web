@@ -300,24 +300,30 @@ const useWorkflow = () => {
                                 data.forEach(item => {
                                     if (!item) return;
                                     const entity = getEntityDetail(item);
+                                    const type = entity?.entity_value_type;
                                     const enums = (entity?.entity_value_attribute as any)?.enum;
                                     const typeOption = entityTypeOptions.find(
-                                        it => it.value === entity?.entity_value_type,
+                                        it => it.value === type,
                                     );
 
                                     paramData.outputs.push({
                                         name: entity?.entity_name || item,
-                                        type: entity?.entity_value_type,
+                                        type,
                                         typeLabel: !typeOption?.label
-                                            ? entity?.entity_value_type
+                                            ? type
                                             : getIntlText(typeOption.label),
                                         key: genRefParamKey(id, item),
-                                        enums: isEmpty(enums)
-                                            ? undefined
-                                            : Object.entries(enums)?.map(([key, value]) => ({
+                                        enums: !isEmpty(enums)
+                                            ? Object.entries(enums)?.map(([key, value]) => ({
                                                   key,
                                                   label: value as string | undefined,
-                                              })),
+                                              }))
+                                            : type !== 'BOOLEAN'
+                                              ? undefined
+                                              : DEFAULT_BOOLEAN_DATA_ENUMS.map(item => ({
+                                                    key: item.key,
+                                                    label: getIntlText(item.labelIntlKey),
+                                                })),
                                     });
                                 });
                                 break;
@@ -335,24 +341,30 @@ const useWorkflow = () => {
                                     const entity = getEntityDetail(key);
 
                                     if (!entity) return;
+                                    const type = entity?.entity_value_type;
                                     const enums = (entity?.entity_value_attribute as any)?.enum;
                                     const typeOption = entityTypeOptions.find(
-                                        it => it.value === entity?.entity_value_type,
+                                        it => it.value === type,
                                     );
 
                                     paramData.outputs.push({
                                         name: entity?.entity_name || key,
-                                        type: entity?.entity_value_type,
+                                        type,
                                         typeLabel: !typeOption?.label
-                                            ? entity?.entity_value_type
+                                            ? type
                                             : getIntlText(typeOption.label),
                                         key: genRefParamKey(id, key),
-                                        enums: isEmpty(enums)
-                                            ? undefined
-                                            : Object.entries(enums)?.map(([key, value]) => ({
+                                        enums: !isEmpty(enums)
+                                            ? Object.entries(enums)?.map(([key, value]) => ({
                                                   key,
                                                   label: value as string | undefined,
-                                              })),
+                                              }))
+                                            : type !== 'BOOLEAN'
+                                              ? undefined
+                                              : DEFAULT_BOOLEAN_DATA_ENUMS.map(item => ({
+                                                    key: item.key,
+                                                    label: getIntlText(item.labelIntlKey),
+                                                })),
                                     });
                                 });
                                 break;
