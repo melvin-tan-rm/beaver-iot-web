@@ -366,6 +366,12 @@ const WorkflowEditor = () => {
             getIntlText,
         ],
     );
+    const handleBeforeBack = () => {
+        const selectedNode = nodes.find(node => node.selected);
+
+        if (!selectedNode?.id) return;
+        updateNode(selectedNode?.id, { selected: false });
+    };
 
     // ---------- Save Workflow ----------
     const navigate = useNavigate();
@@ -494,6 +500,7 @@ const WorkflowEditor = () => {
                 mode={designMode}
                 onDataChange={handleFlowDataChange}
                 onDesignModeChange={handleDesignModeChange}
+                onBeforeBack={handleBeforeBack}
                 rightSlot={[
                     <TestButton
                         key="test-button"

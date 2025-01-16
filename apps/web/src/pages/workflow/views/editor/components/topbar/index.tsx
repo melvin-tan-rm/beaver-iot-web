@@ -32,6 +32,9 @@ export interface TopbarProps {
     /** Data Change Callback */
     onDataChange?: (data: TopbarProps['data']) => void;
 
+    /** This handler gets called before the user click 「Back」 Button */
+    onBeforeBack?: () => void | Promise<void>;
+
     /** Button Click Callback */
     // onButtonClick?: (type: 'back' | 'save', data?: TopbarProps['data']) => void;
 }
@@ -47,6 +50,7 @@ const Topbar: React.FC<TopbarProps> = ({
     rightSlot,
     onDataChange,
     onDesignModeChange,
+    onBeforeBack,
 }) => {
     const navigate = useNavigate();
     const { getIntlText } = useI18n();
@@ -75,6 +79,14 @@ const Topbar: React.FC<TopbarProps> = ({
         });
     };
 
+    const handleBack = async () => {
+        if (onBeforeBack) {
+            await onBeforeBack();
+        }
+
+        navigate('/workflow', { replace: true });
+    };
+
     useEffect(() => {
         if (data?.id) {
             setFlowData(data);
@@ -101,7 +113,7 @@ const Topbar: React.FC<TopbarProps> = ({
                         variant="outlined"
                         className="btn-back"
                         startIcon={<ArrowBackIcon />}
-                        onClick={() => navigate('/workflow', { replace: true })}
+                        onClick={() => handleBack()}
                     >
                         {getIntlText('common.label.back')}
                     </Button>
