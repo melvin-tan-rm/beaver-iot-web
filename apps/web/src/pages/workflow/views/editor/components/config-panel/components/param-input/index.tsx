@@ -100,12 +100,12 @@ const ParamInput: React.FC<ParamInputProps> = ({
         if (isOutput) {
             result.push({
                 value: 'OTHER',
-                label: getIntlText('workflow.label.param_type_other'),
+                label: 'workflow.label.param_type_other',
             });
         }
 
         return result;
-    }, [isOutput, getIntlText]);
+    }, [isOutput]);
 
     return (
         <div className="ms-param-input">
