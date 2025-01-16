@@ -33,8 +33,8 @@ type LangListType = Partial<
             /** 接口数据映射值 */
             value: string;
 
-            /** 语言说明 */
-            label?: string;
+            /** I18n key of lang label */
+            labelIntlKey: string;
 
             /** 文案包 */
             locale?: Record<string, string> | Record<string, string>[];
@@ -62,11 +62,13 @@ export const langs: LangListType = {
         key: LANGUAGE.EN,
         value: i18nHelper.getComponentLanguage(LANGUAGE.EN, 'dayjs'),
         muiLocale: enUS,
+        labelIntlKey: 'common.language.en',
     },
     CN: {
         key: LANGUAGE.CN,
         value: i18nHelper.getComponentLanguage(LANGUAGE.CN, 'dayjs'),
         muiLocale: zhCN,
+        labelIntlKey: 'common.language.cn',
     },
 };
 

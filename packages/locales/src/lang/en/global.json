@@ -194,5 +194,6 @@
     "common.label.no_permissions": "No Permissions!",
     "common.label.sign_out": "Sign out",
     "common.label.true": "True",
-    "common.label.false": "False"
+    "common.label.false": "False",
+    "common.label.language": "Language"
 }

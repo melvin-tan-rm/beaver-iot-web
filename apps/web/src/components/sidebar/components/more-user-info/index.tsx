@@ -9,9 +9,9 @@ import {
     ListItemText,
     ListItemIcon,
     Divider,
+    Stack,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-
 import { LogoutIcon } from '@milesight/shared/src/components';
 import { iotLocalStorage, TOKEN_CACHE_KEY } from '@milesight/shared/src/utils/storage';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -19,6 +19,7 @@ import { useI18n } from '@milesight/shared/src/hooks';
 import Tooltip from '@/components/tooltip';
 import { useUserStore } from '@/stores';
 import { type GlobalAPISchema } from '@/services/http';
+import LangItem from './lang-item';
 
 function stringToColor(string: string) {
     let hash = 0;
@@ -58,9 +59,7 @@ interface MoreUserInfoProps {
 /**
  * User information display and operation components
  */
-const MoreUserInfo: React.FC<MoreUserInfoProps> = props => {
-    const { userInfo } = props || {};
-
+const MoreUserInfo: React.FC<MoreUserInfoProps> = ({ userInfo }) => {
     const navigate = useNavigate();
     const { getIntlText } = useI18n();
     const { setUserInfo } = useUserStore();
@@ -69,15 +68,24 @@ const MoreUserInfo: React.FC<MoreUserInfoProps> = props => {
         <PopupState variant="popover" popupId="user-info-menu">
             {state => (
                 <div className="ms-user-info">
-                    <Avatar {...stringAvatar(userInfo?.nickname || '')} {...bindTrigger(state)} />
+                    <Stack
+                        direction="row"
+                        spacing={2}
+                        alignItems="center"
+                        className="ms-sidebar-user-trigger"
+                        {...bindTrigger(state)}
+                    >
+                        <Avatar {...stringAvatar(userInfo?.nickname || '')} />
+                        <Tooltip autoEllipsis className="ms-name" title={userInfo.nickname} />
+                    </Stack>
                     <Menu
                         {...bindMenu(state)}
                         anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'center',
+                            vertical: -10,
+                            horizontal: 'left',
                         }}
                         transformOrigin={{
-                            vertical: 145,
+                            vertical: 'bottom',
                             horizontal: 'left',
                         }}
                     >
@@ -91,6 +99,7 @@ const MoreUserInfo: React.FC<MoreUserInfoProps> = props => {
                             />
                         </ListItem>
                         <Divider sx={{ marginBottom: '8px' }} />
+                        <LangItem onChange={() => state.close()} />
                         <MenuItem
                             onClick={() => {
                                 state.close();

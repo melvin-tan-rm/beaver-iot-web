@@ -27,6 +27,8 @@ export const apiLangs: Partial<Record<LangType, string>> = {
     EN: 'en',
 };
 
+export type { LangType };
+
 export default () => {
     const lang = useSharedGlobalStore(state => state.lang);
     const httpErrorKeys = useMemo(() => {

@@ -124,6 +124,7 @@ export {
     OpenInFull as OpenInFullIcon,
     AddCircleOutline as AddCircleOutlineIcon,
     Logout as LogoutIcon,
+    Language as LanguageIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';

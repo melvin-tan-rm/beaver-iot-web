@@ -1,0 +1,54 @@
+import React from 'react';
+import { Menu, MenuItem, ListItemIcon, Stack } from '@mui/material';
+import { usePopupState, bindTrigger, bindMenu } from 'material-ui-popup-state/hooks';
+import { useI18n, type LangType } from '@milesight/shared/src/hooks';
+import { LanguageIcon, ArrowForwardIosIcon } from '@milesight/shared/src/components';
+
+interface Props {
+    onChange?: (lang: LangType) => void;
+}
+
+const LangItem: React.FC<Props> = ({ onChange }) => {
+    const { lang, langs, changeLang, getIntlText } = useI18n();
+    const popupState = usePopupState({ variant: 'popover', popupId: 'ms-langs-menu' });
+
+    return (
+        <>
+            <MenuItem {...bindTrigger(popupState)}>
+                <ListItemIcon>
+                    <LanguageIcon />
+                </ListItemIcon>
+                <Stack sx={{ flex: 1 }}>{getIntlText('common.label.language')}</Stack>
+                <ArrowForwardIosIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+            </MenuItem>
+            <Menu
+                {...bindMenu(popupState)}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                sx={{ '& .MuiList-root': { width: 160 } }}
+            >
+                {Object.values(langs).map(item => (
+                    <MenuItem
+                        selected={item.key === lang}
+                        onClick={() => {
+                            if (item.key === lang) return;
+                            popupState.close();
+                            changeLang(item.key);
+                            onChange?.(item.key);
+                        }}
+                    >
+                        {getIntlText(item.labelIntlKey)}
+                    </MenuItem>
+                ))}
+            </Menu>
+        </>
+    );
+};
+
+export default LangItem;
