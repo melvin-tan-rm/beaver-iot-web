@@ -25,7 +25,7 @@ export type ParamSelectProps = SelectProps<ParamSelectValueType>;
  */
 const ParamSelect: React.FC<ParamSelectProps> = ({ label, required, disabled, ...props }) => {
     const { getIntlText } = useI18n();
-    const { getUpstreamNodeParams } = useWorkflow();
+    const { getUpstreamNodeParams, getReferenceParamDetail } = useWorkflow();
 
     const renderOptions = useCallback(() => {
         const [data] = getUpstreamNodeParams();
@@ -65,6 +65,21 @@ const ParamSelect: React.FC<ParamSelectProps> = ({ label, required, disabled, ..
         return result;
     }, [getIntlText, getUpstreamNodeParams]);
 
+    const renderValue = useCallback<NonNullable<ParamSelectProps['renderValue']>>(
+        selected => {
+            if (!selected) return null;
+            const detail = getReferenceParamDetail(selected);
+
+            if (!detail) return null;
+            return (
+                <Tooltip title={`${detail.valueName} / ${detail.valueType}`}>
+                    <span className="name">{detail.valueName}</span>
+                </Tooltip>
+            );
+        },
+        [getReferenceParamDetail],
+    );
+
     return (
         <div className="ms-param-select">
             <FormControl fullWidth required={required} disabled={disabled}>
@@ -79,6 +94,7 @@ const ParamSelect: React.FC<ParamSelectProps> = ({ label, required, disabled, ..
                     labelId="param-select-label"
                     label={!isNil(label) ? label : getIntlText('common.label.value')}
                     IconComponent={KeyboardArrowDownIcon}
+                    renderValue={renderValue}
                     MenuProps={{
                         className: 'ms-param-select-menu',
                         anchorOrigin: {

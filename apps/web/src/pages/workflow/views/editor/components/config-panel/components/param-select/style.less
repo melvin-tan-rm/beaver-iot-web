@@ -47,30 +47,10 @@
     }
 
     .@{mui-prefix}InputBase-root {
-        .@{prefix}-param-select-item {
-            display: inline-flex;
-            align-items: center;
-            max-width: calc(100% - 40px);
-            max-width: 120px;
-            padding: 0 @padding-xs;
-            background-color: var(--component-background-gray);
-            border-radius: @border-radius-base;
-            .text-size(@font-size-base);
-
-            .name {
-                min-width: 8px;
-                max-width: calc(50% - 8px);
-            }
-
-            .divider {
-                margin: 0 @margin-xxs;
-                color: var(--text-color-secondary);
-            }
-
-            .type {
-                font-size: @font-size-sm;
-                color: var(--text-color-tertiary);
-            }
+        .name {
+            display: block;
+            // .text-size(@font-size-base);
+            .ellipsis();
         }
     }
 }
