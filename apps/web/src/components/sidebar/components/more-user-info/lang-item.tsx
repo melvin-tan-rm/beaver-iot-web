@@ -2,7 +2,7 @@ import React from 'react';
 import { Menu, MenuItem, ListItemIcon, Stack } from '@mui/material';
 import { usePopupState, bindTrigger, bindMenu } from 'material-ui-popup-state/hooks';
 import { useI18n, type LangType } from '@milesight/shared/src/hooks';
-import { LanguageIcon, ArrowForwardIosIcon } from '@milesight/shared/src/components';
+import { LanguageIcon, ArrowForwardIosIcon, CheckIcon } from '@milesight/shared/src/components';
 
 interface Props {
     onChange?: (lang: LangType) => void;
@@ -33,19 +33,23 @@ const LangItem: React.FC<Props> = ({ onChange }) => {
                 }}
                 sx={{ '& .MuiList-root': { width: 160 } }}
             >
-                {Object.values(langs).map(item => (
-                    <MenuItem
-                        selected={item.key === lang}
-                        onClick={() => {
-                            if (item.key === lang) return;
-                            popupState.close();
-                            changeLang(item.key);
-                            onChange?.(item.key);
-                        }}
-                    >
-                        {getIntlText(item.labelIntlKey)}
-                    </MenuItem>
-                ))}
+                {Object.values(langs).map(item => {
+                    const selected = item.key === lang;
+                    return (
+                        <MenuItem
+                            selected={selected}
+                            onClick={() => {
+                                if (selected) return;
+                                popupState.close();
+                                changeLang(item.key);
+                                onChange?.(item.key);
+                            }}
+                        >
+                            <Stack sx={{ flex: 1 }}>{getIntlText(item.labelIntlKey)}</Stack>
+                            {selected && <CheckIcon sx={{ color: 'primary.main' }} />}
+                        </MenuItem>
+                    );
+                })}
             </Menu>
         </>
     );
