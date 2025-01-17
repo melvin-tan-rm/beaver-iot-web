@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useRequest, useMemoizedFn } from 'ahooks';
 
 import { Button, Stack } from '@mui/material';
@@ -29,6 +29,11 @@ const Devices: React.FC = () => {
     const [keyword, setKeyword] = useState<string>('');
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const [selectedIds, setSelectedIds] = useState<readonly ApiKey[]>([]);
+
+    const handleSearch = useCallback((value: string) => {
+        setKeyword(value);
+        setPaginationModel(model => ({ ...model, page: 0 }));
+    }, []);
 
     const {
         data: roleDevices,
@@ -177,7 +182,7 @@ const Devices: React.FC = () => {
                 toolbarRender={toolbarRender}
                 onPaginationModelChange={setPaginationModel}
                 onRowSelectionModelChange={setSelectedIds}
-                onSearch={setKeyword}
+                onSearch={handleSearch}
                 onRefreshButtonClick={getRoleDevices}
                 isRowSelectable={params => Boolean(!params?.row?.roleIntegration)}
                 slots={{

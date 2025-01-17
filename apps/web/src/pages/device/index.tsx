@@ -153,7 +153,10 @@ export default () => {
                         onRowDoubleClick={({ row }) => {
                             navigate(`/device/detail/${row.id}`, { state: row });
                         }}
-                        onSearch={setKeyword}
+                        onSearch={value => {
+                            setKeyword(value);
+                            setPaginationModel(model => ({ ...model, page: 0 }));
+                        }}
                         onRefreshButtonClick={getDeviceList}
                     />
                 </div>
