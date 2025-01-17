@@ -4,7 +4,7 @@ import { Stack } from '@mui/material';
 import { useRequest } from 'ahooks';
 import { DevicesOtherIcon, EntityIcon } from '@milesight/shared/src/components';
 import { thousandSeparate, objectToCamelCase } from '@milesight/shared/src/utils/tools';
-import { Breadcrumbs } from '@/components';
+import { Breadcrumbs, Tooltip } from '@/components';
 import {
     integrationAPI,
     IntegrationAPISchema,

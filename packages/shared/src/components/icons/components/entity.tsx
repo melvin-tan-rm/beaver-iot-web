@@ -7,6 +7,7 @@ const EntityIcon = createSvgIcon(
         viewBox="0 0 24 24"
         // strokeWidth={1.5}
         stroke="currentColor"
+        strokeWidth={0.2}
     >
         <path
             fillRule="evenodd"
