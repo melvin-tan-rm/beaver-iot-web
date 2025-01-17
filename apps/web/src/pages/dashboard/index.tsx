@@ -87,6 +87,22 @@ export default () => {
             setTabs([...tabs, { ...data, dashboard_id: resData.dashboard_id, widgets: [] }]);
             setShowAdd(false);
             toast.success(getIntlText('common.message.operation_success'));
+            // 如果是新增的dashboard弹出提示是否要切换到新的tab页
+            if (!data.dashboard_id) {
+                if (isEdit) {
+                    confirm({
+                        title: getIntlText('common.modal.title_leave_current_page'),
+                        description: getIntlText('dashboard.leave_to_new_dashboard_description'),
+                        confirmButtonText: getIntlText('common.button.confirm'),
+                        onConfirm: () => {
+                            setTabKey(resData.dashboard_id);
+                            setIsEdit(false);
+                        },
+                    });
+                } else {
+                    setTabKey(resData.dashboard_id);
+                }
+            }
         }
     };
 
