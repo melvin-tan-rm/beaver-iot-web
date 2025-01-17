@@ -1,7 +1,5 @@
 /**
- * 常用工具函数
- *
- * 注意：工具函数必须为纯函数
+ * Common tool functions
  */
 import { stringify } from 'qs';
 import axios, { type Canceler } from 'axios';
@@ -9,7 +7,7 @@ import { camelCase, isPlainObject } from 'lodash-es';
 import { PRIVATE_PROPERTY_PREFIX } from '../config';
 
 /**
- * 判断是否为本地 IP 地址
+ * Check whether it is a local IP address
  * @param {String} ip
  * @returns
  */
@@ -50,11 +48,12 @@ export const isLocalIP = (ip: string): boolean => {
 };
 
 /**
- * 异步加载 JS 资源文件
- * @param src 资源文件路径
- * @param attrs 自定义 script 属性
- * @param removeOnLoad 加载完成后是否移除脚本标签，默认为 false
- * @returns 返回一个 Promise，resolve 参数为加载完成后的 HTMLScriptElement 元素
+ * Asynchronous loading JS resource file
+ * @param src Resource file path
+ * @param attrs Custom Script attribute
+ * @param removeOnLoad Whether to remove the script label after loading, the default is false
+ * @returns Return a promise, the resolution parameter is the HTMLScriptElement after
+ * the loading is completed
  */
 export const loadScript = (
     src: string,
@@ -100,9 +99,9 @@ export const loadScript = (
 };
 
 /**
- * 动态插入 JavaScript 代码到页面中
- * @param code 要插入的 JavaScript 代码
- * @returns 插入的 `<script>` 标签对象
+ * Dynamically insert JavaScript code to the page
+ * @param code JavaScript code to be inserted
+ * @returns Insert `<script>` tag objects
  */
 export const loadScriptCode = (code: string): HTMLScriptElement => {
     const script = document.createElement('script');
@@ -113,17 +112,17 @@ export const loadScriptCode = (code: string): HTMLScriptElement => {
 };
 
 type CSSLoadOptions = {
-    /** 元素属性 */
+    /** Link attributes */
     attrs?: Record<string, any>;
-    /** 是否在 head 所有子元素之前插入。默认 `false`，即插入到所有子元素之后 */
+    /** Whether it is inserted before all head elements. The default `false` */
     insertBefore?: boolean;
 };
 /**
- * 异步加载样式表资源文件
- * @param url 资源地址
- * @param options.attrs 自定义 link 属性
- * @param options.insertBefore 是否在 head 所有子元素之前插入。默认 `false`，即插入到所有子元素之后
- * @returns 返回一个 Promise，resolve 参数为加载完成后的 HTMLLinkElement 元素
+ * Asynchronous loading style sheet resource file
+ * @param url Resource address
+ * @param options.attrs
+ * @param options.insertBefore
+ * @returns Return a promise, the resolve parameter is the HtmlLinkElement after loading
  */
 export const loadStylesheet = (
     url: string,
@@ -178,28 +177,28 @@ export const loadStylesheet = (
 };
 
 interface TruncateOptions {
-    /** 最大字符数 */
+    /** Maximum Length */
     maxLength: number;
-    /** 截断占位符，默认为 '...' */
+    /** Ellipsis placeholder, the default is '...' */
     ellipsis?: string;
-    /** 占位符位置，默认为 'end' */
+    /** Ellipsis position，default is 'end' */
     ellipsisPosition?: 'start' | 'middle' | 'end';
 }
 /**
- * 将字符串截断为指定长度，并添加截断占位符
- * @param {String} str 需要截断的字符串
- * @param {Options} options 截断选项
- * @returns {String} 返回截断后的字符串
+ * Trim the string to the specified length and add a placeholder
+ * @param {String} str String that needs to be cut off
+ * @param {Options} options Trim option
+ * @returns {String}
  */
 export const truncate = (str: string, options: TruncateOptions): string => {
     const { maxLength, ellipsis = '...', ellipsisPosition = 'end' } = options;
 
     if (typeof str !== 'string') {
-        throw new TypeError('参数必须是字符串类型');
+        throw new TypeError('The parameter must be a string type');
     }
 
     // eslint-disable-next-line
-    const regExp = /([\u4e00-\u9fa5])|([^\x00-\xff])/g; // 匹配中文和非 ASCII 字符
+    const regExp = /([\u4e00-\u9fa5])|([^\x00-\xff])/g; // Matching Chinese and non -ASCII characters
     let count = 0;
     let truncatedLength = 0;
 
@@ -213,8 +212,9 @@ export const truncate = (str: string, options: TruncateOptions): string => {
         truncatedLength++;
 
         /**
-         * 遍历至最后一个字符，若此时计算字符数小于最大限制字符数，
-         * 或者截断长度与字符长度相等，则直接返回原始字符
+         * Traversing to the last character, if the number of characters is less than the
+         * maximum limit number of characters at this time, or the cutting length is equal to
+         * the character length, then return to the original character directly.
          */
         if (i === len - 1 && (count <= maxLength || len === truncatedLength)) {
             return str;
@@ -228,15 +228,15 @@ export const truncate = (str: string, options: TruncateOptions): string => {
             return ellipsis + truncatedStr.slice(ellipsis.length);
         }
         case 'middle': {
-            // 计算左侧和右侧部分的长度
+            // Calculate the length of the left and right parts
             const leftHalfMaxLength = Math.floor((maxLength - ellipsis.length) / 2);
             const rightHalfMaxLength = maxLength - ellipsis.length - leftHalfMaxLength;
-            // 截取左侧字符
+            // Truncate the left characters
             const leftHalf = truncatedStr.slice(0, leftHalfMaxLength);
             let rightHalf = '';
             let count = 0;
 
-            // 截取右侧字符
+            // Truncate the right characters
             for (let i = str.length - 1; i >= 0; i--) {
                 if (count >= rightHalfMaxLength) {
                     break;
@@ -247,22 +247,23 @@ export const truncate = (str: string, options: TruncateOptions): string => {
                 rightHalf = `${char}${rightHalf}`;
             }
 
-            // 拼接字符串
+            // Stitching string
             return leftHalf + ellipsis + rightHalf;
         }
         case 'end': {
             return truncatedStr + ellipsis;
         }
         default: {
-            throw new Error(`无效的占位符位置 "${ellipsisPosition}"`);
+            throw new Error(`Invalid placeholder location "${ellipsisPosition}"`);
         }
     }
 };
 
 /**
- * 版本号比较函数，判断第一个版本号是否大于等于第二个版本号
- * @param {String} version1 第一个版本号（支持 1.1, 1.2.3, v1.2.3 格式）
- * @param {String} version2 第二个版本号（支持 1.1, 1.2.3, v1.2.3 格式）
+ * The version number comparative function, determine whether the first version number is
+ * greater than or equal to the second version number
+ * @param {String} version1 The first version number (supports 1.1, 1.2.3, V1.2.3 format)
+ * @param {String} version2 The second version number (supports 1.1, 1.2.3, V1.2.3 format)
  */
 export const compareVersions = (version1: string, version2: string) => {
     const ver1 = !version1.startsWith('v') ? version1 : version1.substring(1);
@@ -272,7 +273,7 @@ export const compareVersions = (version1: string, version2: string) => {
     const length = Math.max(parts1.length, parts2.length);
 
     for (let i = 0; i < length; i++) {
-        const num1 = parseInt(parts1[i] || '0'); // 转换为整数，默认为 0
+        const num1 = parseInt(parts1[i] || '0'); // Converted to integer, default 0
         const num2 = parseInt(parts2[i] || '0');
 
         if (num1 > num2) {
@@ -294,13 +295,12 @@ export interface NameInfo {
     lastName?: string;
 }
 /**
- * 组合名称
- * @param {NameInfo} nameInfo - 包含firstName和lastName的名称对象
- * @param {boolean} isCN - 是否是国内环境
- * @returns {string} 返回组合后的名称
+ * Combination name
+ * @param {NameInfo} nameInfo - Name objects containing `firstName` and `lastName`
+ * @param {boolean} isCN - Whether it is the Chinese environment
+ * @returns {string}
  */
 export const composeName = (nameInfo: NameInfo, isCN = true): string => {
-    // 兼容值为null/undefined的情况
     const firstName = nameInfo?.firstName || '';
     const lastName = nameInfo?.lastName || '';
 
@@ -309,16 +309,18 @@ export const composeName = (nameInfo: NameInfo, isCN = true): string => {
 };
 
 /**
- * 基于 a 标签的文件下载
- * @param {string | Blob} assets - 文件地址或者blob数据
- * @param {string} fileName - 文件名
+ * Download file based `a` tag
+ * @param {string | Blob} assets - File address or blob data
+ * @param {string} fileName - File name
  *
  * @description
- * **优势：** 流式下载，大文件下载时减轻CPU及内存压力
+ * ** Advantage: ** Streaming download, reducing the CPU and memory pressure when downloading large files
  *
- * **受限条件：**
- * 1. 跨域URL的下载，fileName参数将失效，无法重命名。可改用`xhrDownload`方法进行下载
- * 2. Edge等部分浏览器下载office文件时，会自动打开文件预览。可改用`xhrDownload`方法进行下载
+ * ** Limited conditions: **
+ * 1. For cross domain URL downloads, the `fileName` parameter will fail and cannot be renamed. You
+ * can use the `xhrDownload` method to download;
+ * 2. Edge and other browsers will automatically open the file preview when downloading Office files. You
+ *  can use the `xhrDownload` method to download;
  */
 export const linkDownload = (assets: string | Blob, fileName: string) => {
     if (!assets) return;
@@ -338,44 +340,44 @@ export const linkDownload = (assets: string | Blob, fileName: string) => {
 
 interface DownloadOptions {
     /**
-     * 文件地址或者blob数据
+     * File address or blob data
      */
     assets: string | Blob;
     /**
-     * 文件名
+     * File name
      */
     fileName: string;
     /**
-     * 下载进度回调
-     * @param percent 下载进度百分比
+     * Download progress callback
+     * @param percent Download progress percentage
      */
     onProgress?: (percent: number) => void;
     /**
-     * 自定义请求头
+     * Custom request header
      */
     header?: Record<string, string>;
 }
 interface xhrDownloadResponse<T> {
     /**
-     * 中断下载
+     * Interrupt download
      */
     abort: () => void;
     /**
-     * 下载成功回调
+     * Download success callback
      */
     then: Promise<T>['then'];
     /**
-     * 下载失败回调
+     * Download failed callback
      */
     catch: Promise<T>['catch'];
 }
 /**
- * 基于HTTP的文件下载
- * @param {DownloadOptions} options - 下载参数
- * @param {string | Blob} options.assets - 文件地址或者blob数据
- * @param {string} options.fileName - 下载文件名
- * @param {Function} [options.onProgress] - 下载进度回调
- * @return {xhrDownloadResponse} 返回PromiseLike，包含下载成功回调`then`、失败回调`catch`和下载中断方法`abort`，支持Promise A+调用
+ * HTTP-based file download
+ * @param {DownloadOptions} options Download options
+ * @param {string | Blob} options.assets File address or blob data
+ * @param {string} options.fileName fileName
+ * @param {Function} [options.onProgress] Download progress callback
+ * @return {xhrDownloadResponse} return PromiseLike object
  */
 export const xhrDownload = ({
     assets,
@@ -393,7 +395,7 @@ export const xhrDownload = ({
     const { CancelToken } = axios;
     let cancel: Canceler | null = null;
     const client = new Promise<string>((resolve, reject) => {
-        // 利用axios下载文件
+        // Use Axios to download files
         axios
             .request({
                 headers: header,
@@ -430,7 +432,7 @@ export const xhrDownload = ({
 };
 
 /**
- * 生成UUID的函数
+ * Generate UUID
  * @returns UUID
  */
 export const generateUUID = (): string => {
@@ -445,24 +447,24 @@ export const generateUUID = (): string => {
 };
 
 interface GenerateStrOPtions {
-    /** 是否包含大写字母 */
+    /** Whether contain uppercase letters */
     upperCase?: boolean;
-    /** 是否包含小写字母 */
+    /** Whether contain lowercase letters */
     lowerCase?: boolean;
-    /** 是否包含数字 */
+    /** Whether contain numbers */
     number?: boolean;
-    /** 是否包含符号 */
+    /** Whether contain symbols */
     symbol?: boolean;
 }
 /**
- * 生成随机字符串
- * @param {number} length - 字符长度，默认为 `8`
- * @param {Object} [options] - 生成字符串的选项，默认包含**大写字母+数字**
- * @param {boolean} options.number - 是否包含数字，默认为 `true`
- * @param {boolean} options.upperCase - 是否包含大写字母，默认为 `true`
- * @param {boolean} options.lowerCase - 是否包含小写字母，默认为 `false`
- * @param {boolean} options.symbol - 是否包含符号，默认为 `false`
- * @returns 随机字符串
+ * Generate random string
+ * @param {number} length String length, default is 8
+ * @param {Object} [options] Options
+ * @param {boolean} options.number Whether contain uppercase letters, default is `true`
+ * @param {boolean} options.upperCase Whether contain uppercase letters, default is `true`
+ * @param {boolean} options.lowerCase Whether contain lowercase letters, default is `false`
+ * @param {boolean} options.symbol Whether contain symbols, default is `false`
+ * @returns {string}
  */
 export const genRandomString = (
     length = 8,
@@ -497,9 +499,9 @@ export const genRandomString = (
 };
 
 /**
- * 数字千位分隔（默认分隔符为 `,`）
- * @param number 待分隔数字
- * @param separator 分隔符
+ * Digital thousands of separators
+ * @param number Number to be separated
+ * @param separator Separator, default is `,`
  */
 export const thousandSeparate = (number?: number | string, separator = ',') => {
     if (!number && number !== 0) return '';
@@ -508,8 +510,8 @@ export const thousandSeparate = (number?: number | string, separator = ',') => {
 };
 
 /**
- * 获取对象类型
- * @param obj 任意对象
+ * Get Object type
+ * @param obj Any object
  * @returns
  */
 export const getObjectType = (obj: any) => {
@@ -520,14 +522,14 @@ export const getObjectType = (obj: any) => {
     return type;
 };
 
-/** 是否是文件名 */
+/** Whether it is a valid file name */
 export const isFileName = (name: string) => {
     const fileNameRegex = /^[^\\/:*?"<>|]+\.[a-zA-Z0-9]+$/;
     return fileNameRegex.test(name);
 };
 
 /**
- * 将对象key的下划线转为驼峰
+ * Convert snake case to camel case
  * @deprecated
  */
 export const convertKeysToCamelCase = <T extends Record<string, any>>(target: T) => {
@@ -555,10 +557,10 @@ export const convertKeysToCamelCase = <T extends Record<string, any>>(target: T)
 };
 
 /**
- * 将对象的所有属性名转换为指定命名法
- * @param obj 要转换的对象
- * @param keyConverter 转换属性名的函数
- * @returns 转换为驼峰命名法后的对象
+ * Convert all the attribute names of the object to the specified naming method
+ * @param obj Object to be converted
+ * @param keyConverter Function of converting attribute name
+ * @returns new object that has be converted
  */
 function convertObjectCase<TInput extends object, TResult extends ObjectToCamelCase<TInput>>(
     obj: TInput,
@@ -592,9 +594,9 @@ function convertObjectCase<TInput extends object, TResult extends ObjectToCamelC
 }
 
 /**
- * 将字符串转换为驼峰命名法
- * @param str 要转换的字符串
- * @returns 转换为驼峰命名法后的字符串
+ * Convert string to camel case
+ * @param str The string to be converted
+ * @returns
  */
 export function toCamelCase<T extends string>(str: T): ToCamelCase<T> {
     return (
@@ -607,18 +609,18 @@ export function toCamelCase<T extends string>(str: T): ToCamelCase<T> {
 }
 
 /**
- * 将对象的所有属性名转换为驼峰命名法
- * @param obj 要转换的对象
- * @returns 转换为驼峰命名法后的对象
+ * Convert all the attribute names of the object to the camel case
+ * @param obj The Object to be converted
+ * @returns
  */
 export function objectToCamelCase<T extends object>(obj: T): ObjectToCamelCase<T> {
     return convertObjectCase(obj, toCamelCase);
 }
 
 /**
- * 将驼峰转换为下划线
- * @param str 要转换的字符串
- * @returns 转换为下划线名法后的字符串
+ * Convert string to snake case
+ * @param str The string to be converted
+ * @returns
  */
 export function camelToSnake<T extends string>(str: T): ToCamelCase<T> {
     return str.replace(/([A-Z])/g, function (match) {
@@ -627,25 +629,25 @@ export function camelToSnake<T extends string>(str: T): ToCamelCase<T> {
 }
 
 /**
- * 将对象的所有属性名转换为下划线名法
- * @param obj 要转换的对象
- * @returns 转换为下划线名法后的对象
+ * Convert all the attribute names of the object to the snake case
+ * @param obj The Object to be converted
+ * @returns
  */
 export function objectToCamelToSnake<T extends object>(obj: T): ObjectToCamelCase<T> {
     return convertObjectCase(obj, camelToSnake);
 }
 
 /**
- * 将嵌套的对象展开为扁平化的对象，其中嵌套的键通过点号连接。
+ * The nested object is expanded as a flat object, where the nested keys are connected
+ * through the point number.
  *
- * @template T 输入对象的类型，它必须是一个 Record<string, any>。
- * @param obj 要展开的嵌套对象。
- * @returns 展开后的扁平化对象。
+ * @param obj The Object to be flattened
+ * @returns
  *
  * @example
  * const nestedObj = { a: { b: { c: 1 } } };
  * const flattenedObj = flattenObject(nestedObj);
- * // flattenedObj 现在是 { 'a.b.c': 1 }
+ * // flattenedObj -> { 'a.b.c': 1 }
  */
 export function flattenObject<T extends Record<string, any>>(obj: T) {
     const result: Record<string, any> = {};
@@ -666,10 +668,10 @@ export function flattenObject<T extends Record<string, any>>(obj: T) {
 }
 
 /**
- * 生成完整的 API 地址
- * @param origin 服务器源
- * @param path 路径
- * @param params 参数
+ * Generate a complete API address
+ * @param origin Origin
+ * @param path path
+ * @param params params
  */
 export const genApiUrl = (origin = '', path = '', params?: Record<string, any>) => {
     origin = origin.replace(/\/$/, '');
@@ -684,9 +686,9 @@ export const genApiUrl = (origin = '', path = '', params?: Record<string, any>) 
 };
 
 /**
- * 延迟执行
- * @param ms - 延迟时间（毫秒）
- * @returns 返回PromiseLike，包含cancel和then方法，支持Promise A+调用
+ * Delay execution
+ * @param ms - Delay time (millisecond)
+ * @returns return PromiseLike
  */
 export const delay = (ms: number): PromiseLike<void> & { cancel: () => void } => {
     const { resolve, promise } = withPromiseResolvers<void>();
@@ -701,7 +703,8 @@ export const delay = (ms: number): PromiseLike<void> & { cancel: () => void } =>
 };
 
 /**
- * 返回一个包含`Promise`和`resolve`、`reject`的对象，适用于减少代码层级的嵌套
+ * Returns an object that contains `promise` and` Resolve`, and `Reject`, which is
+ * suitable for reducing nested coding levels
  * @docs https://github.com/tc39/proposal-promise-with-resolvers
  */
 export const withPromiseResolvers = <T>() => {
