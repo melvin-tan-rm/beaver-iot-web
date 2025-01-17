@@ -1,14 +1,15 @@
 /* eslint-disable camelcase */
 /**
- * 通用请求处理中间件
+ * General request processing middleware
  */
 import type { AxiosRequestConfig } from 'axios';
 import cancelRequest, { cacheRequestCancelToken } from './cancel-request';
 
 /**
- * Language 请求头配置
+ * Language header handler
  *
- * 注意：此中间件依赖 i18n 服务，若出现循环依赖，则该中间件应迁移至各平台各自处理
+ * Note: This middleware depends on the i18N service. If a circular dependence occurs, the
+ * middleware should be migrated to the respective platform for each platform
  */
 // export const languageHandler = async (config: AxiosRequestConfig) => {
 //     config.headers = config.headers || {};
@@ -18,9 +19,9 @@ import cancelRequest, { cacheRequestCancelToken } from './cancel-request';
 // };
 
 /**
- * 重复请求处理（默认不允许重复）
+ * Duplicate request handler
  *
- * 若要支持重复请求，可以传入 headers: { 'x-allow-repeat': true }
+ * If you want to support duplicate requests, you can pass headers: `{'x-allow-repeat': true}`
  */
 export const cancelConfigHandler = async (config: AxiosRequestConfig) => {
     cancelRequest(config);

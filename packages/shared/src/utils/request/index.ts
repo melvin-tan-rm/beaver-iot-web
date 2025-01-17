@@ -14,7 +14,7 @@ const MATCH_PATH_PARAMS = /:(\w+)/g;
 const USE_DATA_METHODS = ['POST', 'PUT', 'PATCH', 'DELETE'];
 
 /**
- * 创建 API 请求
+ * Create API requests
  */
 export function attachAPI<T extends APISchema>(
     client: AxiosInstance,
@@ -26,7 +26,7 @@ export function attachAPI<T extends APISchema>(
     for (const apiName in apis) {
         const apiConfig = apis[apiName];
 
-        // 配置为一个函数
+        // If `apiConfig` is a function, it will be called directly
         if (typeof apiConfig === 'function') {
             // hostApi[apiName] = apiConfig as RequestFunction;
             hostApi[apiName] = (...args) => {
@@ -52,7 +52,7 @@ export function attachAPI<T extends APISchema>(
         let apiOptions = {};
         let apiPath = apiConfig as RequestPath;
 
-        // 配置为一个对象
+        // If `apiConfig` is an object, it will be merged into `apiOptions`
         if (typeof apiConfig === 'object') {
             const { path, method = 'GET', ...rest } = apiConfig as RequestOptions;
             apiPath = (
@@ -63,11 +63,11 @@ export function attachAPI<T extends APISchema>(
 
         hostApi[apiName] = (params, options) => {
             const _params = getObjectType(params) === 'object' ? { ...params } : params || {};
-            // 匹配路径中请求方法，如：'POST /api/test'
+            // Match the request method in the `apiPath`, such as `POST /api/test`
             const [prefix, method] = apiPath.match(MATCH_METHOD) || ['GET ', 'GET'];
-            // 剔除掉 GET/POST 等前缀
+            // Remove the prefixes such as `GET/POST`
             let url = apiPath.replace(prefix, '');
-            // 匹配路径中的参数占位符， 如 '/api/:user_id/:res_id'
+            // Match the parameters in the `apiPath`, such as `/api/:user_id/:res_id`
             const matchParams = apiPath.match(MATCH_PATH_PARAMS);
 
             if (matchParams && typeof _params === 'object') {
@@ -114,7 +114,7 @@ export function attachAPI<T extends APISchema>(
 }
 
 /**
- * 创建请求客户端
+ * Create request client
  */
 export function createRequestClient({
     configHandlers,
@@ -131,7 +131,7 @@ export function createRequestClient({
         ...restConfig,
     });
 
-    // 附加各业务请求头
+    // Additional business request header
     client.interceptors.request.use(
         config => {
             const configHandlersPromise = (configHandlers || []).map(handler => {
@@ -150,7 +150,7 @@ export function createRequestClient({
         },
     );
 
-    // 拦截请求
+    // Intercept request
     client.interceptors.response.use(
         resp => {
             if (onResponse) {
@@ -170,9 +170,10 @@ export function createRequestClient({
 }
 
 /**
- * 通用请求接口前缀
+ * General request path prefix
  *
- * 注意：若各平台接口前缀不同，应在各自 client 初始化时自行处理
+ * Note: If the prefix of each platform interface is different, it should be handled by
+ * yourself when the client initialization
  */
 export const apiPrefix = '/api/v1';
 export const apiPrefixDevice = `/device${apiPrefix}`;
@@ -181,11 +182,11 @@ export const apiPrefixCenter = `/center${apiPrefix}`;
 export const apiPrefixTools = `/tool${apiPrefix}`;
 export const apiPrefixTask = `/task${apiPrefix}`;
 
-// 导出所有工具函数
+// Export all the tool functions
 export * from './utils';
 
-// 导出请求处理中间件
+// Export request middlewares
 export * from './handlers';
 
-// 导出取消请求处理函数
+// Export the request cancel function
 export { default as cancelRequest, cacheRequestCancelToken } from './cancel-request';

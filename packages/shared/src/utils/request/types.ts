@@ -1,11 +1,11 @@
 import { AxiosRequestConfig, AxiosResponse, AxiosError, CreateAxiosDefaults } from 'axios';
 
-// 获取配置签名
+// Get config signature
 type GetConfigSignature<Obj extends Record<string, any>> = {
     [Key in keyof Obj]: Obj[Key];
 };
 
-// 选项配置
+// Request options type
 export type RequestOptions = {
     path: string;
     method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'HEAD' | 'OPTIONS' | 'CONNECT' | 'TRACE' | 'PATCH';
@@ -13,14 +13,15 @@ export type RequestOptions = {
     baseURL?: string;
 };
 
-// 路径配置
+// Request path type
 export type RequestPath = `${Uppercase<RequestOptions['method']>} ${string}`;
 
 export type RequestFunctionOptions = AxiosRequestConfig & {
     /**
-     * 是否忽略全局错误处理，支持传入指定忽略的错误码
+     * Whether to ignore global error handling, and specify the error code to ignore
      *
-     * 注意：工具库不做相应实现，业务中应配合相关 error handler 来自行处理
+     * Note: The tool library does not implement the corresponding error handling, and the
+     * business should handle it according to the relevant error handler
      */
     $ignoreError?:
         | boolean
@@ -30,14 +31,15 @@ export type RequestFunctionOptions = AxiosRequestConfig & {
               handler: (code: string, resp?: AxiosResponse<unknown, any>) => void;
           }[];
     /**
-     * 是否允许并行重复请求
+     * Whether to allow parallel duplicate requests
      *
-     * 注意：工具库不做相应实现，应配合相关 config handler 来自行处理
+     * Note: The tool library does not implement the corresponding error handling, and the business
+     * should handle it according to the relevant config handler
      */
     $allowRepeat?: boolean;
     [key: string]: any;
 };
-// 自定义函数
+// Request function type
 export type RequestFunction<P = Record<string, any> | void, R = any> = (
     params: P,
     // ...args: any[]
@@ -51,7 +53,7 @@ export type ConfigHandler = (config: AxiosRequestConfig) => Promise<AxiosRequest
 export type ErrorHandler = (error: AxiosError) => void;
 export type ResponseHandler<T = AxiosResponse> = (resp: T) => T;
 
-// Tip: 已提取到全局
+// Tip: The type has been extracted to global
 // export type APISchema = Record<string, {
 //     request: Record<string, any> | void;
 //     response: Record<string, any> | any;
@@ -62,29 +64,29 @@ export type AttachAPIOptions<T extends APISchema> = {
         [K in keyof GetConfigSignature<T>]: APIConfig;
     };
 
-    /** 响应处理函数 */
+    /** Response callback */
     onResponse?: ResponseHandler<AxiosResponse<ApiResponse>>;
 
-    /** 错误处理函数 */
+    /** Error callback */
     onError?: ErrorHandler;
 };
 
 export type CreateRequestConfig = {
-    /** 请求配置处理函数集合 */
+    /** Request config handlers */
     // headerHandlers?: Array<HeaderHandler>;
     configHandlers?: Array<ConfigHandler>;
 
-    /** 请求配置错误处理函数 */
+    /** The callback of config handler error */
     onConfigError?: ErrorHandler;
 
-    /** 响应处理函数 */
+    /** Response callback */
     onResponse?: ResponseHandler<AxiosResponse<ApiResponse>>;
 
-    /** 响应错误处理函数 */
+    /** Response error callback */
     onResponseError?: ErrorHandler;
 } & CreateAxiosDefaults;
 
-// 创建请求客户端的类型约束
+// Create type constraints of the request client
 export type CreateRequestClient<T extends APISchema> = {
     [K in keyof GetConfigSignature<T>]: RequestFunction<
         GetConfigSignature<T>[K]['request'],

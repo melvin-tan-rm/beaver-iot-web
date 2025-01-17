@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const pendingMap = new Map();
 /**
- * 生成每个请求唯一的键
+ * Generate the unique key for each request
  * @param {*} config
  * @returns string
  */
@@ -15,7 +15,7 @@ function generatePendingKey(config: AxiosRequestConfig) {
 }
 
 /**
- * 储存每个请求唯一值, 也就是cancel()方法, 用于取消请求
+ * Cache the cancel token for each request
  * @param {*} config
  */
 function cacheRequestCancelToken(config: AxiosRequestConfig) {
@@ -31,7 +31,7 @@ function cacheRequestCancelToken(config: AxiosRequestConfig) {
         });
 }
 /**
- * 删除重复的请求
+ * Cancel the duplicate request
  * @param {*} config
  */
 function cancelRequest(config?: AxiosRequestConfig) {

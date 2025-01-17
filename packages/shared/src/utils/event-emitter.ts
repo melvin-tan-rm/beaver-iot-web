@@ -5,8 +5,9 @@ export interface ISubscribe {
     attrs?: Record<string, any>;
     callbacks: ((...args: any[]) => void)[];
 }
+
 /**
- * 发布订阅实现类
+ * Publish&Subscribe implementation class
  */
 export class EventEmitter<T extends ISubscribe = ISubscribe> {
     private subscribeHandles: T[];
@@ -15,9 +16,9 @@ export class EventEmitter<T extends ISubscribe = ISubscribe> {
     }
 
     /**
-     * 发布
-     * @param {string} topic - 订阅主题
-     * @param {...any[]} args - 执行回调的参数
+     * Publish
+     * @param {string} topic Topic
+     * @param {...any[]} args The arguments to execute the callback
      */
     publish(topic: T['topic'], ...args: Parameters<T['callbacks'][number]>): void {
         const subscriber = this.subscribeHandles.find(
@@ -28,11 +29,11 @@ export class EventEmitter<T extends ISubscribe = ISubscribe> {
     }
 
     /**
-     * 订阅
-     * @param {string} topic - 订阅主题（支持订阅重复的主题）
-     * @param {Function} callback - 回调函数
-     * @param {Object} attrs - 可修改属性（此值可能会被覆盖，请谨慎使用）
-     * @returns {boolean} 是否已经订阅过主题
+     * Subscribe
+     * @param {string} topic Topic
+     * @param {Function} callback Callback function
+     * @param {Object} attrs Attributes
+     * @returns {boolean} Whether subscribed the topic before
      */
     subscribe(topic: T['topic'], callback: T['callbacks'][number], attrs?: T['attrs']): boolean {
         const subscriber = this.subscribeHandles.find(
@@ -53,10 +54,10 @@ export class EventEmitter<T extends ISubscribe = ISubscribe> {
     }
 
     /**
-     * 取消订阅
-     * @param {string} topic - 取消订阅的主题
-     * @param {Function} callback - 回调函数，不传则清空该主题所有订阅
-     * @returns {boolean} 该订阅主题是否已经被清空
+     * Unsubscribe
+     * @param {string} topic Topic
+     * @param {Function} callback callback to be cleared, if not passed, clear all the subscriptions of the theme
+     * @returns {boolean} Whether the topic has been cleared
      */
     unsubscribe(topic: T['topic'], callback?: T['callbacks'][number]): boolean {
         if (!callback) {
@@ -81,9 +82,9 @@ export class EventEmitter<T extends ISubscribe = ISubscribe> {
     }
 
     /**
-     * 根据主题获取订阅信息
-     * @param {string} topic - 订阅主题
-     * @returns 订阅的信息
+     * Get the first subscriber based on the topic
+     * @param {string} topic Topic
+     * @returns {object}
      */
     getSubscriber(topic: T['topic']): Readonly<T> | undefined {
         const subscriber = this.subscribeHandles.find(
@@ -91,20 +92,20 @@ export class EventEmitter<T extends ISubscribe = ISubscribe> {
         );
         if (!subscriber) return;
 
-        // 深拷贝处理，防止源数据被篡改
+        // Deep copy to prevent the original data from being tampered with
         return cloneDeep(subscriber);
     }
 
     /**
-     * 获取所有主题
-     * @returns 返回订阅的所有主题
+     * Get all topics
+     * @returns {string[]}
      */
     getTopics(): T['topic'][] {
         return this.subscribeHandles.map((subscriber: T) => subscriber.topic);
     }
 
     /**
-     * 销毁
+     * Destroy all subscriptions
      */
     destroy(): void {
         this.subscribeHandles = [];

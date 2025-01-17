@@ -1,36 +1,36 @@
-# General request tool library
+# 通用请求工具库
 
-## Introduction
+## 简介
 
-In the previous development, because the business type are different, each project requires their respective packaging request instances. Internal logic is usually coupled with the business, which cannot be effectively shared and reused. At the same time, there are a large number of template codes in the encapsulated API Service, with lack of type constraints and lack of specifications. This tool library aims to solve the problems mentioned above, making the API in the project simple and easy to read, the management is more orderly, the type is complete, and the call is smoother and smooth.
+在之前的开发中，因为业务属性不同，每个项目都需要各自封装请求实例，内部相关的逻辑通常都耦合了业务，无法有效的进行共享复用。同时，在封装的 api service 中存在大量的模板代码，类型约束缺失且缺少规范。本工具库旨在解决上述提到的问题，让项目中的 API 简洁易读，管理更加有序，类型完备，调用更加顺畅丝滑。
 
-## Quick Start
+## 开始使用
 
-Create instance:
+创建实例：
 
 ```ts
 // client.ts
 import { createRequestClient } from '@iot/shared/src/utils/request';
 
-/** Header handler */
+/** 业务请求头配置 */
 const headerHandler = async () => {
     // ...
 }
 
-/** Auto jump handler */
+/** 自动刷新逻辑处理 */
 const autoJumpHandler = async () => {
     // ...
 }
 
-/** Interface timeout tracking and reporting handler */
+/** 接口超时跟踪上报 */
 const trackerHandler = async () => {
     // ...
 }
 
 const client = createRequestClient({
-    // Request base url
+    // 接口 base url
     baseURL: 'https://xxx.host.com',
-    // Static request headers
+    // 静态接口请求头
     headers: {
         'x-headers': 'xxx',
     },
@@ -39,11 +39,11 @@ const client = createRequestClient({
         autoJumpHandler,
     ],
     onResponse(resp) {
-        // Todo: Global general response processing logic
+        // Todo: 全局通用响应处理
         return resp;
     },
     onResponseError(error) {
-        // Todo: Global general error processing logic
+        // Todo: 全局通用错误处理
         return error;
     },
 });
@@ -51,16 +51,16 @@ const client = createRequestClient({
 export default client;
 ```
 
-Create API：
+创建 API：
 
 ```ts
 // services/http/user.ts
 import { attachAPI } from '@iot/shared/src/utils/request';
 import client from 'client.ts';
 
-// APISchema has been defined in @iot/shared/types/common.d.ts
+// APISchema 已在 @iot/shared/types/common.d.ts 中定义
 interface UserAPISchema extends APISchema {
-    /** Get user based on id */
+    /** 根据 id 获取用户 */
     getUser: {
         request: {
             id: number;
@@ -72,7 +72,7 @@ interface UserAPISchema extends APISchema {
         };
     };
 
-    /** Get the login user info */
+    /** 获取当前登录用户 */
     getLoginUser: {
         request: void;
         response: {
@@ -82,7 +82,7 @@ interface UserAPISchema extends APISchema {
         }
     };
 
-    /** Create user */
+    /** 创建新用户 */
     createUser: {
         request: {
             avatar: string;
@@ -96,7 +96,7 @@ interface UserAPISchema extends APISchema {
         };
     },
 
-    /** Download */
+    /** 下载资源 */
     download: {
         request: {
             id: number;
@@ -106,32 +106,32 @@ interface UserAPISchema extends APISchema {
 }
 
 export default attachAPI<UserAPISchema>(client, {
-    // The interface error and response are processed to the service layer, and the business can be defined by itself
+    // 接口错误及响应的处理下放至 service 层，业务可自行定义
     onError(error) {
-        // Todo: The General request error processing logic
+        // Todo: apis 统一错误处理
         return error;
     },
 
     onResponse(resp) {
-        // Todo: The General request response processing logic
+        // Todo: apis 统一响应处理
         return resp;
     },
 
-    // Support 3 configuration methods, which can be flexibly selected
+    // 支持 3 种配置方式，可灵活选择
     apis: {
-        // Config with string
+        // 字符串配置
         getUser: 'GET api/user/:id',
         getLoginUser: 'GET api/user/current',
 
-        // Config with object
+        // 对象配置
         createUser: {
             method: 'POST',
             path: 'api/user/:enterpriseId',
-            // Specific request headers
+            // 特殊配置
             headers: { 'x-abc': 'xxx' },
         },
 
-        // Config with function
+        // 函数配置
         download: async (params) => {
             const resp = await client.request({
                 url: 'http://xxx.yeastar.com',
@@ -150,7 +150,7 @@ export default attachAPI<UserAPISchema>(client, {
 });
 ```
 
-Use the api service:
+业务调用：
 
 ```ts
 import userAPI from '@/services/http/user.ts';
