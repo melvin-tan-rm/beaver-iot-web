@@ -94,9 +94,11 @@ const AddMemberModal: React.FC<ModalProps> = props => {
      * right table selected items filter method
      */
     const handleSelectedFilter = useMemoizedFn((keyword, row: TableRowDataType) => {
+        const newKeyword = (keyword || '')?.toLowerCase();
+
         return (
-            row.nickname?.toLowerCase()?.includes(keyword) ||
-            row.email?.toLowerCase()?.includes(keyword)
+            row.nickname?.toLowerCase()?.includes(newKeyword) ||
+            row.email?.toLowerCase()?.includes(newKeyword)
         );
     });
 

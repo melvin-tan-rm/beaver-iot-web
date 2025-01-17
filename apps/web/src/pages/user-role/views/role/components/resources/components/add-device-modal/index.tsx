@@ -104,10 +104,12 @@ const AddDeviceModal: React.FC<ModalProps> = props => {
      * right table selected items filter method
      */
     const handleSelectedFilter = useMemoizedFn((keyword, row: TableRowDataType) => {
+        const newKeyword = (keyword || '')?.toLowerCase();
+
         return (
-            row.deviceName?.toLowerCase()?.includes(keyword) ||
-            row.userNickname?.toLowerCase()?.includes(keyword) ||
-            row.integrationName?.toLowerCase()?.includes(keyword)
+            row.deviceName?.toLowerCase()?.includes(newKeyword) ||
+            row.userNickname?.toLowerCase()?.includes(newKeyword) ||
+            row.integrationName?.toLowerCase()?.includes(newKeyword)
         );
     });
 
