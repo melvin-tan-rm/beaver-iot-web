@@ -185,6 +185,10 @@ export default () => {
         [navigate, handleExportConfirm],
     );
     const columns = useColumns<TableRowDataType>({ onButtonClick: handleTableBtnClick });
+    const handleSearch = useCallback((value: string) => {
+        setKeyword(value);
+        setPaginationModel(model => ({ ...model, page: 0 }));
+    }, []);
 
     return (
         <div className="ms-main">
@@ -201,7 +205,7 @@ export default () => {
                 toolbarRender={toolbarRender}
                 onPaginationModelChange={setPaginationModel}
                 onRowSelectionModelChange={setSelectedIds}
-                onSearch={setKeyword}
+                onSearch={handleSearch}
                 onRefreshButtonClick={getList}
             />
             {!!detailVisible && !!detail && <Detail onCancel={handleDetailClose} detail={detail} />}

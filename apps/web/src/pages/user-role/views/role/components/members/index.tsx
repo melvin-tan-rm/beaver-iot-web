@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useRequest, useMemoizedFn } from 'ahooks';
 
 import { Button, Stack } from '@mui/material';
@@ -156,6 +156,10 @@ const Members: React.FC = () => {
     );
 
     const columns = useColumns<TableRowDataType>({ onButtonClick: handleTableBtnClick });
+    const handleSearch = useCallback((value: string) => {
+        setKeyword(value);
+        setPaginationModel(model => ({ ...model, page: 0 }));
+    }, []);
 
     return (
         <>
@@ -171,7 +175,7 @@ const Members: React.FC = () => {
                 toolbarRender={toolbarRender}
                 onPaginationModelChange={setPaginationModel}
                 onRowSelectionModelChange={setSelectedIds}
-                onSearch={setKeyword}
+                onSearch={handleSearch}
                 onRefreshButtonClick={getUserMembers}
             />
             <AddMemberModal

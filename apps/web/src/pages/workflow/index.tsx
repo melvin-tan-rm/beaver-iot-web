@@ -12,14 +12,7 @@ import {
     toast,
 } from '@milesight/shared/src/components';
 import { Breadcrumbs, TablePro, useConfirm, PermissionControlHidden } from '@/components';
-import {
-    WorkflowAPISchema,
-    awaitWrap,
-    getResponseData,
-    isRequestSuccess,
-    workflowAPI,
-} from '@/services/http';
-import { type FormDataProps as ImportFormDataProps } from '@/pages/workflow/components/import-modal/hook/useImportFormItems';
+import { awaitWrap, getResponseData, isRequestSuccess, workflowAPI } from '@/services/http';
 import { ImportModal, LogModal } from '@/pages/workflow/components';
 import { PERMISSIONS } from '@/constants';
 import { useUserPermissions } from '@/hooks';
@@ -251,7 +244,10 @@ const Workflow = () => {
 
                             navigate(`/workflow/editor?wid=${row.id}`);
                         }}
-                        onSearch={setKeyword}
+                        onSearch={value => {
+                            setKeyword(value);
+                            setPaginationModel(model => ({ ...model, page: 0 }));
+                        }}
                         onRefreshButtonClick={getWorkflowList}
                     />
                 </div>

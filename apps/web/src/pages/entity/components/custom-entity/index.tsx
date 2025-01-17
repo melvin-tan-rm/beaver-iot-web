@@ -164,6 +164,11 @@ export default () => {
         handleClose();
     };
 
+    const handleSearch = useCallback((value: string) => {
+        setKeyword(value);
+        setPaginationModel(model => ({ ...model, page: 0 }));
+    }, []);
+
     return (
         <div className="ms-main">
             <TablePro<TableRowDataType>
@@ -179,7 +184,7 @@ export default () => {
                 toolbarRender={toolbarRender}
                 onPaginationModelChange={setPaginationModel}
                 onRowSelectionModelChange={setSelectedIds}
-                onSearch={setKeyword}
+                onSearch={handleSearch}
                 onRefreshButtonClick={getList}
             />
             {modalOpen && (
