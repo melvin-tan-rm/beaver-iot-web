@@ -257,6 +257,7 @@ const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
                 {...commonPopoverProps}
             >
                 <UpstreamNodeList
+                    value={selectValue}
                     onChange={node => {
                         setFocused(false);
                         setAnchorEl(null);
