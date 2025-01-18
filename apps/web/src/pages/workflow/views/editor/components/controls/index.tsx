@@ -68,7 +68,7 @@ const Controls: React.FC<ControlsProps> = ({ minZoom, maxZoom, addable = true })
                     </Button>
                     <NodeMenu
                         anchorOrigin={{
-                            vertical: -10,
+                            vertical: -8,
                             horizontal: 'left',
                         }}
                         transformOrigin={{

@@ -1,5 +1,5 @@
 import { useState, useMemo, useLayoutEffect } from 'react';
-import { useReactFlow } from '@xyflow/react';
+import { useReactFlow, useViewport } from '@xyflow/react';
 import { Menu, MenuItem, type MenuProps } from '@mui/material';
 import { useDebounceFn } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -60,6 +60,7 @@ const NodeMenu = ({
     }, [getIntlText]);
 
     // ---------- Menu Open ----------
+    const { zoom } = useViewport();
     const [innerOpen, setInnerOpen] = useState(false);
     const handleInnerClose: MenuProps['onClose'] = (e, reason) => {
         setInnerOpen(false);
@@ -98,7 +99,7 @@ const NodeMenu = ({
             className="ms-workflow-node-menu"
             anchorOrigin={{
                 vertical: 'center',
-                horizontal: 24,
+                horizontal: 16 * zoom + 8,
             }}
             transformOrigin={{
                 vertical: 'center',
