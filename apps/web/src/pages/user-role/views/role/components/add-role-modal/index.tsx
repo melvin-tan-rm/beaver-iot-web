@@ -54,7 +54,13 @@ const AddRoleModal: React.FC<Props> = props => {
     }, [getIntlText]);
 
     const onSubmit: SubmitHandler<AddRoleProps> = async params => {
-        await onFormSubmit(params.name, () => {
+        const { name } = params || {};
+        const newName = typeof name === 'string' ? name.trim() : '';
+        if (!newName) {
+            return;
+        }
+
+        await onFormSubmit(newName, () => {
             reset();
         });
     };

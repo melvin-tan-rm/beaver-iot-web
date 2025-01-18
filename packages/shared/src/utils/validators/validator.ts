@@ -34,8 +34,10 @@ export const checkRequired: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.required);
 
     return value => {
+        const newValue = typeof value === 'string' ? value.trim() : value;
+
         try {
-            if (!isEmpty(value)) {
+            if (!isEmpty(newValue)) {
                 return Promise.resolve(true);
             }
         } catch (e) {
