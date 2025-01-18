@@ -176,7 +176,7 @@ export function isMaxLength(value: string, max: number): boolean {
 }
 
 /**
- * Check if the string's length is greater than or equal to `min`.
+ * Check if the string's length is greater than or equal to `min`
  */
 export function isMinLength(value: string, min: number): boolean {
     return validator.isLength(value, {
@@ -185,7 +185,7 @@ export function isMinLength(value: string, min: number): boolean {
 }
 
 /**
- * Check if the string's length is between `min` and `max`.
+ * Check if the string's length is between `min` and `max`
  * @param value The string to check
  * @param min Maximum length
  * @param max Minimum length
