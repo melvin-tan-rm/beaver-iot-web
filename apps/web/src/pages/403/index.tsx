@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 
 import notPermissionImg from './assets/403.svg';
@@ -6,6 +8,7 @@ import './style.less';
 
 export default () => {
     const { getIntlText } = useI18n();
+    const navigate = useNavigate();
 
     return (
         <div className="ms-view-403">
@@ -19,6 +22,15 @@ export default () => {
                 <div className="ms-view-403__description">
                     {getIntlText('common.label.page_not_permission')}
                 </div>
+                <Button
+                    variant="contained"
+                    onClick={() => {
+                        navigate('/', { replace: true });
+                        window.location.reload();
+                    }}
+                >
+                    {getIntlText('common.label.refresh')}
+                </Button>
             </div>
         </div>
     );
