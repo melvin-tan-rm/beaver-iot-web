@@ -86,7 +86,7 @@ export function useRole() {
         async (name: string, callback: () => void): Promise<void> => {
             const [err, resp] = await awaitWrap(
                 userAPI.addRole({
-                    name,
+                    name: (name || '').trim(),
                 }),
             );
 
@@ -110,7 +110,7 @@ export function useRole() {
             const [err, resp] = await awaitWrap(
                 userAPI.editRole({
                     role_id: activeRole.roleId,
-                    name,
+                    name: (name || '').trim(),
                 }),
             );
 
