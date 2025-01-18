@@ -1,195 +1,198 @@
 import intl from 'react-intl-universal';
 
 /**
- * 存放通用的校验与国际化 key 的对应关系
+ * General check rule and i18n key mapping
  */
 export enum EErrorMessages {
     /**
-     * 必填项
+     * Required
      */
     required = 'valid.input.required',
     /**
-     * 最小值
+     * Minimum value
      */
     minValue = 'valid.input.min_value',
     /**
-     * 最大值
+     * Maximum value
      */
     maxValue = 'valid.input.max_value',
     /**
-     * 最大最小值
+     * Range value
      */
     rangeValue = 'valid.input.range_value',
     /**
-     * 有效值
+     * Value
      */
     value = 'valid.input.value',
     /**
-     * 最小位数
+     * Minimum length
      */
     minLength = 'valid.input.min_length',
     /**
-     * 最大位数
+     * Maximum length
      */
     maxLength = 'valid.input.max_length',
     /**
-     * 最大最小位数
+     * Range length
      */
     rangeLength = 'valid.input.range_length',
     /**
-     * 固定位数
+     * Length
      */
     length = 'valid.input.length',
     /**
-     * IPv4类 IP地址/掩码/网关
+     * IP address
      */
     ipAddress = 'valid.input.ip_address',
     /**
-     * IPv6类 IP地址
+     * IPv6 address
      */
     ipv6Address = 'valid.input.ipv6_address',
     /**
-     * IPv4类 IP地址/掩码/网关
+     * IPv4 address
      */
     netmask = 'valid.input.netmask',
     /**
-     * Mac地址
+     * MAC address
      */
     mac = 'valid.input.mac',
     /**
-     * Mobile Number/Phone Number/Fax- 电话号码类
+     * Mobile Number/Phone Number/Fax
      */
     phone = 'valid.input.phone',
     /**
      * +86 手机号码
+     * +86 phone number (Chinese phone number)
      */
     cnPhone = 'valid.input.cn_phone',
     /**
-     * Zip/Postal Code- 邮政编码类
+     * Zip/Postal Code
      */
     postalCode = 'valid.input.postal_code',
     /**
-     * 数值
+     * Numeric value
      */
     number = 'valid.input.number',
     /**
-     * 十进制数值，无0
+     * Decimal value, no 0
      */
     numberNoZero = 'valid.input.number_no_zero',
     /**
-     * 十六进制数值
+     * Hexadecimal value
      */
     hexNumber = 'valid.input.hex_number',
     /**
-     * 端口：网络端口
+     * Port: network port
      */
     port = 'valid.input.port',
     /**
-     * Email Address - 邮箱地址
+     * Email Address
      */
     email = 'valid.input.email',
     /**
-     * username校验
+     * Username
      */
     username = 'valid.input.username',
     /**
-     * 密码校验
+     * Password
      */
     password = 'valid.input.password',
     /**
-     * 是否小数
+     * Decimal value
      */
     decimals = 'valid.input.decimals',
     /**
-     * 支持大小写字母
+     * Letters
      */
     letters = 'valid.input.letters',
     /**
-     * 支持数字和大小写字母
+     * Letters and numbers
      */
     lettersAndNum = 'valid.input.letters_and_num',
     /**
-     * Remark/Comments备注，正常是在 textarea
+     * Remark/Comments
      */
-    comments = 'valid.input.comments', // 备注通用
+    comments = 'valid.input.comments',
     /**
-     * 至少包含一个小写字母
+     * At least 1 lowercase letter
      */
     atLeastOneLowercaseLetter = 'valid.input.at_least_1_lowercase_letter',
     /**
-     * 至少包含一个大写字母
+     * At least one uppercase letter
      */
     atLeastOneUppercaseLetter = 'valid.input.at_least_1_uppercase_letter',
     /**
-     * 至少包含一个数字
+     * At least one number
      */
     atLeastOneNum = 'valid.input.at_least_1_num',
     /**
-     * 不能包含空格
+     * Cannot contain spaces
      */
     notIncludeWhitespace = 'valid.input.not_include_whitespace',
     /**
-     * 必须以大小写字母或数字或下划线开头
+     * Must start with a number, letter or underscore
      */
     startWithNormalChar = 'valid.input.start_with_normal_char',
     /**
-     * 金额最多只能 {0} 位
+     * Maximum number of digits
      */
     amountMaxLength = 'valid.input.amount_max_length',
     /**
-     * 金额最多只能 {0} 位小数
+     * Amount can only have {0} decimal places
      */
     amountDecimalsMaxLength = 'valid.input.amount_decimals_max_length',
     /**
-     * 请输入一个11位有效企业ID。
+     * Company ID
      */
     companyId = 'valid.input.company_id',
     /**
-     * 允许输入数字，字母，空格和字符：().-+*#
+     * Number, letter, space and character: ().-+*#
      */
     numLetterSpaceSimpleSpecial = 'valid.input.num_letter_space_simple_special',
     /**
-     * 请输入一个有效的12位或者16位的数字和大小写字母组合的序列号。
+     * SN (12/16)
      */
     sn = 'valid.input.sn',
     /**
-     * Url Address - URL地址
+     * Url Address
      */
     url = 'valid.input.url',
     /**
-     * 不含空格的ASCII字符
+     * ASCII characters without spaces
      */
     noIncludesSpaceAscii = 'valid.input.no_includes_space_ascii',
     /**
-     * 仅允许输入大写字母、小写字母、数字及“_”、“-”
+     * Strings can only contain uppercase letters, lowercase letters, numbers, and "_" and "-"
      */
     stringRulesOne = 'valid.input.string_rules_one',
     /**
-     * 仅允许输入大写字母、小写字母、数字及!"#$%&'()*+,-./:;<=>@[]^_`{|}~
+     * Strings can only contain uppercase letters, lowercase letters, numbers,
+     * and "!"#$%&'()*+,-./:;<=>@[]^_`{|}~"
      */
     stringRulesTwo = 'valid.input.string_rules_two',
     /**
      * 检测是否为 ipv4/ipv6 或域名
+     * IPv4/IPv6 or domain
      */
     ipOrDomain = 'valid.input.ip_or_domain',
     /**
-     * 整数校验（正整数、负整数和零）
+     * Integer validation (positive integer, negative integer, and zero)
      */
     integerPositiveNegativeZero = 'valid.input.integer_positive_negative_zero',
     /**
-     * 正整数校验（正整数和零）
+     * Positive integer validation (positive integer and zero)
      */
     integerPositiveZero = 'valid.input.integer_positive_zero',
     /**
-     * 必须以 http/https 开头
+     * Must start with http/https
      */
     startWithHttpOrHttps = 'valid.input.start_with_http_https',
     /**
-     * 必须以 ws/wss 开头
+     * Must start with ws/wss
      */
     startWithWsOrWss = 'valid.input.start_with_ws_wss',
     /**
-     * 不允许字符: &/\:*?'"<>|%
+     * Not allow string: &\/\:*?'"<>|%
      */
     notAllowStringOne = 'valid.input.not_allow_string',
 }
@@ -200,10 +203,10 @@ export enum EErrorMessages {
 // };
 
 /**
- * 取得 国际化处理后的 错误信息
- * @param {String} key 国际化文案的 key
- * @param {Object} options 向 FormattedMessage 组件传值，提供变量给国际化文案模板使用
- * @returns {String} 找不到任何的 key 就会返回 'error' 字符串
+ * Get the internationalized error message
+ * @param {String} key i18n key
+ * @param {Object} options Variables in message
+ * @returns {String}
  */
 const getErrorMessage = (key: EErrorMessages | string, options?: Record<string, any>): string => {
     // if (!intlInstance) {

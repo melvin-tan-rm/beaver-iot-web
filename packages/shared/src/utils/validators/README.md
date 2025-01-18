@@ -1,8 +1,8 @@
-# 通用表单校验规则的规约与使用说明
+# User Guide
 
-## 开始使用
+## Quick Start
 
-封装的 validator 中集成了国际化语言 message，因此在各应用中首次引入时，需先挂载 intl 实例，以使用加载好的 key：
+The encapsulated validator integrates international language MESSAGE. Therefore, when introducing for the first time in each application, you need to mount an `intl` instance to use the loaded key:
 
 ```ts
 import intl from 'react-intl-universal';
@@ -13,12 +13,10 @@ import { validators } from '@milesight/shared/src/utils';
 validators.validatorIgniter(intl);
 ```
 
-> auth, client, admin 已引入并初始化，开发同学直接使用即可。
-
-使用：
+For example:
 
 ```tsx
-import { Form, Input } from '@yeastar/pc-web-ui';
+import { Form, Input } from '@milesight/pc-web-ui';
 import { validators } from '@milesight/shared/src/utils';
 
 const { emailCheckers } = validators;
@@ -36,96 +34,97 @@ export const LoginForm = () => {
 }
 ```
 
-## 基础通用校验 - 断言方法
+## Basic General validator
 
-我们基于 [validator.js](https://github.com/validatorjs/validator.js) 进行封装的一些通用的断言方法 `is[Name]()`：
+We've wrapped a generic assertion method based on [validator.js](https://github.com/validatorjs/validator.js):
+
 
 | Assert | Description |
 | --- | --- |
-| `isEmpty(value: any, options?: validator.IsEmptyOptions)` | 检查值是否为空 |
-| `isContains(value: string, seed: any)` | 验证 value 中是否含有 seed |
-| `isEqual(valueA, valueB)` | 验证是否相等 |
-| `isCreditCard(value: string)` | 检查是否是信用卡号码 |
-| `isDivisibleBy(value: number \| string, number: number)` | 检查 value 是否是一个可以被 number 整除的数字 |
-| `isDecimals(value: number \| string, options?: validator.IsDecimalOptions)` | 是否带有小数数值 |
-| `isEmail(value: string, options?: validator.IsEmailOptions)` | 检查是否是邮件地址 |
-| `isFQDN(value: string, options?: validator.IsFQDNOptions)` | 是否是域名 |
-| `isMaxValue(value: number \| string, max: number)` | 是否 value <= max |
-| `isMinValue(value: number, min: number)` | 是否 value >= min |
-| `isRangeValue(value: number, min: number, max: number)` | 是否 min <= value <= max |
-| `isGtValue(value: number, gt: number)` | 是否 value > gt |
-| `isLtValue(value: number, lt: number)` | 是否 value < lt |
-| `isGLRange(value: number, gt: number, lt: number)` | 是否 gt < value < lt |
-| `isHexadecimal(value: string)` | 是否是十六进制数字 |
-| `isIP(value: string, version?: validator.IPVersion)` | 是否是 IP 地址值，version 为 4 或者 6 |
-| `isIPRange(value: string, version?: validator.IPVersion)` | 是否是 IP 段，version 为 4 或者 6 |
-| `isInt(value: string \| number, options?: validator.IsIntOptions)` | 是否是整数 |
-| `isJSON(value: string)` | 使用 JSON.parse 判断是否是 json |
-| `isMaxLength(value: string, max: number)` | 判断字符串的长度是否不大于最大长度 max |
-| `isMinLength(value: string, min: number)` | 判断字符串的长度是否不小于最小长度 min |
-| `isRangeLength(value: string, min: number, max: number)` | 判断字符串的长度是否在一个范围内 min <= len <= max |
-| `isLowercase(value: string)` | 是否小写 |
-| `isMACAddress(value: string, options?: validator.IsMACAddressOptions)` | 是否是 MAC 地址 |
-| `isMD5(value: string)` | 是否是 MD5 加密的哈希值 |
-| `isMimeType(value: string)` | 是否是 MIME type 值 |
-| `isNumeric(value: string, options?: validator.IsNumericOptions)` | 是否仅仅包含数字 |
-| `isURL(value: string, options?: validator.IsURLOptions)` | 是否是一个 URL 地址 |
-| `isUppercase(value: string)` | 是否大写 |
-| `isMatches(value: string, pattern: RegExp)` | 是否匹配，利用 match 方法，其中匹配的模式可以作为第三个参数，当然也可以卸载正则表达式 pattern 中 |
-| `isMobilePhone(value: number \| string, locale?: 'any' \| validator.MobilePhoneLocale \| validator.MobilePhoneLocale[], options?: validator.IsMobilePhoneOptions & { loose: boolean; })` | 是否是移动电话号码 |
-| `isPostalCode( value: number \| string, locale?: 'any' \| validator.PostalCodeLocale, options?: { loose: boolean })` | 是否有效的邮编号码 |
-| `isPort(value: string)` | 是否是端口号 |
+| `isEmpty(value: any, options?: validator.IsEmptyOptions)` | Check whether the value is empty |
+| `isContains(value: string, seed: any)` | Check if the `value` contains `seed` |
+| `isEqual(valueA, valueB)` | Check if the arguments is equal |
+| `isCreditCard(value: string)` | Check if the string is a credit card number |
+| `isDivisibleBy(value: number \| string, number: number)` | Check if the value is divisible by the number |
+| `isDecimals(value: number \| string, options?: validator.IsDecimalOptions)` | Check if the parameter contains a decimal number |
+| `isEmail(value: string, options?: validator.IsEmailOptions)` | Check if the string is an email |
+| `isFQDN(value: string, options?: validator.IsFQDNOptions)` | Check if the string is a fully qualified domain name (e.g. domain.com). |
+| `isMaxValue(value: number \| string, max: number)` | Check if the value is less than or equal to max |
+| `isMinValue(value: number, min: number)` | Check if the value is greater than or equal to min |
+| `isRangeValue(value: number, min: number, max: number)` | Check if the value is between min and max |
+| `isGtValue(value: number, gt: number)` | Check if the value is greater than gt |
+| `isLtValue(value: number, lt: number)` | Check if the value is less than lt |
+| `isGLRange(value: number, gt: number, lt: number)` | Check if the value is greater than gt and less than lt |
+| `isHexadecimal(value: string)` | Check if the string is a hexadecimal number |
+| `isIP(value: string, version?: validator.IPVersion)` | Check if the string is an IP (version 4 or 6) |
+| `isIPRange(value: string, version?: validator.IPVersion)` | Check if the string is an IP range (version 4 or 6) |
+| `isInt(value: string \| number, options?: validator.IsIntOptions)` | Check if the string is an integer |
+| `isJSON(value: string)` | Check if the string is valid JSON (note: uses JSON.parse) |
+| `isMaxLength(value: string, max: number)` | Check if the string's length is less than or equal to `max` |
+| `isMinLength(value: string, min: number)` | Check if the string's length is greater than or equal to `min` |
+| `isRangeLength(value: string, min: number, max: number)` | Check if the string's length is between `min` and `max` |
+| `isLowercase(value: string)` | Check if the string is lowercase |
+| `isMACAddress(value: string, options?: validator.IsMACAddressOptions)` | Check if the string is a MAC address |
+| `isMD5(value: string)` | Check if the string is a MD5 hash |
+| `isMimeType(value: string)` | Check if the string is a valid MIME type |
+| `isNumeric(value: string, options?: validator.IsNumericOptions)` | Check if the string contains only numbers (0-9) |
+| `isURL(value: string, options?: validator.IsURLOptions)` | Check if the string is a URL |
+| `isUppercase(value: string)` | Check if the string is uppercase |
+| `isMatches(value: string, pattern: RegExp)` | Check if the string matches the pattern |
+| `isMobilePhone(value: number \| string, locale?: 'any' \| validator.MobilePhoneLocale \| validator.MobilePhoneLocale[], options?: validator.IsMobilePhoneOptions & { loose: boolean; })` | Check if the string is a mobile phone number |
+| `isPostalCode( value: number \| string, locale?: 'any' \| validator.PostalCodeLocale, options?: { loose: boolean })` | Check if the string is a valid postal code |
+| `isPort(value: string)` | Check if the string is a valid port number |
 
-### 示例
+### Example
 
 ```tsx
 if (isURL('http://localhost:3000')) {
-    console.log('正确！');
+    console.log('Success !');
 } else {
-    console.log('失败！');
+    console.log('Failed !');
 }
 ```
 
-## 基础通用校验 - Form.Item 的 按条 validator
+## Basic General checker
 
-以下一个方法，对应着一个 valid 的国际化 key。
+Each checker corresponds to an I18N key, which can be used to internationalize the message:
 
 | Validator | Description | Params |
 | --- | --- | --- |
 | `checkRequired` | valid.input.required: 'Please configure this item.', | - |
-| `checkMinValue` | valid.input.min_value: 'The input value cannot be smaller than {0}.', | min: number 最小值 |
-| `checkMaxValue` | valid.input.max_value: 'The input value cannot be greater than {0}.', | max: number 最大值 |
-| `checkRangeValue` | valid.input.range_value: '您输入的值应大于等于{0}，且小于等于{1}。', | min: number 最小值 <br /> max: number 最大值 |
-| `checkValue` | valid.input.value: '只允许输入值：{0}', | enum: any[] 允许值范围 |
-| `checkMinLength` | valid.input.min_length: '您输入的值的长度应不小于{0}。', | min: number 最小长度 |
-| `checkMaxLength` | valid.input.max_length: 'The input cannot be greater than {0} characters.', | max: number 最大长度 |
-| `checkRangeLength` | valid.input.range_length: '您输入的值的长度应大于等于{0}，且小于等于{1}。', | min: number 最小长度 <br /> max: number 最大长度 |
-| `checkLength` | valid.input.length: '只允许输入长度：{0}', | enum: any[] 允许长度值范围 |
-| `checkIPAddressV4` | valid.input.ip_address: '请输入正确的 IP 地址，格式为：XXX.XXX.XXX.XXX。', | - |
-| `checkIPAddressV6` | valid.input.ipv6_address: '请输入正确的 IP 地址，格式为：X:X:X:X:X:X:X:X。', | - |
-| `checkMaskAddress` | valid.input.netmask: '请输入正确的子网掩码，格式为：XXX.XXX.XXX.XXX。', | - |
-| `checkMACAddress` | valid.input.mac: '请输入正确的 MAC 地址。', | - |
-| `checkMobilePhone` | valid.input.phone: '请输入有效的电话号码，只允许输入数字、字母、空格和字符：().-+\*#。', | - |
-| `checkPostalCode` | valid.input.postal_code: '请输入有效邮编', | - |
-| `checkNumber` | valid.input.number: '只允许输入数字。', | - |
-| `checkNumberNoZero` | valid.input.number_no_zero: '只允许输入大于 0 的数字。', | - |
-| `checkHexNumber` | valid.input.hex_number: '只允许十六进制数值。', | - |
-| `checkPort` | valid.input.port: '请输入有效的端口号', | - |
+| `checkMinValue` | valid.input.min_value: 'The input value cannot be smaller than {0}.', | min: number |
+| `checkMaxValue` | valid.input.max_value: 'The input value cannot be greater than {0}.', | max: number |
+| `checkRangeValue` | valid.input.range_value: 'The value you enter should be greater than or equal to {0} and less than or equal to {1}.', | min: number <br /> max: number 最大值 |
+| `checkValue` | valid.input.value: 'Input value: {0} only.', | enum: any[] |
+| `checkMinLength` | valid.input.min_length: 'The length of the value you enter should be more than or equal to {0}.', | min: number |
+| `checkMaxLength` | valid.input.max_length: 'The input cannot be greater than {0} characters.', | max: number |
+| `checkRangeLength` | valid.input.range_length: 'The length of the value you enter should be greater than or equal to {0} and less than or equal to {1}.', | min: number <br /> max: number |
+| `checkLength` | valid.input.length: 'Allowed input length: {0}.', | enum: any[] |
+| `checkIPAddressV4` | valid.input.ip_address: 'Please enter your IP address in the following format: XXX.XXX.XXX.XXX. XXX should be 1-255.', | - |
+| `checkIPAddressV6` | valid.input.ipv6_address: 'Please enter your IP address in this format: XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX (XXXX is 0000-FFFF).', | - |
+| `checkMaskAddress` | valid.input.netmask: 'Please enter your subnet mask in the following format: XXX.XXX.XXX.XXX.', | - |
+| `checkMACAddress` | valid.input.mac: 'Please enter your MAC address.', | - |
+| `checkMobilePhone` | valid.input.phone: 'Please enter a valid phone number. It must be 1 to 31 characters long.', | - |
+| `checkPostalCode` | valid.input.postal_code: 'Please enter your postal number in the required format: numbers, letters, spaces, and special characters such as (). -+*#. The length of the input should be less than 32 digits.', | - |
+| `checkNumber` | valid.input.number: 'Please enter a number.', | - |
+| `checkNumberNoZero` | valid.input.number_no_zero: 'Please enter a number greater than 0.', | - |
+| `checkHexNumber` | valid.input.hex_number: 'Input numbers only.', | - |
+| `checkPort` | valid.input.port: 'Please enter a valid port number.', | - |
 | `checkEmail` | valid.input.email: 'Please enter a valid email address.', | - |
-| `checkDecimals` | valid.input.decimals: '只允许输入小数', | - |
-| `checkLetters` | valid.input.letters: '只允许大小写字母', | - |
-| `checkLettersAndNum` | valid.input.letters_and_num: '只允许大小写字母及数字', | - |
-| `checkAtLeastOneLowercaseLetter` | valid.input.at_least_1_lowercase_letter: '至少包含一个小写字母' | - |
-| `checkAtLeastOneUppercaseLetter` | valid.input.at_least_1_uppercase_letter: '至少包含一个大写字母', | - |
-| `checkAtLeastOneNum` | valid.input.at_least_1_num: '至少包含一位数字', | - |
-| `checkHasWhitespace` | valid.input.not_include_whitespace: '不允许有空格', | - |
-| `checkStartWithNormalChar` | valid.input.start*with_normal_char: '必须以 a-zA-Z0-9* 开头', | - |
+| `checkDecimals` | valid.input.decimals: 'Please enter the correct decimal number.', | - |
+| `checkLetters` | valid.input.letters: 'Letters only (upper and lower case)', | - |
+| `checkLettersAndNum` | valid.input.letters_and_num: 'Letters and numbers only (upper and lower case)', | - |
+| `checkAtLeastOneLowercaseLetter` | valid.input.at_least_1_lowercase_letter: 'Require at least one lowercase letter.' | - |
+| `checkAtLeastOneUppercaseLetter` | valid.input.at_least_1_uppercase_letter: 'Require at least one uppercase letter.', | - |
+| `checkAtLeastOneNum` | valid.input.at_least_1_num: 'Require at least one digit.', | - |
+| `checkHasWhitespace` | valid.input.not_include_whitespace: 'No spaces are allowed.', | - |
+| `checkStartWithNormalChar` | valid.input.start_with_normal_char: 'Required Format: the input must start with lower case letters (a-z), upper case letters (A-Z), numbers (0-9), or underscores (_).', | - |
 
-> 注意：如果实际使用中需要覆盖默认的 message，所有 validator 方法都支持通过 rule 传入 message 去覆盖默认的 message。
+> Attention: If you need to override the default message, all checker support passing in the message through the rule to override the default message.
 
-### 示例
+### Example
 
-基础使用示例：
+Base usage:
 
 ```tsx
 <Form.Item name="email" validateFirst rules={[
@@ -136,7 +135,7 @@ if (isURL('http://localhost:3000')) {
 ]}>
 ```
 
-自定义传入 message
+Custom message:
 
 ```tsx
 <Form.Item
@@ -146,11 +145,11 @@ if (isURL('http://localhost:3000')) {
         {
             required: true,
             validator: checkRequired,
-            message: '请填写 Email 地址！',
+            message: 'Please enter a valid email address.'
         },
         {
             validator: checkEmail,
-            message: '对不起，您输入的邮箱地址不正确',
+            message: 'Sorry, your email address is incorrect.'
         },
     ]}
 >
@@ -158,7 +157,7 @@ if (isURL('http://localhost:3000')) {
 </Form.Item>
 ```
 
-通过 rule 向 validator 方法传值
+Custom param values:
 
 ```tsx
 <Form.Item
@@ -176,109 +175,63 @@ if (isURL('http://localhost:3000')) {
 </Form.Item>
 ```
 
-## 组合校验规则，Form.Item 的一组 rules
+## Composed Checker
 
-1. **`commentsChecker()`**
+1. **`commentsChecker()`**: Remark/Comments checker
+   - Min 1, Max 1024
+   - Any characters
 
-    Remark/Comments 备注，正常是在 textarea
+2. **`streetAddressChecker()`**: Street/Address
+   - Min 1, Max 255
+   - Any characters
 
-    最小 1 位，最大 1024 位
+3. **`cityChecker()`**: City/State/province
+   - Min 1, Max 127
+   - Any characters
 
-    支持任意字符。
+4. **`emailCheckers()`**: Generate a set of email validation rules
+   - Start with a-zA-Z0-9_
+   - Must be composed of the English letters, numbers, and characters (`_-+.`)
+   - Behind the `.`, `-` or before `@` must be followed by a-zA-Z0-9_
+   - Must conform to email format XXX@XXX.XX
 
-1. **`streetAddressChecker()`**
+5. **`mobilePhoneChecker()`**: Mobile Number/Phone Number/Fax
+   - Min 1, Max 31
+   - Allow input numbers, letters, spaces, and characters: ().-+*#
 
-    Street/Address - 单行地址类
+6. **`postalCodeChecker()`**: Zip/Postal Code
+   - Min 1, Max 31
+   - Allow input numbers, letters, spaces, and characters: ().-+*#
 
-    最小 1 位，最大 255 位
+7. **`normalNameChecker()`**: Name Checker
+   - Min 1, Max 63
+   - Allow any characters that are not spaces
 
-    支持任意字符。
+8. **`firstNameChecker()`**: First Name
+   - Min 1, Max 63
+   - Allow any characters
 
-1. **`cityChecker()`**
+9.  **`lastNameChecker()`**: Last Name
+    - Min 1, Max 63
+    - Allow any characters
 
-    City/State/province - 国家城市
+10. **`companyNameChecker()`**: Company Name
+    - The same as normalNameChecker
 
-    最小 1 位，最大 127 位
+11. **`SNChecker()`**: SN (The General Specification for Yeastar Products)
 
-    支持任意字符。
+12. **`moneyChecker()`**: Money Checker
+   - Up to 10 digits before the decimal point and up to 2 digits after the decimal point
 
-1. **`emailCheckers()`**
+### Example
 
-    生成一组 Email 的校验规则
-
-    格式要求：只允许大小写英文字母、数字 和字符：@符号 下划线* 中划线 - 加号+，英文句号. ，且必须由 大小写字母 或 数字 或 下划线* 开头，.和-后面或者@前面一定要跟上 A-Z，a-z，0-9，\_
-
-    必须符合邮箱格式XXX@XXX.XX
-
-1. **`mobilePhoneChecker()`**
-
-    Mobile Number/Phone Number/Fax- 电话号码类
-
-    最小 1 位，最大 31 位
-
-    允许输入数字，字母，空格和字符：().-+\*#
-
-1. **`postalCodeChecker()`**
-
-    Zip/Postal Code- 邮政编码类
-
-    最小 1 位，最大 31 位
-
-    允许输入数字，字母，空格和字符：().-+\*#
-
-1. **`normalNameChecker()`**
-
-    Name - 名称类，非用户名
-
-    最小 1 位，最大 127 位
-
-    支持输入任意字符，不支持输入纯空格。（提交后用 Trim（）去掉最前和最后的空格）
-
-1. **`firstNameChecker()`**
-
-    First Name
-
-    最小 1 位，最大 63 位
-
-    任意字符
-
-1. **`lastNameChecker()`**
-
-    Last Name
-
-    最小 1 位，最大 63 位
-
-    任意字符
-
-1. **`companyNameChecker()`**
-
-    Company Name
-
-    与 normalNameChecker 规则一样
-
-1. **`companyIdChecker()`**
-
-    Company ID （智慧办公产品的标识 ID）
-
-1. **`SNChecker()`**
-
-    SN（Yeastar 所有产品通用规范）
-
-1. **`moneyChecker()`**
-
-    金额输入
-
-    小数点前最大 10 位，小数点后 2 位
-
-### 示例：
-
-基础使用：
+Basic usage:
 
 ```tsx
 <Form.Item rules={[commentsChecker()]}>...</Form.Item>
 ```
 
-跟别的自定义规则组合：
+Compose with other custom rules:
 
 ```tsx
 <Form.Item
@@ -294,14 +247,14 @@ if (isURL('http://localhost:3000')) {
 </Form.Item>
 ```
 
-## 其他属性和方法
+## Others
 
-| 属性/方法 | 描述 |
+| Function | Description |
 | --- | --- |
-| `EErrorMessages` | 枚举值，它用于存放通用的校验与国际化 key 的对应关系。 |
-| `getErrorMessage = (localeKey: EErrorMessages \| string, values?: Record<string, any>): ReactElement \| 'error'` | 取得 国际化处理后的 错误信息 <br /><br /> 参数 `localeKey` 国际化文案的 key <br /> 参数 `values` 向 `FormattedMessage` 组件传值，提供变量给国际化文案模板使用 <br /><br /> 返回值：ReactElement \| 'error' 找不到任何的 localeKey 就会返回 'error' 字符串 |
+| `EErrorMessages` | Enum, General check rule and i18n key mapping |
+| `getErrorMessage = (localeKey: EErrorMessages \| string, values?: Record<string, any>): ReactElement \| 'error'` | Get the internationalized error message |
 
-基础示例：
+Basic usage:
 
 ```tsx
 <Form.Item rules={[
@@ -312,7 +265,7 @@ if (isURL('http://localhost:3000')) {
 ]}>
 ```
 
-传参示例：
+Custom param values:
 
 ```tsx
 <Form.Item rules={[

@@ -6,7 +6,7 @@ export type Validate<TFieldValue = any, TFormValues = Record<string, any>> = (
 ) => ValidateResult | Promise<ValidateResult>;
 
 type RuleType = {
-    /** 自定义错误提示 */
+    /** error message */
     message?: string;
 };
 
