@@ -1,5 +1,4 @@
 /* eslint-disable no-useless-escape */
-// import type { Rule } from 'ysd-iot/es/form';
 import { isMatches, isMinValue } from './asserts';
 import getErrorMessage, { EErrorMessages } from './getErrorMessage';
 import {
@@ -21,7 +20,7 @@ import {
 import type { Validate, TValidator } from './typings';
 
 export * from './asserts';
-// 导出所有的单条 validator
+// Export all single validator
 export * from './validator';
 export { getErrorMessage, EErrorMessages };
 
@@ -29,47 +28,44 @@ export type { Validate, TValidator };
 export type TChecker = () => Record<string, ReturnType<TValidator>>;
 
 /**
- * validator 初始化辅助函数
- * 当前仅用于挂载 intl 对象，后续可根据需要进行扩展
- */
-// export const init = intlInstanceGenerator;
-
-// 以下是组合校验 -------
-/**
- * Remark/Comments备注，正常是在 textarea
- * 对应 EErrorMessages.comments
+ * Remark/Comments checker
+ * I18N key: EErrorMessages.comments
  *
- * 最小1位，最大1024位
- * 支持任意字符。
+ * 1. Min 1, Max 1024
+ * 2. Any characters
  */
 export const commentsChecker: TChecker = () => ({
     checkRangeLength: checkRangeLength({ min: 1, max: 1024 }),
 });
 
 /**
- * Street/Address - 单行地址类
+ * Street/Address
  *
- * 最小1位，最大255位
- * 支持任意字符。
+ * 1. Min 1, Max 255
+ * 2. Any characters
  */
 export const streetAddressChecker: TChecker = () => ({
     checkRangeLength: checkRangeLength({ min: 1, max: 255 }),
 });
 
 /**
- * City/State/province - 国家城市
- * 最小1位，最大127位
- * 支持任意字符。
+ * City/State/province
+ *
+ * 1. Min 1, Max 127
+ * 2. Any characters
  */
 export const cityChecker: TChecker = () => ({
     checkRangeLength: checkRangeLength({ min: 1, max: 127 }),
 });
 
 /**
- * 生成一组 Email 的校验规则
- * 格式要求：
- * 只允许大小写英文字母、数字 和字符：@符号 下划线_ 中划线 -  加号+，英文句号. ，且必须由 大小写字母 或 数字 或 下划线_ 开头，.和-后面或者@前面一定要跟上A-Z，a-z，0-9，_
- * 必须符合邮箱格式XXX@XXX.XX
+ * Generate a set of email validation rules
+ *
+ * Rules:
+ * 1. Start with a-zA-Z0-9_
+ * 2. Must be composed of the English letters, numbers, and characters (`_-+.`)
+ * 3. Behind the `.`, `-` or before `@` must be followed by a-zA-Z0-9_
+ * 4. Must conform to email format XXX@XXX.XX
  */
 export const emailCheckers: TChecker = () => {
     return {
@@ -80,7 +76,7 @@ export const emailCheckers: TChecker = () => {
 };
 
 /**
- * mobilePhoneChecker 和 postalCodeChecker 共享的 validator
+ * Contact field validators that are shared by mobilePhoneChecker and postalCodeChecker
  */
 const contactFieldValidators: TChecker = () => ({
     checkRangeLength: checkRangeLength({ min: 1, max: 31 }),
@@ -94,10 +90,10 @@ const contactFieldValidators: TChecker = () => ({
 });
 
 /**
- * Mobile Number/Phone Number/Fax- 电话号码类
+ * Mobile Number/Phone Number/Fax
  *
- * 最小1位，最大31位
- * 允许输入数字，字母，空格和字符：().-+*#
+ * 1. Min 1, Max 31
+ * 2. Allow input numbers, letters, spaces, and characters: ().-+*#
  */
 export const mobilePhoneChecker: TChecker = () => {
     return {
@@ -107,7 +103,7 @@ export const mobilePhoneChecker: TChecker = () => {
 };
 
 /**
- * 允许+86 中国大陆手机号码
+ * Mobile Number that from China (+86)
  */
 export const mobileCNPhoneChecker: TChecker = () => {
     return {
@@ -116,10 +112,10 @@ export const mobileCNPhoneChecker: TChecker = () => {
 };
 
 /**
- * Zip/Postal Code- 邮政编码类
+ * Zip/Postal Code
  *
- * 最小1位，最大31位
- * 允许输入数字，字母，空格和字符：().-+*#
+ * 1. Min 1, Max 31
+ * 2. Allow input numbers, letters, spaces, and characters: ().-+*#
  */
 export const postalCodeChecker: TChecker = () => {
     return {
@@ -129,10 +125,10 @@ export const postalCodeChecker: TChecker = () => {
 };
 
 /**
- * Name - 名称类，非用户名
+ * Name Checker
  *
- * 最小1位，最大127位
- * 支持输入任意字符，不支持输入纯空格。（提交后用Trim（）去掉最前和最后的空格）
+ * 1. Min 1, Max 63
+ * 2. Allow any characters that are not spaces
  */
 export const normalNameChecker: TChecker = () => {
     return {
@@ -143,8 +139,8 @@ export const normalNameChecker: TChecker = () => {
 /**
  * First Name
  *
- * 最小1位，最大63位
- * 任意字符
+ * 1. Min 1, Max 63
+ * 2. Allow any characters
  */
 export const firstNameChecker: TChecker = () => {
     return {
@@ -155,20 +151,20 @@ export const firstNameChecker: TChecker = () => {
 /**
  * Last Name
  *
- * 最小1位，最大63位
- * 任意字符
+ * 1. Min 1, Max 63
+ * 2. Allow any characters
  */
 export const lastNameChecker: TChecker = firstNameChecker;
 
 /**
  * Company Name
  *
- * 与 normalNameChecker 规则一样
+ * The same as normalNameChecker
  */
 export const companyNameChecker: TChecker = normalNameChecker;
 
 /**
- * SN（Yeastar 产品通用规范）
+ * SN (The General Specification for Yeastar Products)
  */
 export const SNLengthChecker: TChecker = () => ({
     checkLettersAndNum: checkLettersAndNum(),
@@ -179,16 +175,16 @@ export const SNLengthChecker: TChecker = () => ({
 });
 
 /**
- * 金额输入
+ * Money Checker
  *
- * 小数点前最大10位，小数点后2位
+ * Up to 10 digits before the decimal point and up to 2 digits after the decimal point
  */
 export const moneyChecker: TChecker = () => ({
-    // 只能是数值
+    // Check number
     checkNumber: checkNumber(),
-    // 只能是正数
+    // Check min value
     checkMinValue: checkMinValue({ min: 0 }),
-    // 校验整数位
+    // Check integer length
     checkIntegerLength(value) {
         const maxLength = 10;
         const message = getErrorMessage(EErrorMessages.amountMaxLength, { 0: maxLength });
@@ -205,7 +201,7 @@ export const moneyChecker: TChecker = () => ({
         return Promise.resolve(true);
     },
 
-    // 校验小数位
+    // Check decimals length
     checkDecimalsLength(value) {
         const maxLength = 2;
         const message = getErrorMessage(EErrorMessages.amountDecimalsMaxLength, { 0: maxLength });
@@ -223,10 +219,10 @@ export const moneyChecker: TChecker = () => ({
 });
 
 /**
- * 域名/服务器地址
+ * Host checker
  *
- * 最小3位，最大255位
- * 任意字符
+ * 1. Min 1, Max 255
+ * 2. Allow any characters
  */
 export const hostChecker: TChecker = () => {
     return {
@@ -236,9 +232,10 @@ export const hostChecker: TChecker = () => {
 };
 /**
  * 端口号
+ * Port checker
  *
- * 最小1位，最大5位
- * 1-65535范围内的整数,纯数字
+ * 1. Min 1, Max 5
+ * 2. Integer between 1 and 65535
  */
 export const portChecker: TChecker = () => {
     return {
@@ -249,8 +246,8 @@ export const portChecker: TChecker = () => {
 /**
  * userName
  *
- * 最小5位，最大255位
- * 至少包含大小写英文字母，支持除了空格外的任意字符，不支持除英文外的多语言
+ * 1. Min 5, Max 255
+ * 2. At least one uppercase letter, one lowercase letter, and any characters except spaces
  */
 export const userNameChecker: TChecker = () => {
     return {
@@ -272,9 +269,10 @@ export const userNameChecker: TChecker = () => {
 
 /**
  * 密码
+ * Password checker
  *
- * 最小8位，最大63位
- * 至少包含大小写英文字母，支持除了空格外的任意字符，不支持除英文外的多语言
+ * 1. Min 8, Max 63
+ * 2. At least one uppercase letter, one lowercase letter, and any characters except spaces
  */
 export const passwordChecker: TChecker = () => {
     return {
@@ -298,8 +296,9 @@ export const passwordChecker: TChecker = () => {
 };
 
 /**
- * url合法性
- * 最大 1024 位
+ * Url checker
+ *
+ * 1. Min 1, Max 1024
  */
 export const urlChecker: TChecker = () => {
     return {
@@ -310,8 +309,10 @@ export const urlChecker: TChecker = () => {
 
 /**
  * 秒数校验规则
- * 1. 必须为整数
- * 2. min <= 值 <= max，min 默认为 1，max 默认为 30 * 24 * 60 * 60
+ * Seconds checker
+ *
+ * 1. Must be an integer
+ * 2. min <= value <= max, min defaults to 1, max defaults to 30 * 24 * 60 * 60
  */
 export const secondsChecker: TChecker = (min = 1, max = 30 * 24 * 60 * 60) => {
     return {

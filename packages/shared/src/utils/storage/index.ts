@@ -8,7 +8,7 @@ const iotLocalStorage = new IotStorage({ storage: window.localStorage });
 /** sessionStorage */
 const iotSessionStorage = new IotStorage({ storage: window.sessionStorage });
 
-/** indexDB 实例 */
+/** indexDB Instance */
 const iotIndexedDBStorage = new IndexedDBStorage(`${DEFAULT_CACHE_PREFIX}db`);
 
 export * from './constant';
