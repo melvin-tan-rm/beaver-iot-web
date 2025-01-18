@@ -8,59 +8,59 @@ dayjs.extend(timezone);
 export { dayjs };
 
 /**
- * 默认日期时间格式
+ * Default date time format
  */
 export const DEFAULT_DATA_TIME_FORMAT = {
-    /** 周日期格式 */
+    /** Week start format */
     weekDateFormat: 'ddd',
 
-    /** 简单日期格式 */
+    /** Simple date format */
     simpleDateFormat: 'YYYY-MM-DD',
 
-    /** 日期周末格式 */
+    /** Date week format */
     fullDateFormat: 'YYYY-MM-DD ddd',
 
-    /** 日期时分格式 */
+    /** Date time minute format */
     fullDateTimeMinuteFormat: 'YYYY-MM-DD HH:mm',
 
-    /** 日期时分秒格式 */
+    /** Date time second format */
     fullDateTimeSecondFormat: 'YYYY-MM-DD HH:mm:ss',
 
-    /** 日期周时分格式 */
+    /** Date week time minute format */
     fullDateWeekTimeMinute: 'YYYY-MM-DD ddd HH:mm',
 
-    /** 月日周时分格式 */
+    /** Day week time minute format */
     monthDayWeekTimeMinute: 'MM-DD ddd HH:mm',
 
-    /** 月日时分格式 */
+    /** Day minute format */
     monthDayTimeMinute: 'MM-DD HH:mm',
 
-    /** 时分格式 */
+    /** Minute format */
     timeMinuteFormat: 'HH:mm',
 
-    /** 时分秒格式 */
+    /** Second format */
     timeSecondFormat: 'HH:mm:ss',
 } as const;
 
 /**
- * 获取当前设备时区
+ * Get the current device time zone
  */
 export const getTimezone = () => {
     return dayjs.tz.guess();
 };
 
 /**
- * 变更默认时区
- * @param timezone 时区
+ * Change default timezone
+ * @param timezone Time zone
  */
 export const changeTimezone = (timezone: string) => {
     dayjs.tz.setDefault(timezone);
 };
 
 /**
- * 日期时间格式化
- * @param time 时间对象
- * @param format 格式
+ * Format date time
+ * @param time Time
+ * @param format Format
  */
 export const format = (
     time: dayjs.ConfigType = dayjs(),

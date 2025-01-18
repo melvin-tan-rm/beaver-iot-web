@@ -6,25 +6,28 @@ import { getCurrentTheme, type ThemeType } from '../services/theme';
 import { getTimezone, changeTimezone } from '../services/time';
 
 interface GlobalStore {
-    /** 系统语言 */
+    /** Current Language */
     lang?: LangType;
 
-    /** 系统主题 */
+    /** Current Theme */
     theme: ThemeType;
 
-    /** 系统时区 */
+    /** Current Timezone */
     timezone: string;
 
-    /** 更新系统主题 */
+    /** Set theme */
     setTheme: (theme: ThemeType) => void;
 
-    /** 更新系统时区 */
+    /** Set timezone */
     setTimezone: (tz: string) => void;
 }
 
 const useGlobalStore = create(
     immer<GlobalStore>(set => ({
-        // lang 初始化时不设置默认值，以便文案加载完毕后可触发页面更新
+        /**
+         * The init language is not set by default, so that the page can be updated after the
+         * language source is loaded.
+         */
         lang: undefined,
 
         theme: getCurrentTheme(),
@@ -42,7 +45,7 @@ const useGlobalStore = create(
     })),
 );
 
-// 监听语言变更
+// Listen the language change event and update the global language state.
 onLangChange(lang => {
     /**
      * Calling actions outside a React event handler in pre React 18

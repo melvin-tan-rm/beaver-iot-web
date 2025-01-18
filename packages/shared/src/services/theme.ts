@@ -10,21 +10,21 @@ import { merge } from 'lodash-es';
 import type { PaletteMode, ColorSystemOptions, CssVarsThemeOptions } from '@mui/material/styles';
 import iotStorage from '../utils/storage';
 
-/** 主题类型 */
+/** Theme type */
 export type ThemeType = PaletteMode;
 
-// 缓存 key（注意：使用 iotStorage 会自动拼接 msiot. 前缀）
+// Cache key of theme (Note: iotStorage will automatically add the `mos.` prefix)
 export const THEME_CACHE_KEY = 'theme';
-/** 主题 CSS 变量选择器 */
+/** The selector of css theme */
 export const THEME_COLOR_SCHEMA_SELECTOR = 'data-theme';
 
-/** 主题色 - 白 */
+/** Theme color - white */
 export const white = '#FFFFFF';
 
-/** 主题色 - 黑 */
+/** Theme color - black */
 export const black = '#000000';
 
-/** 主题色 - 蓝 */
+/** Theme color - blue */
 export const blue = {
     ...MBlue,
     200: '#F0F9FF',
@@ -37,7 +37,7 @@ export const blue = {
     900: '#1351AD',
 } as const;
 
-/** 主题色 - 绿 */
+/** Theme color - green */
 export const green = {
     ...MGreen,
     200: '#EBFAEF',
@@ -50,7 +50,7 @@ export const green = {
     900: '#076E3A',
 } as const;
 
-/** 主题色 - 黄 */
+/** Theme - yellow */
 export const yellow = {
     ...MYellow,
     200: '#FFFDEB',
@@ -63,7 +63,7 @@ export const yellow = {
     900: '#AB7003',
 } as const;
 
-/** 主题色 - 红 */
+/** Theme - red */
 export const red = {
     ...MRed,
     200: '#FEEBEE',
@@ -76,7 +76,7 @@ export const red = {
     900: '#A6141E',
 } as const;
 
-/** 主题色 - 深橙 */
+/** Theme color - dark orange */
 export const deepOrange = {
     ...MDeepOrange,
     200: '#FFF7F0',
@@ -89,7 +89,7 @@ export const deepOrange = {
     900: '#AB3813',
 } as const;
 
-/** 主题色 - 紫 */
+/** Theme color - purple */
 export const purple = {
     50: '#F5F2FF',
     100: '#EAE3FD',
@@ -103,7 +103,7 @@ export const purple = {
     900: '#462C8E',
 } as const;
 
-/** 主题色 - 灰 */
+/** Theme color - gray */
 export const grey = {
     ...MGrey,
     50: '#F7F8FA',
@@ -119,21 +119,22 @@ export const grey = {
 } as const;
 
 /**
- * 判断浏览器当前是否为黑暗模式
+ * Is browser current in dark mode
  */
 const isDarkMode = ((): boolean => {
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 })();
 
-/** 系统主题 */
+/** System theme */
 export const SYSTEM_THEME: ThemeType = isDarkMode ? 'dark' : 'light';
-/** 应用默认主题 */
+/** Default theme of application */
 export const DEFAULT_THEME: ThemeType = 'light';
 
 /**
- * 初始化系统主题
+ * Init theme
  *
- * 优先根据缓存中的主题类型变更当前主题，若无缓存则默认为 light 主题
+ * Prioritizes changes to the current theme based on the type of theme in the cache, and
+ * defaults to the light theme if there is no cache.
  */
 export const initTheme = (theme?: ThemeType) => {
     const type = iotStorage.getItem<ThemeType>(THEME_CACHE_KEY) || theme || DEFAULT_THEME;
@@ -143,7 +144,7 @@ export const initTheme = (theme?: ThemeType) => {
 };
 
 /**
- * 获取当前系统主题类型
+ * Get current theme type
  */
 export const getCurrentTheme = (): ThemeType => {
     const mode = iotStorage.getItem<ThemeType>(THEME_CACHE_KEY);
@@ -152,9 +153,9 @@ export const getCurrentTheme = (): ThemeType => {
 };
 
 /**
- * 变更主题
- * @param theme 主题类型
- * @param isPersist 是否在 localStorage 持久化存储
+ * Change theme
+ * @param theme Theme type
+ * @param isPersist Whether to persist in local storage
  */
 export const changeTheme = (theme: ThemeType, isPersist = true) => {
     if (!theme) return;
@@ -165,7 +166,7 @@ export const changeTheme = (theme: ThemeType, isPersist = true) => {
 };
 
 /**
- * 获取 MUI 主题配置
+ * Get MUI theme configuration
  */
 export const getMuiSchemes = () => {
     const lightPalette: ColorSystemOptions['palette'] = {
@@ -282,7 +283,7 @@ export const getMuiSchemes = () => {
 };
 
 /**
- * 暗色主题配置
+ * Get all theme configs
  */
 const getThemes = (): Record<ThemeType, any> => {
     const light = {};
@@ -294,8 +295,8 @@ const getThemes = (): Record<ThemeType, any> => {
 };
 
 /**
- * 获取 MUI 组件主题配置
- * @param mode 主题类型
+ * Get MUI component theme configuration
+ * @param mode Theme type
  * @link https://mui.com/material-ui/customization/theme-components/
  */
 export const getMuiComponents = (mode: ThemeType = 'light') => {
@@ -391,9 +392,9 @@ export const getMuiComponents = (mode: ThemeType = 'light') => {
 };
 
 /**
- * 根据传入的 CSS 变量名获取对应值
- * @param vars CSS 变量名或变量名数组
- * @returns 返回对应 CSS 变量值
+ * Get the corresponding value of the CSS variable name
+ * @param vars CSS variables
+ * @returns CSS variable values
  */
 export const getCSSVariableValue = <T extends string | string[]>(
     vars: T,

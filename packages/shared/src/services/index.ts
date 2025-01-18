@@ -1,12 +1,12 @@
 /**
- * 接口服务&第三方服务等
+ * Universal services
  */
 
-// 国际化
+// I18N
 export * as i18n from './i18n';
 
-// 主题配色
+// Theme
 export * as theme from './theme';
 
-// 日期时间处理
+// Time
 export * as time from './time';
