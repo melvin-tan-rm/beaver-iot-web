@@ -39,6 +39,7 @@ type RouteObjectType = RouteObject & {
          * Whether to hide in the menu bar
          */
         hideInMenuBar?: boolean;
+
         /** 隐藏侧边栏 */
         hideSidebar?: boolean;
     };

@@ -6,7 +6,6 @@ import classNames from 'classnames';
 
 import { Modal, type ModalProps } from '@milesight/shared/src/components';
 import {
-    userNameChecker,
     passwordChecker,
     checkRequired,
     emailCheckers,
@@ -46,9 +45,14 @@ const OperateUserModal: React.FC<Props> = props => {
             {
                 name: 'nickname',
                 rules: {
+                    maxLength: {
+                        value: 127,
+                        message: getIntlText('valid.input.max_length', {
+                            1: 127,
+                        }),
+                    },
                     validate: {
                         checkRequired: checkRequired(),
-                        userNameChecker: userNameChecker().checkUsername,
                     },
                 },
                 defaultValue: '',
