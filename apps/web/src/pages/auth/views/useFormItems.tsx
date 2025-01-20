@@ -55,6 +55,10 @@ const useFormItems = ({ mode = 'login' }: UseFormItemsProps) => {
                             helperText={error ? error.message : null}
                             value={value}
                             onChange={onChange}
+                            onBlur={event => {
+                                const newValue = event?.target?.value;
+                                onChange(typeof newValue === 'string' ? newValue.trim() : newValue);
+                            }}
                             slotProps={{
                                 input: {
                                     startAdornment: (
@@ -91,6 +95,10 @@ const useFormItems = ({ mode = 'login' }: UseFormItemsProps) => {
                             helperText={error ? error.message : null}
                             value={value}
                             onChange={onChange}
+                            onBlur={event => {
+                                const newValue = event?.target?.value;
+                                onChange(typeof newValue === 'string' ? newValue.trim() : newValue);
+                            }}
                             slotProps={{
                                 input: {
                                     startAdornment: (

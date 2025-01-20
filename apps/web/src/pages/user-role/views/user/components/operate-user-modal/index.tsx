@@ -67,6 +67,10 @@ const OperateUserModal: React.FC<Props> = props => {
                             helperText={error ? error.message : null}
                             value={value}
                             onChange={onChange}
+                            onBlur={event => {
+                                const newValue = event?.target?.value;
+                                onChange(typeof newValue === 'string' ? newValue.trim() : newValue);
+                            }}
                         />
                     );
                 },
@@ -91,6 +95,10 @@ const OperateUserModal: React.FC<Props> = props => {
                             helperText={error ? error.message : null}
                             value={value}
                             onChange={onChange}
+                            onBlur={event => {
+                                const newValue = event?.target?.value;
+                                onChange(typeof newValue === 'string' ? newValue.trim() : newValue);
+                            }}
                         />
                     );
                 },

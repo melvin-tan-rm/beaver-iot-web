@@ -58,8 +58,8 @@ const useUser = (getAllUsers?: () => void) => {
 
         const [err, resp] = await awaitWrap(
             userAPI.addUser({
-                nickname: nickname?.trim(),
-                email: email?.trim(),
+                nickname,
+                email,
                 password,
             }),
         );
@@ -82,8 +82,8 @@ const useUser = (getAllUsers?: () => void) => {
         const [err, resp] = await awaitWrap(
             userAPI.editUserInfo({
                 user_id: userId,
-                nickname: nickname?.trim(),
-                email: email?.trim(),
+                nickname,
+                email,
             }),
         );
 

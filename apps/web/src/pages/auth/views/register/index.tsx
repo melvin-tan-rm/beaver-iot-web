@@ -56,7 +56,7 @@ export default () => {
         const [error, resp] = await awaitWrap(
             globalAPI.oauthRegister({
                 email,
-                nickname: (username || '').trim(),
+                nickname: username!,
                 password,
             }),
         );

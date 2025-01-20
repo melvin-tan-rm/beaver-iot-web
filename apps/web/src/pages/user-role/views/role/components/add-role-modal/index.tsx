@@ -46,6 +46,10 @@ const AddRoleModal: React.FC<Props> = props => {
                             helperText={error ? error.message : null}
                             value={value}
                             onChange={onChange}
+                            onBlur={event => {
+                                const newValue = event?.target?.value;
+                                onChange(typeof newValue === 'string' ? newValue.trim() : newValue);
+                            }}
                         />
                     );
                 },
@@ -54,13 +58,7 @@ const AddRoleModal: React.FC<Props> = props => {
     }, [getIntlText]);
 
     const onSubmit: SubmitHandler<AddRoleProps> = async params => {
-        const { name } = params || {};
-        const newName = typeof name === 'string' ? name.trim() : '';
-        if (!newName) {
-            return;
-        }
-
-        await onFormSubmit(newName, () => {
+        await onFormSubmit(params.name, () => {
             reset();
         });
     };
