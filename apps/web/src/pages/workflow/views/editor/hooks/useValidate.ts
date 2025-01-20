@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from 'react';
 import { useReactFlow } from '@xyflow/react';
-import { isObject, isNil } from 'lodash-es';
+import { isObject, isNil, isNumber } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 import {
@@ -204,12 +204,61 @@ const useValidate = () => {
                                 return true;
                             }
                             break;
+                        case 'INTERVAL':
+                            if (
+                                value.timezone &&
+                                !isNil(value.intervalTime) &&
+                                isNumber(value.intervalTime) &&
+                                value.intervalTimeUnit
+                            ) {
+                                return true;
+                            }
+                            break;
                         default:
                             break;
                     }
 
                     const message = getIntlText(ErrorIntlKey.required, { 1: fieldName });
                     return message;
+                },
+                checkIntervalTime(
+                    value?: NonNullable<TimerNodeDataType['parameters']>['timerSettings'],
+                    fieldName?: string,
+                ) {
+                    const MAX_INTERVAL_HOURS = 24;
+                    const { type, intervalTime, intervalTimeUnit } = value || {};
+                    if (
+                        type === 'INTERVAL' &&
+                        !isNil(intervalTime) &&
+                        isNumber(intervalTime) &&
+                        intervalTimeUnit
+                    ) {
+                        let seconds = 0;
+
+                        switch (intervalTimeUnit) {
+                            case 'HOURS':
+                                seconds = intervalTime * 3600;
+                                break;
+                            case 'MINUTES':
+                                seconds = intervalTime * 60;
+                                break;
+                            case 'SECONDS':
+                                seconds = intervalTime;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        if (seconds < MAX_INTERVAL_HOURS * 3600) {
+                            return true;
+                        }
+
+                        const message = getIntlText('workflow.valid.invalid_timer_interval', {
+                            1: getIntlText('common.label.hours', { 1: MAX_INTERVAL_HOURS }),
+                        });
+                        return message;
+                    }
+                    return true;
                 },
             },
             'ifelse.choice': {

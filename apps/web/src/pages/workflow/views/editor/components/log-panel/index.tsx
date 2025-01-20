@@ -51,7 +51,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
             'setNodesDataValidResult',
         ]),
     );
-    const { updateNodesStatus, checkWorkflowValid, getEntityDetail } = useWorkflow();
+    const { updateNodesStatus, getEntityDetail } = useWorkflow();
     const title = useMemo(() => {
         switch (logPanelMode) {
             case 'testRun':
@@ -201,13 +201,11 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
             // workflow verification
             const nodes = getNodes();
             const edges = getEdges();
-            if (!checkWorkflowValid(nodes, edges)) return;
 
             const edgesCheckResult = merge(
                 checkEdgesId(edges, nodes, { validateFirst: true }),
                 checkEdgesType(edges, nodes, { validateFirst: true }),
             );
-            // console.log({ edgesCheckResult });
             if (!isEmpty(edgesCheckResult)) return;
 
             const nodesCheckResult = merge(
@@ -215,7 +213,6 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
                 checkNodesType(nodes, { validateFirst: isAdvanceMode }),
                 checkNodesData(nodes, { validateFirst: isAdvanceMode }),
             );
-            // console.log({ nodesCheckResult });
             if (!isEmpty(nodesCheckResult)) {
                 if (isAdvanceMode) return;
                 const statusData = Object.entries(nodesCheckResult).reduce(
@@ -256,7 +253,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
                     {},
                 ) || null;
 
-            addTestLog({ id: resp.data.request_id, flow_data: toObject(), ...data });
+            addTestLog({ id: resp.data.request_id, flow_data: designData, ...data });
             setLogDetail({ traceInfos: data.trace_infos });
             updateNodesStatus(nodeStatus, { partial: true });
         },

@@ -8,6 +8,7 @@ import {
     MenuItem,
     Button,
     IconButton,
+    TextField,
     Stack,
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
@@ -49,6 +50,9 @@ const timerTypeConfigs: Record<
     SCHEDULE: {
         labelIntlKey: 'workflow.editor.form_param_timer_type_cycle',
     },
+    INTERVAL: {
+        labelIntlKey: 'workflow.editor.form_param_timer_type_interval',
+    },
 };
 
 const periodConfigs: Record<
@@ -83,6 +87,25 @@ const periodConfigs: Record<
     },
 };
 
+const intervalConfigs: Partial<
+    Record<
+        TimerIntervalType,
+        {
+            labelIntlKey: string;
+        }
+    >
+> = {
+    HOURS: {
+        labelIntlKey: 'common.label.hours',
+    },
+    MINUTES: {
+        labelIntlKey: 'common.label.minutes',
+    },
+    SECONDS: {
+        labelIntlKey: 'common.label.seconds',
+    },
+};
+
 const MAX_VALUE_LENGTH = 10;
 const DEFAULT_SCHEDULE_HOUR = 9;
 const DEFAULT_SCHEDULE_MINUTE = 0;
@@ -114,9 +137,16 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
             </MenuItem>
         ));
     }, [getIntlText]);
+    const intervalTypeOptions = useMemo(() => {
+        return Object.entries(intervalConfigs).map(([interval, config]) => (
+            <MenuItem key={interval} value={interval}>
+                {getIntlText(config.labelIntlKey, { 1: '' }).trim()}
+            </MenuItem>
+        ));
+    }, [getIntlText]);
 
     useLayoutEffect(() => {
-        if (data?.type === 'ONCE' || isEqual(data?.rules, list)) return;
+        if (data?.type !== 'SCHEDULE' || isEqual(data?.rules, list)) return;
         resetList(data?.rules || []);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, resetList]);
@@ -154,6 +184,10 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                                 result.expirationEpochSecond = getTime(
                                     DEFAULT_SCHEDULE_EXPIRATION,
                                 ).unix();
+                                break;
+                            }
+                            case 'INTERVAL': {
+                                result.intervalTimeUnit = 'HOURS';
                                 break;
                             }
                             default: {
@@ -275,6 +309,44 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                         }}
                     />
                 </>
+            )}
+            {data?.type === 'INTERVAL' && (
+                <div className="ms-timer-input-exec-interval">
+                    <TextField
+                        required={required}
+                        autoComplete="off"
+                        label={getIntlText('common.label.value')}
+                        value={isNaN(+data.intervalTime!) ? '' : data.intervalTime}
+                        onChange={e => {
+                            const { value } = e.target;
+                            if (isNaN(+value)) return;
+                            setData({
+                                ...data,
+                                intervalTime: value === '' ? '' : +value,
+                            });
+                        }}
+                    />
+                    <FormControl fullWidth required={required}>
+                        <InputLabel id="time-input-type-label">
+                            {getIntlText('common.label.unit')}
+                        </InputLabel>
+                        <Select<TimerInputValueType['intervalTimeUnit'] | ''>
+                            notched
+                            labelId="time-input-interval-type-label"
+                            label={getIntlText('common.label.unit')}
+                            value={data.intervalTimeUnit || ''}
+                            onChange={e => {
+                                setData(data => ({
+                                    ...data,
+                                    intervalTimeUnit: e.target
+                                        .value as TimerInputValueType['intervalTimeUnit'],
+                                }));
+                            }}
+                        >
+                            {intervalTypeOptions}
+                        </Select>
+                    </FormControl>
+                </div>
             )}
         </Stack>
     );
