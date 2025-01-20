@@ -3,6 +3,8 @@ import GRL, { WidthProvider } from 'react-grid-layout';
 import { WidgetDetail } from '@/services/http/dashboard';
 import Widget from './widget';
 
+import './style.less';
+
 const ReactGridLayout = WidthProvider(GRL);
 interface WidgetProps {
     onChangeWidgets: (widgets: any[]) => void;
@@ -90,7 +92,7 @@ const Widgets = (props: WidgetProps) => {
             margin={[20, 20]}
             onLayoutChange={handleChangeWidgets}
             draggableCancel=".dashboard-content-widget-icon-img,.dashboard-custom-resizable-handle"
-            className={`${isEdit ? 'dashboard-content-widget-grid-edit' : 'dashboard-content-widget-grid-not-edit'}`}
+            className={`${isEdit ? 'dashboard-content-widget-grid-edit' : 'dashboard-content-widget-grid-not-edit'} slow-transition-react-grid-layout`}
             resizeHandle={
                 <span className="dashboard-custom-resizable-handle dashboard-custom-resizable-handle-se" />
             }
