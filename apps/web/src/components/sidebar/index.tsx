@@ -66,7 +66,13 @@ const Sidebar: React.FC<Props> = memo(({ menus, logoLinkTo = '/' }) => {
                         <MoreUserInfo userInfo={userInfo} />
                     </div>
                 )}
-                <IconButton className="ms-oprt-shrink" onClick={() => setShrink(!shrink)}>
+                <IconButton
+                    className="ms-oprt-shrink"
+                    onClick={() => setShrink(!shrink)}
+                    sx={{
+                        padding: '10px',
+                    }}
+                >
                     <FormatIndentDecreaseIcon />
                 </IconButton>
             </div>

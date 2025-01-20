@@ -57,7 +57,7 @@ const routes: RouteObjectType[] = [
             get title() {
                 return intl.get('common.label.dashboard');
             },
-            icon: <DashboardCustomizeIcon fontSize="medium" />,
+            icon: <DashboardCustomizeIcon fontSize="small" />,
             permissions: PERMISSIONS.DASHBOARD_MODULE,
         },
         async lazy() {
@@ -74,7 +74,7 @@ const routes: RouteObjectType[] = [
             get title() {
                 return intl.get('common.label.device');
             },
-            icon: <DevicesFilledIcon fontSize="medium" />,
+            icon: <DevicesFilledIcon fontSize="small" />,
             permissions: PERMISSIONS.DEVICE_MODULE,
         },
         children: [
@@ -110,7 +110,7 @@ const routes: RouteObjectType[] = [
             get title() {
                 return intl.get('common.label.integration');
             },
-            icon: <IntegrationInstructionsIcon fontSize="medium" />,
+            icon: <IntegrationInstructionsIcon fontSize="small" />,
             permissions: PERMISSIONS.INTEGRATION_MODULE,
         },
         children: [
@@ -147,7 +147,7 @@ const routes: RouteObjectType[] = [
             get title() {
                 return intl.get('common.label.entity');
             },
-            icon: <EntityIcon fontSize="medium" />,
+            icon: <EntityIcon fontSize="small" />,
             permissions: PERMISSIONS.ENTITY_MODULE,
         },
         children: [
@@ -169,7 +169,7 @@ const routes: RouteObjectType[] = [
             get title() {
                 return intl.get('common.label.workflow');
             },
-            icon: <WorkflowIcon />,
+            icon: <WorkflowIcon fontSize="small" />,
             permissions: PERMISSIONS.WORKFLOW_MODULE,
         },
         children: [
@@ -203,7 +203,7 @@ const routes: RouteObjectType[] = [
             get title() {
                 return intl.get('user.label.user_role');
             },
-            icon: <Person4Icon fontSize="medium" />,
+            icon: <Person4Icon fontSize="small" />,
             permissions: PERMISSIONS.USER_ROLE_MODULE,
         },
         async lazy() {

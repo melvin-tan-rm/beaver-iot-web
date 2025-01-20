@@ -13,7 +13,7 @@
     }
 
     &-logo {
-        margin: @margin-md;
+        margin: 10px;
     }
 
     & &-menus {
@@ -29,7 +29,7 @@
             display: flex;
             flex: 1;
             align-items: center;
-            padding: @padding-sm @padding-md;
+            padding: @padding-xs @padding-md;
             color: var(--text-color-base);
             text-decoration: none;
 
@@ -82,7 +82,7 @@
             }
 
             .@{prefix}-icon {
-                transition: .3s;
+                transition: 0.3s;
             }
 
             &.active {
@@ -98,14 +98,14 @@
     }
 
     &&-shrink {
-        width: 64px;
+        width: 56px;
         padding-bottom: @ms-sidebar-footer-height-shrink;
         // transition: width 0.3s;
 
         .@{prefix}-sidebar-menu-item {
             &-link {
                 justify-content: center;
-                padding: @padding-sm;
+                padding: 10px;
 
                 .ms-name {
                     display: none;
