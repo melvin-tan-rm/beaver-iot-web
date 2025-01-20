@@ -22,6 +22,12 @@ export default () => {
         };
 
         return {
+            typography: {
+                fontFamily: 'inherit',
+            },
+            shape: {
+                borderRadius: 6,
+            },
             palette,
             colorSchemes,
             components,
