@@ -109,15 +109,25 @@ declare type TimePeriodType =
     | 'SATURDAY'
     | 'SUNDAY';
 
+declare type TimerIntervalType = 'SECONDS' | 'MINUTES' | 'HOURS' | 'DAYS';
+
 /**
  * Timer Node Parameters
  */
 declare type TimerNodeDataType = BaseNodeDataType<{
     timerSettings: {
-        type: 'ONCE' | 'SCHEDULE';
+        /**
+         * Execution Type
+         * @param ONCE Single execution
+         * @param SCHEDULE Periodic execution
+         * @param INTERVAL Interval execution
+         */
+        type: 'ONCE' | 'SCHEDULE' | 'INTERVAL';
         timezone: string;
         /** Execution Time (Unit s) */
         executionEpochSecond?: number;
+        intervalTimeUnit?: TimerIntervalType;
+        intervalTime?: number | string;
         rules?: {
             hour?: number;
             minute?: number;

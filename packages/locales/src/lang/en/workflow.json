@@ -116,5 +116,7 @@
     "workflow.label.condition_operator_greater_than_or_equal": "Greater Equals",
     "workflow.label.condition_operator_less_than": "Less Than",
     "workflow.label.condition_operator_less_than_or_equal": "Less Equals",
-    "workflow.label.param_type_other": "OTHER"
+    "workflow.label.param_type_other": "OTHER",
+    "workflow.editor.form_param_timer_type_interval": "Interval Execution",
+    "workflow.valid.invalid_timer_interval": "The timer interval must be less than {1}."
 }

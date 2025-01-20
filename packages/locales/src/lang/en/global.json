@@ -47,8 +47,8 @@
     "common.label.readonly": "Read only",
     "common.label.register": "Register",
     "common.label.search": "Search",
-    "common.label.second": "{1} sec",
-    "common.label.seconds": "{1} secs",
+    "common.label.second": "{1} Second",
+    "common.label.seconds": "{1} Seconds",
     "common.label.service": "Service",
     "common.label.setting": "Setting",
     "common.label.table_disabled_status": "Disabled status",
@@ -196,5 +196,7 @@
     "common.label.true": "True",
     "common.label.false": "False",
     "common.label.language": "Language",
-    "common.label.refresh": "Refresh"
+    "common.label.refresh": "Refresh",
+    "common.label.minutes": "{1} Minutes",
+    "common.label.unit": "Unit"
 }

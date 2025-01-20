@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { ButtonGroup, Button, Popover, Tabs, Tab, CircularProgress } from '@mui/material';
 import { useRequest } from 'ahooks';
-import { useNodes } from '@xyflow/react';
+import { useNodes, useReactFlow } from '@xyflow/react';
 import { useI18n, useStoreShallow } from '@milesight/shared/src/hooks';
 import { PlayArrowIcon, HistoryIcon } from '@milesight/shared/src/components';
 import { workflowAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
@@ -39,6 +39,7 @@ const TestButton: React.FC<Props> = ({ disabled }) => {
         runLogs,
         testLogs,
         logDetailLoading,
+        openLogPanel,
         setRunLogs,
         setLogPanelMode,
         setOpenLogPanel,
@@ -49,6 +50,7 @@ const TestButton: React.FC<Props> = ({ disabled }) => {
             'runLogs',
             'testLogs',
             'logDetailLoading',
+            'openLogPanel',
             'setRunLogs',
             'setLogPanelMode',
             'setOpenLogPanel',
@@ -56,7 +58,7 @@ const TestButton: React.FC<Props> = ({ disabled }) => {
             'setLogDetailLoading',
         ]),
     );
-    const { updateNodesStatus } = useWorkflow();
+    const { updateNodesStatus, checkWorkflowValid } = useWorkflow();
 
     // ---------- Fetch Run Log List ----------
     const { loading, run: getRunLogList } = useRequest(
@@ -80,9 +82,12 @@ const TestButton: React.FC<Props> = ({ disabled }) => {
     );
 
     // ---------- Popover ----------
+    const { getNodes, getEdges } = useReactFlow<WorkflowNode, WorkflowEdge>();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const handleClick = async (e: React.MouseEvent<HTMLButtonElement>, type: TestButtonType) => {
         if (type === 'test') {
+            if (openLogPanel) return;
+            if (!checkWorkflowValid(getNodes(), getEdges())) return;
             setOpenLogPanel(true);
             setLogPanelMode('testRun');
             setLogDetail(undefined);
