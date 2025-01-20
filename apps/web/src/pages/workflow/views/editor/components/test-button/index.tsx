@@ -40,6 +40,7 @@ const TestButton: React.FC<Props> = ({ disabled }) => {
         testLogs,
         logDetailLoading,
         openLogPanel,
+        logPanelMode,
         setRunLogs,
         setLogPanelMode,
         setOpenLogPanel,
@@ -51,6 +52,7 @@ const TestButton: React.FC<Props> = ({ disabled }) => {
             'testLogs',
             'logDetailLoading',
             'openLogPanel',
+            'logPanelMode',
             'setRunLogs',
             'setLogPanelMode',
             'setOpenLogPanel',
@@ -86,7 +88,7 @@ const TestButton: React.FC<Props> = ({ disabled }) => {
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const handleClick = async (e: React.MouseEvent<HTMLButtonElement>, type: TestButtonType) => {
         if (type === 'test') {
-            if (openLogPanel) return;
+            if (openLogPanel && logPanelMode === 'testRun') return;
             if (!checkWorkflowValid(getNodes(), getEdges())) return;
             setOpenLogPanel(true);
             setLogPanelMode('testRun');
