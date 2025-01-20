@@ -15,7 +15,7 @@ import WebhookModal, {
     WEBHOOK_KEYS,
     type WebhookFormDataProps,
 } from './webhook-modal';
-import OpenapiModal, { OPENAPI_SCHEDULED_KEYS, type OpenapiFormDataProps } from './openapi-modal';
+// import OpenapiModal, { OPENAPI_SCHEDULED_KEYS, type OpenapiFormDataProps } from './openapi-modal';
 import '../style.less';
 
 type WebhookStatusType = 'READY' | 'NOT_READY' | 'ERROR';
@@ -89,35 +89,35 @@ const Services: React.FC<Props> = ({ entities, onUpdateSuccess }) => {
     };
 
     // ---------- OpenAPI 相关处理逻辑 ----------
-    const [openApiModalVisible, setOpenApiModalVisible] = useState(false);
-    const [openapiData, setOpenapiData] = useState<OpenapiFormDataProps>();
-    const handleOpenapiUpdate = async (params?: OpenapiFormDataProps) => {
-        const finalParams =
-            params &&
-            Object.entries(params).reduce(
-                (acc, [key, value]) => {
-                    const entityKey = getEntityKey(key);
+    // const [openApiModalVisible, setOpenApiModalVisible] = useState(false);
+    // const [openapiData, setOpenapiData] = useState<OpenapiFormDataProps>();
+    // const handleOpenapiUpdate = async (params?: OpenapiFormDataProps) => {
+    //     const finalParams =
+    //         params &&
+    //         Object.entries(params).reduce(
+    //             (acc, [key, value]) => {
+    //                 const entityKey = getEntityKey(key);
 
-                    if (entityKey && value !== undefined) {
-                        entityKey && (acc[entityKey] = value);
-                    }
-                    return acc;
-                },
-                {} as Record<string, any>,
-            );
+    //                 if (entityKey && value !== undefined) {
+    //                     entityKey && (acc[entityKey] = value);
+    //                 }
+    //                 return acc;
+    //             },
+    //             {} as Record<string, any>,
+    //         );
 
-        if (!finalParams || !Object.keys(finalParams).length) {
-            console.warn(`params is empty, the origin params is ${JSON.stringify(params)}`);
-            return;
-        }
+    //     if (!finalParams || !Object.keys(finalParams).length) {
+    //         console.warn(`params is empty, the origin params is ${JSON.stringify(params)}`);
+    //         return;
+    //     }
 
-        const [error, resp] = await awaitWrap(entityAPI.updateProperty({ exchange: finalParams }));
-        if (error || !isRequestSuccess(resp)) return;
+    //     const [error, resp] = await awaitWrap(entityAPI.updateProperty({ exchange: finalParams }));
+    //     if (error || !isRequestSuccess(resp)) return;
 
-        onUpdateSuccess?.();
-        setOpenApiModalVisible(false);
-        toast.success({ content: getIntlText('common.message.operation_success') });
-    };
+    //     onUpdateSuccess?.();
+    //     setOpenApiModalVisible(false);
+    //     toast.success({ content: getIntlText('common.message.operation_success') });
+    // };
 
     // 获取 Service 数据
     useEffect(() => {
@@ -126,13 +126,13 @@ const Services: React.FC<Props> = ({ entities, onUpdateSuccess }) => {
             WEBHOOK_KEYS.ENABLED_KEY,
             WEBHOOK_KEYS.SECRET_KEY,
         ]);
-        const openApiFormData = getEntityValues([
-            OPENAPI_SCHEDULED_KEYS.ENABLED_KEY,
-            OPENAPI_SCHEDULED_KEYS.PERIOD_KEY,
-        ]);
+        // const openApiFormData = getEntityValues([
+        //     OPENAPI_SCHEDULED_KEYS.ENABLED_KEY,
+        //     OPENAPI_SCHEDULED_KEYS.PERIOD_KEY,
+        // ]);
 
         setWebhookData(webhookFormData);
-        setOpenapiData(openApiFormData);
+        // setOpenapiData(openApiFormData);
     }, [getEntityValues]);
 
     return (
@@ -222,7 +222,7 @@ const Services: React.FC<Props> = ({ entities, onUpdateSuccess }) => {
                         </div>
                     </div>
                 </div>
-                <div className="ms-service-card">
+                {/* <div className="ms-service-card">
                     <div className="ms-service-card__header">
                         <div className="ms-service-card__header-left">
                             <Switch
@@ -274,7 +274,7 @@ const Services: React.FC<Props> = ({ entities, onUpdateSuccess }) => {
                             </span>
                         </div>
                     </div>
-                </div>
+                </div> */}
             </div>
             <WebhookModal
                 mode={webhookData && webhookData[WEBHOOK_KEYS.ENABLED_KEY] ? 'edit' : 'switch'}
@@ -283,7 +283,7 @@ const Services: React.FC<Props> = ({ entities, onUpdateSuccess }) => {
                 onCancel={() => setWebhookModalVisible(false)}
                 onSubmit={handleWebhookUpdate}
             />
-            <OpenapiModal
+            {/* <OpenapiModal
                 mode={
                     openapiData && openapiData[OPENAPI_SCHEDULED_KEYS.ENABLED_KEY]
                         ? 'edit'
@@ -293,7 +293,7 @@ const Services: React.FC<Props> = ({ entities, onUpdateSuccess }) => {
                 visible={openApiModalVisible}
                 onCancel={() => setOpenApiModalVisible(false)}
                 onSubmit={handleOpenapiUpdate}
-            />
+            /> */}
         </div>
     );
 };
