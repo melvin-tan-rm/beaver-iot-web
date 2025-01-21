@@ -1,51 +1,50 @@
 # Beaver IoT Web
 
-本项目是 Beaver IoT Web 应用，基础技术栈包括：
+This project is the Beaver IoT Web application, built upon the following core technologies:
 
-- 视图库：React
-- 请求库：Axios
-- 组件库：Ysd-iot
-- 状态管理：Zustand
-- 国际化：react-intl-universal
-- 通用 Hook：Ahooks
+- View Library: React
+- Request Library: Axios
+- Component Library: Ysd-iot
+- State Management: Zustand
+- Internationalization: react-intl-universal
+- General Hooks: Ahooks
 
-## 目录结构
+## Directory Structure
 
 ```
 @app/web
 ├── public
 ├── src
-│   ├── assets                  # 图片资源
-│   ├── components              # 全局组件
-│   ├── hooks                   # 全局 Hooks
-│   ├── layouts                 # 布局组件
-│   ├── pages                   # 路由页面资源
+│   ├── assets                  # Image assets
+│   ├── components              # Global components
+│   ├── hooks                   # Global hooks
+│   ├── layouts                 # Layout components
+│   ├── pages                   # Route page resources
 │   │     ├── page-a
-│   │     │     ├── components  # 页面组件
-│   │     │     ├── index.ts    # 页面入口
-│   │     │     ├── store.ts    # 页面共享状态
+│   │     │     ├── components  # Page components
+│   │     │     ├── index.ts    # Page entry
+│   │     │     ├── store.ts    # Page shared state
 │   │     │     ├── style.ts
 │   │     │     └── ...
 │   │     │
 │   │     └── page-b
 │   │
-│   ├── routes                  # 路由配置
-│   ├── services                # 通用服务
-│   ├── stores                  # 全局状态
-│   ├── styles                  # 全局样式
-│   ├── main.ts                 # 应用入口
-│   └── typings.d.ts            # 类型约束
+│   ├── routes                  # Route configuration
+│   ├── services                # Common services
+│   ├── stores                  # Global state
+│   ├── styles                  # Global styles
+│   ├── main.ts                 # Application entry
+│   └── typings.d.ts            # Type definitions
 │
-├── index.html                  # 入口 Html
+├── index.html                  # Entry HTML
 ├── package.json
 ├── tsconfig.json
 ├── tsconfig.node.json
-└── vite.config.ts              # 构建配置
+└── vite.config.ts              # Build configuration
 ```
 
-## 开发维护
+## Development and Maintenance
 
-### 别名支持
+### Alias Support
 
-- `'@': './src/*'` src 路径别名
-
+- `'@': './src/*'` src path alias
