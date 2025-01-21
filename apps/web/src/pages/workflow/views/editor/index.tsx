@@ -23,7 +23,7 @@ import {
     isRequestSuccess,
     type FlowNodeTraceInfo,
 } from '@/services/http';
-import { MIN_ZOOM, MAX_ZOOM, FROZEN_NODE_PROPERTY_KEYS } from './constants';
+import { MIN_ZOOM, MAX_ZOOM, FROZEN_NODE_PROPERTY_KEYS, DELETE_KEY_CODE } from './constants';
 import useFlowStore from './store';
 import { normalizeNodes, normalizeEdges } from './helper';
 import { useNodeTypes, useInteractions, useWorkflow, useValidate } from './hooks';
@@ -530,6 +530,7 @@ const WorkflowEditor = () => {
                         className="ms-workflow"
                         minZoom={MIN_ZOOM}
                         maxZoom={MAX_ZOOM}
+                        deleteKeyCode={DELETE_KEY_CODE}
                         selectionOnDrag={false}
                         selectNodesOnDrag={false}
                         selectionKeyCode={null}

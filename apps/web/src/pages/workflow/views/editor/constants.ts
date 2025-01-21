@@ -54,6 +54,11 @@ export const NODE_SPACING_X = 48;
 export const NODE_SPACING_Y = 48;
 
 /**
+ * The key codes to delete nodes or edges
+ */
+export const DELETE_KEY_CODE = ['Delete', 'Backspace'];
+
+/**
  * Global parameter reference pattern string
  */
 export const PARAM_REFERENCE_PATTERN_STRING = `#\\{properties\\.([^'\\[\\]]+)\\['([^']+)'\\]\\}`;
