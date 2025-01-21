@@ -10,6 +10,7 @@ type SeverityType = 'info' | 'success' | 'warning' | 'error';
 interface Toast {
     key: ApiKey;
     duration: number | null;
+    createAt: number;
     severity: SeverityType;
     content: React.ReactNode;
     onClose?: (event: Event | React.SyntheticEvent<any, Event>) => void;
@@ -17,7 +18,7 @@ interface Toast {
 
 type Params =
     | string
-    | (PartialOptional<Omit<Toast, 'severity'>, 'key' | 'duration'> & {
+    | (PartialOptional<Omit<Toast, 'severity' | 'createAt'>, 'key' | 'duration'> & {
           container?: HTMLDivElement;
       });
 
@@ -35,6 +36,7 @@ class ToastManager {
     private toasts: Toast[] = [];
     private root: Root | null = null;
     private container: HTMLDivElement;
+    private maxNumber = 5;
 
     constructor() {
         this.container = document.createElement('div');
@@ -43,16 +45,9 @@ class ToastManager {
     }
 
     private renderToasts(container?: HTMLDivElement) {
-        let toastContainer: HTMLDivElement;
         if (container) {
             this.root?.unmount();
-            toastContainer = document.createElement('div');
-            container.appendChild(toastContainer);
-            this.root = createRoot(toastContainer);
-        } else {
-            this.root?.unmount();
-            this.root = createRoot(this.container);
-            document.body.appendChild(this.container);
+            this.root = createRoot(container);
         }
         this.root?.render(
             <>
@@ -70,11 +65,6 @@ class ToastManager {
                         onClose={e => {
                             this.removeToast(toast.key);
                             toast.onClose?.(e);
-                            if (container && toastContainer) {
-                                container.removeChild(toastContainer);
-                            } else {
-                                document.body.removeChild(this.container);
-                            }
                         }}
                     >
                         <div className={`ms-toast ${toast.severity}`}>
@@ -92,9 +82,19 @@ class ToastManager {
         key = Date.now(),
         container,
         ...props
-    }: PartialOptional<Toast, 'key' | 'duration'> & { container?: HTMLDivElement }) {
-        const toast: Toast = { duration, key, ...props };
-        this.toasts = uniqBy([...this.toasts, toast], 'key');
+    }: PartialOptional<Omit<Toast, 'createAt'>, 'key' | 'duration'> & {
+        container?: HTMLDivElement;
+    }) {
+        const toast: Toast = { duration, key, createAt: Date.now(), ...props };
+
+        this.toasts = this.toasts
+            .filter(toast => {
+                if (toast.key === key) return false;
+                if (toast.duration === null) return true;
+                return Date.now() - toast.createAt < toast.duration;
+            })
+            .slice(0, this.maxNumber - 1);
+        this.toasts.push(toast);
         this.renderToasts(container);
     }
 
