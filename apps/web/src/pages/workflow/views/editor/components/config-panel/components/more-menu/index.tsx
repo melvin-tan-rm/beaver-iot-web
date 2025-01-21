@@ -40,7 +40,11 @@ const MoreMenu = () => {
                         </div>
                         <div className="node-info-item-content">
                             <Tooltip autoEllipsis title={selectedNode?.id} />
-                            <IconButton onClick={() => handleCopy(selectedNode?.id || '')}>
+                            <IconButton
+                                onClick={e =>
+                                    handleCopy(selectedNode?.id || '', e.target as HTMLElement)
+                                }
+                            >
                                 <ContentCopyIcon sx={{ fontSize: 16 }} />
                             </IconButton>
                         </div>

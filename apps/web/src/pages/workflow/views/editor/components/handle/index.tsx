@@ -1,14 +1,14 @@
-import React, { useState, useCallback, useMemo, forwardRef } from 'react';
+import React, { useState, useCallback, useMemo, forwardRef, useEffect } from 'react';
 import cls from 'classnames';
 import { useDebounceFn } from 'ahooks';
 import {
     Handle as XHandle,
     useEdges,
-    useReactFlow,
+    useViewport,
     type HandleProps,
     type NodeProps,
 } from '@xyflow/react';
-import { Stack } from '@mui/material';
+import { Stack, Portal } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { AddCircleIcon } from '@milesight/shared/src/components';
 import NodeMenu from '../node-menu';
@@ -34,18 +34,23 @@ const Handle = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> &
         const targetAddEnabled = edges.every(edge => edge.target !== nodeProps.id);
 
         // ---------- Handle Tooltip Open ----------
-        const [originNodeZIndex] = useState(nodeProps.zIndex);
-        const { updateNode } = useReactFlow();
-        const [showTooltip, setShowTooltip] = useState(false);
+        const { zoom } = useViewport();
+        const [tooltipPosition, setTooltipPosition] = useState<null | {
+            top: number;
+            left: number;
+        }>(null);
         const { run: handleMouseEnter, cancel: cancelHandleMouseEnter } = useDebounceFn(
-            () => {
+            (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
                 if (isLogMode || (isTargetHandle && !targetAddEnabled)) return;
-                setShowTooltip(true);
-                // Increase the zIndex of the node to make the tooltip appear on top of other nodes
-                updateNode(nodeProps.id, { zIndex: 1 });
+                const rect = (e.target as HTMLDivElement).getBoundingClientRect();
+                const position = { top: rect.top - 12, left: rect.left + rect.width / 2 };
+
+                setTooltipPosition(position);
             },
             { wait: 500 },
         );
+
+        useEffect(() => setTooltipPosition(null), [zoom]);
 
         // ---------- Handle Click Callback ----------
         const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
@@ -83,19 +88,24 @@ const Handle = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> &
                     onClick={handleClick}
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={() => {
-                        setShowTooltip(false);
+                        setTooltipPosition(null);
                         cancelHandleMouseEnter();
-                        updateNode(nodeProps.id, { zIndex: originNodeZIndex });
                     }}
                 >
                     {/* Use Custom Tooltip, resolve the issue of Edge connect failure when Mui Tooltip component is enabled */}
-                    <span
-                        className={cls('ms-workflow-handle-tooltip', {
-                            hidden: !showTooltip || !!anchorEl,
-                        })}
-                    >
-                        {getIntlHtml('workflow.label.handle_tooltip')}
-                    </span>
+                    {!anchorEl && !!tooltipPosition && (
+                        <Portal>
+                            <span
+                                className="ms-workflow-handle-tooltip"
+                                style={{
+                                    top: tooltipPosition?.top,
+                                    left: tooltipPosition?.left,
+                                }}
+                            >
+                                {getIntlHtml('workflow.label.handle_tooltip')}
+                            </span>
+                        </Portal>
+                    )}
                     <Stack sx={{ pointerEvents: 'none' }}>
                         <AddCircleIcon />
                     </Stack>

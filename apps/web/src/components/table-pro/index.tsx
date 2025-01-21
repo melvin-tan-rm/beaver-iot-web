@@ -134,6 +134,7 @@ const TablePro = <DataType extends GridValidRowModel>({
                     hideFooterSelectedRowCount
                     sx={{ border: 0 }}
                     columnHeaderHeight={44}
+                    rowHeight={48}
                     paginationMode={paginationMode}
                     pageSizeOptions={DEFAULT_PAGE_SIZE_OPTIONS}
                     columns={memoColumns}
