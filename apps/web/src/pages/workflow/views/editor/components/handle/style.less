@@ -41,34 +41,6 @@
         }
     }
 
-    & &-handle-tooltip {
-        position: absolute;
-        top: -12px;
-        left: 0;
-        z-index: 10;
-        min-width: 145px;
-        padding: @padding-xs @padding-sm;
-        font-size: @font-size-base;
-        color: var(--white);
-        text-align: left;
-        background-color: var(--gray-background-3);
-        border-radius: @border-radius-base;
-        pointer-events: none;
-        transform: translate(-50%, -100%);
-
-        &::after {
-            position: absolute;
-            bottom: -15px;
-            left: 50%;
-            content: '';
-            .triangle(8px, { top: var(--gray-background-3) });
-        }
-
-        &.hidden {
-            display: none;
-        }
-    }
-
     .react-flow__node {
         .@{prefix}-workflow-handle.is-menu-open {
             background-color: var(--component-background);
@@ -101,5 +73,33 @@
                 display: block;
             }
         }
+    }
+}
+
+.@{prefix}-workflow-handle-tooltip {
+    position: absolute;
+        top: -12px;
+        left: 0;
+        z-index: 10;
+        min-width: 145px;
+        padding: @padding-xs @padding-sm;
+        font-size: @font-size-base;
+        color: var(--white);
+        text-align: left;
+        background-color: var(--gray-background-3);
+        border-radius: @border-radius-base;
+        pointer-events: none;
+        transform: translate(-50%, -100%);
+
+        &::after {
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            content: '';
+            transform: translateX(-50%);
+
+            .triangle(8px, {
+                top: var(--gray-background-3)
+            });
     }
 }
