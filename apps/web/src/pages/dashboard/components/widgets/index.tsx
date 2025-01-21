@@ -87,9 +87,9 @@ const Widgets = (props: WidgetProps) => {
         <ReactGridLayout
             isDraggable={isEdit}
             isResizable={isEdit}
-            rowHeight={30}
-            cols={24}
-            margin={[20, 20]}
+            rowHeight={87}
+            cols={12}
+            margin={[16, 16]}
             onLayoutChange={handleChangeWidgets}
             draggableCancel=".dashboard-content-widget-icon-img,.dashboard-custom-resizable-handle"
             className={`${isEdit ? 'dashboard-content-widget-grid-edit' : 'dashboard-content-widget-grid-not-edit'} slow-transition-react-grid-layout`}
@@ -101,9 +101,9 @@ const Widgets = (props: WidgetProps) => {
                 const id = (data.widget_id || data.tempId) as ApiKey;
                 const pos = {
                     ...data.data.pos,
-                    w: data.data?.pos?.w || data.data.minCol || 3,
+                    w: data.data?.pos?.w || data.data.minCol || 2,
                     h: data.data?.pos?.h || data.data.minRow || 2,
-                    minW: data.data.minCol || 3,
+                    minW: data.data.minCol || 2,
                     minH: data.data.minRow || 2,
                     i: data?.widget_id || data.data.tempId,
                     x: data.data.pos?.x || 0,

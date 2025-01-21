@@ -105,6 +105,12 @@ module.exports = {
                 ],
             },
         ],
+        'function-no-unknown': [
+            true,
+            {
+                ignoreFunctions: ['fade'],
+            },
+        ],
     },
     ignoreFiles: [
         'node_modules',

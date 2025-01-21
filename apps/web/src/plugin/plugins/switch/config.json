@@ -3,10 +3,10 @@
     "name": "Switch",
     "class": "operate",
     "icon": "./icon.png",
-    "defaultRow": 3,
-    "defaultCol": 5,
-    "minRow": 2,
-    "minCol": 4,
+    "defaultRow": 1,
+    "defaultCol": 2,
+    "minRow": 1,
+    "minCol": 1,
     "configProps": [
         {
             "style": "width: 100%",
