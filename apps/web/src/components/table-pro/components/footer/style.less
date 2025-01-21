@@ -1,4 +1,4 @@
-@ms-table-pro-footer-button-height: 34px;
+@ms-table-pro-footer-button-height: 28px;
 
 .@{prefix}-table-pro {
     & &__footer {
@@ -24,6 +24,12 @@
             height: @ms-table-pro-footer-button-height;
             border: 1px solid var(--border-color-base);
             border-radius: @border-radius-base;
+
+            .@{mui-prefix}TablePagination-select {
+                min-width: 30px;
+                text-align: left;
+                text-align-last: left;
+            }
         }
 
         .@{mui-prefix}ButtonBase-root {
@@ -40,7 +46,13 @@
         .@{mui-prefix}TablePagination-selectLabel,
         .@{mui-prefix}TablePagination-displayedRows {
             margin: 0;
+            color: var(--text-color-secondary);
         }
+    }
+}
 
+.@{prefix}-table-pro__pagination-select {
+    .@{mui-prefix}MenuItem-root {
+        font-size: @font-size-base;
     }
 }

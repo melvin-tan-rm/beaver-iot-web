@@ -29,13 +29,14 @@ const CustomFooter: React.FC<CustomFooterProps> = ({
                 className="ms-table-pro__refresh-btn"
                 onClick={onRefreshButtonClick}
             >
-                <RefreshIcon sx={{ width: 24, height: 24 }} />
+                <RefreshIcon sx={{ width: 20, height: 20 }} />
             </IconButton>
             <GridPagination
                 className="ms-table-pro__pagination"
                 slotProps={{
                     select: {
                         MenuProps: {
+                            className: 'ms-table-pro__pagination-select',
                             anchorOrigin: { vertical: 'top', horizontal: 'left' },
                             transformOrigin: { vertical: 'bottom', horizontal: 'left' },
                         },
