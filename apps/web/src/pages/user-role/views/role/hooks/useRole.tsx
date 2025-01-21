@@ -162,9 +162,6 @@ export function useRole() {
                 0: activeRole?.name || '',
             }),
             confirmButtonText: getIntlText('common.label.delete'),
-            confirmButtonProps: {
-                color: 'error',
-            },
             icon: <ErrorIcon sx={{ color: 'var(--orange-base)' }} />,
             onConfirm: async () => {
                 if (!activeRole?.roleId) return;

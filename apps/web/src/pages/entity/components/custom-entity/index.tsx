@@ -4,7 +4,13 @@ import { Button, Stack, Menu, MenuItem } from '@mui/material';
 import { useRequest } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
-import { AddIcon, DeleteOutlineIcon, NoteAddIcon, toast } from '@milesight/shared/src/components';
+import {
+    AddIcon,
+    DeleteOutlineIcon,
+    NoteAddIcon,
+    toast,
+    ErrorIcon,
+} from '@milesight/shared/src/components';
 import { TablePro, useConfirm, PermissionControlHidden } from '@/components';
 import { entityAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import { ENTITY_TYPE, PERMISSIONS } from '@/constants';
@@ -72,9 +78,7 @@ export default () => {
                 title: getIntlText('common.label.delete'),
                 description: getIntlText('device.message.delete_tip'),
                 confirmButtonText: getIntlText('common.label.delete'),
-                confirmButtonProps: {
-                    color: 'error',
-                },
+                icon: <ErrorIcon sx={{ color: 'var(--orange-base)' }} />,
                 onConfirm: async () => {
                     const [error, resp] = await awaitWrap(
                         entityAPI.deleteEntities({ entity_ids: idsToDelete }),

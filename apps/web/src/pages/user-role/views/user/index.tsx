@@ -4,7 +4,12 @@ import { useRequest, useMemoizedFn } from 'ahooks';
 import { Button, Stack } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
-import { toast, AddIcon, RemoveCircleOutlineIcon } from '@milesight/shared/src/components';
+import {
+    toast,
+    AddIcon,
+    RemoveCircleOutlineIcon,
+    ErrorIcon,
+} from '@milesight/shared/src/components';
 import { TablePro, useConfirm } from '@/components';
 import { userAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 
@@ -87,9 +92,7 @@ const Users: React.FC = () => {
             title: title(),
             description: description(),
             confirmButtonText: getIntlText('common.label.delete'),
-            confirmButtonProps: {
-                color: 'error',
-            },
+            icon: <ErrorIcon sx={{ color: 'var(--orange-base)' }} />,
             onConfirm: async () => {
                 const [err, resp] = await awaitWrap(
                     userAPI.deleteUsers({

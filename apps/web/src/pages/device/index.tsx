@@ -4,7 +4,7 @@ import { Button, Stack } from '@mui/material';
 import { useRequest } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
-import { AddIcon, DeleteOutlineIcon, toast } from '@milesight/shared/src/components';
+import { AddIcon, DeleteOutlineIcon, toast, ErrorIcon } from '@milesight/shared/src/components';
 import { Breadcrumbs, TablePro, useConfirm, PermissionControlHidden } from '@/components';
 import { PERMISSIONS } from '@/constants';
 import { useUserPermissions } from '@/hooks';
@@ -62,9 +62,7 @@ export default () => {
                 title: getIntlText('common.label.delete'),
                 description: getIntlText('device.message.delete_tip'),
                 confirmButtonText: getIntlText('common.label.delete'),
-                confirmButtonProps: {
-                    color: 'error',
-                },
+                icon: <ErrorIcon sx={{ color: 'var(--orange-base)' }} />,
                 onConfirm: async () => {
                     const [error, resp] = await awaitWrap(
                         deviceAPI.deleteDevices({ device_id_list: idsToDelete }),
