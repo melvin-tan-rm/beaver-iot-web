@@ -12,7 +12,7 @@ import {
 import cls from 'classnames';
 import { LoadingButton } from '@milesight/shared/src/components';
 import { DialogProps } from './types';
-import { defaultGlobalOptions } from './default-options';
+import { defaultGlobalOptions, defaultIconMap } from './default-options';
 import './style.less';
 
 const initialConfirmInputState = {
@@ -31,10 +31,12 @@ export const ConfirmDialog: React.FC<DialogProps> = ({
     const [confirmInput, setConfirmInput] = React.useState(initialConfirmInputState);
     const [loading, setLoading] = React.useState(false);
 
+    const icon =
+        finalOptions?.icon || (!finalOptions.type ? null : defaultIconMap[finalOptions.type]);
     const className = cls(finalOptions.dialogProps?.className, 'ms-confirm', {
         [`ms-confirm-${finalOptions.type}`]: finalOptions.type,
-        'ms-confirm-with-icon': finalOptions.icon,
-        'ms-confirm-without-title': !finalOptions.title && !finalOptions.icon,
+        'ms-confirm-with-icon': !!icon,
+        'ms-confirm-without-title': !finalOptions.title && !icon,
     });
     const isConfirmDisabled = Boolean(!confirmInput.isMatched && finalOptions?.confirmText);
 
@@ -65,6 +67,7 @@ export const ConfirmDialog: React.FC<DialogProps> = ({
             isMatched: finalOptions?.confirmText === inputValue,
         });
     };
+
     return (
         <Dialog
             {...finalOptions.dialogProps}
@@ -83,11 +86,9 @@ export const ConfirmDialog: React.FC<DialogProps> = ({
                 />
             )}
             <DialogTitle {...finalOptions.dialogTitleProps}>
-                {!!(finalOptions.icon || finalOptions.title) && (
+                {!!(icon || finalOptions.title) && (
                     <div className="ms-confirm-title">
-                        {!!finalOptions.icon && (
-                            <span className="ms-confirm-icon">{finalOptions.icon}</span>
-                        )}
+                        {!!icon && <span className="ms-confirm-icon">{icon}</span>}
                         {finalOptions.title!}
                     </div>
                 )}

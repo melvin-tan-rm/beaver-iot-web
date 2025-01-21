@@ -1,4 +1,5 @@
 import { merge } from 'lodash-es';
+import { ErrorIcon, CancelIcon, InfoIcon, CheckCircleIcon } from '@milesight/shared/src/components';
 import { GlobalOptions, ConfirmOptions, FinalOptions } from './types';
 
 export const defaultGlobalOptions: GlobalOptions = {
@@ -36,6 +37,13 @@ export const defaultGlobalOptions: GlobalOptions = {
             },
         },
     },
+};
+
+export const defaultIconMap: Record<NonNullable<ConfirmOptions['type']>, React.ReactNode> = {
+    success: <CheckCircleIcon />,
+    error: <CancelIcon />,
+    warning: <ErrorIcon />,
+    info: <InfoIcon />,
 };
 
 export const handleOverrideOptions = (
