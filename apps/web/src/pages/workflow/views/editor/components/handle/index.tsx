@@ -98,8 +98,8 @@ const Handle = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> &
                             <span
                                 className="ms-workflow-handle-tooltip"
                                 style={{
-                                    top: tooltipPosition?.top,
-                                    left: tooltipPosition?.left,
+                                    top: tooltipPosition.top,
+                                    left: tooltipPosition.left,
                                 }}
                             >
                                 {getIntlHtml('workflow.label.handle_tooltip')}
