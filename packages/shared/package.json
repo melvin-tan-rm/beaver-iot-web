@@ -11,6 +11,9 @@
         "stylelint:fix": "stylelint ./src/**/*.{css,less} --fix --cache --cache-location=./node_modules/.cache/.stylelintcache",
         "ts-check": "tsc --noEmit"
     },
+    "imports": {
+        "#/*": "./src/*"
+    },
     "dependencies": {
         "@lexical/html": "^0.17.1",
         "@lexical/react": "^0.17.1",
