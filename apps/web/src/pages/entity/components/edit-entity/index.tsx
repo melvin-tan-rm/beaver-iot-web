@@ -16,7 +16,7 @@ const EditEntity = (props: IProps) => {
 
     const formItems = [
         {
-            label: getIntlText('dashboard.dashboard_name'),
+            label: getIntlText('device.label.param_entity_name'),
             name: 'entityName',
             type: 'TextField',
             defaultValue: data?.entityName,
