@@ -1,11 +1,18 @@
-import { useCallback, useEffect, useRef } from 'react';
-import GRL, { WidthProvider } from 'react-grid-layout';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import GRL, { WidthProvider, type Layout } from 'react-grid-layout';
+
+import { useTheme } from '@milesight/shared/src/hooks';
+
 import { WidgetDetail } from '@/services/http/dashboard';
 import Widget from './widget';
 
 import './style.less';
 
 const ReactGridLayout = WidthProvider(GRL);
+
+const GRID_LAYOUT_MARGIN = 16;
+const GRID_LAYOUT_COLS = 12;
+
 interface WidgetProps {
     onChangeWidgets: (widgets: any[]) => void;
     widgets: WidgetDetail[];
@@ -15,9 +22,14 @@ interface WidgetProps {
 }
 
 const Widgets = (props: WidgetProps) => {
+    const { getCSSVariableValue } = useTheme();
+
     const { widgets, onChangeWidgets, isEdit, onEdit, mainRef } = props;
     const widgetRef = useRef<WidgetDetail[]>();
     const requestRef = useRef<any>(null);
+    const bgImageTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [isResizing, setIsResizing] = useState(false);
+    const [helperBg, setHelperBg] = useState<React.CSSProperties>();
 
     useEffect(() => {
         widgetRef.current = widgets;
@@ -31,7 +43,7 @@ const Widgets = (props: WidgetProps) => {
         };
     }, []);
 
-    const handleChangeWidgets = (data: any[]) => {
+    const handleChangeWidgets = (data: Layout[]) => {
         if (requestRef.current) {
             cancelAnimationFrame(requestRef.current);
         }
@@ -83,19 +95,109 @@ const Widgets = (props: WidgetProps) => {
         [widgets],
     );
 
+    useEffect(() => {
+        /**
+         * dynamically set dashboard background helper image
+         */
+        const setBgImage = () => {
+            if (bgImageTimeoutRef.current) {
+                clearTimeout(bgImageTimeoutRef.current);
+                bgImageTimeoutRef.current = null;
+            }
+
+            bgImageTimeoutRef.current = setTimeout(() => {
+                const layoutNode = document.querySelector(
+                    '.dashboard-content-main .slow-transition-react-grid-layout',
+                );
+                if (!layoutNode) {
+                    return;
+                }
+
+                const layoutRect = layoutNode.getBoundingClientRect();
+                const { width } = layoutRect || {};
+                if (!width) {
+                    return;
+                }
+
+                const gridWidth = Math.round((width - GRID_LAYOUT_MARGIN) / GRID_LAYOUT_COLS);
+                if (!gridWidth) {
+                    return;
+                }
+
+                /**
+                 * if the canvas is existed then we need to remove it
+                 */
+                const isExisted = document.getElementById('grid-layout-canvas');
+                if (isExisted) {
+                    document.body.removeChild(isExisted);
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.id = 'grid-layout-canvas';
+                canvas.width = gridWidth;
+                canvas.height = 103;
+                canvas.style.display = 'none';
+                document.body.appendChild(canvas);
+                if (!canvas?.getContext) {
+                    return;
+                }
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    return;
+                }
+
+                ctx.beginPath();
+                ctx.setLineDash([8, 8]);
+                ctx.strokeStyle = getCSSVariableValue('--gray-4') || '#C9CDD4';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(1, 1, gridWidth - GRID_LAYOUT_MARGIN - 2, 85);
+                ctx.closePath();
+
+                const imageData = canvas.toDataURL();
+                setHelperBg({
+                    height: '100%',
+                    backgroundImage: `url(${imageData})`,
+                    backgroundPosition: `${GRID_LAYOUT_MARGIN}px ${GRID_LAYOUT_MARGIN}px`,
+                    backgroundSize: `${gridWidth}px 103px`,
+                });
+
+                // clear the canvas
+                document.body.removeChild(canvas);
+            }, 150);
+        };
+        window.addEventListener('resize', setBgImage);
+
+        /**
+         * initialize
+         */
+        setBgImage();
+
+        return () => {
+            window.removeEventListener('resize', setBgImage);
+
+            if (bgImageTimeoutRef.current) {
+                clearTimeout(bgImageTimeoutRef.current);
+                bgImageTimeoutRef.current = null;
+            }
+        };
+    }, []);
+
     return (
         <ReactGridLayout
             isDraggable={isEdit}
             isResizable={isEdit}
             rowHeight={87}
-            cols={12}
-            margin={[16, 16]}
+            cols={GRID_LAYOUT_COLS}
+            margin={[GRID_LAYOUT_MARGIN, GRID_LAYOUT_MARGIN]}
             onLayoutChange={handleChangeWidgets}
             draggableCancel=".dashboard-content-widget-icon-img,.dashboard-custom-resizable-handle"
             className={`${isEdit ? 'dashboard-content-widget-grid-edit' : 'dashboard-content-widget-grid-not-edit'} slow-transition-react-grid-layout`}
             resizeHandle={
                 <span className="dashboard-custom-resizable-handle dashboard-custom-resizable-handle-se" />
             }
+            onResizeStart={() => setIsResizing(true)}
+            onResizeStop={() => setIsResizing(false)}
+            style={isResizing ? helperBg : undefined}
         >
             {widgets.map((data: WidgetDetail) => {
                 const id = (data.widget_id || data.tempId) as ApiKey;
