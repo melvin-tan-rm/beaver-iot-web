@@ -71,6 +71,7 @@ const EntryModal: React.FC<Props> = ({ isEditing, loading }) => {
                     </div>
                     <div className="ms-workflow-panel-entry-footer">
                         <Button
+                            fullWidth
                             variant="contained"
                             disabled={!selectedNodeType}
                             onClick={handleCreate}
