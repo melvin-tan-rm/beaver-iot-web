@@ -8,6 +8,7 @@
         }
 
         &:first-child {
+            padding: @padding-xxs @padding-sm;
             .@{mui-prefix}Button-startIcon {
                 display: flex;
                 align-items: center;
@@ -18,7 +19,7 @@
         }
 
         &:last-child {
-            padding: @padding-xs;
+            padding: (@padding-xs - 1) @padding-xs;
         }
     }
 }
