@@ -135,7 +135,7 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
                                     required={required}
                                     label={displayName}
                                     defaultValue={defaultValue}
-                                    value={value}
+                                    value={value || ''}
                                     onChange={onChange}
                                 />
                             );
