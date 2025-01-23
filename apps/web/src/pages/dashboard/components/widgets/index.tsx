@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import GRL, { WidthProvider, type Layout } from 'react-grid-layout';
 
 import { useTheme } from '@milesight/shared/src/hooks';
+import { PerfectScrollbar } from '@milesight/shared/src/components';
 
 import { WidgetDetail } from '@/services/http/dashboard';
 import Widget from './widget';
@@ -28,8 +29,9 @@ const Widgets = (props: WidgetProps) => {
     const widgetRef = useRef<WidgetDetail[]>();
     const requestRef = useRef<any>(null);
     const bgImageTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const [isResizing, setIsResizing] = useState(false);
+    const [showHelperBg, setShowHelperBg] = useState(false);
     const [helperBg, setHelperBg] = useState<React.CSSProperties>();
+    const [scrollKey, setScrollKey] = useState<number>(0);
 
     useEffect(() => {
         widgetRef.current = widgets;
@@ -65,7 +67,13 @@ const Widgets = (props: WidgetProps) => {
                 }
                 return widget;
             });
+
             onChangeWidgets(newData);
+
+            /** waiting the widget change completed */
+            setTimeout(() => {
+                setScrollKey(key => key + 1);
+            }, 150);
         });
     };
 
@@ -119,7 +127,7 @@ const Widgets = (props: WidgetProps) => {
                     return;
                 }
 
-                const gridWidth = Math.round((width - GRID_LAYOUT_MARGIN) / GRID_LAYOUT_COLS);
+                const gridWidth = (width - GRID_LAYOUT_MARGIN) / GRID_LAYOUT_COLS;
                 if (!gridWidth) {
                     return;
                 }
@@ -155,7 +163,7 @@ const Widgets = (props: WidgetProps) => {
 
                 const imageData = canvas.toDataURL();
                 setHelperBg({
-                    height: '100%',
+                    minHeight: 'calc(100% + 60px)',
                     backgroundImage: `url(${imageData})`,
                     backgroundPosition: `${GRID_LAYOUT_MARGIN}px ${GRID_LAYOUT_MARGIN}px`,
                     backgroundSize: `${gridWidth}px 103px`,
@@ -183,52 +191,56 @@ const Widgets = (props: WidgetProps) => {
     }, []);
 
     return (
-        <ReactGridLayout
-            isDraggable={isEdit}
-            isResizable={isEdit}
-            rowHeight={87}
-            cols={GRID_LAYOUT_COLS}
-            margin={[GRID_LAYOUT_MARGIN, GRID_LAYOUT_MARGIN]}
-            onLayoutChange={handleChangeWidgets}
-            draggableCancel=".dashboard-content-widget-icon-img,.dashboard-custom-resizable-handle"
-            className={`${isEdit ? 'dashboard-content-widget-grid-edit' : 'dashboard-content-widget-grid-not-edit'} slow-transition-react-grid-layout`}
-            resizeHandle={
-                <span className="dashboard-custom-resizable-handle dashboard-custom-resizable-handle-se" />
-            }
-            onResizeStart={() => setIsResizing(true)}
-            onResizeStop={() => setIsResizing(false)}
-            style={isResizing ? helperBg : undefined}
-        >
-            {widgets.map((data: WidgetDetail) => {
-                const id = (data.widget_id || data.tempId) as ApiKey;
-                const pos = {
-                    ...data.data.pos,
-                    w: data.data?.pos?.w || data.data.minCol || 2,
-                    h: data.data?.pos?.h || data.data.minRow || 2,
-                    minW: data.data.minCol || 2,
-                    minH: data.data.minRow || 2,
-                    i: data?.widget_id || data.data.tempId,
-                    x: data.data.pos?.x || 0,
-                    y: data.data.pos?.y || 0,
-                };
-                return (
-                    <div
-                        key={id}
-                        data-grid={pos}
-                        className={!isEdit ? 'dashboard-widget-grid-edit' : ''}
-                    >
-                        <Widget
-                            onEdit={handleEdit}
-                            onDelete={handleDelete}
-                            data={data}
-                            isEdit={isEdit}
+        <PerfectScrollbar shouldUpdateKey={String(scrollKey)}>
+            <ReactGridLayout
+                isDraggable={isEdit}
+                isResizable={isEdit}
+                rowHeight={87}
+                cols={GRID_LAYOUT_COLS}
+                margin={[GRID_LAYOUT_MARGIN, GRID_LAYOUT_MARGIN]}
+                onLayoutChange={handleChangeWidgets}
+                draggableCancel=".dashboard-content-widget-icon-img,.dashboard-custom-resizable-handle"
+                className={`${isEdit ? 'dashboard-content-widget-grid-edit' : 'dashboard-content-widget-grid-not-edit'} slow-transition-react-grid-layout`}
+                resizeHandle={
+                    <span className="dashboard-custom-resizable-handle dashboard-custom-resizable-handle-se" />
+                }
+                onDragStart={() => setShowHelperBg(true)}
+                onDragStop={() => setShowHelperBg(false)}
+                onResizeStart={() => setShowHelperBg(true)}
+                onResizeStop={() => setShowHelperBg(false)}
+                style={showHelperBg ? helperBg : { minHeight: 'calc(100% + 60px)' }}
+            >
+                {widgets.map((data: WidgetDetail) => {
+                    const id = (data.widget_id || data.tempId) as ApiKey;
+                    const pos = {
+                        ...data.data.pos,
+                        w: data.data?.pos?.w || data.data.minCol || 2,
+                        h: data.data?.pos?.h || data.data.minRow || 2,
+                        minW: data.data.minCol || 2,
+                        minH: data.data.minRow || 2,
+                        i: data?.widget_id || data.data.tempId,
+                        x: data.data.pos?.x || 0,
+                        y: data.data.pos?.y || 0,
+                    };
+                    return (
+                        <div
                             key={id}
-                            mainRef={mainRef}
-                        />
-                    </div>
-                );
-            })}
-        </ReactGridLayout>
+                            data-grid={pos}
+                            className={!isEdit ? 'dashboard-widget-grid-edit' : ''}
+                        >
+                            <Widget
+                                onEdit={handleEdit}
+                                onDelete={handleDelete}
+                                data={data}
+                                isEdit={isEdit}
+                                key={id}
+                                mainRef={mainRef}
+                            />
+                        </div>
+                    );
+                })}
+            </ReactGridLayout>
+        </PerfectScrollbar>
     );
 };
 

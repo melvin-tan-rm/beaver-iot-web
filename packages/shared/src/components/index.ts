@@ -21,3 +21,4 @@ export {
     type MSEditor,
     type IEditorProps,
 } from './ms-editor';
+export { default as PerfectScrollbar, SCROLLBAR_WIDTH } from './perfect-scrollbar';
