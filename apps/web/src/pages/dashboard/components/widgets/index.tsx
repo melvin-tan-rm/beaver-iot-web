@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import GRL, { WidthProvider, type Layout } from 'react-grid-layout';
+import { debounce } from 'lodash-es';
 
 import { useTheme } from '@milesight/shared/src/hooks';
 import { PerfectScrollbar } from '@milesight/shared/src/components';
@@ -163,7 +164,8 @@ const Widgets = (props: WidgetProps) => {
 
                 const imageData = canvas.toDataURL();
                 setHelperBg({
-                    minHeight: 'calc(100% + 60px)',
+                    minHeight: '100%',
+                    marginBottom: '103px',
                     backgroundImage: `url(${imageData})`,
                     backgroundPosition: `${GRID_LAYOUT_MARGIN}px ${GRID_LAYOUT_MARGIN}px`,
                     backgroundSize: `${gridWidth}px 103px`,
@@ -204,11 +206,12 @@ const Widgets = (props: WidgetProps) => {
                 resizeHandle={
                     <span className="dashboard-custom-resizable-handle dashboard-custom-resizable-handle-se" />
                 }
+                onResize={debounce(() => setScrollKey(key => key + 1), 150)}
                 onDragStart={() => setShowHelperBg(true)}
                 onDragStop={() => setShowHelperBg(false)}
                 onResizeStart={() => setShowHelperBg(true)}
                 onResizeStop={() => setShowHelperBg(false)}
-                style={showHelperBg ? helperBg : { minHeight: 'calc(100% + 60px)' }}
+                style={showHelperBg ? helperBg : { minHeight: '100%', marginBottom: '103px' }}
             >
                 {widgets.map((data: WidgetDetail) => {
                     const id = (data.widget_id || data.tempId) as ApiKey;
