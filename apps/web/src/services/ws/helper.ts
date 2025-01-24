@@ -36,7 +36,7 @@ export const transform = (message: string) => {
  * Merge the callback data and push it in batches
  * @param {Function} cb - Callback function for batch push
  * @param {number} time - Push interval, unit: ms
- * @returns {Object} 返回一个对象，包含执行合并任务 'run' and cancel the task 'cancel', and get the current status' getStatus'
+ * @returns {Object} Returns an object containing the execution of the merge task, 'run' and cancel the task 'cancel', and get the current status' getStatus'
  */
 export const batchPush = <T extends (...params: any[]) => any>(
     cb: (data: Parameters<T>[]) => ReturnType<T>,

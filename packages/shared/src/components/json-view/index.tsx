@@ -124,7 +124,9 @@ const JsonTextarea = forwardRef<JsonTextareaExposeProps, Props>(
                         const result = JSON.parse(state);
                         // Check json data
                         if (props?.validateJson && !props.validateJson(result)) {
-                            throw new Error('自定义 json 格式校验失败');
+                            throw new Error(
+                                'The user-defined json format verification fails. Procedure',
+                            );
                         }
 
                         // Distribute execute change callbacks

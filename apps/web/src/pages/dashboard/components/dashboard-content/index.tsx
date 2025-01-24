@@ -223,7 +223,7 @@ export default (props: DashboardContentProps) => {
                                 sx={{ marginLeft: '20px' }}
                                 startIcon={<Add />}
                             >
-                                添加自定义组件
+                                {getIntlText('dashboard.add_custom_components')}
                             </Button> */}
                         </>
                     ) : (
