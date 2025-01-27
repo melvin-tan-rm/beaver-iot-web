@@ -2,9 +2,13 @@ import intl from 'react-intl-universal';
 import { Outlet, RouteObject } from 'react-router-dom';
 import {
     DashboardCustomizeIcon,
-    DevicesIcon,
-    SettingsIcon,
+    DevicesFilledIcon,
+    IntegrationInstructionsIcon,
+    Person4Icon,
+    EntityIcon,
+    WorkflowIcon,
 } from '@milesight/shared/src/components';
+import { PERMISSIONS } from '@/constants';
 import ErrorBoundaryComponent from './error-boundary';
 
 type RouteObjectType = RouteObject & {
@@ -24,6 +28,20 @@ type RouteObjectType = RouteObject & {
 
         /** 是否无需登录便可访问，默认 `false` (需要登录) */
         authFree?: boolean;
+
+        /**
+         * The page should be accessible based on satisfying one of the functions of the current route
+         * Then satisfying one of the permissions in the array enables the current routing access
+         */
+        permissions?: PERMISSIONS | PERMISSIONS[];
+
+        /**
+         * Whether to hide in the menu bar
+         */
+        hideInMenuBar?: boolean;
+
+        /** 隐藏侧边栏 */
+        hideSidebar?: boolean;
     };
 
     /** 子路由 */
@@ -39,7 +57,8 @@ const routes: RouteObjectType[] = [
             get title() {
                 return intl.get('common.label.dashboard');
             },
-            icon: <DashboardCustomizeIcon fontSize="medium" />,
+            icon: <DashboardCustomizeIcon fontSize="small" />,
+            permissions: PERMISSIONS.DASHBOARD_MODULE,
         },
         async lazy() {
             const { default: Component } = await import('@/pages/dashboard');
@@ -55,7 +74,8 @@ const routes: RouteObjectType[] = [
             get title() {
                 return intl.get('common.label.device');
             },
-            icon: <DevicesIcon fontSize="medium" />,
+            icon: <DevicesFilledIcon fontSize="small" />,
+            permissions: PERMISSIONS.DEVICE_MODULE,
         },
         children: [
             {
@@ -83,26 +103,27 @@ const routes: RouteObjectType[] = [
         ],
     },
     {
-        path: '/setting',
+        path: '/integration',
         element: <Outlet />,
         ErrorBoundary,
         handle: {
             get title() {
-                return intl.get('common.label.setting');
+                return intl.get('common.label.integration');
             },
-            icon: <SettingsIcon fontSize="medium" />,
+            icon: <IntegrationInstructionsIcon fontSize="small" />,
+            permissions: PERMISSIONS.INTEGRATION_MODULE,
         },
         children: [
             {
                 index: true,
                 async lazy() {
-                    const { default: Component } = await import('@/pages/setting');
+                    const { default: Component } = await import('@/pages/integration');
                     return { Component };
                 },
                 ErrorBoundary,
             },
             {
-                path: 'integration/:integrationId',
+                path: 'detail/:integrationId',
                 handle: {
                     get title() {
                         return intl.get('common.label.integration');
@@ -110,13 +131,98 @@ const routes: RouteObjectType[] = [
                 },
                 async lazy() {
                     const { default: Component } = await import(
-                        '@/pages/setting/views/integration-detail'
+                        '@/pages/integration/views/integration-detail'
                     );
                     return { Component };
                 },
                 ErrorBoundary,
             },
         ],
+    },
+    {
+        path: '/entity',
+        element: <Outlet />,
+        ErrorBoundary,
+        handle: {
+            get title() {
+                return intl.get('common.label.entity');
+            },
+            icon: <EntityIcon fontSize="small" />,
+            permissions: PERMISSIONS.ENTITY_MODULE,
+        },
+        children: [
+            {
+                index: true,
+                async lazy() {
+                    const { default: Component } = await import('@/pages/entity');
+                    return { Component };
+                },
+                ErrorBoundary,
+            },
+        ],
+    },
+    {
+        path: '/workflow',
+        element: <Outlet />,
+        ErrorBoundary,
+        handle: {
+            get title() {
+                return intl.get('common.label.workflow');
+            },
+            icon: <WorkflowIcon fontSize="small" />,
+            permissions: PERMISSIONS.WORKFLOW_MODULE,
+        },
+        children: [
+            {
+                index: true,
+                async lazy() {
+                    const { default: Component } = await import('@/pages/workflow');
+                    return { Component };
+                },
+                ErrorBoundary,
+            },
+            {
+                path: 'editor',
+                handle: {
+                    get title() {
+                        return intl.get('common.label.editor');
+                    },
+                    hideSidebar: true,
+                },
+                async lazy() {
+                    const { default: Component } = await import('@/pages/workflow/views/editor');
+                    return { Component };
+                },
+                ErrorBoundary,
+            },
+        ],
+    },
+    {
+        path: '/user-role',
+        handle: {
+            get title() {
+                return intl.get('user.label.user_role');
+            },
+            icon: <Person4Icon fontSize="small" />,
+            permissions: PERMISSIONS.USER_ROLE_MODULE,
+        },
+        async lazy() {
+            const { default: Component } = await import('@/pages/user-role');
+            return { Component };
+        },
+        ErrorBoundary,
+    },
+    {
+        path: '/403',
+        handle: {
+            title: '403',
+            hideInMenuBar: true,
+        },
+        async lazy() {
+            const { default: Component } = await import('@/pages/403');
+            return { Component };
+        },
+        ErrorBoundary,
     },
     {
         path: '/auth',

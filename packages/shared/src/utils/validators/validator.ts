@@ -26,8 +26,9 @@ import getErrorMessage, { EErrorMessages } from './getErrorMessage';
 import type { TValidator } from './typings';
 
 /**
- * 必填项
- * 对应 EErrorMessages.required
+ * Check required
+ *
+ * I18N key: EErrorMessages.required
  */
 export const checkRequired: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.required);
@@ -46,8 +47,9 @@ export const checkRequired: TValidator = rule => {
 };
 
 /**
- * 最小值
- * 对应 EErrorMessages.minValue
+ * Check min value
+ *
+ * I18N key: EErrorMessages.minValue
  */
 export const checkMinValue: TValidator<{ min: number }> = rule => {
     const message =
@@ -71,8 +73,9 @@ export const checkMinValue: TValidator<{ min: number }> = rule => {
 };
 
 /**
- * 最大值
- * 对应 EErrorMessages.maxValue
+ * Check max value
+ *
+ * I18N key: EErrorMessages.maxValue
  */
 export const checkMaxValue: TValidator<{ max: number }> = rule => {
     const message =
@@ -95,8 +98,9 @@ export const checkMaxValue: TValidator<{ max: number }> = rule => {
     };
 };
 /**
- * 最大最小值
- * 对应 EErrorMessages.rangeValue
+ * Check range value
+ *
+ * I18N key: EErrorMessages.rangeValue
  */
 export const checkRangeValue: TValidator<{ min: number; max: number }> = rule => {
     const message =
@@ -121,7 +125,7 @@ export const checkRangeValue: TValidator<{ min: number; max: number }> = rule =>
 };
 
 /**
- * 检查值是否为指定值中的一个
+ * Check value is one of the specified values
  */
 export const checkValue: TValidator<{ enum: number[] }> = rule => {
     const message =
@@ -146,8 +150,9 @@ export const checkValue: TValidator<{ enum: number[] }> = rule => {
 };
 
 /**
- * 最小位数
- * 对应 EErrorMessages.minLength
+ * Check min length
+ *
+ * I18N key: EErrorMessages.minLength
  */
 export const checkMinLength: TValidator<{ min: number }> = rule => {
     const message =
@@ -171,8 +176,9 @@ export const checkMinLength: TValidator<{ min: number }> = rule => {
 };
 
 /**
- * 最大位数
- * 对应 EErrorMessages.maxLength
+ * Check max length
+ *
+ * I18N key: EErrorMessages.maxLength
  */
 export const checkMaxLength: TValidator<{ max: number }> = rule => {
     const message =
@@ -196,8 +202,9 @@ export const checkMaxLength: TValidator<{ max: number }> = rule => {
 };
 
 /**
- * 最大最小位数
- * 对应 EErrorMessages.rangeLength
+ * Check range length
+ *
+ * I18N key: EErrorMessages.rangeLength
  */
 export const checkRangeLength: TValidator<{ min: number; max: number }> = rule => {
     const message =
@@ -222,7 +229,7 @@ export const checkRangeLength: TValidator<{ min: number; max: number }> = rule =
 };
 
 /**
- * 校验长度是否是指定的长度，可以通过 enum 指定多个长度
+ * Check length is one of the specified lengths
  */
 export const checkLength: TValidator<{ enum: number[] }> = rule => {
     const message =
@@ -245,8 +252,9 @@ export const checkLength: TValidator<{ enum: number[] }> = rule => {
 };
 
 /**
- * IPv4类 IP地址/掩码/网关
- * 对应 EErrorMessages.ipAddress
+ * Check IPv4 address
+ *
+ * I18N key: EErrorMessages.ipAddress
  */
 export const checkIPAddressV4: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.ipAddress);
@@ -265,8 +273,9 @@ export const checkIPAddressV4: TValidator = rule => {
 };
 
 /**
- * IPv6类 IP地址/掩码/网关
- * 对应 EErrorMessages.netmask
+ * Check IPv6 address
+ *
+ * I18N key: EErrorMessages.ipv6Address
  */
 export const checkIPAddressV6: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.ipv6Address);
@@ -285,8 +294,9 @@ export const checkIPAddressV6: TValidator = rule => {
 };
 
 /**
- * Mac地址
- * 对应 EErrorMessages.mac
+ * Check MAC address
+ *
+ * I18N key: EErrorMessages.mac
  */
 export const checkMACAddress: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.mac);
@@ -305,8 +315,9 @@ export const checkMACAddress: TValidator = rule => {
 };
 
 /**
- * Mobile Number/Phone Number/Fax- 电话号码类
- * 对应 EErrorMessages.phone
+ * Check Mobile Phone Number
+ *
+ * I18N key: EErrorMessages.phone
  */
 export const checkMobilePhone: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.phone);
@@ -325,7 +336,7 @@ export const checkMobilePhone: TValidator = rule => {
 };
 
 /**
- * 允许+86 中国大陆手机号码
+ * Check Mobile CN Phone Number (+86)
  */
 export const checkMobileCNPhone: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.cnPhone);
@@ -344,7 +355,7 @@ export const checkMobileCNPhone: TValidator = rule => {
 };
 
 /**
- * Zip/Postal Code- 邮政编码类
+ * Check postal code
  */
 export const checkPostalCode: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.postalCode);
@@ -363,8 +374,9 @@ export const checkPostalCode: TValidator = rule => {
 };
 
 /**
- * 十进制数值
- * 对应 EErrorMessages.number
+ * Check number
+ *
+ * I18N key: EErrorMessages.number
  */
 export const checkNumber: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.number);
@@ -383,8 +395,9 @@ export const checkNumber: TValidator = rule => {
 };
 
 /**
- * 十进制数值，无0
- * 对应 EErrorMessages.numberNoZero
+ * Check number (no zero)
+ *
+ * I18N key: EErrorMessages.numberNoZero
  */
 export const checkNumberNoZero: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.numberNoZero);
@@ -403,8 +416,9 @@ export const checkNumberNoZero: TValidator = rule => {
 };
 
 /**
- * 十六进制数值
- * 对应 EErrorMessages.hexNumber
+ * Check hexadecimal number
+ *
+ * I18N key: EErrorMessages.hexNumber
  */
 export const checkHexNumber: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.hexNumber);
@@ -423,14 +437,15 @@ export const checkHexNumber: TValidator = rule => {
 };
 
 /**
- * 端口：网络端口
- * 对应 EErrorMessages.port
+ * Check port
+ *
+ * I18N key: EErrorMessages.port
  */
 export const checkPort: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.port);
 
     return value => {
-        // 若获取到的值为数字，则转换为字符串
+        // If the value obtained is a number, convert it to a string
         let val = value;
         if (typeof val === 'number') {
             val = String(val);
@@ -448,8 +463,9 @@ export const checkPort: TValidator = rule => {
     };
 };
 /**
- * Email Address - 邮箱地址
- * 对应 EErrorMessages.email
+ * Check email address
+ *
+ * I18N key: EErrorMessages.email
  */
 export const checkEmail: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.email);
@@ -470,8 +486,9 @@ export const checkEmail: TValidator = rule => {
 };
 
 /**
- * 是否小数
- * 对应 EErrorMessages.decimals
+ * Check decimals
+ *
+ * I18N key: EErrorMessages.decimals
  */
 export const checkDecimals: TValidator<{ len: number }> = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.decimals);
@@ -500,8 +517,9 @@ export const checkDecimals: TValidator<{ len: number }> = rule => {
 };
 
 /**
- * 不支持小数，小数则报错 Promise.reject
- * 对应 EErrorMessages.number， 要求输入纯数字
+ * Check no decimals
+ *
+ * I18N key: EErrorMessages.number
  */
 export const checkNoDecimals: TValidator<{ len: number }> = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.number);
@@ -530,8 +548,9 @@ export const checkNoDecimals: TValidator<{ len: number }> = rule => {
 };
 
 /**
- * 支持大小写字母
- * 对应 EErrorMessages.letters
+ * Check letters
+ *
+ * I18N key: EErrorMessages.letters
  */
 export const checkLetters: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.letters);
@@ -550,8 +569,9 @@ export const checkLetters: TValidator = rule => {
 };
 
 /**
- * 支持数字和大小写字母
- * 对应 EErrorMessages.lettersAndNum
+ * Check letters and num
+ *
+ * I18N key: EErrorMessages.lettersAndNum
  */
 export const checkLettersAndNum: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.lettersAndNum);
@@ -570,7 +590,7 @@ export const checkLettersAndNum: TValidator = rule => {
 };
 
 /**
- * 至少包含一个小写字母
+ * Check at least one lowercase letter
  */
 export const checkAtLeastOneLowercaseLetter: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.atLeastOneLowercaseLetter);
@@ -589,7 +609,7 @@ export const checkAtLeastOneLowercaseLetter: TValidator = rule => {
 };
 
 /**
- * 至少包含一个大写字母
+ * Check at least one uppercase letter
  */
 export const checkAtLeastOneUppercaseLetter: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.atLeastOneUppercaseLetter);
@@ -608,7 +628,7 @@ export const checkAtLeastOneUppercaseLetter: TValidator = rule => {
 };
 
 /**
- * 至少包含一个数字
+ * Check at least one number
  */
 export const checkAtLeastOneNum: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.atLeastOneNum);
@@ -627,7 +647,7 @@ export const checkAtLeastOneNum: TValidator = rule => {
 };
 
 /**
- * 不支持有空格
+ * Check at least one whitespace
  */
 export const checkHasWhitespace: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.notIncludeWhitespace);
@@ -646,7 +666,7 @@ export const checkHasWhitespace: TValidator = rule => {
 };
 
 /**
- * 必须以 a-zA-Z0-9_ 开头
+ * Check start with a-zA-Z0-9_
  */
 export const checkStartWithNormalChar: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.startWithNormalChar);
@@ -665,8 +685,9 @@ export const checkStartWithNormalChar: TValidator = rule => {
 };
 
 /**
- * Url Address - URL地址
- * 对应 EErrorMessages.url
+ * Check URL
+ *
+ * I18N key: EErrorMessages.url
  */
 export const checkUrl: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.url);
@@ -685,7 +706,7 @@ export const checkUrl: TValidator = rule => {
 };
 
 /**
- * 数字的最大值检验
+ * Check the maximum value of the number
  */
 export const checkNumericMaxValue: TValidator<{ max: number }> = rule => {
     const { max } = rule;
@@ -715,7 +736,7 @@ export const checkNumericMaxValue: TValidator<{ max: number }> = rule => {
 };
 
 /**
- * 数字的最小值检验
+ * Check the minimum value of the number
  */
 export const checkNumericMinValue: TValidator<{ min: number }> = rule => {
     const { min } = rule;
@@ -745,7 +766,7 @@ export const checkNumericMinValue: TValidator<{ min: number }> = rule => {
 };
 
 /**
- * 不含空格的ASCII字符
+ * Check ASCII characters without spaces
  */
 export const checkNoIncludesSpaceAscii: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.noIncludesSpaceAscii);
@@ -764,7 +785,8 @@ export const checkNoIncludesSpaceAscii: TValidator = rule => {
 };
 
 /**
- * 仅允许输入大写字母、小写字母、数字及“_”、“-”
+ * Check the string that only contains uppercase letters, lowercase letters, numbers,
+ * and underscores
  */
 export const checkCharStringRulesOne: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.stringRulesOne);
@@ -783,7 +805,8 @@ export const checkCharStringRulesOne: TValidator = rule => {
 };
 
 /**
- * 仅允许输入大写字母、小写字母、数字及!"#$%&'()*+,-./:;<=>@[]^_`{|}~
+ * Check the string that only contains uppercase letters, lowercase letters, numbers,
+ * and !"#$%&'()*+,-./:;<=>@[]^_`{|}~
  */
 export const checkCharStringRulesTwo: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.stringRulesTwo);
@@ -802,7 +825,7 @@ export const checkCharStringRulesTwo: TValidator = rule => {
 };
 
 /**
- * 检测是否为 ipv4/ipv6 或域名 或 url
+ * Check if it is ipv4/ipv6 or domain or url
  */
 export const checkIsIpOrDomain: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.ipOrDomain);
@@ -830,7 +853,7 @@ export const checkIsIpOrDomain: TValidator = rule => {
 };
 
 /**
- * 整数校验（正整数、负整数和零）
+ * Check integer (positive integer, negative integer and zero)
  */
 export const checkIsInt: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.integerPositiveNegativeZero);
@@ -849,7 +872,7 @@ export const checkIsInt: TValidator = rule => {
 };
 
 /**
- * 正整数校验（正整数和零）
+ * Check positive integer (positive integer and zero)
  */
 export const checkIsPositiveInt: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.integerPositiveZero);
@@ -868,7 +891,7 @@ export const checkIsPositiveInt: TValidator = rule => {
 };
 
 /**
- * 必须以 http/https 开头
+ * Check if it starts with http/https
  */
 export const checkStartWithHttpOrHttps: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.startWithHttpOrHttps);
@@ -893,7 +916,7 @@ export const checkStartWithHttpOrHttps: TValidator = rule => {
 };
 
 /**
- * 必须以 ws/wss 开头
+ * Check if it starts with ws/wss
  */
 export const checkStartWithWsOrWss: TValidator = rule => {
     const message = rule?.message || getErrorMessage(EErrorMessages.startWithWsOrWss);
@@ -918,7 +941,7 @@ export const checkStartWithWsOrWss: TValidator = rule => {
 };
 
 /**
- * 不允许字符: &/\:*?'"<>|%
+ * Check if it contains the characters: &/\:*?'"<>|%
  */
 export const checkNotAllowStringRuleOne: TValidator = rule => {
     const message =

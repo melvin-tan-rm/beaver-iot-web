@@ -1,25 +1,25 @@
 /**
- * localStorage, sessionStorage 封装，支持任意数据类型及自定义缓存时长
+ * localStorage, sessionStorage operation class
  */
 import { DEFAULT_CACHE_PREFIX } from './constant';
 
 interface IStorage {
-    /** key 名前缀 */
+    /** The prefix of key name */
     prefix?: string;
-    /** 默认缓存时长，单位 ms（默认无限制，不主动清除缓存） */
+    /** Maximum cache duration, unit `ms`（Default is `null`, do not clear the cache） */
     maxAge?: number | null;
-    /** 缓存类型（localStorage | sessionStorage） */
+    /** Storage type (localStorage | sessionStorage) */
     storage: Storage;
 }
 
 interface IData {
-    /** 缓存 key */
+    /** Cache key */
     key: string;
-    /** 缓存设置时的时间戳 */
+    /** The latest update time */
     time: number;
-    /** 缓存时长，单位 ms（默认无限制，不主动清除缓存） */
+    /** Maximum cache duration */
     maxAge?: IStorage['maxAge'];
-    /** 缓存值 */
+    /** Cache value */
     value: any;
 }
 
@@ -38,7 +38,7 @@ export class IotStorage implements IStorage {
         this.storage = storage;
     }
 
-    /** 设置值 */
+    /** Set item */
     setItem(key: IData['key'], value: IData['value'], maxAge: IData['maxAge'] = this.maxAge) {
         const k = `${this.prefix}${key}`;
         const data: IData = {
@@ -51,7 +51,7 @@ export class IotStorage implements IStorage {
         this.storage.setItem(k, JSON.stringify(data));
     }
 
-    /** 获取值 */
+    /** Get item */
     getItem<T = any>(key: IData['key']): T | undefined {
         const k = `${this.prefix}${key}`;
         const dataStr = this.storage.getItem(k) || '';
@@ -78,13 +78,13 @@ export class IotStorage implements IStorage {
         return data.value as T;
     }
 
-    /** 删除值 */
+    /** Remove item */
     removeItem(key: IData['key']) {
         const k = `${this.prefix}${key}`;
         this.storage.removeItem(k);
     }
 
-    /** 批量删除值 */
+    /** Batch remove items */
     removeItems(regex: RegExp) {
         const data = { ...this.storage };
 
@@ -94,7 +94,7 @@ export class IotStorage implements IStorage {
         });
     }
 
-    /** 清空缓存（清空所有 msiot. 前缀的缓存） */
+    /** Clear cache (Clear all caches that prefixed with `mos.`) */
     clear() {
         const data = { ...this.storage };
 

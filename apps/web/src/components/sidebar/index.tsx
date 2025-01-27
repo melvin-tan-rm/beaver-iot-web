@@ -2,76 +2,42 @@ import { memo, useState } from 'react';
 import { useMatches } from 'react-router';
 import { Link } from 'react-router-dom';
 import cls from 'classnames';
-import {
-    MenuList,
-    MenuItem,
-    Avatar,
-    Popover,
-    Stack,
-    IconButton,
-    type MenuItemProps,
-} from '@mui/material';
-import { Logo, FormatIndentDecreaseIcon, ExpandMoreIcon } from '@milesight/shared/src/components';
+import { MenuList, MenuItem, IconButton, type MenuItemProps } from '@mui/material';
+import { Logo, FormatIndentDecreaseIcon } from '@milesight/shared/src/components';
 import { useUserStore } from '@/stores';
 import Tooltip from '../tooltip';
+import { MoreUserInfo } from './components';
 import './style.less';
 
 interface Props {
-    /** 导航菜单 */
+    /** Navigation menu */
     menus?: {
         name: string;
         path: string;
         icon?: React.ReactNode;
     }[];
 
-    /** 点击 Logo 跳转地址，默认跳转 `/` */
+    /** Navigate url when logo click，default `/` */
     logoLinkTo?: string;
 
-    /** 菜单点击事件 */
+    /** Menu click callback */
     onMenuClick?: MenuItemProps['onClick'];
-}
-
-function stringToColor(string: string) {
-    let hash = 0;
-    let i;
-
-    /* eslint-disable no-bitwise */
-    for (i = 0; i < string.length; i += 1) {
-        hash = string.charCodeAt(i) + ((hash << 5) - hash);
-    }
-
-    let color = '#';
-
-    for (i = 0; i < 3; i += 1) {
-        const value = (hash >> (i * 8)) & 0xff;
-        color += `00${value.toString(16)}`.slice(-2);
-    }
-    /* eslint-enable no-bitwise */
-
-    return color;
-}
-
-function stringAvatar(name: string) {
-    return {
-        sx: {
-            width: 32,
-            height: 32,
-            bgcolor: stringToColor(name),
-        },
-        children: `${name.split(' ')[0][0]}`,
-    };
 }
 
 const Sidebar: React.FC<Props> = memo(({ menus, logoLinkTo = '/' }) => {
     const routes = useMatches().slice(1);
     const userInfo = useUserStore(state => state.userInfo);
     const selectedKeys = routes.map(route => route.pathname);
-    const [userMenuAnchorEl, setUserMenuAnchorEl] = useState<HTMLDivElement | null>(null);
     const [shrink, setShrink] = useState(true);
 
     // console.log({ userInfo });
     return (
-        <div className={cls('ms-layout-left ms-sidebar', { 'ms-sidebar-shrink': shrink })}>
+        <div
+            className={cls('ms-layout-left ms-sidebar', {
+                'ms-sidebar-shrink': shrink,
+                hidden: (routes?.[routes.length - 1].handle as any)?.hideSidebar,
+            })}
+        >
             <Logo className="ms-sidebar-logo" to={logoLinkTo} mini={shrink} />
             <MenuList className="ms-sidebar-menus">
                 {menus?.map(menu => (
@@ -97,37 +63,16 @@ const Sidebar: React.FC<Props> = memo(({ menus, logoLinkTo = '/' }) => {
             <div className="ms-sidebar-footer">
                 {!!userInfo && (
                     <div className="ms-sidebar-user">
-                        <Stack
-                            direction="row"
-                            spacing={2}
-                            alignItems="center"
-                            className={cls('ms-sidebar-user-trigger', {
-                                active: !!userMenuAnchorEl,
-                            })}
-                            // onClick={e => setUserMenuAnchorEl(e.currentTarget)}
-                        >
-                            <Avatar {...stringAvatar(userInfo.nickname || '')} />
-                            <Tooltip autoEllipsis className="ms-name" title={userInfo.nickname} />
-                            {/* <ExpandMoreIcon className="ms-icon" /> */}
-                        </Stack>
-                        {/* <Popover
-                            open={!!userMenuAnchorEl}
-                            anchorEl={userMenuAnchorEl}
-                            anchorOrigin={{
-                                vertical: -10,
-                                horizontal: 'left',
-                            }}
-                            transformOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            }}
-                            onClose={() => setUserMenuAnchorEl(null)}
-                        >
-                            <p>UserMenu</p>
-                        </Popover> */}
+                        <MoreUserInfo userInfo={userInfo} />
                     </div>
                 )}
-                <IconButton className="ms-oprt-shrink" onClick={() => setShrink(!shrink)}>
+                <IconButton
+                    className="ms-oprt-shrink"
+                    onClick={() => setShrink(!shrink)}
+                    sx={{
+                        padding: '10px',
+                    }}
+                >
                     <FormatIndentDecreaseIcon />
                 </IconButton>
             </div>

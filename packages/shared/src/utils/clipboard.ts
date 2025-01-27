@@ -1,5 +1,5 @@
 /**
- * 剪切板通用操作函数
+ * Copy & Paste
  */
 import { isIOS } from './userAgent';
 
@@ -7,11 +7,14 @@ const cssText = 'position:fixed;z-index:-9999;opacity:0;';
 const copyErrorMessage = 'Failed to copy value to clipboard. Unknown type.';
 
 /**
- * 文本复制通用函数
- * @param content 待复制的文本
- * @returns `Promise<boolean>` 返回复制操作的结果，成功 `true`，失败 `false`
+ * Copy text
+ * @param content The content to be copied
+ * @returns {Promise<boolean>} Return to the results of the copy result, success `true`, fail `false`
  */
-export const copyText = (content: string): Promise<boolean> => {
+export const copyText = (
+    content: string,
+    container: HTMLElement = document.body,
+): Promise<boolean> => {
     if (typeof content !== 'string') {
         try {
             content = JSON.stringify(content);
@@ -20,7 +23,7 @@ export const copyText = (content: string): Promise<boolean> => {
         }
     }
 
-    // 是否降级使用
+    // Whether fallback to use `document.execCommand` to copy
     const isFallback = !navigator.clipboard;
     const fallbackCopy = (txt: string, cb: (success: boolean) => void = () => {}) => {
         const textarea = document.createElement('textarea');
@@ -29,7 +32,7 @@ export const copyText = (content: string): Promise<boolean> => {
         textarea.setAttribute('readonly', '');
         textarea.style.cssText = cssText;
 
-        document.body.appendChild(textarea);
+        container.appendChild(textarea);
 
         if (isIOS()) {
             const { readOnly, contentEditable: editable } = textarea;
@@ -60,7 +63,7 @@ export const copyText = (content: string): Promise<boolean> => {
             cb(false);
         }
 
-        document.body.removeChild(textarea);
+        container.removeChild(textarea);
     };
 
     if (!isFallback) {

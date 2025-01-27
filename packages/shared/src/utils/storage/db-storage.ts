@@ -1,16 +1,16 @@
 /**
- * indexDB 封装
+ * indexDB operation class
  */
 interface OptionsType {
-    /** 数据库名称 */
+    /** DB name */
     dbName?: string;
-    /** store 名称 */
+    /** Store name */
     storeName: string;
-    /** 版本号，必须为 64 位整数 */
+    /** version (must be 64-bit integer) */
     version?: number;
-    /** 主键，默认为 id */
+    /** Primary key，default is `id` */
     keyPath?: string | string[];
-    /** 索引 */
+    /** Index */
     indexs?: Record<
         string,
         IDBIndexParameters & {
@@ -29,7 +29,7 @@ export class IndexedDBStorage {
     }
 
     /**
-     * 初始化 IndexedDB 数据库
+     * Init IndexedDB
      */
     async init({
         dbName = this.dbName,
@@ -102,7 +102,7 @@ export class IndexedDBStorage {
     }
 
     /**
-     * 更新数据
+     * Update data
      */
     async putItem<T extends Record<string, any>>(
         data: T,
@@ -136,8 +136,8 @@ export class IndexedDBStorage {
     }
 
     /**
-     * 删除单条数据（仅支持通过主键删除）
-     * @param keyValue 主键值
+     * Delete a single data (only supports deleting by primary key)
+     * @param keyValue Primary key value
      */
     async removeItem(keyValue: ApiKey): Promise<boolean> {
         const { db, storeName } = this;
@@ -162,9 +162,9 @@ export class IndexedDBStorage {
     }
 
     /**
-     * 删除多条数据
-     * @param key 搜索键
-     * @param values 搜索键值（若未传值则会删除所有数据）
+     * Delete multiple data
+     * @param key Search key
+     * @param values Search key values (If the values is not empty, all the data will be deleted)
      */
     async removeItems(key: string, values: ApiKey | ApiKey[]): Promise<boolean> {
         const { db, storeName } = this;
@@ -200,10 +200,10 @@ export class IndexedDBStorage {
     }
 
     /**
-     * 获取当前 Store 下指定条件的所有数据
-     * @param key 搜索键
-     * @param query 搜索条件
-     * @param direction 取值顺序（默认 `prev`，从最后位置开始取值）
+     * Get all data under the current Store with the specified conditions
+     * @param key Search key
+     * @param query Search query
+     * @param direction The cursor's direction（ Default is `prev`）
      */
     async getItems<T extends Record<string, any>[]>(
         key = 'id',
@@ -240,7 +240,7 @@ export class IndexedDBStorage {
     }
 
     /**
-     * 清空当前 Store 数据，清除成功时返回 `true`
+     * Clear all data under the current Store, return `true` when the clear is successful
      */
     async clear(): Promise<boolean> {
         const { db, storeName } = this;

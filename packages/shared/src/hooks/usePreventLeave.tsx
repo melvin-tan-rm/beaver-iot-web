@@ -23,6 +23,7 @@ const usePreventLeave = (props: PreventLeaveProps) => {
     const showPrevent = (params: showPreventProps) => {
         const { onOk, onCancel } = params;
         confirm({
+            type: 'info',
             title: getIntlText('common.modal.title_leave_current_page'),
             description: getIntlText('common.modal.desc_leave_current_page'),
             confirmButtonText: getIntlText('common.button.confirm'),

@@ -2,11 +2,11 @@
     "type": "trigger",
     "name": "Trigger",
     "class": "operate",
-    "icon": "./icon.png",
-    "defaultRow": 4,
-    "defaultCol": 4,
-    "minRow": 3,
-    "minCol": 3,
+    "icon": "./icon.svg",
+    "defaultRow": 2,
+    "defaultCol": 2,
+    "minRow": 1,
+    "minCol": 2,
     "configProps": [
         {
             "style": "width: 100%",
@@ -21,7 +21,7 @@
                     "componentProps": {
                         "size": "small",
                         "entityType": ["SERVICE", "PROPERTY"],
-                        "accessMods": ["W", "RW"],
+                        "entityAccessMods": ["W", "RW"],
                         "entityExcludeChildren": true
                     },
                     "rules": {
@@ -40,7 +40,7 @@
                     "componentProps": {
                         "size": "small",
                         "inputProps": {
-                            "maxLength": 15
+                            "maxLength": 35
                         }
                     }
                 }
@@ -56,7 +56,7 @@
                     "componentProps": {
                         "size": "small",
                         "inputProps": {
-                            "maxLength": 15
+                            "maxLength": 35
                         }
                     }
                 }
@@ -104,9 +104,7 @@
                     "tag": "Tooltip",
                     "class": "trigger-view-title",
                     "style": "white-space: nowrap;overflow: hidden;text-overflow: ellipsis;font-weight: 600;",
-                    "params": [
-                        "title"
-                    ],
+                    "params": ["title"],
                     "themes": {
                         "default": {
                             "style": "color: #272E3B"
@@ -130,17 +128,13 @@
                             "styleDepended": {
                                 "color": "iconColor"
                             },
-                            "params": [
-                                "icon"
-                            ]
+                            "params": ["icon"]
                         },
                         {
                             "tag": "Tooltip",
                             "class": "trigger-view-title",
                             "style": "white-space: nowrap;overflow: hidden;text-overflow: ellipsis;;text-align: center;margin-top: 8px;",
-                            "params": [
-                                "label"
-                            ],
+                            "params": ["label"],
                             "themes": {
                                 "default": {
                                     "style": "color: #6B7785"

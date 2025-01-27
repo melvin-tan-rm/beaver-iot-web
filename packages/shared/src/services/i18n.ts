@@ -1,7 +1,8 @@
 /**
- * 国际化多语言服务
+ * I18N Service
  *
- * 注意：通常情况下请勿直接调用该服务中的相关方法，业务中可通过 /hooks/useI18n.ts 来使用
+ * Note: Normally, you should not directly call the methods in this service, but you can
+ * use /hooks/useI18n.ts in the business.
  */
 /* eslint-disable camelcase */
 import intl from 'react-intl-universal';
@@ -17,7 +18,7 @@ import 'dayjs/locale/zh-cn';
 
 // import type { WeekStartWithType } from '../utils/time/interface';
 /**
- * 周开始时间类型
+ * Week start time type
  */
 type WeekStartWithType = 'SUNDAY' | 'MONDAY' | 'SATURDAY';
 
@@ -27,58 +28,61 @@ type LangListType = Partial<
     Record<
         LangType,
         {
-            /** 语言 key */
+            /** Lang key */
             key: LangType;
 
-            /** 接口数据映射值 */
+            /** Lang key of api */
             value: string;
 
-            /** 语言说明 */
-            label?: string;
+            /** I18n key of lang label */
+            labelIntlKey: string;
 
-            /** 文案包 */
+            /** language resource */
             locale?: Record<string, string> | Record<string, string>[];
 
-            /** MUI 对应语言包资源 */
+            /** MUI lang resource */
             muiLocale?: Localization;
 
-            /** moment 对应语言包资源（非 false 表示已加载） */
+            /** moment lang resource */
             // momentLocale?: any;
         }
     >
 >;
 
-// 缓存 key（注意：使用 iotStorage 会自动拼接 msiot. 前缀）
+// Cache key of lang (Note: iotStorage will automatically add the `mos.` prefix)
 const CACHE_KEY = 'lang';
-// 语言变更监听事件名
+// The global event topic of lang change
 const LANG_CHANGE_TOPIC = 'iot:lang:change';
 export const DEFAULT_LANGUAGE = LANGUAGE.EN;
 
 /**
- * 语言列表
+ * Lang list
  */
 export const langs: LangListType = {
     EN: {
         key: LANGUAGE.EN,
         value: i18nHelper.getComponentLanguage(LANGUAGE.EN, 'dayjs'),
         muiLocale: enUS,
+        labelIntlKey: 'common.language.en',
     },
     CN: {
         key: LANGUAGE.CN,
         value: i18nHelper.getComponentLanguage(LANGUAGE.CN, 'dayjs'),
         muiLocale: zhCN,
+        labelIntlKey: 'common.language.cn',
     },
 };
 
 /**
- * 代理intl相关方法，解决国际化文案加载未完成时出现的控制台警告
- * @returns {Function} - loadI18nComplete 国际化文案加载完成
+ * Proxy intl related methods to solve the console warning of loading incomplete
+ * internationalization messages
+ * @returns {Function} lang resource loaded callback
  */
 const { loadI18nComplete } = (() => {
     let isLoadFinished = false;
 
     /**
-     * 重写intl相关方法
+     * Rewrite `intl.get`, `intl.getHTML`
      */
     const patchIntl = () => {
         const originalIntlGet = intl.get;
@@ -104,8 +108,9 @@ const { loadI18nComplete } = (() => {
             return originalIntlGetHTML.apply(intl, params);
         };
     };
+
     /**
-     * 语言包加载完成
+     * Lang resource loaded callback
      */
     const loadI18nComplete = () => {
         isLoadFinished = true;
@@ -119,7 +124,7 @@ const { loadI18nComplete } = (() => {
 })();
 
 /**
- * 国际化初始化
+ * I18n init
  */
 export const initI18n = async (platform: AppType, defaultLang?: LangType) => {
     let lang = iotStorage.getItem<LangType>(CACHE_KEY) || defaultLang;
@@ -127,13 +132,15 @@ export const initI18n = async (platform: AppType, defaultLang?: LangType) => {
     if (!lang || !langs[lang]) {
         let { language } = navigator;
 
-        // 兼容 en en-US
-        // 将浏览器语言格式转换成 我们自定义的统一的格式
+        // Compatible with en, en-US
+        // Convert the browser language format into our custom unified format
         language = language.replace('-', '_').toLocaleUpperCase();
 
         /**
-         * 匹配中文 zh / zh_cn / zh_tw 等字符，统一处理为 cn
-         * 注意：当前系统中无「繁体中文」，若后续要支持，则下方赋值需做调整
+         * Match Chinese characters zh / zh_cn / zh_tw, and unify them into cn
+         *
+         * Note: There is no 「Traditional Chinese」 in the current system, so the assignment
+         * needs to be adjusted if it is supported later
          */
         if (/^zh(_\w+)?/i.test(language)) {
             language = LANGUAGE.CN;
@@ -147,11 +154,11 @@ export const initI18n = async (platform: AppType, defaultLang?: LangType) => {
 };
 
 /**
- * 切换语言
- * @param lang 语言
- * @param platform 平台
- * @params weekStartWith 周开始时间
- * @returns true 成功，false 失败
+ * Change Language
+ * @param lang Language
+ * @param platform Platform type
+ * @params weekStartWith Week start time type
+ * @returns {boolean}
  */
 export const changeLang = async (
     lang: LangType,
@@ -167,7 +174,7 @@ export const changeLang = async (
             locales = await i18nHelper.getLoadedLocales(platform, lang);
         } catch (e) {
             // eslint-disable-next-line no-console
-            console.error('国际化文案加载失败', lang, platform, e);
+            console.error('Load I18N resource failed', lang, platform, e);
             return false;
         }
 
@@ -176,7 +183,7 @@ export const changeLang = async (
 
     await intl.init({
         currentLocale: lang,
-        // Todo: 已加载的其他语言文案是否要一起注入？
+        // Todo: Should loaded language resources be injected together ?
         locales: { [lang]: locale },
         escapeHtml: false,
     });
@@ -195,7 +202,7 @@ export const changeLang = async (
 };
 
 /**
- * 获取当前语言
+ * Get current language
  */
 export const getCurrentLang = (): LangType => {
     const lang = iotStorage.getItem<LangType>(CACHE_KEY);
@@ -203,7 +210,7 @@ export const getCurrentLang = (): LangType => {
 };
 
 /**
- * 获取当前语言映射的 Dayjs 语言
+ * Get the Dayjs language corresponding to the current language
  */
 export const getCurrentComponentLang = () => {
     const lang = getCurrentLang();
@@ -211,32 +218,32 @@ export const getCurrentComponentLang = () => {
 };
 
 /**
- * 返回周开始时间、12 小时制国际化处理
+ * Get week start time and 12 hour format internationalization processing
  *
- * TODO: 验证 Dayjs 中是否有对应的配置
+ * Todo: Check if there is a corresponding configuration in Dayjs
  */
 export const getWeekStartAndIntl = (weekStartWith?: WeekStartWithType) => {
     /**
-     * 周开始时间处理
+     * Handle week start time
      */
     const dowMap: Record<WeekStartWithType, number> = {
         SUNDAY: 0,
         MONDAY: 1,
         SATURDAY: 6,
     };
-    // 默认周开始时间为周日
+    // The default is Sunday
     let dowVal = 0;
     if (weekStartWith && dowMap?.[weekStartWith]) {
         dowVal = dowMap[weekStartWith];
     }
 
-    // 返回 dayjs 配置
+    // Return dayjs configuration
     return {
         week: {
             dow: dowVal,
         },
         /**
-         * 12 小时制国际化处理
+         * The i18n of 12 hour format
          */
         meridiem: (hours: number) => {
             return hours < 12 ? intl.get('common.time.morning') : intl.get('common.time.afternoon');
@@ -249,9 +256,9 @@ export { HTTP_ERROR_CODE_PREFIX };
 export const { getHttpErrorKey } = i18nHelper;
 
 /**
- * 监听系统语言变更
- * @param callback 主题变更时的回调函数
- * @returns 返回移除监听函数
+ * Language change listener
+ * @param callback The callback function
+ * @returns {Function} Unsubscribe function
  */
 export const onLangChange = (callback: (type: LangType) => void) => {
     eventEmitter.subscribe(LANG_CHANGE_TOPIC, callback);
@@ -260,7 +267,7 @@ export const onLangChange = (callback: (type: LangType) => void) => {
 };
 
 /**
- * 移除系统语言变更监听
+ * Unsubscribe language change function
  */
 export const removeLangChange = (callback: (type: LangType) => void) => {
     eventEmitter.unsubscribe(LANG_CHANGE_TOPIC, callback);

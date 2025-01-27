@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useRef } from 'react';
+import { Suspense, useCallback, useRef, useMemo } from 'react';
 import classnames from 'classnames';
 import {
     DeleteOutlineIcon as DeleteOutline,
@@ -31,8 +31,15 @@ const Widget = (props: WidgetProps) => {
         onDelete(data);
     }, [data]);
     // console.log(plugins, data.data.type, (plugins as any)[`${data.data.type}`]);
+
+    const widgetCls = useMemo(() => {
+        return classnames('dashboard-content-widget', {
+            'none-user-select': isEdit,
+        });
+    }, [isEdit]);
+
     return (
-        <div className="dashboard-content-widget">
+        <div className={widgetCls}>
             {isEdit && (
                 <div
                     className={classnames('dashboard-content-widget-icon', {

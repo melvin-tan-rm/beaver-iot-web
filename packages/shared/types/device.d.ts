@@ -1,28 +1,28 @@
 /**
- * 设备数据模型
+ * Device Data Model
  */
 declare interface DeviceSchema {
-    /** 设备 ID */
+    /** Device ID */
     id: ApiKey;
 
-    /** 设备 Key */
+    /** Device Key */
     key: ApiKey;
 
-    /** 设备名称 */
+    /** Device Name */
     name: string;
 
-    /** 来源集成 ID */
+    /** Integration ID */
     integration: string;
 
-    /** 集成外部 ID */
+    /** External ID for Integration */
     external_id: ApiKey;
 
-    /** 额外数据 */
+    /** Additional Data */
     additional_data?: any;
 
-    /** 创建时间 */
+    /** Creation Times (ms) */
     create_at: number;
 
-    /** 更新时间 */
+    /** Update Time (ms) */
     update_at: number;
 }

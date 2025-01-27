@@ -2,12 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { type ControllerProps } from 'react-hook-form';
 import { TextField, IconButton, InputAdornment, type TextFieldProps } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
-import {
-    checkRequired,
-    checkEmail,
-    userNameChecker,
-    passwordChecker,
-} from '@milesight/shared/src/utils/validators';
+import { checkRequired, checkEmail, passwordChecker } from '@milesight/shared/src/utils/validators';
 import {
     EmailIcon,
     VisibilityIcon,
@@ -60,6 +55,10 @@ const useFormItems = ({ mode = 'login' }: UseFormItemsProps) => {
                             helperText={error ? error.message : null}
                             value={value}
                             onChange={onChange}
+                            onBlur={event => {
+                                const newValue = event?.target?.value;
+                                onChange(typeof newValue === 'string' ? newValue.trim() : newValue);
+                            }}
                             slotProps={{
                                 input: {
                                     startAdornment: (
@@ -77,9 +76,14 @@ const useFormItems = ({ mode = 'login' }: UseFormItemsProps) => {
                 // mode: 'register',
                 name: 'username',
                 rules: {
+                    maxLength: {
+                        value: 127,
+                        message: getIntlText('valid.input.max_length', {
+                            1: 127,
+                        }),
+                    },
                     validate: {
                         checkRequired: checkRequired(),
-                        ...userNameChecker(),
                     },
                 },
                 render({ field: { onChange, value }, fieldState: { error } }) {
@@ -91,6 +95,10 @@ const useFormItems = ({ mode = 'login' }: UseFormItemsProps) => {
                             helperText={error ? error.message : null}
                             value={value}
                             onChange={onChange}
+                            onBlur={event => {
+                                const newValue = event?.target?.value;
+                                onChange(typeof newValue === 'string' ? newValue.trim() : newValue);
+                            }}
                             slotProps={{
                                 input: {
                                     startAdornment: (

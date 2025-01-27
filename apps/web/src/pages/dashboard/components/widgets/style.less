@@ -1,0 +1,34 @@
+@primary-color-8: #7b4efa;
+
+.react-grid-item {
+    z-index: 9;
+    touch-action: auto !important;
+    transition: all 0.2s ease;
+
+    &.cssTransforms {
+        transition-property: transform;
+    }
+
+    &.react-draggable-dragging {
+        transition: none;
+        will-change: transform;
+    }
+
+    &.resizing {
+        transition: none;
+        will-change: width, height;
+    }
+
+    &.react-grid-placeholder {
+        z-index: 2;
+        background: fade(@primary-color-8, 8%) !important;
+        border-radius: 16px !important;
+        opacity: 1 !important;
+        user-select: none;
+        transition-duration: 0.1s;
+    }
+}
+
+.slow-transition-react-grid-layout {
+    transition: all 0.1s ease !important;
+}

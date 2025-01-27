@@ -4,14 +4,21 @@
     padding: 0;
 
     .@{prefix}-tabs {
-        flex: 1;
+        // flex: 1;
     }
 
     .@{prefix}-tab-content {
         flex: 1;
-        padding: @padding-lg 0;
+        padding: @padding-lg 0 0 0;
         overflow: hidden;
         background: var(--gray-color-2);
+
+        &__empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 56px - 60px);
+        }
     }
 
     .@{prefix}-tabpanel {
@@ -43,11 +50,9 @@
     }
 
     &-add {
-        height: 100%;
-        padding: 24px 20px 0 0;
+        display: inline-block;
         line-height: 1;
         background: var(--component-background);
-        border-bottom: 1px solid var(--border-color-base);
         cursor: pointer;
 
         &:hover &-icon {
@@ -56,6 +61,12 @@
 
         &-icon {
             font-size: @font-size-xxl;
+        }
+
+        &-contain {
+            flex: 1;
+            height: 100%;
+            padding: 24px 20px 0 0;
         }
     }
 
@@ -83,8 +94,11 @@
             flex: 1;
             width: 100%;
             overflow: hidden;
-            overflow-y: auto;
             background: var(--gray-color-2);
+
+            & > div {
+                height: 100%;
+            }
 
             .drag {
                 position: relative;
@@ -93,12 +107,10 @@
 
         &-operate {
             display: flex;
+            align-items: center;
+            justify-content: space-between;
             padding: 0 @padding-lg;
             margin-bottom: @margin-md;
-
-            &-left {
-                flex: 1;
-            }
         }
 
         &-empty {
@@ -123,7 +135,11 @@
             height: 100%;
             overflow: hidden;
             background: var(--main-background);
-            border-radius: @border-radius-base;
+            border-radius: @border-radius-md;
+
+            &.none-user-select {
+                user-select: none;
+            }
 
             &-main {
                 display: flex;
@@ -143,7 +159,7 @@
                     padding: @padding-xxs;
                     margin-left: @margin-xs;
                     line-height: 0;
-                    color: rgba(0,0,0,.54);
+                    color: rgba(0, 0, 0, 0.54);
                     border: @border-base;
                     border-radius: 50%;
                     cursor: pointer;
@@ -166,27 +182,52 @@
 
     &-custom-resizable-handle {
         position: absolute;
+        right: -6px;
+        bottom: -4px;
         z-index: 10;
-            box-sizing: border-box;
-        width: 20px;
-        height: 20px;
-        padding: 0 3px 3px 0;
-        background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2IDYiIHN0eWxlPSJiYWNrZ3JvdW5kLWNvbG9yOiNmZmZmZmYwMCIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSI2cHgiIGhlaWdodD0iNnB4Ij48ZyBvcGFjaXR5PSIwLjMwMiI+PHBhdGggZD0iTSA2IDYgTCAwIDYgTCAwIDQuMiBMIDQgNC4yIEwgNC4yIDQuMiBMIDQuMiAwIEwgNiAwIEwgNiA2IEwgNiA2IFoiIGZpbGw9IiMwMDAwMDAiLz48L2c+PC9zdmc+);
-        background-repeat: no-repeat;
-        background-position: bottom right;
-        background-origin: content-box;
-        cursor: se-resize;
-    }
-
-    &-custom-resizable-handle-se {
-        right: 0;
-        bottom: 0;
-        cursor: se-resize;
+        display: none;
+        box-sizing: border-box;
+        width: 16px;
+        height: 16px;
+        overflow: hidden;
+        background: var(--primary-color-base);
+        border: 2px solid var(--primary-color-base);
+        border-radius: 50%;
+        cursor: nwse-resize;
     }
 
     &-content-widget-grid-edit {
-        .dashboard-custom-resizable-handle {
-            display: block;
+        .react-grid-item {
+            cursor: grab;
+
+            &.react-draggable-dragging {
+                cursor: grabbing;
+            }
+
+            &.resizing {
+                cursor: nwse-resize;
+            }
+
+            &::before {
+                position: absolute;
+                inset: -2px;
+                border: 2px solid transparent;
+                border-radius: @border-radius-md;
+                pointer-events: none;
+                content: '';
+                transition: all 0.3s ease;
+            }
+
+            &:hover,
+            &:active {
+                &::before {
+                    border-color: var(--primary-color-base);
+                }
+
+                .dashboard-custom-resizable-handle {
+                    display: block;
+                }
+            }
         }
     }
 
@@ -194,10 +235,6 @@
         .dashboard-custom-resizable-handle {
             display: none;
         }
-    }
-
-    .react-grid-item:hover {
-        z-index: 10;
     }
 
     .react-resizable-handle {

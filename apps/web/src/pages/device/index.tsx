@@ -4,8 +4,10 @@ import { Button, Stack } from '@mui/material';
 import { useRequest } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
-import { AddIcon, DeleteOutlineIcon, toast } from '@milesight/shared/src/components';
-import { Breadcrumbs, TablePro, useConfirm } from '@/components';
+import { AddIcon, DeleteOutlineIcon, toast, ErrorIcon } from '@milesight/shared/src/components';
+import { Breadcrumbs, TablePro, useConfirm, PermissionControlHidden } from '@/components';
+import { PERMISSIONS } from '@/constants';
+import { useUserPermissions } from '@/hooks';
 import { deviceAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import { useColumns, type UseColumnsProps, type TableRowDataType } from './hooks';
 import { AddModal } from './components';
@@ -14,6 +16,7 @@ import './style.less';
 export default () => {
     const navigate = useNavigate();
     const { getIntlText } = useI18n();
+    const { hasPermission } = useUserPermissions();
 
     // ---------- 列表数据相关 ----------
     const [keyword, setKeyword] = useState<string>();
@@ -59,9 +62,7 @@ export default () => {
                 title: getIntlText('common.label.delete'),
                 description: getIntlText('device.message.delete_tip'),
                 confirmButtonText: getIntlText('common.label.delete'),
-                confirmButtonProps: {
-                    color: 'error',
-                },
+                icon: <ErrorIcon sx={{ color: 'var(--orange-base)' }} />,
                 onConfirm: async () => {
                     const [error, resp] = await awaitWrap(
                         deviceAPI.deleteDevices({ device_id_list: idsToDelete }),
@@ -83,24 +84,28 @@ export default () => {
     const toolbarRender = useMemo(() => {
         return (
             <Stack className="ms-operations-btns" direction="row" spacing="12px">
-                <Button
-                    variant="contained"
-                    sx={{ height: 36, textTransform: 'none' }}
-                    startIcon={<AddIcon />}
-                    onClick={() => setModalOpen(true)}
-                >
-                    {getIntlText('common.label.add')}
-                </Button>
-                <Button
-                    variant="outlined"
-                    color="error"
-                    disabled={!selectedIds.length}
-                    sx={{ height: 36, textTransform: 'none' }}
-                    startIcon={<DeleteOutlineIcon />}
-                    onClick={() => handleDeleteConfirm()}
-                >
-                    {getIntlText('common.label.delete')}
-                </Button>
+                <PermissionControlHidden permissions={PERMISSIONS.DEVICE_ADD}>
+                    <Button
+                        variant="contained"
+                        sx={{ height: 36, textTransform: 'none' }}
+                        startIcon={<AddIcon />}
+                        onClick={() => setModalOpen(true)}
+                    >
+                        {getIntlText('common.label.add')}
+                    </Button>
+                </PermissionControlHidden>
+                <PermissionControlHidden permissions={PERMISSIONS.DEVICE_DELETE}>
+                    <Button
+                        variant="outlined"
+                        color="error"
+                        disabled={!selectedIds.length}
+                        sx={{ height: 36, textTransform: 'none' }}
+                        startIcon={<DeleteOutlineIcon />}
+                        onClick={() => handleDeleteConfirm()}
+                    >
+                        {getIntlText('common.label.delete')}
+                    </Button>
+                </PermissionControlHidden>
             </Stack>
         );
     }, [getIntlText, handleDeleteConfirm, selectedIds]);
@@ -132,7 +137,7 @@ export default () => {
             <div className="ms-view ms-view-device">
                 <div className="ms-view__inner">
                     <TablePro<TableRowDataType>
-                        checkboxSelection
+                        checkboxSelection={hasPermission(PERMISSIONS.DEVICE_DELETE)}
                         loading={loading}
                         columns={columns}
                         rows={deviceData?.content}
@@ -146,7 +151,10 @@ export default () => {
                         onRowDoubleClick={({ row }) => {
                             navigate(`/device/detail/${row.id}`, { state: row });
                         }}
-                        onSearch={setKeyword}
+                        onSearch={value => {
+                            setKeyword(value);
+                            setPaginationModel(model => ({ ...model, page: 0 }));
+                        }}
                         onRefreshButtonClick={getDeviceList}
                     />
                 </div>

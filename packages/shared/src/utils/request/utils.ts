@@ -1,10 +1,11 @@
 /**
- * 常用请求处理工具
+ * Common request tools
  */
 import type { AxiosResponse, AxiosError } from 'axios';
+import iotStorage, { TOKEN_CACHE_KEY } from '../storage';
 
 /**
- * 判断 API 请求是否成功
+ * Check if the API request is successful
  */
 export const isRequestSuccess = (resp?: AxiosResponse<ApiResponse>) => {
     const data = resp?.data;
@@ -18,7 +19,7 @@ export const isRequestSuccess = (resp?: AxiosResponse<ApiResponse>) => {
 };
 
 /**
- * 获取接口响应的 data 数据
+ * Get the data of the API response
  */
 export const getResponseData = <T extends AxiosResponse<ApiResponse>>(
     resp?: T,
@@ -33,7 +34,7 @@ export const getResponseData = <T extends AxiosResponse<ApiResponse>>(
 };
 
 /**
- * Async/Await 错误处理封装器 (Inspired by await-to-js: https://github.com/scopsy/await-to-js)
+ * The async wrapper for request (Inspired by await-to-js: https://github.com/scopsy/await-to-js)
  * @param {Promise} promise Promise
  * @param errorExt Additional Information you can pass to the err object
  * @returns {Promise} promise
@@ -52,4 +53,26 @@ export const awaitWrap = <T, U = AxiosError>(
 
             return [err, undefined];
         });
+};
+
+export type TokenDataType = {
+    /** Access Token */
+    access_token: string;
+    /** Refresh Token */
+    refresh_token: string;
+    /**
+     * Expiration time, in milliseconds
+     *
+     * Note: This value is the expiration time of the front-end, only for determining
+     * when to refresh the token.
+     */
+    expires_in: number;
+};
+
+/**
+ * Get interface Authorization Token
+ */
+export const getAuthorizationToken = () => {
+    const token = iotStorage.getItem<TokenDataType>(TOKEN_CACHE_KEY);
+    return token?.access_token ? `Bearer ${token?.access_token}` : '';
 };

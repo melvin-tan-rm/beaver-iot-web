@@ -1,7 +1,7 @@
 const UA = window.navigator.userAgent;
 
 /**
- * @description 检查客户端是否为移动端
+ * @description Check if the client is the mobile terminal
  */
 export function isMobile() {
     // eslint-disable-next-line
@@ -9,42 +9,42 @@ export function isMobile() {
 }
 
 /**
- * @description 检查客户端是否为 IOS
+ * @description Check whether the client is iOS
  */
 export function isIOS() {
     return !!UA.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
 }
 
 /**
- * @description 检查客户端是否为 safari 浏览器
+ * @description Check if the client is Safari browser
  */
 export function isSafari() {
     return /^((?!chrome|android).)*safari/i.test(UA);
 }
 
 /**
- * @description 检查客户端是否为 android
+ * @description Check whether the client is Android
  */
 export function isAndroid() {
     return UA.indexOf('Android') > -1 || UA.indexOf('Adr') > -1;
 }
 
 /**
- * @description 检查是否为微信 webview 环境
+ * @description Check whether it is the WeChat WebView environment
  */
 export function isWeiXin() {
     return /MicroMessenger/i.test(UA);
 }
 
 /**
- * @description 检查是否为 webkit 内核浏览器
+ * @description Check whether it is a webkit kernel browser
  */
 export function isWebkitBrowser(): boolean {
     return /webkit/i.test(UA);
 }
 
 /**
- * 判断是否为 Windows 系统
+ * Determine whether it is Windows system
  */
 export function isWindows() {
     return /windows|win32|win64/i.test(UA);

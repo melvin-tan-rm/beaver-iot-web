@@ -19,7 +19,7 @@ export type ColumnType<R extends GridValidRowModel = any, V = any, F = V> = Grid
     ellipsis?: boolean;
 };
 
-interface Props<T extends GridValidRowModel> extends DataGridProps<T> {
+export interface Props<T extends GridValidRowModel> extends DataGridProps<T> {
     columns: ColumnType<T>[];
 
     /**
@@ -32,6 +32,11 @@ interface Props<T extends GridValidRowModel> extends DataGridProps<T> {
 
     /** 刷新按钮点击回调 */
     onRefreshButtonClick?: () => void;
+
+    /**
+     * toolbar sort
+     */
+    toolbarSort?: React.ReactNode;
 }
 
 /** 默认每页显示数量选项 */
@@ -49,8 +54,10 @@ const TablePro = <DataType extends GridValidRowModel>({
     slots,
     slotProps,
     toolbarRender,
+    toolbarSort,
     onSearch,
     onRefreshButtonClick,
+    paginationMode = 'server',
     ...props
 }: Props<DataType>) => {
     const memoColumns = useMemo(() => {
@@ -98,7 +105,7 @@ const TablePro = <DataType extends GridValidRowModel>({
 
     return (
         <div className="ms-table-pro">
-            {!!(toolbarRender || onSearch) && (
+            {!!(toolbarRender || onSearch || toolbarSort) && (
                 <div className="ms-table-pro__header">
                     <div className="ms-table-pro__topbar-operations">{toolbarRender}</div>
                     {!!onSearch && (
@@ -115,6 +122,9 @@ const TablePro = <DataType extends GridValidRowModel>({
                             />
                         </div>
                     )}
+                    {!!toolbarSort && (
+                        <div className="ms-table-pro__topbar-sort">{toolbarSort}</div>
+                    )}
                 </div>
             )}
             <div className="ms-table-pro__body">
@@ -124,7 +134,8 @@ const TablePro = <DataType extends GridValidRowModel>({
                     hideFooterSelectedRowCount
                     sx={{ border: 0 }}
                     columnHeaderHeight={44}
-                    paginationMode="server"
+                    rowHeight={48}
+                    paginationMode={paginationMode}
                     pageSizeOptions={DEFAULT_PAGE_SIZE_OPTIONS}
                     columns={memoColumns}
                     initialState={{

@@ -1,6 +1,10 @@
 @import url('@milesight/shared/src/styles/index.less');
 @import url('./mui-polyfill.less');
 
+html {
+    font-family: @font-family;
+}
+
 body {
     background-color: var(--body-background);
     .text-size(@font-size-base);
@@ -14,7 +18,7 @@ body {
 
     &-left {
         flex-shrink: 0;
-        width: 256px;
+        width: 240px;
     }
 
     &-right {
@@ -82,16 +86,6 @@ body {
 
         &:not(.@{mui-prefix}-selected):hover {
             color: var(--text-color-main);
-        }
-
-        &::after {
-            display: block;
-            height: 1px;
-            margin-bottom: -1px;
-            overflow: hidden;
-            font-weight: @font-weight-bold;
-            visibility: hidden;
-            content: attr(title)
         }
     }
 

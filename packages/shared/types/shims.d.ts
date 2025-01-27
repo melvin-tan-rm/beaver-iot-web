@@ -1,5 +1,5 @@
 /**
- * 类型垫片
+ * Shims for TypeScript
  */
 declare module '*.css';
 declare module '*.less';

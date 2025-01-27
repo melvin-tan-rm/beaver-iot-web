@@ -13,5 +13,9 @@
     "error.http.server_error": "Request error, please check and try again.",
     "error.http.token_invalid": "The token is invalid, please try again.",
     "error.http.token_not_found": "Your account hasn't been signed in.",
-    "error.http.user_register_email_exist": "This User Register Email Already Exists."
+    "error.http.user_register_email_exist": "This User Register Email Already Exists.",
+    "error.http.role_does_not_exit": "Role does not exist.",
+    "error.http.name_repeated": "Name is repeated",
+    "error.http.user_has_no_permission": "User has no permission.",
+    "error.http.role_still_has_user": "Please remove the user under the role first, and then delete the role."
 }
