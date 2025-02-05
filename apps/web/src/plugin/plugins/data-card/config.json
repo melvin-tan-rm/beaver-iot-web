@@ -2,7 +2,7 @@
     "type": "dataCard",
     "name": "Card",
     "class": "data_card",
-    "icon": "./icon.png",
+    "icon": "./icon.svg",
     "defaultRow": 2,
     "defaultCol": 3,
     "minRow": 1,

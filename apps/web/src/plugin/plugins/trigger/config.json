@@ -2,7 +2,7 @@
     "type": "trigger",
     "name": "Trigger",
     "class": "operate",
-    "icon": "./icon.png",
+    "icon": "./icon.svg",
     "defaultRow": 2,
     "defaultCol": 2,
     "minRow": 1,

@@ -1,0 +1,24 @@
+.@{prefix}-editable-text {
+    &-view {
+        padding: 0 @padding-xxs;
+        border: 1px solid transparent;
+        border-radius: @border-radius-base;
+        transition: .3s;
+        .text-size(@font-size-xl);
+
+        &:hover {
+            border-color: var(--border-color-main);
+        }
+    }
+
+    &-input {
+        display: block;
+        width: 100%;
+        padding: 0 @padding-xxs;
+        font-family: @font-family;
+        border: 1px solid var(--border-color-main);
+        border-radius: @border-radius-base;
+        outline: none;
+        .text-size(@font-size-xl);
+    }
+}

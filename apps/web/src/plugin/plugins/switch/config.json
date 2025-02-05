@@ -2,7 +2,7 @@
     "type": "switch",
     "name": "Switch",
     "class": "operate",
-    "icon": "./icon.png",
+    "icon": "./icon.svg",
     "defaultRow": 1,
     "defaultCol": 2,
     "minRow": 1,

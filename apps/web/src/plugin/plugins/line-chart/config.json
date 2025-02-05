@@ -2,7 +2,7 @@
     "type": "lineChart",
     "name": "Line Chart",
     "class": "data_chart",
-    "icon": "./icon.png",
+    "icon": "./icon.svg",
     "defaultRow": 4,
     "defaultCol": 4,
     "minRow": 2,
