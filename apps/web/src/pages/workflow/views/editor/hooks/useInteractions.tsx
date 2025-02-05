@@ -7,7 +7,7 @@ import {
     type ReactFlowProps,
 } from '@xyflow/react';
 import { useSize } from 'ahooks';
-import { cloneDeep, maxBy } from 'lodash-es';
+import { cloneDeep, maxBy, isNil } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { useConfirm } from '@/components';
 import { basicNodeConfigs } from '@/pages/workflow/config';
@@ -72,7 +72,17 @@ const useInteractions = () => {
             const nodes = getNodes();
             const edges = getEdges();
             const newEdge = { ...connection, id: genUuid('edge'), type: EDGE_TYPE_ADDABLE };
+            const hasEdge = edges.some(
+                edge =>
+                    edge.source === newEdge.source &&
+                    edge.target === newEdge.target &&
+                    ((isNil(edge.sourceHandle) && isNil(newEdge.sourceHandle)) ||
+                        edge.sourceHandle === newEdge.sourceHandle) &&
+                    ((isNil(edge.targetHandle) && isNil(newEdge.targetHandle)) ||
+                        edge.targetHandle === newEdge.targetHandle),
+            );
 
+            if (hasEdge) return;
             if (!checkNestedParallelLimit(nodes, [...edges, newEdge])) return;
             addEdges([newEdge]);
         },
