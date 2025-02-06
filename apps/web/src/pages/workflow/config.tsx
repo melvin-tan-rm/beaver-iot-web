@@ -190,7 +190,7 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
                 type: 'object',
             },
         ],
-        outputKeys: ['serviceInvocationSetting.serviceParams'],
+        outputKeys: ['payload'],
     },
     select: {
         type: 'select',

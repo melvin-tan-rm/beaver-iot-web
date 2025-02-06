@@ -250,6 +250,11 @@ declare type ServiceNodeDataType = BaseNodeDataType<{
         /** Input variables of service entity */
         serviceParams?: Record<string, string>;
     };
+    /** Output */
+    payload: {
+        name: ApiKey;
+        type: EntityValueDataType;
+    }[];
 }>;
 
 /**
