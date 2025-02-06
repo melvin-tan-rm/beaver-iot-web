@@ -9,8 +9,6 @@ import {
     Switch,
     MenuItem,
 } from '@mui/material';
-// import { useI18n } from '@milesight/shared/src/hooks';
-// import { checkRequired } from '@milesight/shared/src/utils/validators';
 import { NodeFormItemValueType } from '../../../typings';
 import useFlowStore from '../../../store';
 import {
@@ -65,7 +63,6 @@ const assignerNodeEntityFilterModel: EntityAssignSelectProps['filterModel'] = {
 
 const useNodeFormItems = ({ nodeType, readonly }: Props) => {
     const nodeConfigs = useFlowStore(state => state.nodeConfigs);
-    // const { getIntlText } = useI18n();
 
     const formConfigs = useMemo(() => {
         if (!Object.keys(nodeConfigs).length) return {};
@@ -149,7 +146,7 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
                                     return (
                                         <ParamInput
                                             // required={required}
-                                            isOutput={nodeType === 'code'}
+                                            isOutput={nodeType === 'code' || nodeType === 'service'}
                                             value={value}
                                             onChange={onChange}
                                         />
