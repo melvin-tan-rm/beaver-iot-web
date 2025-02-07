@@ -81,6 +81,10 @@ export interface ModalProps {
      * Whether the icon is turned off in the upper right corner, the default FALSE
      */
     showCloseIcon?: boolean;
+    /**
+     * Disable the scroll lock behavior.
+     */
+    disableScrollLock?: boolean;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -99,6 +103,7 @@ const Modal: React.FC<ModalProps> = ({
     children,
     disabledBackdropClose = true,
     showCloseIcon = false,
+    disableScrollLock = false,
 }) => {
     const { getIntlText } = useI18n();
     const [loading, setLoading] = useState<boolean>();
@@ -149,6 +154,7 @@ const Modal: React.FC<ModalProps> = ({
             onClose={handleClose}
             container={container}
             sx={{ '& .MuiDialog-paper': { width: ModalWidth, maxWidth: 'none' }, ...(sx || {}) }}
+            disableScrollLock={disableScrollLock}
         >
             {!!title && (
                 <DialogTitle sx={{ m: 0, paddingX: 3, paddingY: 2 }} id="customized-dialog-title">

@@ -2,7 +2,7 @@
     "type": "iconRemaining",
     "name": "Icon Remaining",
     "class": "data_chart",
-    "icon": "./icon.png",
+    "icon": "./icon.svg",
     "defaultCol": 1,
     "defaultRow": 2,
     "minRow": 2,

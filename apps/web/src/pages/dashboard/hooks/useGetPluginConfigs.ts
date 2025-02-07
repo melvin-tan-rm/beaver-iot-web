@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import components from '@/plugin/plugins/components';
 // Defines a collection of modules that can be imported
 const modules = import.meta.glob('../../../plugin/plugins/*/config.json');
-const iconModules = import.meta.glob('../../../plugin/plugins/*/icon.png');
+const iconModules = import.meta.glob('../../../plugin/plugins/*/icon.svg');
 const PLUGIN_DIR = '../../../plugin';
 
 export default () => {
@@ -14,7 +14,7 @@ export default () => {
         const jsonData: any = await modules[jsonPath]();
         let icon = null;
         if (jsonData?.icon) {
-            const iconSrc = `${PLUGIN_DIR}/plugins/${comName}/icon.png`;
+            const iconSrc = `${PLUGIN_DIR}/plugins/${comName}/icon.svg`;
             icon = await iconModules[iconSrc]();
         }
         const isExit = pluginRef.current.some(item => item.name === jsonData.name);

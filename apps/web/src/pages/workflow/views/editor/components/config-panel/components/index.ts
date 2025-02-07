@@ -26,3 +26,4 @@ export { default as ServiceParamAssignInput } from './service-param-assign-input
 export { default as MoreMenu } from './more-menu';
 export { default as TestDrawer } from './test-drawer';
 export { default as EmailRecipients } from './email-recipients';
+export { default as EditableText } from './editable-text';

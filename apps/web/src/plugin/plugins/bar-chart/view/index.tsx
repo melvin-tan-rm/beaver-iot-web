@@ -21,12 +21,20 @@ const View = (props: ViewProps) => {
     const { entity, title, time } = config || {};
     const { isPreview } = configJson || {};
 
-    const { chartShowData, chartLabels, chartRef, timeUnit, format, displayFormats, xAxisRange } =
-        useBasicChartEntity({
-            entity,
-            time,
-            isPreview,
-        });
+    const {
+        chartShowData,
+        chartLabels,
+        chartRef,
+        timeUnit,
+        format,
+        displayFormats,
+        xAxisRange,
+        chartZoomRef,
+    } = useBasicChartEntity({
+        entity,
+        time,
+        isPreview,
+    });
 
     useEffect(() => {
         try {
@@ -74,6 +82,7 @@ const View = (props: ViewProps) => {
                                 pan: {
                                     enabled: true,
                                     mode: 'x', // Only move on the X axis
+                                    onPanStart: chartZoomRef.current?.show,
                                 },
                                 zoom: {
                                     wheel: {
@@ -83,11 +92,17 @@ const View = (props: ViewProps) => {
                                         enabled: true, // Enable touch shrinkage
                                     },
                                     mode: 'x', // Only zoomed in the X axis
+                                    onZoomStart: chartZoomRef.current?.show,
                                 },
                             },
                         } as any,
                     },
                 });
+
+                /**
+                 * store reset zoom state function
+                 */
+                chartZoomRef.current?.storeReset(chart);
             }
 
             return () => {
@@ -106,6 +121,7 @@ const View = (props: ViewProps) => {
             <Tooltip className={styles.name} autoEllipsis title={title} />
             <div className={styles['bar-chart-content']}>
                 <canvas ref={chartRef} />
+                {chartZoomRef.current?.iconNode}
             </div>
         </div>
     );

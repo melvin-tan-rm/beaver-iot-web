@@ -5,7 +5,7 @@ import {
     DevicesFilledIcon,
     IntegrationInstructionsIcon,
     Person4Icon,
-    EntityIcon,
+    EntityFilledIcon,
     WorkflowIcon,
 } from '@milesight/shared/src/components';
 import { PERMISSIONS } from '@/constants';
@@ -147,7 +147,7 @@ const routes: RouteObjectType[] = [
             get title() {
                 return intl.get('common.label.entity');
             },
-            icon: <EntityIcon fontSize="small" />,
+            icon: <EntityFilledIcon fontSize="small" />,
             permissions: PERMISSIONS.ENTITY_MODULE,
         },
         children: [
