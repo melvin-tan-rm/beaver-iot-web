@@ -119,7 +119,18 @@ const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
                 });
 
                 if (error) return;
-                const list = res.map((item: EntityData) => {
+                /**
+                 * If the sub entity is empty, and the entity type is not BINARY, ENUM, or OBJECT,
+                 * use the entity itself as the sub entity.
+                 */
+                const list = res.length
+                    ? res
+                    : (['BINARY', 'ENUM', 'OBJECT'] as EntityValueDataType[]).includes(
+                            entity.entity_value_type,
+                        )
+                      ? []
+                      : [entity];
+                const result = list.map((item: EntityData) => {
                     const type = item.entity_value_type;
                     const enums =
                         item.entity_value_attribute?.enum ||
@@ -139,7 +150,7 @@ const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
                         enums,
                     };
                 });
-                setSubEntityList(list);
+                setSubEntityList(result);
             };
 
             getSubEntityList();

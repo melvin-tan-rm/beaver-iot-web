@@ -52,6 +52,21 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
             service.children.push(item);
         });
 
+        /**
+         * If the sub entity is empty, and the entity value type is not BINARY, ENUM, or OBJECT,
+         * use the entity itself as the sub entity.
+         */
+        result.forEach(item => {
+            if (
+                item.children?.length ||
+                (['BINARY', 'ENUM', 'OBJECT'] as EntityValueDataType[]).includes(item.valueType)
+            ) {
+                return;
+            }
+            item.children = item.children || [];
+            item.children.push(item);
+        });
+
         return result.filter(item => !item.parent);
     }, [entities, excludeKeys]);
 
@@ -96,13 +111,9 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
 
         const [error, resp] = await awaitWrap(
             entityAPI.callService({
-                exchange: {
-                    [targetService.key]:
-                        isEmpty(finalParams) ||
-                        Object.values(finalParams).every(val => isUndefined(val))
-                            ? null
-                            : finalParams,
-                },
+                exchange: Object.values(finalParams).every(val => isUndefined(val))
+                    ? {}
+                    : finalParams,
             }),
         );
         if (error || !isRequestSuccess(resp)) return;
