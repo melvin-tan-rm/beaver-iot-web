@@ -108,6 +108,7 @@ const View = (props: Props) => {
                     },
                     dialogProps: {
                         container: mainRef.current,
+                        disableScrollLock: true,
                     },
                 });
             }
@@ -151,6 +152,7 @@ const View = (props: Props) => {
                     onCancel={() => setVisible(false)}
                     container={mainRef.current}
                     visible
+                    disableScrollLock
                 >
                     <div className="trigger-view-form">
                         {/* @ts-ignore: Mock data field is missing, temporarily ignore the TS verification error */}

@@ -1,4 +1,6 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { IconButton } from '@mui/material';
+import { RefreshIcon } from '@milesight/shared/src/components/icons';
 
 import { useTime } from '@milesight/shared/src/hooks';
 import { entityAPI, isRequestSuccess, getResponseData } from '@/services/http';
@@ -38,6 +40,42 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
      * Chart x -axis label
      */
     const [chartLabels, setChartLabels] = useState<number[]>([]);
+    /**
+     * chart zoom icon ref
+     */
+    const chartZoomIconRef = useRef<HTMLDivElement>(null);
+    /**
+     * the reset chart zoom function
+     */
+    const resetChartZoomRef = useRef<() => void>();
+    /**
+     * chart zoom ref
+     */
+    const chartZoomRef = useRef({
+        /** show chart reset zoom icon */
+        show: () => {
+            chartZoomIconRef.current?.style.setProperty('display', 'block');
+        },
+        /** store chart reset zoom function */
+        storeReset: (chart: { resetZoom: () => void; [key: string]: any }) => {
+            resetChartZoomRef.current = () => {
+                chart?.resetZoom();
+                chartZoomIconRef.current?.style.setProperty('display', 'none');
+            };
+        },
+        /** chart reset zoom icon html node */
+        iconNode: (
+            <div
+                ref={chartZoomIconRef}
+                className="reset-chart-zoom"
+                onClick={() => resetChartZoomRef.current?.()}
+            >
+                <IconButton color="default">
+                    <RefreshIcon />
+                </IconButton>
+            </div>
+        ),
+    });
     /**
      * webSocket subscription theme
      */
@@ -216,5 +254,9 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
          * X -axis scale range
          */
         xAxisRange,
+        /**
+         * chart zoom ref
+         */
+        chartZoomRef,
     };
 }
