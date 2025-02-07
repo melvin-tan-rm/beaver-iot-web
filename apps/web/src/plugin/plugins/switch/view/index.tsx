@@ -144,7 +144,7 @@ const View = (props: ViewProps) => {
             <div className={styles.icon}>
                 {IconComponent}
                 <div className={styles.body}>
-                    <Switch value={isSwitchOn} onChange={handleSwitchChange} />
+                    <Switch checked={isSwitchOn} onChange={handleSwitchChange} />
                 </div>
             </div>
             <Tooltip className={styles.text} autoEllipsis title={title} />
