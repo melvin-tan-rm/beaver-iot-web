@@ -112,7 +112,7 @@ const TablePro = <DataType extends GridValidRowModel>({
                         <div className="ms-table-pro__topbar-search">
                             <OutlinedInput
                                 placeholder="Search"
-                                sx={{ width: 220, height: 40 }}
+                                sx={{ width: 220 }}
                                 onChange={e => onSearch?.(e.target.value)}
                                 startAdornment={
                                     <InputAdornment position="start">

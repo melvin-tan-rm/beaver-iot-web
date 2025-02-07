@@ -301,22 +301,19 @@ const getThemes = (): Record<ThemeType, any> => {
  */
 export const getMuiComponents = (mode: ThemeType = 'light') => {
     const result: CssVarsThemeOptions['components'] = {
-        // MuiButtonBase: {
-        //     defaultProps: {
-        //         // No more ripple, on the whole application 💣!
-        //         // disableRipple: true,
-        //     },
-        //     styleOverrides: {
-        //         root: {
-        //             boxShadow: 'none',
-        //         },
-        //     },
-        // },
         MuiButton: {
             styleOverrides: {
                 root: {
                     boxShadow: 'none',
+                    lineHeight: '1.375rem',
+                    padding: '7px 16px',
                     '&:hover': { boxShadow: 'none' },
+                },
+                outlined: {
+                    padding: '6px 16px',
+                },
+                sizeSmall: {
+                    padding: '2px 12px',
                 },
             },
         },
@@ -327,29 +324,63 @@ export const getMuiComponents = (mode: ThemeType = 'light') => {
         },
         MuiTextField: {
             defaultProps: {
-                size: 'small',
+                size: 'medium',
                 margin: 'dense',
                 slotProps: {
                     inputLabel: { shrink: true },
                 },
                 sx: { my: 1.5 },
             },
+            styleOverrides: {
+                root: {
+                    fontSize: '0.875rem', // 14px
+                },
+            },
         },
         MuiInput: {
             defaultProps: {
-                size: 'small',
+                size: 'medium',
                 margin: 'dense',
+            },
+            styleOverrides: {
+                root: {
+                    fontSize: '0.875rem', // 14px
+                },
+                input: {
+                    height: '1.375rem',
+                    padding: '7px 12px',
+                },
+                inputSizeSmall: {
+                    padding: '2px 12px',
+                },
             },
         },
         MuiOutlinedInput: {
             defaultProps: {
-                size: 'small',
+                size: 'medium',
                 margin: 'dense',
+            },
+            styleOverrides: {
+                root: {
+                    fontSize: '0.875rem', // 14px
+                },
+                input: {
+                    height: '1.375rem',
+                    padding: '7px 12px',
+                },
+                inputSizeSmall: {
+                    padding: '2px 12px',
+                },
             },
         },
         MuiInputLabel: {
             defaultProps: {
                 shrink: true,
+            },
+            styleOverrides: {
+                root: {
+                    fontSize: '0.875rem', // 14px
+                },
             },
         },
         MuiTab: {
@@ -381,6 +412,25 @@ export const getMuiComponents = (mode: ThemeType = 'light') => {
         MuiCheckbox: {
             defaultProps: {
                 size: 'small',
+            },
+        },
+        MuiSelect: {
+            styleOverrides: {
+                select: {
+                    height: '1.375rem',
+                    lineHeight: '1.375rem',
+                    padding: '7px 12px',
+                },
+            },
+        },
+        MuiAutocomplete: {
+            styleOverrides: {
+                inputRoot: {
+                    '&.MuiInputBase-sizeSmall.MuiAutocomplete-inputRoot .MuiAutocomplete-input': {
+                        paddingTop: '1px',
+                        paddingBottom: '1px',
+                    },
+                },
             },
         },
     };
