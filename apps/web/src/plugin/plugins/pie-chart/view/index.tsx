@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useMemo } from 'react';
 import { useRequest } from 'ahooks';
 import Chart from 'chart.js/auto';
+import { isEmpty } from 'lodash-es';
+
+import { useTheme } from '@milesight/shared/src/hooks';
 import {
     awaitWrap,
     entityAPI,
@@ -26,6 +29,7 @@ const View = (props: IProps) => {
     const { config, configJson } = props;
     const { entity, title, metrics, time } = config || {};
 
+    const { getCSSVariableValue } = useTheme();
     const chartRef = useRef<HTMLCanvasElement>(null);
     const { data: countData, runAsync: getData } = useRequest(
         async () => {
@@ -62,8 +66,15 @@ const View = (props: IProps) => {
         try {
             const ctx = chartRef.current!;
             const data = countData?.data?.count_result || [];
-            if (!ctx || !data?.length) return;
+            if (!ctx) return;
             const resultColor = getChartColor(data);
+            const pieCountData = data?.map(item => item.count);
+
+            const pieData = !isEmpty(pieCountData) ? pieCountData : [1];
+            const pieColor = !isEmpty(resultColor)
+                ? resultColor
+                : [getCSSVariableValue('--gray-2')];
+
             const chart = new Chart(ctx, {
                 type: 'pie',
                 data: {
@@ -71,9 +82,9 @@ const View = (props: IProps) => {
                     datasets: [
                         {
                             // label: 'My First Dataset',
-                            data: data?.map(item => item.count) as any, // Data value
+                            data: pieData, // Data value
                             borderWidth: 1, // Border width
-                            backgroundColor: resultColor,
+                            backgroundColor: pieColor,
                         },
                     ],
                 },
@@ -85,7 +96,7 @@ const View = (props: IProps) => {
                             position: 'right', // Legend position
                         },
                         tooltip: {
-                            enabled: true, // Enlightenment prompts
+                            enabled: Boolean(data?.length), // Enlightenment prompts
                         },
                     },
                 },
