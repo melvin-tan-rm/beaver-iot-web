@@ -1,7 +1,6 @@
 import {
     blue as MBlue,
     green as MGreen,
-    red as MRed,
     grey as MGrey,
     yellow as MYellow,
     deepOrange as MDeepOrange,
@@ -65,7 +64,8 @@ export const yellow = {
 
 /** Theme - red */
 export const red = {
-    ...MRed,
+    50: '#FFF2F0',
+    100: '#FFE0DB',
     200: '#FEEBEE',
     300: '#FFE0DB',
     400: '#FFBAB3',
@@ -74,6 +74,20 @@ export const red = {
     700: '#F13535',
     800: '#CC2328',
     900: '#A6141E',
+} as const;
+
+/** Theme color - orange */
+export const orange = {
+    50: '#FFF7F0',
+    100: '#FFEAD9',
+    200: '#FFD1B0',
+    300: '#FFB587',
+    400: '#FF975E',
+    500: '#F77234',
+    600: '#D15321',
+    700: '#AB3913',
+    800: '#832308',
+    900: '#5E1505',
 } as const;
 
 /** Theme color - dark orange */
@@ -222,6 +236,17 @@ export const getMuiSchemes = () => {
         },
         Tooltip: {
             bg: grey[800],
+        },
+        Alert: {
+            infoColor: purple[800],
+            infoStandardBg: purple[50],
+            errorColor: red[800],
+            errorStandardBg: red[50],
+            successColor: green[800],
+            successStandardBg: green[200],
+            warningColor: orange[600],
+            warningIconColor: orange[500],
+            warningStandardBg: orange[50],
         },
     };
     const darkPalette: ColorSystemOptions['palette'] = {
