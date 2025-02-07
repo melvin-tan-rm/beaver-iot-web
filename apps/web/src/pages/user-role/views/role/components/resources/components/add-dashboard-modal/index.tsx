@@ -109,6 +109,12 @@ const AddDashboardModal: React.FC<ModalProps> = props => {
         return row.dashboardName?.toLowerCase()?.includes(newKeyword);
     });
 
+    /** left table search */
+    const handleSearch = useMemoizedFn((value: string) => {
+        setKeyword(value);
+        setPaginationModel(model => ({ ...model, page: 0 }));
+    });
+
     const renderModal = () => {
         if (visible) {
             return (
@@ -138,7 +144,7 @@ const AddDashboardModal: React.FC<ModalProps> = props => {
                             getRowId: row => row.dashboardId,
                             paginationModel,
                             onPaginationModelChange: setPaginationModel,
-                            onSearch: setKeyword,
+                            onSearch: handleSearch,
                             onRefreshButtonClick: getUndistributedDashboards,
                         }}
                     />
