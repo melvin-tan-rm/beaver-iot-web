@@ -3,10 +3,10 @@
     "name": "Trigger",
     "class": "operate",
     "icon": "./icon.svg",
-    "defaultRow": 2,
+    "defaultRow": 1,
     "defaultCol": 2,
     "minRow": 1,
-    "minCol": 2,
+    "minCol": 1,
     "configProps": [
         {
             "style": "width: 100%",
