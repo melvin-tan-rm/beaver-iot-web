@@ -74,7 +74,7 @@ const Forms = <T extends FieldValues>(props: formProps<T>, ref: any) => {
                     resultData[key] = data[key];
                 }
             });
-            onOk(resultData as T);
+            await onOk(resultData as T);
         } else {
             console.error('Validation failed');
         }

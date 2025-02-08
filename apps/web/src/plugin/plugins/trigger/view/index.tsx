@@ -1,11 +1,14 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
+
 import { Modal, EntityForm, toast } from '@milesight/shared/src/components';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { flattenObject, objectToCamelToSnake } from '@milesight/shared/src/utils/tools';
+import * as Icons from '@milesight/shared/src/components/icons';
+
 import { useConfirm } from '@/components';
 import { ENTITY_VALUE_TYPE } from '@/constants';
+import { Tooltip } from '../../../view-components';
 import { useEntityApi, type CallServiceType } from '../../../hooks';
-import { RenderView } from '../../../render';
 import { ViewConfigProps } from './typings';
 import './style.less';
 
@@ -21,6 +24,7 @@ const View = (props: Props) => {
     const confirm = useConfirm();
     const { getEntityChildren, callService, updateProperty } = useEntityApi();
     const { config, configJson, isEdit, mainRef } = props;
+    const { label, icon, bgColor } = config || {};
     const [visible, setVisible] = useState(false);
     const [entities, setEntities] = useState([]);
     const ref = useRef<any>();
@@ -97,11 +101,11 @@ const View = (props: Props) => {
                         // If the entity itself is the object default is {}, otherwise it is null
                         const resultValue = valueType === ENTITY_VALUE_TYPE.OBJECT ? {} : null;
                         if (entityType === 'SERVICE') {
-                            handleCallService({
+                            await handleCallService({
                                 [entityKey]: resultValue,
                             });
                         } else if (entityType === 'PROPERTY') {
-                            handleUpdateProperty({
+                            await handleUpdateProperty({
                                 [entityKey]: resultValue,
                             });
                         }
@@ -115,11 +119,11 @@ const View = (props: Props) => {
         }
     };
 
-    const handleOk = () => {
-        ref.current?.handleSubmit();
+    const handleOk = async () => {
+        await ref.current?.handleSubmit();
     };
 
-    const handleSubmit = (data: Record<string, any>) => {
+    const handleSubmit = async (data: Record<string, any>) => {
         const newData: any = flattenObject(data);
         const keys = Object.keys(newData);
         const resultData: any = {};
@@ -128,23 +132,45 @@ const View = (props: Props) => {
         });
         const entityType = config?.entity?.rawData?.entityType;
         if (entityType === 'PROPERTY') {
-            handleUpdateProperty(resultData);
+            await handleUpdateProperty(resultData);
         } else if (entityType === 'SERVICE') {
-            handleCallService(resultData);
+            await handleCallService(resultData);
         }
     };
 
+    /**
+     * Icon component
+     */
+    const IconComponent = useMemo(() => {
+        const IconShow = Reflect.get(Icons, icon);
+        if (!IconShow) return null;
+
+        return <IconShow sx={{ fontSize: 24 }} />;
+    }, [icon]);
+
     if (configJson.isPreview) {
         return (
-            <div className="trigger-view-preview">
-                <RenderView config={config} configJson={configJson} onClick={handleClick} />
+            <div className="trigger-view-preview" style={{ backgroundColor: bgColor }}>
+                {IconComponent}
+                <div className="trigger-view__label">
+                    <Tooltip autoEllipsis title={label} />
+                </div>
             </div>
         );
     }
 
     return (
         <>
-            <RenderView config={config} configJson={configJson} onClick={handleClick} />
+            <div
+                className="trigger-view"
+                style={{ backgroundColor: bgColor }}
+                onClick={handleClick}
+            >
+                {IconComponent}
+                <div className="trigger-view__label">
+                    <Tooltip autoEllipsis title={label} />
+                </div>
+            </div>
             {visible && !!mainRef.current && (
                 <Modal
                     title={configJson.name}
