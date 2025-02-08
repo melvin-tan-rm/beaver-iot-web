@@ -1,7 +1,7 @@
 import { useMemo, useEffect } from 'react';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
 import cls from 'classnames';
-import { isNil } from 'lodash-es';
+import { isNil, isBoolean } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { LoadingButton, toast } from '@milesight/shared/src/components';
 import { useEntityFormItems, type EntityFormDataProps } from '@/hooks';
@@ -38,7 +38,7 @@ const Property: React.FC<Props> = ({ loading, entities, onUpdateSuccess }) => {
             return {
                 key: item.key,
                 label: <Tooltip autoEllipsis title={item.name} />,
-                content: !isNil(value) ? value : '-',
+                content: !isNil(value) ? (isBoolean(value) ? String(value) : value) : '-',
             };
         });
     }, [entities]);
