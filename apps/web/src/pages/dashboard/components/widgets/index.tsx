@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import GRL, { WidthProvider, type Layout } from 'react-grid-layout';
 import { useMemoizedFn } from 'ahooks';
+import { get } from 'lodash-es';
 
 import { useTheme } from '@milesight/shared/src/hooks';
 
@@ -13,6 +14,17 @@ const ReactGridLayout = WidthProvider(GRL);
 
 const GRID_LAYOUT_MARGIN = 16;
 const GRID_LAYOUT_COLS = 12;
+const GRID_ROW_HEIGHT = 88;
+const HELPER_RECT_HEIGHT = GRID_LAYOUT_MARGIN + GRID_ROW_HEIGHT;
+
+/**
+ * The widget type corresponds to the default height of the too small screen
+ */
+const DEFAULT_GRID_HEIGHT = {
+    data_chart: 3,
+    operate: 1,
+    data_card: 2,
+};
 
 interface WidgetProps {
     onChangeWidgets: (widgets: any[]) => void;
@@ -20,12 +32,13 @@ interface WidgetProps {
     isEdit: boolean;
     onEdit: (data: WidgetDetail) => void;
     mainRef: any;
+    isTooSmallScreen: boolean;
 }
 
 const Widgets = (props: WidgetProps) => {
     const { getCSSVariableValue } = useTheme();
 
-    const { widgets, onChangeWidgets, isEdit, onEdit, mainRef } = props;
+    const { widgets, onChangeWidgets, isEdit, onEdit, mainRef, isTooSmallScreen } = props;
     const widgetRef = useRef<WidgetDetail[]>();
     const requestRef = useRef<any>(null);
     const bgImageTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -137,7 +150,7 @@ const Widgets = (props: WidgetProps) => {
                 const canvas = document.createElement('canvas');
                 canvas.id = 'grid-layout-canvas';
                 canvas.width = gridWidth;
-                canvas.height = 103;
+                canvas.height = HELPER_RECT_HEIGHT;
                 canvas.style.display = 'none';
                 document.body.appendChild(canvas);
                 if (!canvas?.getContext) {
@@ -152,7 +165,7 @@ const Widgets = (props: WidgetProps) => {
                 ctx.setLineDash([8, 8]);
                 ctx.strokeStyle = getCSSVariableValue('--gray-4') || '#C9CDD4';
                 ctx.lineWidth = 1;
-                ctx.strokeRect(1, 1, gridWidth - GRID_LAYOUT_MARGIN - 2, 85);
+                ctx.strokeRect(1, 1, gridWidth - GRID_LAYOUT_MARGIN - 2, GRID_ROW_HEIGHT - 2);
                 ctx.closePath();
 
                 const imageData = canvas.toDataURL();
@@ -160,7 +173,7 @@ const Widgets = (props: WidgetProps) => {
                     minHeight: 'calc(100% + 60px)',
                     backgroundImage: `url(${imageData})`,
                     backgroundPosition: `${GRID_LAYOUT_MARGIN}px ${GRID_LAYOUT_MARGIN}px`,
-                    backgroundSize: `${gridWidth}px 103px`,
+                    backgroundSize: `${gridWidth}px ${HELPER_RECT_HEIGHT}px`,
                 });
 
                 // clear the canvas
@@ -216,7 +229,7 @@ const Widgets = (props: WidgetProps) => {
         <ReactGridLayout
             isDraggable={isEdit}
             isResizable={isEdit}
-            rowHeight={87}
+            rowHeight={GRID_ROW_HEIGHT}
             cols={GRID_LAYOUT_COLS}
             margin={[GRID_LAYOUT_MARGIN, GRID_LAYOUT_MARGIN]}
             onLayoutChange={handleChangeWidgets}
@@ -234,10 +247,13 @@ const Widgets = (props: WidgetProps) => {
         >
             {widgets.map((data: WidgetDetail) => {
                 const id = (data.widget_id || data.tempId) as ApiKey;
+
                 const pos = {
                     ...data.data.pos,
-                    w: data.data?.pos?.w || data.data.minCol || 2,
-                    h: data.data?.pos?.h || data.data.minRow || 2,
+                    w: isTooSmallScreen ? 12 : data.data?.pos?.w || data.data.minCol || 2,
+                    h: isTooSmallScreen
+                        ? get(DEFAULT_GRID_HEIGHT, data?.data?.class, 3)
+                        : data.data?.pos?.h || data.data.minRow || 2,
                     minW: data.data.minCol || 2,
                     minH: data.data.minRow || 2,
                     i: data?.widget_id || data.data.tempId,

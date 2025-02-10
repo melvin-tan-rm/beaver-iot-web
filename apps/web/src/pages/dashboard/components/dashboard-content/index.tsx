@@ -29,13 +29,14 @@ interface DashboardContentProps {
     getDashboards: () => void;
     onChangeIsEdit: (isEdit: boolean) => void;
     isEdit: boolean;
+    isTooSmallScreen: boolean;
 }
 
 export default (props: DashboardContentProps) => {
     const { getIntlText } = useI18n();
     const { pluginsConfigs } = useGetPluginConfigs();
     const confirm = useConfirm();
-    const { dashboardDetail, getDashboards, onChangeIsEdit, isEdit } = props;
+    const { dashboardDetail, getDashboards, onChangeIsEdit, isEdit, isTooSmallScreen } = props;
     const [isShowAddWidget, setIsShowAddWidget] = useState(false);
     const [isShowEditDashboard, setIsShowEditDashboard] = useState(false);
     const [widgets, setWidgets] = useState<WidgetDetail[]>([]);
@@ -46,6 +47,8 @@ export default (props: DashboardContentProps) => {
     // const [isEdit, setIsEdit] = useState(false);
     const mainRef = useRef<HTMLDivElement>(null);
     const widgetsRef = useRef<any[]>([]);
+    /** normal screen widget position info storage */
+    const normalWidgetRef = useRef<any[]>([]);
 
     useEffect(() => {
         // Merge the data in the database with the local one to ensure that the component configuration is locally up to date
@@ -65,7 +68,17 @@ export default (props: DashboardContentProps) => {
         setWidgets([...(newWidgets || [])]);
         setLoading(false);
         widgetsRef.current = cloneDeep(newWidgets || []);
-    }, [dashboardDetail.widgets, pluginsConfigs]);
+
+        if (!isTooSmallScreen) {
+            normalWidgetRef.current = cloneDeep(newWidgets || []);
+        }
+    }, [dashboardDetail.widgets, pluginsConfigs, isTooSmallScreen]);
+
+    useEffect(() => {
+        if (!isTooSmallScreen) {
+            setWidgets(cloneDeep(normalWidgetRef.current));
+        }
+    }, [isTooSmallScreen]);
 
     const dashboardId = dashboardDetail.dashboard_id;
 
@@ -229,6 +242,7 @@ export default (props: DashboardContentProps) => {
                     ) : (
                         <PermissionControlHidden permissions={PERMISSIONS.DASHBOARD_EDIT}>
                             <Button
+                                disabled={isTooSmallScreen}
                                 startIcon={<Edit />}
                                 variant="contained"
                                 onClick={changeEditStatus}
@@ -316,6 +330,7 @@ export default (props: DashboardContentProps) => {
                         isEdit={isEdit}
                         onEdit={handleSelectPlugin}
                         mainRef={mainRef}
+                        isTooSmallScreen={isTooSmallScreen}
                     />
                 </div>
             )}
