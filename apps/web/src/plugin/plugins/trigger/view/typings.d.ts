@@ -4,4 +4,6 @@ export interface ViewConfigProps {
     entity: Record<string, any>;
     showIcon: boolean;
     icon: string;
+    label: string;
+    bgColor: string;
 }

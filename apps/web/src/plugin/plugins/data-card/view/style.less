@@ -1,6 +1,6 @@
 .data-view {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     width: 100%;
     min-width: 100%;
     height: 100%;
@@ -13,6 +13,7 @@
         width: 312px;
         min-width: auto;
         height: 96px;
+        border-radius: @border-radius-md;
     }
 
     &__icon {
@@ -32,17 +33,15 @@
         overflow: hidden;
     }
 
-    &__title {
+    &__header {
+        display: flex;
+        align-items: center;
         margin-bottom: @margin-xxs;
-        font-size: @font-size-lg;
-        font-weight: @font-weight-bold;
-        line-height: 1;
-        color: var(--text-color-base);
+    }
 
-        .ms-tooltip-cont {
-            display: inline-block;
-            .text-size(@font-size-sm);
-        }
+    &__title {
+        max-width: calc(100% - 28px);
+        margin-left: @margin-xxs;
     }
 
     &__content {

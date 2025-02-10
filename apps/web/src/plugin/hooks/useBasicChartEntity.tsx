@@ -205,11 +205,12 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
         if (timeUnit !== 'hour') {
             return 'yyyy-MM-dd';
         }
-        return 'MM-dd HH:mm';
+        return 'MM-dd';
     }, [timeUnit]);
 
     const displayFormats = useMemo(() => {
         return {
+            second: 'HH:mm:ss',
             minute: 'HH:mm',
             hour: 'HH:mm',
             day: format,
