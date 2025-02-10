@@ -98,7 +98,7 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
     const { control, handleSubmit, setValue } = useForm<EntityFormDataProps>();
     const { formItems, decodeFormParams, encodeFormData } = useEntityFormItems({
         entities: targetService?.children,
-        isAllRequired: true,
+        // isAllRequired: true,
     });
     const onSubmit: SubmitHandler<EntityFormDataProps> = async params => {
         if (!targetService) return;

@@ -30,6 +30,7 @@ interface Props {
 
     /**
      * Whether all is required
+     * @deprecated
      */
     isAllRequired?: boolean;
 }
@@ -134,7 +135,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
 
         entities?.forEach(entity => {
             const attr = entity.valueAttribute || {};
-            const validate = getValidators(entity, isAllRequired);
+            const validate = getValidators(entity, !!attr.required);
 
             // OBJECT is of Group type and no action is required
             switch (entity.valueType) {
@@ -151,7 +152,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                     fullWidth
                                     type="text"
                                     sx={{ my: 1.5 }}
-                                    required={isAllRequired}
+                                    required={attr.required}
                                     disabled={disabled}
                                     label={entity.name}
                                     error={!!error}
@@ -178,7 +179,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                     sx={{ my: 1.5 }}
                                 >
                                     <InputLabel
-                                        required={isAllRequired}
+                                        required={attr.required}
                                         id={`select-label-${entity.name}`}
                                         error={!!error}
                                     >
@@ -188,7 +189,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                         notched
                                         label={entity.name}
                                         labelId={`select-label-${entity.name}`}
-                                        required={isAllRequired}
+                                        required={attr.required}
                                         error={!!error}
                                         value={value}
                                         onChange={onChange}
@@ -226,7 +227,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                 >
                                     <FormControlLabel
                                         label={entity.name}
-                                        required={isAllRequired}
+                                        required={attr.required}
                                         checked={!!value}
                                         onChange={onChange}
                                         control={<Switch size="small" />}
@@ -253,7 +254,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                     multiline
                                     type="text"
                                     rows={4}
-                                    required={isAllRequired}
+                                    required={attr.required}
                                     disabled={disabled}
                                     label={entity.name}
                                     error={!!error}
@@ -273,7 +274,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
         });
 
         return result;
-    }, [entities, isAllRequired, encodedEntityKeys]);
+    }, [entities, encodedEntityKeys]);
 
     return {
         formItems,
