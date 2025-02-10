@@ -57,7 +57,7 @@ const EntityForm = forwardRef((props: EntityFormProps, ref: any) => {
         const attr: any = entity?.value_attribute || {};
         const type: any = entity?.entity_value_type;
         const rules: rulesType = {
-            required: attr?.optional === false,
+            required: Boolean(!attr?.optional),
         };
         switch (type) {
             case entityType.string:
