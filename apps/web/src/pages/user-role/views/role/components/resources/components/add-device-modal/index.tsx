@@ -113,6 +113,12 @@ const AddDeviceModal: React.FC<ModalProps> = props => {
         );
     });
 
+    /** left table search */
+    const handleSearch = useMemoizedFn((value: string) => {
+        setKeyword(value);
+        setPaginationModel(model => ({ ...model, page: 0 }));
+    });
+
     const renderModal = () => {
         if (visible) {
             return (
@@ -142,7 +148,7 @@ const AddDeviceModal: React.FC<ModalProps> = props => {
                             getRowId: row => row.deviceId,
                             paginationModel,
                             onPaginationModelChange: setPaginationModel,
-                            onSearch: setKeyword,
+                            onSearch: handleSearch,
                             onRefreshButtonClick: getUndistributedDevices,
                         }}
                     />

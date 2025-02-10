@@ -13,18 +13,18 @@ interface Props {
 }
 
 /**
- * 表单数据类型
+ * Form data type
  */
 export type FormDataProps = Record<string, any>;
 
 /**
- * 添加设备动态表单项
+ * Add a device dynamic list entry
  */
 const useDynamicFormItems = ({ entities }: Props) => {
     const { getIntlText } = useI18n();
     const { formItems: entityFormItems, decodeFormParams } = useEntityFormItems({
         entities,
-        isAllRequired: true,
+        // isAllRequired: true,
     });
 
     const formItems = useMemo(() => {

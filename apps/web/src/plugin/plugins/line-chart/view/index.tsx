@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import Chart from 'chart.js/auto';
+
 import { useBasicChartEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
@@ -20,12 +21,20 @@ const View = (props: ViewProps) => {
     const { config, configJson } = props;
     const { entity, title, time } = config || {};
     const { isPreview } = configJson || {};
-    const { chartShowData, chartLabels, chartRef, timeUnit, format, displayFormats, xAxisRange } =
-        useBasicChartEntity({
-            entity,
-            time,
-            isPreview,
-        });
+    const {
+        chartShowData,
+        chartLabels,
+        chartRef,
+        timeUnit,
+        format,
+        displayFormats,
+        xAxisRange,
+        chartZoomRef,
+    } = useBasicChartEntity({
+        entity,
+        time,
+        isPreview,
+    });
 
     useEffect(() => {
         try {
@@ -74,20 +83,28 @@ const View = (props: ViewProps) => {
                                 pan: {
                                     enabled: true,
                                     mode: 'x', // Only move on the X axis
+                                    onPanStart: chartZoomRef.current?.show,
                                 },
                                 zoom: {
                                     wheel: {
                                         enabled: true, // Enable rolling wheel scaling
+                                        speed: 0.05,
                                     },
                                     pinch: {
                                         enabled: true, // Enable touch shrinkage
                                     },
                                     mode: 'x', // Only zoomed in the X axis
+                                    onZoomStart: chartZoomRef.current?.show,
                                 },
                             },
                         } as any,
                     },
                 });
+
+                /**
+                 * store reset zoom state function
+                 */
+                chartZoomRef.current?.storeReset(chart);
             }
 
             return () => {
@@ -106,6 +123,7 @@ const View = (props: ViewProps) => {
             <Tooltip className={styles.name} autoEllipsis title={title} />
             <div className={styles['line-chart-content']}>
                 <canvas ref={chartRef} />
+                {chartZoomRef.current?.iconNode}
             </div>
         </div>
     );

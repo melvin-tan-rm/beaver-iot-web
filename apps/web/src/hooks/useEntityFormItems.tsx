@@ -29,18 +29,19 @@ interface Props {
     >;
 
     /**
-     * 是否全部必填
+     * Whether all is required
+     * @deprecated
      */
     isAllRequired?: boolean;
 }
 
 /**
- * 表单数据类型
+ * Form data type
  */
 export type EntityFormDataProps = Record<string, any>;
 
 /**
- * 获取实体校验规则
+ * Gets entity verification rules
  */
 const getValidators = (entity: NonNullable<Props['entities']>[0], required = false) => {
     const result: NonNullable<ControllerProps<EntityFormDataProps>['rules']>['validate'] = {};
@@ -71,11 +72,11 @@ const getValidators = (entity: NonNullable<Props['entities']>[0], required = fal
 };
 
 /**
- * 实体动态表单项
+ * Entity dynamic form entry
  */
 const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
     /**
-     * 实体 Key & 表单 Key 映射表
+     * Entity Key & Form Key mapping table
      * { [entityKey]: [formKey] }
      */
     const encodedEntityKeys = useMemo(() => {
@@ -134,9 +135,9 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
 
         entities?.forEach(entity => {
             const attr = entity.valueAttribute || {};
-            const validate = getValidators(entity, isAllRequired);
+            const validate = getValidators(entity, !attr.optional);
 
-            // OBJECT 类型为「分组」，暂不做处理
+            // OBJECT is of Group type and no action is required
             switch (entity.valueType) {
                 case 'LONG':
                 case 'DOUBLE':
@@ -151,7 +152,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                     fullWidth
                                     type="text"
                                     sx={{ my: 1.5 }}
-                                    required={isAllRequired}
+                                    required={!attr.optional}
                                     disabled={disabled}
                                     label={entity.name}
                                     error={!!error}
@@ -163,7 +164,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                         },
                     };
 
-                    // 如果是枚举类型，则渲染下拉框
+                    // If it is an enumeration type, render the drop-down box
                     if (attr.enum) {
                         formItem.defaultValue = '';
                         formItem.render = ({
@@ -178,7 +179,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                     sx={{ my: 1.5 }}
                                 >
                                     <InputLabel
-                                        required={isAllRequired}
+                                        required={!attr.optional}
                                         id={`select-label-${entity.name}`}
                                         error={!!error}
                                     >
@@ -188,7 +189,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                         notched
                                         label={entity.name}
                                         labelId={`select-label-${entity.name}`}
-                                        required={isAllRequired}
+                                        required={!attr.optional}
                                         error={!!error}
                                         value={value}
                                         onChange={onChange}
@@ -226,7 +227,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                 >
                                     <FormControlLabel
                                         label={entity.name}
-                                        required={isAllRequired}
+                                        required={!attr.optional}
                                         checked={!!value}
                                         onChange={onChange}
                                         control={<Switch size="small" />}
@@ -253,7 +254,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                     multiline
                                     type="text"
                                     rows={4}
-                                    required={isAllRequired}
+                                    required={!attr.optional}
                                     disabled={disabled}
                                     label={entity.name}
                                     error={!!error}
@@ -273,23 +274,23 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
         });
 
         return result;
-    }, [entities, isAllRequired, encodedEntityKeys]);
+    }, [entities, encodedEntityKeys]);
 
     return {
         formItems,
 
         /**
-         * 对实体 key 进行解码
+         * Decode the entity key
          */
         decodeEntityKey,
 
         /**
-         * 对表单参数进行解码
+         * Decode the form parameters
          */
         decodeFormParams,
 
         /**
-         * 将实体数据编码为表单数据
+         * Encode entity data into form data
          */
         encodeFormData,
     };

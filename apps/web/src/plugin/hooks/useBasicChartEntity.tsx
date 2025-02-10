@@ -1,4 +1,6 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { IconButton } from '@mui/material';
+import { RefreshIcon } from '@milesight/shared/src/components/icons';
 
 import { useTime } from '@milesight/shared/src/hooks';
 import { entityAPI, isRequestSuccess, getResponseData } from '@/services/http';
@@ -39,6 +41,42 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
      */
     const [chartLabels, setChartLabels] = useState<number[]>([]);
     /**
+     * chart zoom icon ref
+     */
+    const chartZoomIconRef = useRef<HTMLDivElement>(null);
+    /**
+     * the reset chart zoom function
+     */
+    const resetChartZoomRef = useRef<() => void>();
+    /**
+     * chart zoom ref
+     */
+    const chartZoomRef = useRef({
+        /** show chart reset zoom icon */
+        show: () => {
+            chartZoomIconRef.current?.style.setProperty('display', 'block');
+        },
+        /** store chart reset zoom function */
+        storeReset: (chart: { resetZoom: () => void; [key: string]: any }) => {
+            resetChartZoomRef.current = () => {
+                chart?.resetZoom();
+                chartZoomIconRef.current?.style.setProperty('display', 'none');
+            };
+        },
+        /** chart reset zoom icon html node */
+        iconNode: (
+            <div
+                ref={chartZoomIconRef}
+                className="reset-chart-zoom"
+                onClick={() => resetChartZoomRef.current?.()}
+            >
+                <IconButton color="default">
+                    <RefreshIcon />
+                </IconButton>
+            </div>
+        ),
+    });
+    /**
      * webSocket subscription theme
      */
     const topics = useMemo(() => {
@@ -74,7 +112,7 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
                 entityAPI.getHistory({
                     entity_id: e.value,
                     start_timestamp: Date.now() - time,
-                    end_timestamp: Date.now(), // 当前时间
+                    end_timestamp: Date.now(), // Current time
                     page_number: 1,
                     page_size: 999,
                 }),
@@ -167,11 +205,12 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
         if (timeUnit !== 'hour') {
             return 'yyyy-MM-dd';
         }
-        return 'MM-dd HH:mm';
+        return 'MM-dd';
     }, [timeUnit]);
 
     const displayFormats = useMemo(() => {
         return {
+            second: 'HH:mm:ss',
             minute: 'HH:mm',
             hour: 'HH:mm',
             day: format,
@@ -216,5 +255,9 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
          * X -axis scale range
          */
         xAxisRange,
+        /**
+         * chart zoom ref
+         */
+        chartZoomRef,
     };
 }

@@ -1,8 +1,7 @@
 import { useMemo, useState, useCallback, useEffect } from 'react';
+import { Switch } from '@mui/material';
 
 import * as Icons from '@milesight/shared/src/components/icons';
-import { useI18n } from '@milesight/shared/src/hooks';
-import Switch from '@/plugin/components/switch';
 import { entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import ws, { getExChangeTopic } from '@/services/ws';
 import { Tooltip } from '../../../view-components';
@@ -28,7 +27,6 @@ const View = (props: ViewProps) => {
     const { entity, title, onIconColor, offIconColor, offIcon, onIcon } = config || {};
     const { isPreview } = configJson || {};
 
-    const { getIntlText } = useI18n();
     const [isSwitchOn, setIsSwitchOn] = useState(false);
 
     /**
@@ -127,15 +125,6 @@ const View = (props: ViewProps) => {
     }, [isSwitchOn, onIconColor, offIconColor]);
 
     /**
-     * Switch title
-     */
-    const switchTitle = useMemo(() => {
-        return isSwitchOn
-            ? getIntlText('dashboard.switch_title_on')
-            : getIntlText('dashboard.switch_title_off');
-    }, [isSwitchOn, getIntlText]);
-
-    /**
      * Icon component
      */
     const IconComponent = useMemo(() => {
@@ -145,20 +134,20 @@ const View = (props: ViewProps) => {
         const Icon = Reflect.get(Icons, iconName);
         if (!Icon) return null;
 
-        return <Icon sx={{ color: iconColor || '#9B9B9B', fontSize: 32 }} />;
+        return <Icon sx={{ color: iconColor || '#9B9B9B', fontSize: 24 }} />;
     }, [isSwitchOn, onIcon, offIcon, iconColor]);
 
     return (
         <div
             className={`${styles['switch-wrapper']} ${isPreview ? styles['switch-wrapper-preview'] : ''}`}
         >
-            <div className={styles.icon}>{IconComponent}</div>
-            <div className={styles.content}>
-                <Tooltip className={styles.text} autoEllipsis title={title} />
+            <div className={styles.icon}>
+                {IconComponent}
                 <div className={styles.body}>
-                    <Switch value={isSwitchOn} title={switchTitle} onChange={handleSwitchChange} />
+                    <Switch checked={isSwitchOn} onChange={handleSwitchChange} />
                 </div>
             </div>
+            <Tooltip className={styles.text} autoEllipsis title={title} />
         </div>
     );
 };

@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { IconButton } from '@mui/material';
 import classnames from 'classnames';
+import { isBoolean } from 'lodash-es';
+
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import { FilterAltIcon } from '@milesight/shared/src/components';
 import { type ColumnType } from '@/components';
@@ -14,7 +16,7 @@ type OperationType = 'filter';
 
 export interface UseColumnsProps<T> {
     /**
-     * 操作 Button 点击回调
+     * Operation Button click callback
      */
     onButtonClick: (type: OperationType, e: React.MouseEvent<HTMLButtonElement>) => void;
     isShowFilter: boolean;
@@ -35,6 +37,9 @@ const useColumns = <T extends HistoryRowDataType>({
                 flex: 1,
                 minWidth: 150,
                 ellipsis: true,
+                renderCell({ value }) {
+                    return isBoolean(value) ? String(value) : value;
+                },
             },
             {
                 field: 'timestamp',

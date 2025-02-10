@@ -1,4 +1,6 @@
 import { useMemo } from 'react';
+import { useTheme } from '@milesight/shared/src/hooks';
+
 import * as Icons from '@milesight/shared/src/components/icons';
 import { Tooltip } from '@/plugin/view-components';
 import { useSource } from './hooks';
@@ -14,6 +16,8 @@ const View = (props: Props) => {
     const { title, entity } = config || {};
     const { entityStatusValue } = useSource({ entity });
     const { isPreview } = configJson || {};
+
+    const { getCSSVariableValue } = useTheme();
 
     // Current physical real -time data
     const currentEntityData = useMemo(() => {
@@ -59,17 +63,15 @@ const View = (props: Props) => {
 
     return (
         <div className={`data-view ${isPreview ? 'data-view-preview' : ''}`}>
-            {Icon && (
-                <div className="data-view__icon">
-                    <Icon sx={{ color: iconColor, fontSize: 32 }} />
-                </div>
-            )}
-            <div className="data-view__text">
+            <div className="data-view__header">
+                {Icon && (
+                    <Icon
+                        sx={{ color: iconColor || getCSSVariableValue('--gray-5'), fontSize: 20 }}
+                    />
+                )}
                 <Tooltip className="data-view__title" autoEllipsis title={title} />
-                <div className="data-view__container">
-                    <span className="data-view__content">{currentEntityData?.label || '-'}</span>
-                </div>
             </div>
+            <span className="data-view__content">{currentEntityData?.label || '-'}</span>
         </div>
     );
 };

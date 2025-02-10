@@ -1,7 +1,7 @@
 import { useMemo, useEffect } from 'react';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
 import cls from 'classnames';
-import { isNil } from 'lodash-es';
+import { isNil, isBoolean } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { LoadingButton, toast } from '@milesight/shared/src/components';
 import { useEntityFormItems, type EntityFormDataProps } from '@/hooks';
@@ -10,18 +10,18 @@ import { entityAPI, awaitWrap, isRequestSuccess } from '@/services/http';
 import { type InteEntityType } from '../../../hooks';
 
 interface Props {
-    /** 是否加载中 */
+    /** Loading or not */
     loading?: boolean;
 
-    /** 实体列表 */
+    /** Entity list */
     entities?: InteEntityType[];
 
-    /** 编辑成功回调 */
+    /** Edit successful callback */
     onUpdateSuccess?: () => void;
 }
 
 /**
- * 属性实体渲染及操作组件
+ * Attribute entity rendering and manipulation components
  */
 const Property: React.FC<Props> = ({ loading, entities, onUpdateSuccess }) => {
     const { getIntlText } = useI18n();
@@ -38,12 +38,12 @@ const Property: React.FC<Props> = ({ loading, entities, onUpdateSuccess }) => {
             return {
                 key: item.key,
                 label: <Tooltip autoEllipsis title={item.name} />,
-                content: !isNil(value) ? value : '-',
+                content: !isNil(value) ? (isBoolean(value) ? String(value) : value) : '-',
             };
         });
     }, [entities]);
 
-    // ---------- 实体表单相关逻辑处理 ----------
+    // ---------- Entity form related logical processing ----------
     const { control, formState, handleSubmit, setValue } = useForm<EntityFormDataProps>();
     const { formItems, decodeFormParams, encodeFormData } = useEntityFormItems({
         entities: writableProps,
@@ -64,7 +64,7 @@ const Property: React.FC<Props> = ({ loading, entities, onUpdateSuccess }) => {
         toast.success({ content: getIntlText('common.message.operation_success') });
     };
 
-    // 表单数据回填
+    // Form data backfill
     useEffect(() => {
         if (!writableProps?.length) return;
 

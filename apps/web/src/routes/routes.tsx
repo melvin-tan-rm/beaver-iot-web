@@ -5,28 +5,28 @@ import {
     DevicesFilledIcon,
     IntegrationInstructionsIcon,
     Person4Icon,
-    EntityIcon,
+    EntityFilledIcon,
     WorkflowIcon,
 } from '@milesight/shared/src/components';
 import { PERMISSIONS } from '@/constants';
 import ErrorBoundaryComponent from './error-boundary';
 
 type RouteObjectType = RouteObject & {
-    /** 自定义路由元数据 */
+    /** Custom routing metadata */
     handle?: {
         title?: string;
 
-        /** 菜单图标 */
+        /** Menu icon */
         icon?: React.ReactNode;
 
         /**
-         * 布局类型，默认为 `basic`
+         * Layout type, default is' basic '
          *
-         * 注意：此处类型应为 LayoutType，但会出现推断错误，故暂定义为 string
+         * Note: The type here should be LayoutType, but inference errors can occur, so it is temporarily defined as string
          */
         layout?: string;
 
-        /** 是否无需登录便可访问，默认 `false` (需要登录) */
+        /** Whether to access without login, default 'false' (login required) */
         authFree?: boolean;
 
         /**
@@ -40,11 +40,11 @@ type RouteObjectType = RouteObject & {
          */
         hideInMenuBar?: boolean;
 
-        /** 隐藏侧边栏 */
+        /** Hide the sidebar */
         hideSidebar?: boolean;
     };
 
-    /** 子路由 */
+    /** subroute */
     children?: RouteObjectType[];
 };
 
@@ -147,7 +147,7 @@ const routes: RouteObjectType[] = [
             get title() {
                 return intl.get('common.label.entity');
             },
-            icon: <EntityIcon fontSize="small" />,
+            icon: <EntityFilledIcon fontSize="small" />,
             permissions: PERMISSIONS.ENTITY_MODULE,
         },
         children: [

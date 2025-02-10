@@ -93,7 +93,7 @@
             position: relative;
             flex: 1;
             width: 100%;
-            overflow: hidden;
+            overflow: hidden scroll;
             background: var(--gray-color-2);
 
             & > div {
@@ -160,6 +160,7 @@
                     margin-left: @margin-xs;
                     line-height: 0;
                     color: rgba(0, 0, 0, 0.54);
+                    background-color: var(--white);
                     border: @border-base;
                     border-radius: 50%;
                     cursor: pointer;
@@ -224,6 +225,12 @@
                     border-color: var(--primary-color-base);
                 }
 
+                &.react-grid-placeholder {
+                    &::before {
+                        border-color: transparent;
+                    }
+                }
+
                 .dashboard-custom-resizable-handle {
                     display: block;
                 }
@@ -244,4 +251,34 @@
     &-confirm-delete-icon {
         color: var(--orange-6);
     }
+}
+
+.bg-custom-scrollbar::-webkit-scrollbar {
+    position: absolute;
+    inset: 0;
+    width: 11px;
+    height: 12px;
+}
+
+.bg-custom-scrollbar::-webkit-scrollbar-corner {
+    background-color: transparent;
+}
+
+.bg-custom-scrollbar::-webkit-scrollbar-thumb {
+    min-height: 24px;
+    background: transparent;
+    background-clip: padding-box;
+    border: 2px solid transparent;
+    border-radius: 6px;
+}
+
+.bg-custom-scrollbar:hover::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-4);
+    background-clip: content-box;
+}
+
+.bg-custom-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: var(--gray-4);
+    background-clip: padding-box;
+    border: 2px solid transparent;
 }

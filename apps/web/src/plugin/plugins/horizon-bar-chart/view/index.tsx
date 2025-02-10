@@ -48,10 +48,10 @@ const View = (props: ViewProps) => {
                         maintainAspectRatio: false,
                         indexAxis: 'y',
                         scales: {
-                            y: {
+                            x: {
                                 beginAtZero: true,
                             },
-                            x: {
+                            y: {
                                 type: 'time',
                                 time: {
                                     unit: timeUnit,
@@ -73,16 +73,17 @@ const View = (props: ViewProps) => {
                             zoom: {
                                 pan: {
                                     enabled: true,
-                                    mode: 'x', // Only move on the X axis
+                                    mode: 'y', // Only move on the X axis
                                 },
                                 zoom: {
                                     wheel: {
                                         enabled: true, // Enable rolling wheel scaling
+                                        speed: 0.05,
                                     },
                                     pinch: {
                                         enabled: true, // Enable touch shrinkage
                                     },
-                                    mode: 'x', // Only zoomed in the X axis
+                                    mode: 'y', // Only zoomed in the X axis
                                 },
                             },
                         } as any,
