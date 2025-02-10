@@ -95,7 +95,9 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
 
     // ---------- pop-up form related processing logic ----------
     const [targetService, setTargetService] = useState<InteServiceType>();
-    const { control, handleSubmit, setValue } = useForm<EntityFormDataProps>();
+    const { control, handleSubmit, setValue, getValues } = useForm<EntityFormDataProps>({
+        shouldUnregister: true,
+    });
     const { formItems, decodeFormParams, encodeFormData } = useEntityFormItems({
         entities: targetService?.children,
         // isAllRequired: true,
