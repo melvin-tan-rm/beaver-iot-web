@@ -24,7 +24,7 @@ const useDynamicFormItems = ({ entities }: Props) => {
     const { getIntlText } = useI18n();
     const { formItems: entityFormItems, decodeFormParams } = useEntityFormItems({
         entities,
-        isAllRequired: true,
+        // isAllRequired: true,
     });
 
     const formItems = useMemo(() => {
