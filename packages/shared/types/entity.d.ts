@@ -101,8 +101,8 @@ declare interface EntityValueAttributeType {
     format: string;
     /** Fraction Digits */
     fraction_digits: number;
-    /** Required */
-    required: boolean;
+    /** Optional */
+    optional?: boolean;
 }
 
 /**
