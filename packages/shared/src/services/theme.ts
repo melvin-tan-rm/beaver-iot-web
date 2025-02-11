@@ -346,6 +346,13 @@ export const getMuiComponents = (mode: ThemeType = 'light') => {
             defaultProps: {
                 size: 'small',
             },
+            styleOverrides: {
+                sizeSmall: {
+                    fontSize: '0.75rem', // 14px
+                    height: '1.25rem', // 20px
+                    lineHeight: '1.25rem', // 20px
+                },
+            },
         },
         MuiTextField: {
             defaultProps: {
