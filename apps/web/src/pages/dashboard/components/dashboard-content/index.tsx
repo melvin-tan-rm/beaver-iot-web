@@ -286,7 +286,7 @@ export default (props: DashboardContentProps) => {
                             {getIntlText('common.button.save')}
                         </Button>
                     </div>
-                ) : (
+                ) : !widgets?.length && !loading ? null : (
                     <div className="dashboard-content-operate-right">
                         <div onClick={enterFullscreen} className="dashboard-fullscreen">
                             <FullscreenIcon className="dashboard-fullscreen-icon" />
