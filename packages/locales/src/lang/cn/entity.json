@@ -1,6 +1,24 @@
 {
-    "entity.label.create_property": "Create Property",
-    "entity.label.create_entity_only": "Create Entity Only",
-    "entity.label.create_service": "Create Service",
-    "entity.label.create_entity_from_workflow": "Create from Workflow"
+    "entity.label.create_entity_from_workflow": "基于工作流创建",
+    "entity.label.create_entity_only": "仅创建实体",
+    "entity.label.create_property": "创建属性",
+    "entity.label.create_service": "创建服务",
+    "entity.label.custom_entity": "自定义实体",
+    "entity.label.entity_items": "项",
+    "entity.label.entity_maximum_length": "最大长度",
+    "entity.label.entity_maximum_value": "最大值",
+    "entity.label.entity_minimum_length": "最小长度",
+    "entity.label.entity_minimum_value": "最小值",
+    "entity.label.entity_type_of_access": "访问类型",
+    "entity.label.entity_type_of_access_read_and_write": "可读可写",
+    "entity.label.entity_type_of_access_readonly": "只读",
+    "entity.label.entity_type_of_access_write": "只写",
+    "entity.label.entity_type_of_boolean": "BOOLEAN",
+    "entity.label.entity_type_of_double": "DOUBLE",
+    "entity.label.entity_type_of_long": "LONG",
+    "entity.label.entity_type_of_string": "STRING",
+    "entity.label.historical_data": "历史数据",
+    "entity.label.set_enumeration_items": "设置枚举项",
+    "entity.label.set_value": "设置值",
+    "entity.label.value_source": "值来源"
 }
