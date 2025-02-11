@@ -15,7 +15,7 @@ const MoreMenu = () => {
     return (
         <div className="ms-config-panel-more-menu">
             <IconButton onClick={e => setAnchorEl(e.currentTarget)}>
-                <MoreHorizIcon />
+                <MoreHorizIcon fontSize="inherit" />
             </IconButton>
             <Popover
                 className="ms-config-panel-more-menu-popover"

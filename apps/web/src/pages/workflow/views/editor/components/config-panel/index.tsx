@@ -18,7 +18,7 @@ import {
     type CommonFormDataProps,
     type NodeFormDataProps,
 } from './hooks';
-import { MoreMenu, TestDrawer } from './components';
+import { MoreMenu, TestDrawer, EditableText } from './components';
 import './style.less';
 
 type FormDataProps = CommonFormDataProps & NodeFormDataProps;
@@ -150,64 +150,92 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
         >
             <div className="ms-workflow-panel-config">
                 <div className="ms-workflow-panel-config-header">
-                    <Stack
-                        direction="row"
-                        spacing={2}
-                        sx={{ flex: 1, width: 0, alignItems: 'center' }}
-                    >
-                        <span className="icon" style={{ backgroundColor: nodeConfig?.iconBgColor }}>
-                            {nodeConfig?.icon}
-                        </span>
-                        <Tooltip
-                            autoEllipsis
-                            className="title"
-                            title={
-                                latestFormData?.nodeName ||
-                                (!nodeConfig?.labelIntlKey
-                                    ? ''
-                                    : getIntlText(nodeConfig?.labelIntlKey))
-                            }
-                        />
-                    </Stack>
-                    <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                        {nodeConfig?.testable && !readonly && (
-                            <Tooltip title={getIntlText('workflow.editor.node_test_tip')}>
-                                <IconButton
-                                    onClick={() => {
-                                        if (!finalSelectedNode) return;
-                                        const node = getNode(finalSelectedNode.id)!;
-                                        const result = checkNodesData([node], {
-                                            validateFirst: true,
-                                        });
-
-                                        if (!isEmpty(result)) return;
-                                        setDrawerOpen(true);
-                                    }}
-                                >
-                                    <PlayArrowIcon />
-                                </IconButton>
-                            </Tooltip>
-                        )}
-                        <MoreMenu />
-                        <Divider
-                            flexItem
-                            orientation="vertical"
-                            sx={{ height: 20, alignSelf: 'center' }}
-                        />
-                        <IconButton
-                            onClick={() => {
-                                if (!finalSelectedNode) return;
-                                updateNode(finalSelectedNode.id, {
-                                    selected: false,
-                                });
-                            }}
+                    <div className="header-inner">
+                        <Stack
+                            direction="row"
+                            spacing={1}
+                            sx={{ flex: 1, width: 0, alignItems: 'center' }}
                         >
-                            <CloseIcon />
-                        </IconButton>
-                    </Stack>
+                            <span
+                                className="icon"
+                                style={{ backgroundColor: nodeConfig?.iconBgColor }}
+                            >
+                                {nodeConfig?.icon}
+                            </span>
+                            <Controller
+                                key="nodeName"
+                                name="nodeName"
+                                control={control}
+                                render={({ field: { value, onChange } }) => {
+                                    return (
+                                        <EditableText
+                                            className="title"
+                                            value={value}
+                                            onChange={onChange}
+                                        />
+                                    );
+                                }}
+                            />
+                        </Stack>
+                        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                            {nodeConfig?.testable && !readonly && (
+                                <Tooltip title={getIntlText('workflow.editor.node_test_tip')}>
+                                    <IconButton
+                                        onClick={() => {
+                                            if (!finalSelectedNode) return;
+                                            const node = getNode(finalSelectedNode.id)!;
+                                            const result = checkNodesData([node], {
+                                                validateFirst: true,
+                                            });
+
+                                            if (!isEmpty(result)) return;
+                                            setDrawerOpen(true);
+                                        }}
+                                    >
+                                        <PlayArrowIcon fontSize="inherit" />
+                                    </IconButton>
+                                </Tooltip>
+                            )}
+                            <MoreMenu />
+                            <Divider
+                                flexItem
+                                orientation="vertical"
+                                sx={{ height: 20, alignSelf: 'center' }}
+                            />
+                            <IconButton
+                                onClick={() => {
+                                    if (!finalSelectedNode) return;
+                                    updateNode(finalSelectedNode.id, {
+                                        selected: false,
+                                    });
+                                }}
+                            >
+                                <CloseIcon fontSize="inherit" />
+                            </IconButton>
+                        </Stack>
+                    </div>
+                    <div className="header-remark">
+                        <Controller
+                            key="nodeRemark"
+                            name="nodeRemark"
+                            control={control}
+                            render={({ field: { value, onChange } }) => {
+                                return (
+                                    <EditableText
+                                        className="remark"
+                                        placeholder={getIntlText(
+                                            'workflow.editor.input_placeholder_remark',
+                                        )}
+                                        value={value}
+                                        onChange={onChange}
+                                    />
+                                );
+                            }}
+                        />
+                    </div>
                 </div>
                 <div className="ms-workflow-panel-config-body">
-                    <div className="ms-common-form-items">
+                    {/* <div className="ms-common-form-items">
                         {commonFormItems.map(props => (
                             <Controller<CommonFormDataProps>
                                 {...props}
@@ -216,7 +244,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                             />
                         ))}
                     </div>
-                    <Divider className="ms-divider" />
+                    <Divider className="ms-divider" /> */}
                     <div className="ms-node-form-items">
                         {nodeFormGroups.map(
                             ({ groupName, helperText, children: formItems }, index) => (

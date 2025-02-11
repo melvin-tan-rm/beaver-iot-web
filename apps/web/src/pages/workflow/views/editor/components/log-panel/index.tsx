@@ -297,7 +297,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
             })}
         >
             <div className="ms-workflow-panel-log">
-                <div className="ms-workflow-panel-config-header">
+                <div className="ms-workflow-panel-log-header">
                     <Stack
                         direction="row"
                         spacing={2}
@@ -307,7 +307,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
                     </Stack>
                     <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
                         <IconButton onClick={handleClose}>
-                            <CloseIcon />
+                            <CloseIcon fontSize="inherit" />
                         </IconButton>
                     </Stack>
                 </div>

@@ -1,7 +1,6 @@
 import {
     blue as MBlue,
     green as MGreen,
-    red as MRed,
     grey as MGrey,
     yellow as MYellow,
     deepOrange as MDeepOrange,
@@ -65,7 +64,8 @@ export const yellow = {
 
 /** Theme - red */
 export const red = {
-    ...MRed,
+    50: '#FFF2F0',
+    100: '#FFE0DB',
     200: '#FEEBEE',
     300: '#FFE0DB',
     400: '#FFBAB3',
@@ -74,6 +74,20 @@ export const red = {
     700: '#F13535',
     800: '#CC2328',
     900: '#A6141E',
+} as const;
+
+/** Theme color - orange */
+export const orange = {
+    50: '#FFF7F0',
+    100: '#FFEAD9',
+    200: '#FFD1B0',
+    300: '#FFB587',
+    400: '#FF975E',
+    500: '#F77234',
+    600: '#D15321',
+    700: '#AB3913',
+    800: '#832308',
+    900: '#5E1505',
 } as const;
 
 /** Theme color - dark orange */
@@ -223,6 +237,17 @@ export const getMuiSchemes = () => {
         Tooltip: {
             bg: grey[800],
         },
+        Alert: {
+            infoColor: purple[800],
+            infoStandardBg: purple[50],
+            errorColor: red[800],
+            errorStandardBg: red[50],
+            successColor: green[800],
+            successStandardBg: green[200],
+            warningColor: orange[600],
+            warningIconColor: orange[500],
+            warningStandardBg: orange[50],
+        },
     };
     const darkPalette: ColorSystemOptions['palette'] = {
         grey,
@@ -301,22 +326,19 @@ const getThemes = (): Record<ThemeType, any> => {
  */
 export const getMuiComponents = (mode: ThemeType = 'light') => {
     const result: CssVarsThemeOptions['components'] = {
-        // MuiButtonBase: {
-        //     defaultProps: {
-        //         // No more ripple, on the whole application 💣!
-        //         // disableRipple: true,
-        //     },
-        //     styleOverrides: {
-        //         root: {
-        //             boxShadow: 'none',
-        //         },
-        //     },
-        // },
         MuiButton: {
             styleOverrides: {
                 root: {
                     boxShadow: 'none',
+                    lineHeight: '1.375rem',
+                    padding: '7px 16px',
                     '&:hover': { boxShadow: 'none' },
+                },
+                outlined: {
+                    padding: '6px 16px',
+                },
+                sizeSmall: {
+                    padding: '2px 12px',
                 },
             },
         },
@@ -324,32 +346,73 @@ export const getMuiComponents = (mode: ThemeType = 'light') => {
             defaultProps: {
                 size: 'small',
             },
+            styleOverrides: {
+                sizeSmall: {
+                    fontSize: '0.75rem', // 14px
+                    height: '1.25rem', // 20px
+                    lineHeight: '1.25rem', // 20px
+                },
+            },
         },
         MuiTextField: {
             defaultProps: {
-                size: 'small',
+                size: 'medium',
                 margin: 'dense',
                 slotProps: {
                     inputLabel: { shrink: true },
                 },
                 sx: { my: 1.5 },
             },
+            styleOverrides: {
+                root: {
+                    fontSize: '0.875rem', // 14px
+                },
+            },
         },
         MuiInput: {
             defaultProps: {
-                size: 'small',
+                size: 'medium',
                 margin: 'dense',
+            },
+            styleOverrides: {
+                root: {
+                    fontSize: '0.875rem', // 14px
+                },
+                input: {
+                    height: '1.375rem',
+                    padding: '7px 12px',
+                },
+                inputSizeSmall: {
+                    padding: '2px 12px',
+                },
             },
         },
         MuiOutlinedInput: {
             defaultProps: {
-                size: 'small',
+                size: 'medium',
                 margin: 'dense',
+            },
+            styleOverrides: {
+                root: {
+                    fontSize: '0.875rem', // 14px
+                },
+                input: {
+                    height: '1.375rem',
+                    padding: '7px 12px',
+                },
+                inputSizeSmall: {
+                    padding: '2px 12px',
+                },
             },
         },
         MuiInputLabel: {
             defaultProps: {
                 shrink: true,
+            },
+            styleOverrides: {
+                root: {
+                    fontSize: '0.875rem', // 14px
+                },
             },
         },
         MuiTab: {
@@ -381,6 +444,25 @@ export const getMuiComponents = (mode: ThemeType = 'light') => {
         MuiCheckbox: {
             defaultProps: {
                 size: 'small',
+            },
+        },
+        MuiSelect: {
+            styleOverrides: {
+                select: {
+                    height: '1.375rem',
+                    lineHeight: '1.375rem',
+                    padding: '7px 12px',
+                },
+            },
+        },
+        MuiAutocomplete: {
+            styleOverrides: {
+                inputRoot: {
+                    '&.MuiInputBase-sizeSmall.MuiAutocomplete-inputRoot .MuiAutocomplete-input': {
+                        paddingTop: '1px',
+                        paddingBottom: '1px',
+                    },
+                },
             },
         },
     };

@@ -1,8 +1,7 @@
 import React from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { Snackbar } from '@mui/material';
-import { uniqBy } from 'lodash-es';
-import { InfoIcon, CheckCircleIcon, CancelIcon, ErrorIcon } from '../icons';
+import { InfoIcon, CheckCircleIcon, ErrorIcon, WarningIcon } from '../icons';
 import './style.less';
 
 type SeverityType = 'info' | 'success' | 'warning' | 'error';
@@ -25,8 +24,8 @@ type Params =
 const iconMap: Record<SeverityType, React.ReactNode> = {
     info: <InfoIcon />,
     success: <CheckCircleIcon />,
-    warning: <ErrorIcon />,
-    error: <CancelIcon />,
+    warning: <WarningIcon />,
+    error: <ErrorIcon />,
 };
 
 /**

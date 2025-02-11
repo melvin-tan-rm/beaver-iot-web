@@ -1,23 +1,29 @@
 import React, { useState } from 'react';
 import { useControllableValue } from 'ahooks';
+import cls from 'classnames';
 import { Tooltip } from '@/components';
 import './style.less';
 
 interface Props {
     value?: string;
     defaultValue?: string;
+    className?: string;
+    placeholder?: string;
     onChange?: (value: Props['value']) => void;
 }
 
-const EditableText: React.FC<Props> = props => {
+const EditableText: React.FC<Props> = ({ className, placeholder = '', ...props }) => {
     const [value, setValue] = useControllableValue(props);
     const [editing, setEditing] = useState(false);
 
     return (
-        <div className="ms-editable-text">
+        <div className={cls('ms-editable-text', className)}>
             {!editing ? (
-                <div className="ms-editable-text-view" onClick={() => setEditing(true)}>
-                    <Tooltip autoEllipsis title={value || ''} />
+                <div
+                    className={cls('ms-editable-text-view', { 'is-placeholder': !value })}
+                    onClick={() => setEditing(true)}
+                >
+                    <Tooltip autoEllipsis title={value || placeholder || ''} />
                 </div>
             ) : (
                 <input
@@ -25,6 +31,7 @@ const EditableText: React.FC<Props> = props => {
                     autoFocus
                     type="text"
                     className="ms-editable-text-input"
+                    placeholder={placeholder}
                     value={value}
                     onBlur={() => setEditing(false)}
                     onChange={e => setValue(e.target.value)}

@@ -53,6 +53,7 @@ export {
     InfoOutlined as InfoOutlinedIcon,
     Error as ErrorIcon,
     Cancel as CancelIcon,
+    Warning as WarningIcon,
     WarningAmber as WarningAmberIcon,
     Delete as DeleteIcon,
     DeleteOutline as DeleteOutlineIcon,

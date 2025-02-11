@@ -1,6 +1,6 @@
 .@{prefix}-workflow-panel-log-root.react-flow__panel.right {
     z-index: 20;
-    width: 445px;
+    width: 416px;
     height: 100%;
     padding: @padding-xs;
     margin: 0;
@@ -17,7 +17,7 @@
     }
 
     &:not(.hidden) ~ .@{prefix}-workflow-panel-config-root {
-        right: 445px - @padding-xs;
+        right: 416px - @padding-xs;
     }
 }
 
@@ -29,11 +29,24 @@
     border-radius: @border-radius-sm;
     box-shadow: @shadow-2;
 
+    &-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: @padding-md;
+        border-bottom: 1px solid var(--border-color-base);
+
+        .@{mui-prefix}IconButton-root {
+            padding: @padding-xxs;
+            font-size: @font-size-lg;
+        }
+    }
+
     &-body {
         display: flex;
         flex: 1;
         flex-direction: column;
-        padding: 0 @padding-xl @padding-lg;
+        padding: @padding-md;
         overflow: auto;
     }
 

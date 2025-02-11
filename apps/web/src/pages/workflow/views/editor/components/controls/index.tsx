@@ -63,7 +63,12 @@ const Controls: React.FC<ControlsProps> = ({ minZoom, maxZoom, addable = true })
                     </ButtonGroup>
                 </Paper>
                 <Paper elevation={0}>
-                    <Button disabled={!addable} sx={{ minWidth: 'auto' }} onClick={handleClick}>
+                    <Button
+                        className="add-button"
+                        disabled={!addable}
+                        sx={{ minWidth: 'auto' }}
+                        onClick={handleClick}
+                    >
                         <AddCircleIcon sx={{ fontSize: 20 }} />
                     </Button>
                     <NodeMenu

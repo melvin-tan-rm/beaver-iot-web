@@ -118,5 +118,6 @@
     "workflow.valid.node_parameters_required": "The {1} node parameters is required.",
     "workflow.valid.parameter_required": "The {1} node parameter is required.",
     "workflow.valid.range_length": "The length of the {1} field value should be greater than or equal to {2} and less than or equal to {3}.",
-    "workflow.valid.required": "The {1} field is required."
+    "workflow.valid.required": "The {1} field is required.",
+    "workflow.editor.input_placeholder_remark": "Add descriptions..."
 }

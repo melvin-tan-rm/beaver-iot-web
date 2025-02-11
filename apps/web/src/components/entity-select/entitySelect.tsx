@@ -114,6 +114,10 @@ const EntitySelect = <
         params => (
             <TextField
                 {...params}
+                InputProps={{
+                    ...params.InputProps,
+                    size: 'small',
+                }}
                 error={error}
                 helperText={helperText}
                 label={label}
