@@ -437,6 +437,7 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
                                     );
                                 })}
                                 <Button
+                                    size="small"
                                     variant="outlined"
                                     className="ms-conditions-input-add-btn"
                                     startIcon={<AddIcon />}

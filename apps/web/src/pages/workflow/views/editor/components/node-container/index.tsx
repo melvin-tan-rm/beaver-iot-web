@@ -175,7 +175,9 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
                     updateNode(nodeId, {
                         type: targetNodeType,
                         componentName: nodeConfig.componentName,
-                        data: {},
+                        data: {
+                            nodeName: getIntlText(nodeConfig.labelIntlKey),
+                        },
                     });
                     break;
                 }
@@ -188,7 +190,7 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
                 }
             }
         },
-        [nodeId, nodeConfigs, updateNode, deleteElements],
+        [nodeId, nodeConfigs, updateNode, deleteElements, getIntlText],
     );
 
     const menuItems = useMemo(() => {

@@ -1,6 +1,6 @@
 .@{prefix}-workflow-panel-config-root.react-flow__panel.right {
     z-index: 20;
-    width: 445px;
+    width: 416px;
     height: 100%;
     padding: @margin-xs;
     margin: 0;
@@ -32,32 +32,71 @@
 
     &-header {
         position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: @padding-lg @padding-xl;
+        padding: @padding-md;
+        border-bottom: 1px solid var(--border-color-base);
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
         .icon {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 32px;
-            height: 32px;
+            width: 24px;
+            height: 24px;
             color: var(--white);
             border-radius: @border-radius-sm;
+
+            .@{mui-prefix}SvgIcon-root {
+                font-size: inherit;
+            }
         }
 
         .title {
             flex: 1;
             width: 0;
+            margin-right: @margin-xs;
             font-weight: @font-weight-bold;
-            .text-size(@font-size-xxl);
+
+            .@{prefix}-editable-text-input {
+                font-weight: @font-weight-bold;
+            }
+        }
+
+        .@{mui-prefix}IconButton-root {
+            padding: @padding-xxs;
+            font-size: @font-size-lg;
+        }
+
+        .header-remark {
+            margin-top: @margin-sm;
+
+            .remark {
+                height: 20px;
+                color: var(--text-color-secondary);
+
+                .@{prefix}-editable-text {
+                    &-view {
+                        font-size: @font-size-sm;
+                        line-height: 18px;
+                    }
+
+                    &-input {
+                        font-size: @font-size-sm;
+                        line-height: 18px;
+                        color: var(--text-color-secondary);
+                    }
+                }
+            }
         }
     }
 
     &-body {
         flex: 1;
-        padding: 0 @padding-xl @padding-lg;
+        padding: @padding-md;
         overflow: auto;
 
         .@{prefix}-common-form-items {
