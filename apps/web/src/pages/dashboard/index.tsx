@@ -19,6 +19,7 @@ export default () => {
     const [showAdd, setShowAdd] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
     const [loading, setLoading] = useState<boolean>();
+    const [isTooSmallScreen, setIsTooSmallScreen] = useState(false);
 
     const { showPrevent } = usePreventLeave({
         confirm,
@@ -53,6 +54,30 @@ export default () => {
 
     useEffect(() => {
         getDashboards();
+    }, []);
+
+    /** To judge current screen whether too small */
+    useEffect(() => {
+        const getWindowWidth = () => {
+            const windowWidth =
+                document.body.clientWidth ||
+                document.documentElement.clientWidth ||
+                window.innerWidth;
+
+            const isTooSmall = windowWidth <= 720;
+            setIsTooSmallScreen(isTooSmall);
+
+            if (isTooSmall) {
+                setIsEdit(false);
+            }
+        };
+        getWindowWidth();
+
+        window.addEventListener('resize', getWindowWidth);
+
+        return () => {
+            window.removeEventListener('resize', getWindowWidth);
+        };
     }, []);
 
     // Switch dashboard tabs
@@ -135,6 +160,7 @@ export default () => {
                         getDashboards={getDashboards}
                         isEdit={isEdit}
                         onChangeIsEdit={setIsEdit}
+                        isTooSmallScreen={isTooSmallScreen}
                     />
                 </TabPanel>
             );
