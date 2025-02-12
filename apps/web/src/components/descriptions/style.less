@@ -1,12 +1,33 @@
 .@{prefix}-descriptions {
-    border: 1px solid var(--border-color-base);
-
     &-root {
         position: relative;
+        overflow: hidden;
+        border: 1px solid var(--border-color-base);
+        border-radius: @border-radius-base;
 
         &.loading {
             .@{prefix}-descriptions {
                 opacity: 0.5;
+            }
+        }
+
+        .@{mui-prefix}TableBody-root {
+            > tr {
+                > td {
+                    border: 0;
+                    border-right: 1px solid var(--border-color-base);
+                    border-bottom: 1px solid var(--border-color-base);
+
+                    &:last-child {
+                        border-right: none;
+                    }
+                }
+
+                &:last-child {
+                    > td {
+                        border-bottom: none;
+                    }
+                }
             }
         }
     }
