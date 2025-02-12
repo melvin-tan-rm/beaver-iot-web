@@ -2,6 +2,7 @@ import React from 'react';
 import cls from 'classnames';
 import { Popper, PopperProps } from '@mui/material';
 import type { EntitySelectInnerProps } from '../../types';
+import './style.less';
 
 type IProps = PopperProps & Pick<EntitySelectInnerProps, 'dropdownMatchSelectWidth'>;
 export default React.memo(({ className, style, dropdownMatchSelectWidth, ...props }: IProps) => {
