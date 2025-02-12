@@ -58,7 +58,7 @@ body {
     &.@{mui-prefix}Tabs-root {
         height: 56px;
         min-height: 44px;
-        padding-top: @padding-sm;
+        padding-top: @padding-xs;
         background-color: var(--component-background);
     }
 
@@ -69,15 +69,18 @@ body {
     }
 
     .@{mui-prefix}Tab-root {
-        min-height: 43px;
-        padding: 0 @padding-md;
+        min-width: auto;
+        min-height: 24px;
+        padding: @padding-xs @padding-md (@padding-md - 1);
         margin-right: 0;
+        font-weight: @font-weight-base;
         color: var(--text-color-secondary);
         border: 1px solid transparent;
         border-bottom: none;
+        .text-size(@font-size-lg);
 
         &.@{mui-prefix}-selected {
-            font-weight: @font-weight-bold;
+            font-weight: @font-weight-medium;
             color: var(--text-color-base);
             background-color: var(--body-background);
             border-color: var(--border-color-base);
@@ -87,6 +90,10 @@ body {
         &:not(.@{mui-prefix}-selected):hover {
             color: var(--text-color-main);
         }
+    }
+
+    .@{mui-prefix}Tabs-scrollButtons {
+        color: var(--text-color-secondary);
     }
 
     .@{mui-prefix}Tabs-indicator {
