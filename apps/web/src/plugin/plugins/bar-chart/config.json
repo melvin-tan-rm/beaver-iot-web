@@ -1,6 +1,6 @@
 {
     "type": "barChart",
-    "name": "Bar Chart",
+    "name": "Bar",
     "class": "data_chart",
     "icon": "./icon.svg",
     "defaultRow": 4,

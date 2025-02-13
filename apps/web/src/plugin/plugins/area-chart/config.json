@@ -1,6 +1,6 @@
 {
     "type": "areaChart",
-    "name": "Area Chart",
+    "name": "Area",
     "class": "data_chart",
     "icon": "./icon.svg",
     "defaultRow": 4,

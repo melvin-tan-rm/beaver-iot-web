@@ -1,6 +1,6 @@
 {
     "type": "iconRemaining",
-    "name": "Icon Remaining",
+    "name": "Remaining",
     "class": "data_chart",
     "icon": "./icon.svg",
     "defaultCol": 1,

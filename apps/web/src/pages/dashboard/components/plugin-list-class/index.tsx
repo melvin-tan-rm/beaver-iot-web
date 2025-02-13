@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { COMPONENTCLASS } from '@/plugin/constant';
 import { WidgetDetail } from '@/services/http/dashboard';
@@ -73,7 +73,7 @@ export default (props: PluginListProps) => {
                                               (pluginConfig: any) => {
                                                   return (
                                                       <Grid
-                                                          xs={3}
+                                                          size={3}
                                                           className="dashboard-plugin-class-item"
                                                       >
                                                           <div

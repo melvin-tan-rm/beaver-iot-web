@@ -1,6 +1,6 @@
 {
     "type": "horizonBarChart",
-    "name": "Horizon Bar Chart",
+    "name": "Horizon Bar",
     "class": "data_chart",
     "icon": "./icon.svg",
     "defaultRow": 4,

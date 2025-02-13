@@ -1,6 +1,6 @@
 {
     "type": "pieChart",
-    "name": "Pie Chart",
+    "name": "Pie",
     "class": "data_chart",
     "icon": "./icon.svg",
     "defaultRow": 4,

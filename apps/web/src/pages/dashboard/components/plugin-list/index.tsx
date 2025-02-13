@@ -1,4 +1,4 @@
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { WidgetDetail } from '@/services/http/dashboard';
 import pluginImg from '@/assets/plugin.png';
 import { useGetPluginConfigs } from '../../hooks';
@@ -23,7 +23,7 @@ export default (props: PluginListProps) => {
             <Grid container>
                 {pluginsConfigs?.map((pluginConfig: any) => {
                     return (
-                        <Grid key={pluginConfig.type} xs={3} className="dashboard-plugin-item">
+                        <Grid key={pluginConfig.type} size={2} className="dashboard-plugin-item">
                             <div
                                 className="dashboard-plugin-item-content"
                                 onClick={() => handleClick(pluginConfig)}

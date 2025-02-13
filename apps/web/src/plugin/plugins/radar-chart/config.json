@@ -1,6 +1,6 @@
 {
     "type": "radarChart",
-    "name": "Radar Chart",
+    "name": "Radar",
     "class": "data_chart",
     "icon": "./icon.svg",
     "defaultRow": 4,
