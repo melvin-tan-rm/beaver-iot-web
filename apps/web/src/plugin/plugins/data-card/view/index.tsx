@@ -71,7 +71,9 @@ const View = (props: Props) => {
                 )}
                 <Tooltip className="data-view__title" autoEllipsis title={title} />
             </div>
-            <span className="data-view__content">{currentEntityData?.label || '-'}</span>
+            <span className="data-view__content">
+                <Tooltip autoEllipsis title={currentEntityData?.label || '-'} />
+            </span>
         </div>
     );
 };
