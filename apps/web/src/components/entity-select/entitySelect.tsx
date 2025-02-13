@@ -179,7 +179,12 @@ const EntitySelect = <
                 maxCount,
                 selectedEntityMap,
                 selectedDeviceMap,
-                onEntityChange,
+                onEntityChange(...args: Parameters<typeof onEntityChange>) {
+                    if (!multiple) {
+                        handleSelectClose({} as React.SyntheticEvent, 'selectOption');
+                    }
+                    onEntityChange(...args);
+                },
             },
             paper: { component: EntityPaper, tabType, setTabType },
             popper: { component: EntityPopper, dropdownMatchSelectWidth },
@@ -192,7 +197,9 @@ const EntitySelect = <
             selectedEntityMap,
             selectedDeviceMap,
             maxCount,
+            multiple,
             onEntityChange,
+            handleSelectClose,
         ],
     );
     return (
