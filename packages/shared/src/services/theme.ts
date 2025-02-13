@@ -465,6 +465,11 @@ export const getMuiComponents = (mode: ThemeType = 'light') => {
                 },
             },
         },
+        MuiToggleButton: {
+            defaultProps: {
+                disableRipple: true,
+            },
+        },
     };
 
     const theme = getThemes()[mode];

@@ -533,7 +533,7 @@ const WorkflowEditor = () => {
                 <div className="ms-view__inner">
                     <ReactFlow<WorkflowNode, WorkflowEdge>
                         fitView
-                        fitViewOptions={{ maxZoom: MAX_PRETTY_ZOOM, duration: 300 }}
+                        fitViewOptions={{ maxZoom: MAX_PRETTY_ZOOM }}
                         className="ms-workflow"
                         minZoom={MIN_ZOOM}
                         maxZoom={MAX_ZOOM}

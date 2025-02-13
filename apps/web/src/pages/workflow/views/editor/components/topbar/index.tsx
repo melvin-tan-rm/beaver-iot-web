@@ -133,7 +133,7 @@ const Topbar: React.FC<TopbarProps> = ({
                     <ToggleButtonGroup
                         exclusive
                         size="small"
-                        className="ms-workflow-mode-buttons"
+                        className="ms-toggle-button-group ms-workflow-mode-buttons"
                         disabled={disabled || loading}
                         value={mode}
                         onChange={(_, value) => {
@@ -142,14 +142,12 @@ const Topbar: React.FC<TopbarProps> = ({
                         }}
                     >
                         <ToggleButton
-                            disableRipple
                             aria-label={getIntlText('workflow.label.design_mode_canvas_name')}
                             value="canvas"
                         >
                             {getIntlText('workflow.label.design_mode_canvas_name')}
                         </ToggleButton>
                         <ToggleButton
-                            disableRipple
                             aria-label={getIntlText('workflow.label.design_mode_advanced_name')}
                             value="advanced"
                         >
