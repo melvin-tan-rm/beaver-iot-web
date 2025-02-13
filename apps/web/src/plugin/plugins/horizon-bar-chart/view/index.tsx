@@ -58,6 +58,10 @@ const View = (props: ViewProps) => {
                         scales: {
                             x: {
                                 beginAtZero: true,
+                                ticks: {
+                                    autoSkip: true,
+                                    autoSkipPadding: 20,
+                                },
                             },
                             y: {
                                 type: 'time',
