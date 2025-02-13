@@ -109,3 +109,43 @@ body {
 .@{prefix}-icon {
     fill: currentcolor;
 }
+
+// ---------- Custom ToggleButtonGroup ----------
+.@{prefix}-toggle-button-group {
+    .@{mui-prefix}ButtonBase-root {
+        text-transform: none;
+    }
+
+    &.@{mui-prefix}ToggleButtonGroup-horizontal {
+        background-color: var(--gray-color-2);
+        border: 2px solid var(--gray-color-2);
+
+        .@{mui-prefix}ToggleButtonGroup-grouped {
+            display: inline-block;
+            padding-right: @padding-sm;
+            padding-left: @padding-sm;
+            border: none;
+            border-radius: @border-radius-base;
+            .text-size(@font-size-base);
+
+            &::after {
+                display: block;
+                height: 1px;
+                margin-bottom: -1px;
+                overflow: hidden;
+                font-weight: @font-weight-medium;
+                visibility: hidden;
+                content: attr(aria-label);
+            }
+
+            &.@{mui-prefix}-selected {
+                font-weight: @font-weight-medium;
+                background-color: var(--component-background);
+
+                &.@{mui-prefix}-disabled {
+                    color: var(--text-color-secondary);
+                }
+            }
+        }
+    }
+}
