@@ -66,7 +66,6 @@ const View = (props: ViewProps) => {
                             x: {
                                 type: 'time',
                                 time: {
-                                    unit: 'hour',
                                     tooltipFormat: format,
                                     displayFormats,
                                 },
