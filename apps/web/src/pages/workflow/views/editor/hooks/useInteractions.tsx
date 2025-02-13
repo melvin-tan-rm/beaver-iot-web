@@ -18,6 +18,7 @@ import {
     DEFAULT_NODE_WIDTH,
     DEFAULT_NODE_HEIGHT,
     EDGE_TYPE_ADDABLE,
+    MAX_PRETTY_ZOOM,
 } from '../constants';
 import useFlowStore from '../store';
 import useWorkflow from './useWorkflow';
@@ -157,10 +158,17 @@ const useInteractions = () => {
                     x: 0,
                     y: 0,
                 },
+                selected: true,
                 data: {
                     nodeName: defaultNodeName,
                 },
             };
+
+            nodes.forEach(item => {
+                if (item.selected) {
+                    item.selected = false;
+                }
+            });
 
             if (prevNode && nextNode) {
                 // ----- Button at the edge -----
@@ -289,7 +297,7 @@ const useInteractions = () => {
             });
 
             if (screenPosition.x > bodyWidth || screenPosition.y > bodyHeight) {
-                setTimeout(() => fitView({ duration: 300 }), 0);
+                setTimeout(() => fitView({ maxZoom: MAX_PRETTY_ZOOM, duration: 300 }), 0);
             }
         },
         [

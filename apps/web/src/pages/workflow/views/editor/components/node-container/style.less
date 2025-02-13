@@ -11,8 +11,10 @@
         border-radius: var(--xy-node-border-radius);
 
         &.selectable {
+            box-shadow: @shadow-1;
+
             &:hover {
-                box-shadow: var(--xy-node-boxshadow-hover-default);
+                box-shadow: @shadow-2;
             }
 
             &.selected {
@@ -71,7 +73,7 @@
         .@{prefix}-workflow-node-title {
             flex: 1;
             width: 0;
-            font-weight: @font-weight-bold;
+            font-weight: @font-weight-medium;
 
             .text-size(@font-size-base);
         }

@@ -1,10 +1,12 @@
 import { memo, useState } from 'react';
-import { Panel, useNodes } from '@xyflow/react';
+import { Panel, useNodes, useReactFlow } from '@xyflow/react';
 import cls from 'classnames';
+import { useSize } from 'ahooks';
 import { Button, CircularProgress } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Empty } from '@/components';
 import { basicNodeConfigs } from '@/pages/workflow/config';
+import { DEFAULT_NODE_HEIGHT } from '../../constants';
 import useInteractions from '../../hooks/useInteractions';
 import './style.less';
 
@@ -15,17 +17,27 @@ interface Props {
     loading?: boolean;
 }
 
+// The height of the page topbar
+const DEFAULT_TOPBAR_HEIGHT = 57;
 const entryNodeConfigs = Object.values(basicNodeConfigs).filter(node => node.category === 'entry');
 
 const EntryModal: React.FC<Props> = ({ isEditing, loading }) => {
     const { getIntlText } = useI18n();
+    const { height: bodyHeight = 600 } = useSize(document.querySelector('body')) || {};
     const nodes = useNodes();
+    const { setViewport, screenToFlowPosition } = useReactFlow<WorkflowNode, WorkflowEdge>();
     const { addNode } = useInteractions();
     const [selectedNodeType, setSelectedNodeType] = useState<WorkflowNodeType>();
 
     const handleCreate = () => {
         if (!selectedNodeType) return;
+        const screenY =
+            (bodyHeight - DEFAULT_TOPBAR_HEIGHT) / 2 +
+            DEFAULT_TOPBAR_HEIGHT -
+            DEFAULT_NODE_HEIGHT / 2;
+        const viewportPosition = screenToFlowPosition({ x: 80, y: screenY });
         addNode({ nodeType: selectedNodeType, position: { x: 0, y: 0 } });
+        setTimeout(() => setViewport({ zoom: 1.2, ...viewportPosition }));
     };
 
     return nodes.length ? null : (
