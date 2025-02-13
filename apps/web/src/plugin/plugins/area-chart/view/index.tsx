@@ -24,7 +24,6 @@ const View = (props: ViewProps) => {
         chartShowData,
         chartLabels,
         chartRef,
-        timeUnit,
         format,
         displayFormats,
         xAxisRange,
@@ -67,7 +66,7 @@ const View = (props: ViewProps) => {
                             x: {
                                 type: 'time',
                                 time: {
-                                    unit: timeUnit,
+                                    unit: 'hour',
                                     tooltipFormat: format,
                                     displayFormats,
                                 },
@@ -120,7 +119,7 @@ const View = (props: ViewProps) => {
         } catch (error) {
             console.error(error);
         }
-    }, [chartShowData, chartLabels, timeUnit]);
+    }, [chartShowData, chartLabels]);
 
     return (
         <div className={styles['area-chart-wrapper']}>

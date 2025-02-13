@@ -25,7 +25,6 @@ const View = (props: ViewProps) => {
         chartShowData,
         chartLabels,
         chartRef,
-        timeUnit,
         format,
         displayFormats,
         xAxisRange,
@@ -66,7 +65,7 @@ const View = (props: ViewProps) => {
                             x: {
                                 type: 'time',
                                 time: {
-                                    // unit: timeUnit,
+                                    unit: 'hour',
                                     tooltipFormat: format,
                                     displayFormats,
                                 },
