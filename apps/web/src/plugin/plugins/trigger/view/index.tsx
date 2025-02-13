@@ -153,7 +153,7 @@ const View = (props: Props) => {
             <div className="trigger-view-preview" style={{ backgroundColor: bgColor }}>
                 {IconComponent}
                 <div className="trigger-view__label">
-                    <Tooltip autoEllipsis title={label} />
+                    <Tooltip className="trigger-view__text" autoEllipsis title={label} />
                 </div>
             </div>
         );
@@ -168,7 +168,7 @@ const View = (props: Props) => {
             >
                 {IconComponent}
                 <div className="trigger-view__label">
-                    <Tooltip autoEllipsis title={label} />
+                    <Tooltip className="trigger-view__text" autoEllipsis title={label} />
                 </div>
             </div>
             {visible && !!mainRef.current && (

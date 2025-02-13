@@ -21,9 +21,9 @@
         overflow: hidden;
     }
 
-    &-title {
-        width: 100%;
-        font-size: @font-size-lg;
+    &__text {
+        font-weight: @font-weight-medium;
+        .text-size(@font-size-base);
     }
 
     &__label {
@@ -40,5 +40,11 @@
 
     &-form {
         padding-top: @padding-sm;
+    }
+}
+
+.dashboard-content-widget-editing {
+    .trigger-view:hover {
+        opacity: 1;
     }
 }

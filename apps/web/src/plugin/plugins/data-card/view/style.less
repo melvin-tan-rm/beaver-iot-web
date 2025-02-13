@@ -42,11 +42,13 @@
     &__title {
         max-width: calc(100% - 28px);
         margin-left: @margin-xxs;
+        .text-size(@font-size-base);
     }
 
     &__content {
         display: inline-block;
-        color: var(--text-color-secondary);
+        font-weight: @font-weight-medium;
+        color: var(--text-color-primary);
         .text-size(@font-size-xxl);
     }
 }
