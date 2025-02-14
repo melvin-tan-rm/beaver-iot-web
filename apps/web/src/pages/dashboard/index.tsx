@@ -188,6 +188,7 @@ export default () => {
                             },
                             '.MuiTabs-flexContainer': {
                                 borderBottom: 'none',
+                                padding: '0 16px',
                             },
                         }}
                     >
