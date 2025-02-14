@@ -31,7 +31,7 @@ export const defaultGlobalOptions: GlobalOptions = {
         variant: 'outlined',
         sx: {
             textTransform: 'none',
-            mr: 1,
+            mr: 0.5,
             '&:last-child': {
                 mr: 0,
             },

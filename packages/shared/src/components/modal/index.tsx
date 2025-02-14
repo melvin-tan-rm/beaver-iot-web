@@ -181,7 +181,7 @@ const Modal: React.FC<ModalProps> = ({
                         variant="outlined"
                         disabled={loading}
                         onClick={onCancel}
-                        sx={{ mr: 1, '&:last-child': { mr: 0 } }}
+                        sx={{ mr: 0.5, '&:last-child': { mr: 0 } }}
                     >
                         {onCancelText || getIntlText('common.button.cancel')}
                     </Button>

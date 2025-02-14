@@ -159,7 +159,7 @@ const ConfigPlugin = (props: ConfigPluginProps) => {
                         <Button
                             variant="outlined"
                             onClick={handleClose}
-                            sx={{ mr: 1, '&:last-child': { mr: 0 } }}
+                            sx={{ mr: 0.5, '&:last-child': { mr: 0 } }}
                         >
                             {getIntlText('common.button.cancel')}
                         </Button>
