@@ -129,7 +129,6 @@ const Members: React.FC = () => {
                 </Button>
                 <Button
                     variant="outlined"
-                    color="error"
                     disabled={!selectedIds.length}
                     sx={{ height: 36, textTransform: 'none' }}
                     startIcon={<RemoveCircleOutlineIcon />}

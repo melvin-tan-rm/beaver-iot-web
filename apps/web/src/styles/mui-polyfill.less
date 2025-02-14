@@ -3,6 +3,37 @@
     text-transform: none;
 }
 
+.@{mui-prefix}ButtonBase-root.@{mui-prefix}Button-outlinedPrimary {
+    color: var(--text-color-primary);
+    background-color: var(--component-background);
+    border: 1px solid var(--border-color-base);
+
+    &:hover {
+        color: var(--text-color-main);
+        border-color: var(--border-color-main);
+    }
+
+    &.@{mui-prefix}-disabled {
+        color: var(--text-color-quaternary);
+        background-color: var(--gray-color-2);
+        border-color: var(--border-color-base);
+    }
+}
+
+.@{mui-prefix}ButtonBase-root.@{mui-prefix}Button-containedPrimary {
+    color: var(--white);
+
+    &:hover {
+        color: var(--white);
+        background-color: var(--primary-color-9);
+    }
+
+    &.@{mui-prefix}-disabled {
+        color: var(--white);
+        background-color: var(--primary-color-4);
+    }
+}
+
 // ---------- Form ----------
 .@{mui-prefix}FormLabel-asterisk {
     color: var(--text-color-error);

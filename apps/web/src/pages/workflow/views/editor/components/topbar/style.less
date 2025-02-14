@@ -9,21 +9,11 @@
     }
 
     .@{prefix}-workflow-topbar-left {
-        .btn-back {
-            flex-shrink: 0;
-            line-height: 24px;
-            color: var(--text-color-base);
-            border-color: var(--border-color-base);
-
-            &:hover {
-                background-color: var(--component-background-gray);
-            }
-        }
-
         .title {
             display: flex;
+            flex: 1;
             align-items: center;
-            width: 100%;
+            width: 0;
             margin-left: @margin-md;
 
             .@{prefix}-tooltip {

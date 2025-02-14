@@ -207,7 +207,6 @@ const Workflow = () => {
                 <PermissionControlHidden permissions={PERMISSIONS.WORKFLOW_DELETE}>
                     <Button
                         variant="outlined"
-                        color="error"
                         disabled={!selectedIds.length}
                         sx={{ height: 36, textTransform: 'none' }}
                         startIcon={<DeleteOutlineIcon />}

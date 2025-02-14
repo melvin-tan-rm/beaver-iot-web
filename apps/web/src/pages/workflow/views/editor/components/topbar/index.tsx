@@ -111,7 +111,7 @@ const Topbar: React.FC<TopbarProps> = ({
                 <Grid2 className="ms-workflow-topbar-left" size={4}>
                     <Button
                         variant="outlined"
-                        className="btn-back"
+                        // className="btn-back"
                         startIcon={<ArrowBackIcon />}
                         onClick={() => handleBack()}
                     >
