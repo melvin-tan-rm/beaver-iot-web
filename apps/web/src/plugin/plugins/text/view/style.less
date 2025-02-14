@@ -1,0 +1,22 @@
+.text-wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: @padding-md;
+    background-color: var(--white);
+    border-radius: @border-radius-md;
+    .text-size(@font-size-3);
+
+    &__preview {
+        max-height: 300px;
+    }
+
+    &__label {
+        margin-bottom: @margin-xs;
+    }
+
+    &__content {
+        flex: 1;
+        overflow: auto;
+        word-break: break-all;
+    }
+}
