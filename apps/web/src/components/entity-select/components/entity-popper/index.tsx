@@ -12,7 +12,7 @@ export default React.memo(
         className,
         style,
         dropdownPlacement = 'bottom-start',
-        dropdownMatchSelectWidth = 360,
+        dropdownMatchSelectWidth,
         ...props
     }: IProps) => {
         const newStyle = dropdownMatchSelectWidth
