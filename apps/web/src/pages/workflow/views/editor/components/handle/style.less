@@ -9,6 +9,13 @@
         border: none;
         border-radius: 0;
 
+        &:hover {
+            .@{mui-prefix}SvgIcon-root {
+                transition: .3s;
+                transform: scale(1.25);
+            }
+        }
+
         &::after {
             position: absolute;
             top: 1px;

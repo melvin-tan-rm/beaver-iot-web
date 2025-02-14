@@ -1,6 +1,7 @@
 import React from 'react';
 import { Menu, MenuItem, ListItemIcon, Stack } from '@mui/material';
-import { usePopupState, bindTrigger, bindMenu } from 'material-ui-popup-state/hooks';
+import { usePopupState, bindHover, bindMenu } from 'material-ui-popup-state/hooks';
+import HoverMenu from 'material-ui-popup-state/HoverMenu';
 import { useI18n, type LangType } from '@milesight/shared/src/hooks';
 import { LanguageIcon, ArrowForwardIosIcon, CheckIcon } from '@milesight/shared/src/components';
 
@@ -14,14 +15,14 @@ const LangItem: React.FC<Props> = ({ onChange }) => {
 
     return (
         <>
-            <MenuItem {...bindTrigger(popupState)}>
+            <MenuItem {...bindHover(popupState)}>
                 <ListItemIcon>
                     <LanguageIcon />
                 </ListItemIcon>
                 <Stack sx={{ flex: 1 }}>{getIntlText('common.label.language')}</Stack>
                 <ArrowForwardIosIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
             </MenuItem>
-            <Menu
+            <HoverMenu
                 {...bindMenu(popupState)}
                 anchorOrigin={{
                     vertical: 'bottom',
@@ -50,7 +51,7 @@ const LangItem: React.FC<Props> = ({ onChange }) => {
                         </MenuItem>
                     );
                 })}
-            </Menu>
+            </HoverMenu>
         </>
     );
 };
