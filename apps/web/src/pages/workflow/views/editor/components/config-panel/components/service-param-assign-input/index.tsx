@@ -14,6 +14,7 @@ type InputParamListType = {
     key: ApiKey;
     name: string;
     type: EntityValueDataType;
+    required: boolean;
     enums?: Record<string, any>;
 };
 
@@ -90,6 +91,7 @@ const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
                                     <span className="param-item-type">{item.type}</span>
                                 </div>
                                 <ParamInputSelect
+                                    label=""
                                     required={required}
                                     valueType={item.type}
                                     enums={item.enums}
@@ -106,6 +108,7 @@ const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
         );
     }, [subEntityList, innerValue, required, getIntlText, handleSubEntityChange]);
 
+    console.log({ subEntityList });
     useDebounceEffect(
         () => {
             const serviceEntity = innerValue?.serviceEntity;
@@ -146,6 +149,7 @@ const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
                     return {
                         key: item.entity_key,
                         name: item.entity_name,
+                        required: !item.entity_value_attribute?.optional,
                         type,
                         enums,
                     };

@@ -33,7 +33,7 @@
     &-header {
         position: relative;
         padding: @padding-md;
-        border-bottom: 1px solid var(--border-color-base);
+        border-bottom: 1px solid var(--border-color-gray-light);
 
         .header-inner {
             display: flex;
@@ -106,19 +106,26 @@
         }
 
         .@{prefix}-divider {
-            margin: @margin-xl 0;
+            margin: @margin-md 0;
+            border-color: var(--border-color-gray-light);
         }
 
         .@{prefix}-node-form-group {
-            padding-bottom: @padding-xl;
-            border-bottom: 1px solid var(--border-color-base);
+            padding-bottom: @padding-md;
+            border-bottom: 1px solid var(--border-color-gray-light);
 
             &:last-child {
                 border-bottom: none;
             }
 
             + .@{prefix}-node-form-group {
-                margin-top: @margin-xl;
+                margin-top: @margin-md;
+            }
+
+            .@{prefix}-node-form-group-item:last-child {
+                > .@{mui-prefix}FormControl-root:only-child {
+                    margin-bottom: 0;
+                }
             }
 
             &-title {

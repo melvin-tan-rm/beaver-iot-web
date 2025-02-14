@@ -20,7 +20,11 @@ import { isEqual, cloneDeep } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { genRandomString } from '@milesight/shared/src/utils/tools';
-import { DeleteOutlineIcon, AddIcon } from '@milesight/shared/src/components';
+import {
+    DeleteOutlineIcon,
+    AddIcon,
+    KeyboardArrowDownIcon,
+} from '@milesight/shared/src/components';
 import './style.less';
 import { entityTypeOptions } from '@/constants';
 
@@ -129,6 +133,7 @@ const ParamInput: React.FC<ParamInputProps> = ({
                             notched
                             labelId="param-input-type-label"
                             label={typeSelectProps?.label || getIntlText('common.label.type')}
+                            IconComponent={KeyboardArrowDownIcon}
                             value={item.type}
                             onChange={e =>
                                 handleChange(index, item, 'type', e.target.value as string)

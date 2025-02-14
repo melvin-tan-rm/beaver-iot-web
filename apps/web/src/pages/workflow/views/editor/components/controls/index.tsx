@@ -9,6 +9,7 @@ import {
     AddCircleIcon,
 } from '@milesight/shared/src/components';
 import NodeMenu from '../node-menu';
+import { MAX_PRETTY_ZOOM } from '../../constants';
 import './style.less';
 
 export interface ControlsProps {
@@ -57,7 +58,9 @@ const Controls: React.FC<ControlsProps> = ({ minZoom, maxZoom, addable = true })
                         <Button disabled={!!maxZoom && maxZoom === zoom} onClick={() => zoomIn()}>
                             <ZoomInIcon sx={{ fontSize: 20 }} />
                         </Button>
-                        <Button onClick={() => fitView({ duration: 300 })}>
+                        <Button
+                            onClick={() => fitView({ maxZoom: MAX_PRETTY_ZOOM, duration: 300 })}
+                        >
                             <MyLocationIcon sx={{ fontSize: 20 }} />
                         </Button>
                     </ButtonGroup>

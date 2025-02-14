@@ -1,4 +1,4 @@
-import type { AutocompleteProps, TextFieldProps } from '@mui/material';
+import type { AutocompleteProps, TextFieldProps, PopperProps } from '@mui/material';
 import type { EntityAPISchema } from '@/services/http';
 
 /** Define the possible tab types */
@@ -99,6 +99,11 @@ export interface EntitySelectProps<
      * custom popper width
      */
     dropdownMatchSelectWidth?: number;
+    /**
+     * The placement of the dropdown
+     * @default 'bottom-start'
+     */
+    dropdownPlacement?: PopperProps['placement'];
     /**
      * The field name of the entity
      * @default 'entityKey'

@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { useControllableValue } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
+import { KeyboardArrowDownIcon } from '@milesight/shared/src/components';
 import {
     EntitySelect as EntitySelectComponent,
     type EntitySelectProps as EntitySelectComponentProps,
@@ -97,6 +98,8 @@ const EntitySelect: React.FC<EntitySelectProps> = ({
             label={getIntlText('common.label.entity')}
             {...props}
             {...filterModelValue}
+            className="ms-entity-select"
+            popupIcon={<KeyboardArrowDownIcon />}
             value={value}
             onChange={handleChange}
             fieldName={fieldName}
