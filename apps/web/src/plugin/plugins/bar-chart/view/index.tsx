@@ -25,7 +25,6 @@ const View = (props: ViewProps) => {
         chartShowData,
         chartLabels,
         chartRef,
-        timeUnit,
         format,
         displayFormats,
         xAxisRange,
@@ -58,11 +57,14 @@ const View = (props: ViewProps) => {
                         scales: {
                             y: {
                                 beginAtZero: true,
+                                ticks: {
+                                    autoSkip: true,
+                                    autoSkipPadding: 20,
+                                },
                             },
                             x: {
                                 type: 'time',
                                 time: {
-                                    // unit: timeUnit,
                                     tooltipFormat: format,
                                     displayFormats,
                                 },

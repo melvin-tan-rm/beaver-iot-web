@@ -2,6 +2,7 @@
     &-item {
         display: flex;
         gap: @margin-xs;
+        align-items: center;
         margin-bottom: @margin-md;
 
         .@{mui-prefix}FormControl-root {
@@ -11,16 +12,6 @@
         > .@{mui-prefix}FormControl-root,
         > .@{mui-prefix}Autocomplete-root {
             flex: 1;
-        }
-    }
-
-    & &-add-btn {
-        font-weight: @font-weight-bold;
-        color: var(--text-color-base);
-        border-color: var(--border-color-base);
-
-        &:hover {
-            background-color: var(--component-background-gray);
         }
     }
 }

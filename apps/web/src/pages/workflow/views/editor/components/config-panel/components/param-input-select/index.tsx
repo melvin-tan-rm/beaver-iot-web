@@ -189,7 +189,7 @@ const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
                 fullWidth
                 color="primary"
                 autoComplete="off"
-                label={label || getIntlText('common.label.value')}
+                label={!isNil(label) ? '' : getIntlText('common.label.value')}
                 required={required}
                 placeholder={
                     selectValue

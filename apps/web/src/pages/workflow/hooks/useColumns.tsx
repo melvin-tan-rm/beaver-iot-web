@@ -98,6 +98,7 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 field: 'enabled',
                 headerName: getIntlText('common.label.enable_status'),
                 // align: 'left',
+                align: 'left',
                 headerAlign: 'left',
                 type: 'boolean',
                 filterable: true,
@@ -118,8 +119,10 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
             {
                 field: '$operation',
                 headerName: getIntlText('common.label.operation'),
-                flex: 1,
-                minWidth: 118,
+                width: 120,
+                display: 'flex',
+                align: 'left',
+                headerAlign: 'left',
                 renderCell({ row }) {
                     return (
                         <Stack

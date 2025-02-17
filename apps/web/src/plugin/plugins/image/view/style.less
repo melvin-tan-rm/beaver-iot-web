@@ -1,0 +1,22 @@
+.image-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    &__preview {
+        width: 500px;
+        height: 320px;
+    }
+
+    &__label {
+        margin: @margin-xs;
+    }
+
+    &__inner {
+        width: 100%;
+        max-width: 100%;
+        object-fit: cover;
+        border-style: none;
+        pointer-events: none;
+    }
+}

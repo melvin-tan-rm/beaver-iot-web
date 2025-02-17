@@ -23,7 +23,13 @@ import {
     isRequestSuccess,
     type FlowNodeTraceInfo,
 } from '@/services/http';
-import { MIN_ZOOM, MAX_ZOOM, FROZEN_NODE_PROPERTY_KEYS, DELETE_KEY_CODE } from './constants';
+import {
+    MIN_ZOOM,
+    MAX_ZOOM,
+    MAX_PRETTY_ZOOM,
+    FROZEN_NODE_PROPERTY_KEYS,
+    DELETE_KEY_CODE,
+} from './constants';
 import useFlowStore from './store';
 import { normalizeNodes, normalizeEdges } from './helper';
 import { useNodeTypes, useInteractions, useWorkflow, useValidate } from './hooks';
@@ -527,6 +533,7 @@ const WorkflowEditor = () => {
                 <div className="ms-view__inner">
                     <ReactFlow<WorkflowNode, WorkflowEdge>
                         fitView
+                        fitViewOptions={{ maxZoom: MAX_PRETTY_ZOOM }}
                         className="ms-workflow"
                         minZoom={MIN_ZOOM}
                         maxZoom={MAX_ZOOM}

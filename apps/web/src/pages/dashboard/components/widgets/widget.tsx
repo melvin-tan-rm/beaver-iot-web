@@ -34,6 +34,7 @@ const Widget = (props: WidgetProps) => {
 
     const widgetCls = useMemo(() => {
         return classnames('dashboard-content-widget', {
+            'dashboard-content-widget-editing': isEdit,
             'none-user-select': isEdit,
         });
     }, [isEdit]);

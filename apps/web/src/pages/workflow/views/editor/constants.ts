@@ -9,6 +9,11 @@ export const MIN_ZOOM = 0.25;
 export const MAX_ZOOM = 2;
 
 /**
+ * Maximum zoom ratio for pretty display
+ */
+export const MAX_PRETTY_ZOOM = 1.2;
+
+/**
  * Parallel limit
  */
 export const PARALLEL_LIMIT = 10;

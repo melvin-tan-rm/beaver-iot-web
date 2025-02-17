@@ -25,19 +25,21 @@
 
     &-right {
         width: 400px;
-        padding: 0 @padding-lg 56px;
+        padding: 0 @padding-xl 68px;
         overflow-y: auto;
         border-top: 1px solid var(--border-color-base);
+
+        .form-contain .form-box:last-child {
+            margin-bottom: @margin-md !important;
+        }
     }
 
     &-footer {
         position: absolute;
         right: 0;
-        bottom: 0;
-        width: calc(400px - 36px);
-        height: 72px;
+        bottom: @padding-xl;
         padding: 0 !important;
-        margin-right: 36px;
+        margin-right: @margin-xl;
         background: var(--main-background);
     }
 

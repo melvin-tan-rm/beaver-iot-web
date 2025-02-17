@@ -122,7 +122,7 @@ const useForm = (props: FormProps) => {
                 disabled={!!defaultValues}
                 exclusive
                 onChange={handleChangeMode}
-                className="entity-modal-button-group"
+                className="ms-toggle-button-group entity-modal-button-group"
                 fullWidth
             >
                 <ToggleButton value="value">{getIntlText('entity.label.set_value')}</ToggleButton>

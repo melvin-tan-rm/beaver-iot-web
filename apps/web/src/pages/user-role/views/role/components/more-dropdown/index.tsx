@@ -10,6 +10,7 @@ export enum ROLE_MORE_OPERATION {
 }
 
 export interface MoreDropdownProps {
+    isActive: boolean;
     onOperation?: (operation: ROLE_MORE_OPERATION) => void;
 }
 
@@ -17,7 +18,7 @@ export interface MoreDropdownProps {
  * More Dropdown component
  */
 const MoreDropdown: React.FC<MoreDropdownProps> = props => {
-    const { onOperation } = props;
+    const { isActive, onOperation } = props;
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -70,7 +71,12 @@ const MoreDropdown: React.FC<MoreDropdownProps> = props => {
 
     return (
         <div className="more-dropdown__wrapper">
-            <IconButton id="more-button" onClick={handleClick}>
+            <IconButton
+                id="more-button"
+                color={isActive ? 'primary' : 'default'}
+                onClick={handleClick}
+                sx={{ padding: '4px' }}
+            >
                 <MoreVertIcon />
             </IconButton>
             <Menu id="dropdown-menu" anchorEl={anchorEl} open={open} onClose={handleClose}>

@@ -1,15 +1,4 @@
 .@{prefix}-conditions-input {
-
-    &-add-btn.@{mui-prefix}ButtonBase-root {
-        font-weight: @font-weight-bold;
-        color: var(--text-color-base);
-        border-color: var(--border-color-base);
-
-        &:hover {
-            background-color: var(--component-background-gray);
-        }
-    }
-
     &-item-topbar {
         display: flex;
         align-items: center;
@@ -36,13 +25,13 @@
                         height: 1px;
                         margin-bottom: -1px;
                         overflow: hidden;
-                        font-weight: @font-weight-bold;
+                        font-weight: @font-weight-medium;
                         visibility: hidden;
                         content: attr(aria-label);
                     }
 
                     &.@{mui-prefix}-selected {
-                        font-weight: @font-weight-bold;
+                        font-weight: @font-weight-medium;
                         background-color: var(--component-background);
                     }
                 }
@@ -57,7 +46,7 @@
     &-item-conditions {
         position: relative;
         margin-bottom: @margin-md;
-        border-bottom: 1px solid var(--border-color-base);
+        border-bottom: 1px solid var(--border-color-gray-light);
 
         &.multiple-conditions {
             padding-left: 64px;
@@ -117,9 +106,9 @@
             .input-wrapper {
                 flex: 1;
 
-                // .@{mui-prefix}InputBase-input {
-                //     .text-size(@font-size-base);
-                // }
+                .@{mui-prefix}InputBase-root:hover .@{mui-prefix}OutlinedInput-notchedOutline {
+                    z-index: 1;
+                }
 
                 .select {
                     display: flex;
@@ -187,8 +176,8 @@
 
     &-item-mvel {
         position: relative;
-        padding-bottom: @padding-sm;
-        margin-bottom: @margin-xl;
+        padding-bottom: @padding-xxs;
+        margin-bottom: @margin-md;
         border-bottom: 1px solid var(--border-color-base);
     }
 }

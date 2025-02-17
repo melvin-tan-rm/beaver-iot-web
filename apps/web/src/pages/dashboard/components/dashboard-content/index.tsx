@@ -264,14 +264,14 @@ export default (props: DashboardContentProps) => {
                         <Button
                             variant="outlined"
                             onClick={showEditDashboard}
-                            sx={{ marginLeft: '20px' }}
+                            sx={{ marginLeft: '12px' }}
                             startIcon={<Edit />}
                         >
                             {getIntlText('common.label.rename')}
                         </Button>
                         <Button
                             variant="outlined"
-                            sx={{ marginLeft: '20px' }}
+                            sx={{ marginLeft: '12px' }}
                             onClick={cancelEditStatus}
                             startIcon={<Close />}
                         >
@@ -280,7 +280,7 @@ export default (props: DashboardContentProps) => {
                         <Button
                             variant="contained"
                             onClick={saveEditDashboard}
-                            sx={{ marginLeft: '20px' }}
+                            sx={{ marginLeft: '12px' }}
                             startIcon={<Check />}
                         >
                             {getIntlText('common.button.save')}

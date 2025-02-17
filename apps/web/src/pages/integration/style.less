@@ -1,19 +1,14 @@
 .@{prefix}-view.@{prefix}-view-integration {
+    position: relative;
     display: flex;
     flex-direction: column;
-    padding: 0;
+    padding: @padding-lg;
+    overflow: auto;
 
-    .@{prefix}-tab-content {
-        position: relative;
-        flex: 1;
-        padding: @padding-lg;
-        overflow: auto;
-
-        .@{mui-prefix}CircularProgress-root {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
+    > .@{mui-prefix}CircularProgress-root {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin: -20px 0 0 -20px;
     }
 }

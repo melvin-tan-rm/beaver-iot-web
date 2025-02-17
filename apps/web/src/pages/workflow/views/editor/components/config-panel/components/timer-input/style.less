@@ -19,6 +19,7 @@
         .queue-item {
             display: flex;
             gap: @margin-xs;
+            align-items: center;
             margin-bottom: @margin-md;
 
             > .@{mui-prefix}FormControl-root {
@@ -30,21 +31,12 @@
                 margin-bottom: 0;
             }
         }
-
-        & &-add-btn {
-            font-weight: @font-weight-bold;
-            color: var(--text-color-base);
-            border-color: var(--border-color-base);
-
-            &:hover {
-                background-color: var(--component-background-gray);
-            }
-        }
     }
 
     &-exec-interval {
         display: flex;
         gap: @margin-xs;
+        align-items: center;
 
         > .@{mui-prefix}FormControl-root {
             flex: 1;

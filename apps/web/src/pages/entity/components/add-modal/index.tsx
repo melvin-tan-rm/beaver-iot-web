@@ -5,6 +5,7 @@ import { entityAPI, awaitWrap, isRequestSuccess } from '@/services/http';
 import { ENTITY_TYPE } from '@/constants';
 import { TableRowDataType } from '../../hooks/useColumns';
 import useForm from './useForm';
+import './style.less';
 
 interface IProps {
     onCancel: () => void;
@@ -131,11 +132,12 @@ const AddEntity = (props: IProps) => {
     return (
         <Modal
             visible
+            size="lg"
+            className="ms-add-entity-modal"
             onCancel={handleClose}
             onOk={handleOk}
             onOkText={getIntlText('common.button.save')}
             title={getIntlText('entity.label.create_entity_only')}
-            size="lg"
         >
             <Form<TableRowDataType>
                 ref={formRef}

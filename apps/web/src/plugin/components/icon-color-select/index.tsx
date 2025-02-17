@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Box, MenuItem, Button } from '@mui/material';
-import { SketchPicker } from 'react-color';
+import { Sketch, type ColorResult } from '@uiw/react-color';
 import { useI18n } from '@milesight/shared/src/hooks';
 import Select from '../select';
 import './style.less';
@@ -13,9 +13,8 @@ const IconColorSelect = (props: any) => {
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
-    const handleColorChange = (color: any) => {
-        onChange(color.hex);
-        // handleClose();
+    const handleColorChange = (color: ColorResult) => {
+        onChange(color.hexa);
     };
 
     return (
@@ -46,17 +45,13 @@ const IconColorSelect = (props: any) => {
             }}
             renderOptions={() => {
                 return (
-                    <MenuItem onClick={handleOpen} className="icon-color-select-menu">
+                    <MenuItem disableRipple onClick={handleOpen} className="icon-color-select-menu">
                         <div
-                            onClick={(e: any) => {
+                            onClick={(e: React.MouseEvent) => {
                                 e.stopPropagation();
                             }}
                         >
-                            <SketchPicker
-                                width="320px"
-                                color={value}
-                                onChangeComplete={handleColorChange}
-                            />
+                            <Sketch color={value} onChange={handleColorChange} />
                             <div className="icon-color-select-submit">
                                 <Button
                                     className="icon-color-select-button"

@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from 'react';
 import { useReactFlow } from '@xyflow/react';
-import { isObject, isNil, isNumber } from 'lodash-es';
+import { isObject, isNil, isNumber, merge } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 import {
@@ -14,8 +14,7 @@ import {
 import { EDGE_TYPE_ADDABLE } from '../constants';
 import useFlowStore from '../store';
 import { isRefParamKey } from '../helper';
-
-type NodeDataValidator<T = any> = (value?: T, fieldName?: string) => string | boolean | undefined;
+import type { NodeDataValidator } from '../typings';
 
 type CheckOptions = {
     /**
@@ -54,6 +53,7 @@ const useValidate = () => {
     const { getIntlText } = useI18n();
     const { getNodes, getEdges } = useReactFlow<WorkflowNode, WorkflowEdge>();
     const nodeConfigs = useFlowStore(state => state.nodeConfigs);
+    const dynamicValidators = useFlowStore(state => state.dynamicValidators);
 
     const dataValidators = useMemo(() => {
         const checkRequired: NodeDataValidator = (value?: any, fieldName?: string) => {
@@ -594,8 +594,9 @@ const useValidate = () => {
             },
             'webhook.inputArguments': inputArgumentsChecker,
         };
-        return result;
-    }, [getIntlText]);
+
+        return merge({}, result, dynamicValidators);
+    }, [dynamicValidators, getIntlText]);
 
     /**
      * Check Nodes ID

@@ -34,7 +34,12 @@
         align-items: center;
         justify-content: space-between;
         padding: @padding-md;
-        border-bottom: 1px solid var(--border-color-base);
+        border-bottom: 1px solid var(--border-color-gray-light);
+
+        .title {
+            font-weight: @font-weight-medium;
+            .text-size(@font-size-xxl);
+        }
 
         .@{mui-prefix}IconButton-root {
             padding: @padding-xxs;

@@ -1,5 +1,6 @@
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useControllableValue, useDebounceEffect } from 'ahooks';
+import { isNil } from 'lodash-es';
 import { Divider, IconButton } from '@mui/material';
 import { useI18n, useStoreShallow } from '@milesight/shared/src/hooks';
 import { HelpIcon } from '@milesight/shared/src/components';
@@ -8,12 +9,14 @@ import { Tooltip, Empty, useEntityStore } from '@/components';
 import ParamInputSelect from '../param-input-select';
 import EntitySelect, { type EntityFilterParams } from '../entity-select';
 import { DEFAULT_BOOLEAN_DATA_ENUMS } from '../../../../constants';
+import useFlowStore from '../../../../store';
 import './style.less';
 
 type InputParamListType = {
     key: ApiKey;
     name: string;
     type: EntityValueDataType;
+    required: boolean;
     enums?: Record<string, any>;
 };
 
@@ -30,13 +33,19 @@ type ServiceParamAssignInputProps = {
     defaultValue?: ServiceParamAssignInputValueType;
     onChange?: (value: ServiceParamAssignInputValueType) => void;
     filterModel?: EntityFilterParams;
+    name: string;
+    nodeType: WorkflowNodeType;
 };
+
+const DEFAULT_PARAMS_VALIDATOR_NAME = 'checkParamsRequired';
 
 const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
     required,
     disabled,
     helperText,
     filterModel = { type: ['SERVICE'], excludeChildren: true },
+    name,
+    nodeType,
     ...props
 }) => {
     const { getIntlText } = useI18n();
@@ -86,10 +95,14 @@ const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
                         return (
                             <div key={item.key} className="param-item">
                                 <div className="param-item-title">
+                                    {item.required && (
+                                        <span className="param-item-asterisk">*</span>
+                                    )}
                                     <span className="param-item-name">{item.name}</span>
                                     <span className="param-item-type">{item.type}</span>
                                 </div>
                                 <ParamInputSelect
+                                    label=""
                                     required={required}
                                     valueType={item.type}
                                     enums={item.enums}
@@ -111,7 +124,10 @@ const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
             const serviceEntity = innerValue?.serviceEntity;
             const entity = entityList?.find(item => item.entity_key === serviceEntity);
 
-            if (!serviceEntity || !entity) return;
+            if (!serviceEntity || !entity) {
+                setSubEntityList([]);
+                return;
+            }
 
             const getSubEntityList = async () => {
                 const { error, res } = await getEntityChildren({
@@ -146,6 +162,7 @@ const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
                     return {
                         key: item.entity_key,
                         name: item.entity_name,
+                        required: !item.entity_value_attribute?.optional,
                         type,
                         enums,
                     };
@@ -158,6 +175,38 @@ const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
         [innerValue?.serviceEntity, entityList, getEntityChildren],
         { wait: 300 },
     );
+
+    // ---------- Generate validators ----------
+    const setDynamicValidator = useFlowStore(state => state.setDynamicValidator);
+
+    useEffect(() => {
+        const requiredEntities = subEntityList?.filter(item => item.required);
+        if (!requiredEntities?.length) {
+            setDynamicValidator(`${nodeType}.${name}`, DEFAULT_PARAMS_VALIDATOR_NAME, null);
+            return;
+        }
+
+        setDynamicValidator(
+            `${nodeType}.${name}`,
+            DEFAULT_PARAMS_VALIDATOR_NAME,
+            (
+                value: NonNullable<ServiceNodeDataType['parameters']>['serviceInvocationSetting'],
+                fieldName,
+            ) => {
+                const params = value?.serviceParams;
+                if (
+                    !params ||
+                    requiredEntities.some(
+                        item => isNil(params[item.key]) || params[item.key] === '',
+                    )
+                ) {
+                    return getIntlText('workflow.valid.required', { 1: fieldName });
+                }
+
+                return true;
+            },
+        );
+    }, [name, nodeType, subEntityList, setDynamicValidator, getIntlText]);
 
     return (
         <div className="ms-service-invocation-setting">

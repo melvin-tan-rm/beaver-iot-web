@@ -403,6 +403,9 @@ export const getMuiComponents = (mode: ThemeType = 'light') => {
                 inputSizeSmall: {
                     padding: '2px 12px',
                 },
+                notchedOutline: {
+                    borderColor: grey[200],
+                },
             },
         },
         MuiInputLabel: {
@@ -463,6 +466,11 @@ export const getMuiComponents = (mode: ThemeType = 'light') => {
                         paddingBottom: '1px',
                     },
                 },
+            },
+        },
+        MuiToggleButton: {
+            defaultProps: {
+                disableRipple: true,
             },
         },
     };

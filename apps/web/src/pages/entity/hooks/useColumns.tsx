@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Stack, IconButton, Chip, type ChipProps } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
-import { ListAltIcon, DeleteOutlineIcon } from '@milesight/shared/src/components';
+import { EditIcon, DeleteOutlineIcon } from '@milesight/shared/src/components';
 import { Tooltip, type ColumnType, PermissionControlDisabled } from '@/components';
 import { type EntityAPISchema } from '@/services/http';
 import { PERMISSIONS } from '@/constants';
@@ -87,8 +87,10 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
             {
                 field: '$operation',
                 headerName: getIntlText('common.label.operation'),
-                flex: 2,
-                minWidth: 100,
+                width: 120,
+                display: 'flex',
+                align: 'left',
+                headerAlign: 'left',
                 renderCell({ row }) {
                     return (
                         <Stack
@@ -97,12 +99,12 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                             sx={{ height: '100%', alignItems: 'center', justifyContent: 'end' }}
                         >
                             <PermissionControlDisabled permissions={PERMISSIONS.ENTITY_CUSTOM_EDIT}>
-                                <Tooltip title={getIntlText('common.label.detail')}>
+                                <Tooltip title={getIntlText('common.button.edit')}>
                                     <IconButton
                                         sx={{ width: 30, height: 30 }}
                                         onClick={() => onButtonClick('edit', row)}
                                     >
-                                        <ListAltIcon sx={{ width: 20, height: 20 }} />
+                                        <EditIcon sx={{ width: 20, height: 20 }} />
                                     </IconButton>
                                 </Tooltip>
                             </PermissionControlDisabled>

@@ -61,7 +61,7 @@ const Role: React.FC = () => {
             >
                 <div className={styles['name-wrapper']}>
                     <div className={styles.icon}>
-                        <PermIdentityIcon />
+                        <PermIdentityIcon color="action" />
                     </div>
 
                     <Typography variant="inherit" noWrap title={item.name}>
@@ -69,7 +69,10 @@ const Role: React.FC = () => {
                     </Typography>
                 </div>
 
-                <MoreDropdown onOperation={handleRoleOperate} />
+                <MoreDropdown
+                    onOperation={handleRoleOperate}
+                    isActive={item.roleId === activeRole?.roleId}
+                />
             </div>
         );
     };

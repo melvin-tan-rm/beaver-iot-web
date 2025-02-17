@@ -4,7 +4,8 @@
         border-color: var(--border-color-base);
 
         &:hover {
-            background-color: var(--component-background-gray);
+            z-index: 1;
+            // background-color: var(--component-background-gray);
         }
 
         &:first-child {
@@ -84,7 +85,7 @@
         }
 
         &__title {
-            font-weight: @font-weight-bold;
+            font-weight: @font-weight-medium;
             .text-size(@font-size-base);
         }
 

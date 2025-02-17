@@ -157,32 +157,31 @@ const Modal: React.FC<ModalProps> = ({
             disableScrollLock={disableScrollLock}
         >
             {!!title && (
-                <DialogTitle sx={{ m: 0, paddingX: 3, paddingY: 2 }} id="customized-dialog-title">
+                <DialogTitle
+                    id="customized-dialog-title"
+                    className="ms-modal-title"
+                    sx={{ m: 0, paddingX: 3, paddingY: 2 }}
+                >
                     {title}
                 </DialogTitle>
             )}
             {showCloseIcon && (
                 <IconButton
                     aria-label="close"
+                    className="ms-modal-close-icon"
                     onClick={handleCloseIcon as any}
-                    sx={theme => ({
-                        position: 'absolute',
-                        right: 8,
-                        top: 8,
-                        color: theme.palette.grey[500],
-                    })}
                 >
-                    <CloseIcon />
+                    <CloseIcon fontSize="inherit" />
                 </IconButton>
             )}
-            <DialogContent>{children}</DialogContent>
+            <DialogContent className="ms-modal-content">{children}</DialogContent>
             {footer === undefined ? (
                 <DialogActions className="ms-modal-footer">
                     <Button
                         variant="outlined"
                         disabled={loading}
                         onClick={onCancel}
-                        sx={{ mr: 1, '&:last-child': { mr: 0 } }}
+                        sx={{ mr: 0.5, '&:last-child': { mr: 0 } }}
                     >
                         {onCancelText || getIntlText('common.button.cancel')}
                     </Button>

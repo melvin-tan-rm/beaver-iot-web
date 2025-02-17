@@ -9,6 +9,7 @@ import {
     Switch,
     MenuItem,
 } from '@mui/material';
+import { cloneDeep } from 'lodash-es';
 import { NodeFormItemValueType } from '../../../typings';
 import useFlowStore from '../../../store';
 import {
@@ -72,7 +73,7 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
         Object.entries(nodeConfigs).forEach(([_, nodeConfig]) => {
             const nodeType = nodeConfig.type;
             const { properties = {}, outputProperties = {} } = nodeConfig.schema || {};
-            const formConfigs = Object.entries(properties)
+            const configs = cloneDeep(Object.entries(properties))
                 .filter(([_, item]) => !item.autowired)
                 .map(([name, item]) => {
                     item.name = item.name || name;
@@ -80,7 +81,7 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
                 })
                 .sort((a, b) => (a.index || 0) - (b.index || 0))
                 .concat(
-                    Object.entries(outputProperties)
+                    cloneDeep(Object.entries(outputProperties))
                         .filter(([_, item]) => !item.autowired && item.editable)
                         .map(([name, item]) => {
                             item.name = item.name || name;
@@ -91,7 +92,7 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
             const formGroups: NodeFormGroupType[] = [];
 
             result[nodeType as WorkflowNodeType] = formGroups;
-            formConfigs.forEach(
+            configs.forEach(
                 ({
                     name,
                     type,
@@ -248,6 +249,8 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
                                 formItem.render = ({ field: { onChange, value } }) => {
                                     return (
                                         <ServiceParamAssignInput
+                                            name={name}
+                                            nodeType={nodeType}
                                             required={required}
                                             value={value}
                                             onChange={onChange}

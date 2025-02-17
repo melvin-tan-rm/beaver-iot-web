@@ -1,3 +1,11 @@
+.@{prefix}-service-invocation-setting {
+    .@{prefix}-entity-select {
+        .@{mui-prefix}FormControl-root {
+            margin-bottom: 0;
+        }
+    }
+}
+
 .@{prefix}-service-param-assign-input {
     .@{prefix}-empty-img {
         width: 96px;
@@ -8,22 +16,24 @@
         margin-top: @margin-md;
 
         &-title {
+            display: flex;
+            align-items: center;
             margin-bottom: @margin-xs;
+            .text-size(@font-size-md);
+        }
+
+        &-asterisk {
+            margin-right: @margin-xxs;
+            color: var(--text-color-error);
         }
 
         &-name {
-            font-size: @font-size-md;
             font-weight: @font-weight-medium;
-            line-height: 22px;
-            color: #272e3b;
         }
 
         &-type {
             margin-left: @margin-xs;
-            font-size: @font-size-md;
-            font-style: normal;
-            line-height: 22px;
-            color: #6b7785;
+            color: var(--text-color-secondary);
         }
     }
 }

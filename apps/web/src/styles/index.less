@@ -58,7 +58,7 @@ body {
     &.@{mui-prefix}Tabs-root {
         height: 56px;
         min-height: 44px;
-        padding-top: @padding-sm;
+        padding-top: @padding-xs;
         background-color: var(--component-background);
     }
 
@@ -69,15 +69,18 @@ body {
     }
 
     .@{mui-prefix}Tab-root {
-        min-height: 43px;
-        padding: 0 @padding-md;
+        min-width: auto;
+        min-height: 24px;
+        padding: @padding-xs @padding-md (@padding-md - 1);
         margin-right: 0;
+        font-weight: @font-weight-base;
         color: var(--text-color-secondary);
         border: 1px solid transparent;
         border-bottom: none;
+        .text-size(@font-size-lg);
 
         &.@{mui-prefix}-selected {
-            font-weight: @font-weight-bold;
+            font-weight: @font-weight-medium;
             color: var(--text-color-base);
             background-color: var(--body-background);
             border-color: var(--border-color-base);
@@ -87,6 +90,12 @@ body {
         &:not(.@{mui-prefix}-selected):hover {
             color: var(--text-color-main);
         }
+    }
+
+    .@{mui-prefix}Tabs-scrollButtons {
+        height: 40px;
+        margin-top: 1px;
+        color: var(--text-color-secondary);
     }
 
     .@{mui-prefix}Tabs-indicator {
@@ -99,4 +108,44 @@ body {
 // ---------- Custom Icon ----------
 .@{prefix}-icon {
     fill: currentcolor;
+}
+
+// ---------- Custom ToggleButtonGroup ----------
+.@{prefix}-toggle-button-group {
+    .@{mui-prefix}ButtonBase-root {
+        text-transform: none;
+    }
+
+    &.@{mui-prefix}ToggleButtonGroup-horizontal {
+        background-color: var(--gray-color-2);
+        border: 2px solid var(--gray-color-2);
+
+        .@{mui-prefix}ToggleButtonGroup-grouped {
+            display: inline-block;
+            padding-right: @padding-sm;
+            padding-left: @padding-sm;
+            border: none;
+            border-radius: @border-radius-base;
+            .text-size(@font-size-base);
+
+            &::after {
+                display: block;
+                height: 1px;
+                margin-bottom: -1px;
+                overflow: hidden;
+                font-weight: @font-weight-medium;
+                visibility: hidden;
+                content: attr(aria-label);
+            }
+
+            &.@{mui-prefix}-selected {
+                font-weight: @font-weight-medium;
+                background-color: var(--component-background);
+
+                &.@{mui-prefix}-disabled {
+                    color: var(--text-color-secondary);
+                }
+            }
+        }
+    }
 }

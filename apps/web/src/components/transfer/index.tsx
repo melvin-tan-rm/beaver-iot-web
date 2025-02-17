@@ -94,6 +94,7 @@ const TransferList: React.FC<TransferListProps> = props => {
                         height: 288,
                         bgcolor: 'background.paper',
                         overflow: 'auto',
+                        borderRadius: '6px',
                     }}
                     dense
                     component="div"

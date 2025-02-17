@@ -86,7 +86,7 @@ const TablePro = <DataType extends GridValidRowModel>({
                     return (
                         <Tooltip
                             autoEllipsis
-                            title={title}
+                            title={title || '-'}
                             slotProps={{
                                 popper: {
                                     modifiers: [{ name: 'offset', options: { offset: [0, -20] } }],
