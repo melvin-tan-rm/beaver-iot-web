@@ -3,7 +3,7 @@ import { immer } from 'zustand/middleware/immer';
 import { type WorkflowAPISchema, type FlowNodeTraceInfo } from '@/services/http';
 import { basicNodeConfigs } from '../../config';
 import type { NodesDataValidResult } from './hooks';
-import type { NodeConfigItem } from './typings';
+import type { NodeConfigItem, NodeDataValidator } from './typings';
 
 export interface FlowStore {
     selectedNode?: WorkflowNode;
@@ -49,6 +49,8 @@ export interface FlowStore {
 
     logDetailLoading?: boolean;
 
+    dynamicValidators?: Record<`${WorkflowNodeType}.${string}`, Record<string, NodeDataValidator>>;
+
     isLogMode: () => boolean;
 
     setSelectedNode: (node?: FlowStore['selectedNode']) => void;
@@ -71,6 +73,12 @@ export interface FlowStore {
     setNodesDataValidResult: (
         data: NodesDataValidResult | null,
         logPanelMode?: FlowStore['logPanelMode'],
+    ) => void;
+
+    setDynamicValidator: (
+        name: `${WorkflowNodeType}.${string}`,
+        checkerName: string,
+        validator?: NodeDataValidator | null,
     ) => void;
 }
 
@@ -154,6 +162,23 @@ const useFlowStore = create(
 
             // console.log(logDetail);
             set({ openLogPanel: true, logPanelMode, logDetail: { traceInfos } });
+        },
+        setDynamicValidator(name, checkerName, validator) {
+            set(state => {
+                if (!validator) {
+                    delete state.dynamicValidators?.[name]?.[checkerName];
+                } else {
+                    state.dynamicValidators = {
+                        ...state.dynamicValidators,
+                        [name]: {
+                            ...state.dynamicValidators?.[name],
+                            [checkerName]: validator,
+                        },
+                    };
+                }
+
+                return state;
+            });
         },
     })),
 );

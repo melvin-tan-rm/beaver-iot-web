@@ -248,6 +248,8 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
                                 formItem.render = ({ field: { onChange, value } }) => {
                                     return (
                                         <ServiceParamAssignInput
+                                            name={name}
+                                            nodeType={nodeType}
                                             required={required}
                                             value={value}
                                             onChange={onChange}

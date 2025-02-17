@@ -66,3 +66,11 @@ export type NodeConfigItem = NodeConfigItemType & {
 export type CustomEntityValueType =
     | Extract<EntityValueDataType, 'LONG' | 'DOUBLE' | 'BOOLEAN' | 'STRING'>
     | 'OTHER';
+
+/**
+ * Node Data Validator
+ */
+export type NodeDataValidator<T = any> = (
+    value?: T,
+    fieldName?: string,
+) => string | boolean | undefined;
