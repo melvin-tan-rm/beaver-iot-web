@@ -456,7 +456,12 @@ const useValidate = () => {
                     if (value?.serviceParams && Object.keys(value.serviceParams).length) {
                         const maxLength = 1000;
                         const hasOverLength = Object.values(value.serviceParams).some(val => {
-                            if (val && !isRefParamKey(val) && !isMaxLength(val, maxLength)) {
+                            if (
+                                val &&
+                                typeof val === 'string' &&
+                                !isRefParamKey(val) &&
+                                !isMaxLength(val, maxLength)
+                            ) {
                                 return true;
                             }
                             return false;

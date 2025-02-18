@@ -1,6 +1,9 @@
 export enum EVENT_TYPE {
     /** The subscription event of the entity */
     EXCHANGE = 'Exchange',
+
+    /** The heartbeat event */
+    HEARTBEAT = 'Heartbeat',
 }
 
 /** ws status */

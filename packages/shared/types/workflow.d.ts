@@ -248,7 +248,7 @@ declare type ServiceNodeDataType = BaseNodeDataType<{
         /** Service Entity Key */
         serviceEntity: string;
         /** Input variables of service entity */
-        serviceParams?: Record<string, string>;
+        serviceParams?: Record<string, string | boolean>;
     };
     /** Output */
     payload: {

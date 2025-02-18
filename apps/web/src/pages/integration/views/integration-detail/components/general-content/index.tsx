@@ -45,7 +45,7 @@ const GeneralContent: React.FC<Props> = ({
         return [
             {
                 key: 'property',
-                label: getIntlText('common.label.property'),
+                label: getIntlText('common.label.settings'),
                 component: (
                     <Property
                         loading={loading}
