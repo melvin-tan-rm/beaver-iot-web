@@ -6,9 +6,16 @@ export interface IEventEmitter extends ISubscribe {
     callbacks: CallbackType[];
 }
 
-export interface WsEvent {
+type ExchangeEvent = {
     event_type: EVENT_TYPE.EXCHANGE;
     payload: {
         entity_key: string[];
     };
-}
+};
+
+type HeartbeatEvent = {
+    event_type: EVENT_TYPE.HEARTBEAT;
+    payload: string;
+};
+
+export type WsEvent = ExchangeEvent | HeartbeatEvent;

@@ -16,9 +16,13 @@ class WebSocketClient {
     private url = ''; // ws address
     private ws: WebSocket | null = null; // ws instance
     private readonly subscribeEvent: EventEmitter<IEventEmitter> = new EventEmitter(); // Event bus
-    private retryCount = 0; // Number of reconnections
+    private retryCount = 0; // Number of reconnection
     private delayTimer: ReturnType<typeof delay> | null = null;
     private throttleTimer: ReturnType<typeof delay> | null = null; // Control escalation frequency
+
+    private heartTimer: number | null = null;
+    private serverHeartTimer: number | null = null;
+    private heartInterval = 10000;
 
     /**
      * Whether the connection is normal
@@ -71,12 +75,13 @@ class WebSocketClient {
             this.retryCount = 0;
             resolve();
             this.emit();
+            this.startHeartbeat();
         };
         // ws connection failed
         ws.onerror = async e => {
             cancelWsPush();
 
-            // Determine the number of reconnections
+            // Determine the number of reconnection
             if (this.retryCount < MAX_RETRY) {
                 this.retryCount++;
                 this.delayTimer = delay(RETRY_DELAY);
@@ -98,16 +103,43 @@ class WebSocketClient {
 
             // Processing subscription events
             const { event_type: eventType, payload } = (data as WsEvent) || {};
-            const { entity_key: topics } = payload || {};
 
-            if (eventType === EVENT_TYPE.EXCHANGE) {
-                runWsPush({ topics: topics.map(topic => `${eventType}:${topic}`), data });
-                return;
+            switch (eventType) {
+                case EVENT_TYPE.EXCHANGE: {
+                    const { entity_key: topics } = payload || {};
+                    runWsPush({ topics: topics.map(topic => `${eventType}:${topic}`), data });
+                    break;
+                }
+                case EVENT_TYPE.HEARTBEAT: {
+                    this.startHeartbeat();
+                    break;
+                }
+                default: {
+                    this.subscribeEvent.publish(eventType, payload);
+                }
             }
-            topics.forEach(topic => this.subscribeEvent.publish(`${eventType}:${topic}`, data));
         };
 
         return promise;
+    }
+
+    startHeartbeat() {
+        this.clearHeartbeat();
+
+        const { ws, heartInterval } = this;
+        if (!ws || heartInterval <= 0) return;
+
+        this.heartTimer = window.setTimeout(() => {
+            ws.send(JSON.stringify({ event_type: EVENT_TYPE.HEARTBEAT, payload: 'ping' }));
+            this.serverHeartTimer = window.setTimeout(() => {
+                this.reconnect();
+            }, heartInterval);
+        }, heartInterval);
+    }
+
+    clearHeartbeat() {
+        if (this.heartTimer) window.clearTimeout(this.heartTimer);
+        if (this.serverHeartTimer) window.clearTimeout(this.serverHeartTimer);
     }
 
     /**
@@ -150,8 +182,8 @@ class WebSocketClient {
      * reconnection
      */
     private reconnect() {
-        this.close.call(this);
-        return this.connect.call(this, this.url);
+        this.close();
+        return this.connect(this.url);
     }
 
     /**
@@ -159,6 +191,7 @@ class WebSocketClient {
      */
     close() {
         this.ws?.close();
+        this.clearHeartbeat();
 
         this.delayTimer?.cancel();
         this.delayTimer = null;
@@ -172,7 +205,7 @@ class WebSocketClient {
      */
     destroy() {
         this.subscribeEvent.destroy();
-        this.close.call(this);
+        this.close();
         this.ws = null;
     }
 
