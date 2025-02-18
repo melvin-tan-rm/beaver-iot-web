@@ -2,21 +2,35 @@
     display: flex;
     flex-direction: column;
     width: 100%;
+    padding: @padding-md;
+    background-color: var(--component-background);
+    border-radius: @border-radius-md;
 
     &__preview {
         width: 500px;
         height: 320px;
     }
 
-    &__label {
-        margin: @margin-xs;
+    &__header {
+        margin-bottom: @margin-xxs;
+        .text-size(@font-size-base);
     }
 
-    &__inner {
+    &__content {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        height: 0;
+        overflow: hidden;
+        border-radius: @border-radius-base;
+    }
+
+    &__img {
         width: 100%;
         max-width: 100%;
         object-fit: cover;
         border-style: none;
+        border-radius: @border-radius-base;
         pointer-events: none;
     }
 }
