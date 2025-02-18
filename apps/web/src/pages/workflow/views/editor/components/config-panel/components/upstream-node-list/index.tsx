@@ -32,7 +32,10 @@ const UpstreamNodeList: React.FC<UpstreamNodeListProps> = props => {
 
             acc.push(
                 <ListSubheader key={node.nodeId} className="ms-upstream-node-list-option-groupname">
-                    {`${node.nodeName || node.nodeId} (${node.nodeLabel})`}
+                    <Tooltip
+                        autoEllipsis
+                        title={`${node.nodeName || node.nodeId} (${node.nodeLabel})`}
+                    />
                 </ListSubheader>,
             );
 
