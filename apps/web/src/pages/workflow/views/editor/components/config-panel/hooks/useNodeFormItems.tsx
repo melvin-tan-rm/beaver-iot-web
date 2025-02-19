@@ -49,6 +49,7 @@ export type NodeFormDataProps = Record<string, any>;
 
 interface Props {
     readonly?: boolean;
+    nodeId?: string;
     nodeType?: WorkflowNodeType;
 }
 
@@ -62,7 +63,7 @@ const assignerNodeEntityFilterModel: EntityAssignSelectProps['filterModel'] = {
     accessMode: ['W', 'RW'],
 };
 
-const useNodeFormItems = ({ nodeType, readonly }: Props) => {
+const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
     const nodeConfigs = useFlowStore(state => state.nodeConfigs);
 
     const formConfigs = useMemo(() => {
@@ -250,6 +251,7 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
                                     return (
                                         <ServiceParamAssignInput
                                             name={name}
+                                            nodeId={nodeId}
                                             nodeType={nodeType}
                                             required={required}
                                             value={value}
@@ -354,7 +356,7 @@ const useNodeFormItems = ({ nodeType, readonly }: Props) => {
         });
 
         return result;
-    }, [nodeConfigs, readonly]);
+    }, [nodeConfigs, nodeId, readonly]);
 
     return !nodeType ? [] : formConfigs[nodeType] || [];
 };

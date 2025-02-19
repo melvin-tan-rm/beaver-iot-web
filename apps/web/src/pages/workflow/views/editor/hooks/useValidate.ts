@@ -53,7 +53,7 @@ const useValidate = () => {
     const { getIntlText } = useI18n();
     const { getNodes, getEdges } = useReactFlow<WorkflowNode, WorkflowEdge>();
     const nodeConfigs = useFlowStore(state => state.nodeConfigs);
-    const dynamicValidators = useFlowStore(state => state.dynamicValidators);
+    const getDynamicValidators = useFlowStore(state => state.getDynamicValidators);
 
     const dataValidators = useMemo(() => {
         const checkRequired: NodeDataValidator = (value?: any, fieldName?: string) => {
@@ -600,8 +600,8 @@ const useValidate = () => {
             'webhook.inputArguments': inputArgumentsChecker,
         };
 
-        return merge({}, result, dynamicValidators);
-    }, [dynamicValidators, getIntlText]);
+        return result;
+    }, [getIntlText]);
 
     /**
      * Check Nodes ID
@@ -868,15 +868,18 @@ const useValidate = () => {
                     }
                 });
 
-                const nodeCheckers = Object.keys(dataValidators).filter(key =>
+                const dynamicValidators = getDynamicValidators(id, nodeType);
+                const validators = merge({}, dataValidators, dynamicValidators);
+
+                const nodeCheckers = Object.keys(validators).filter(key =>
                     key.startsWith(`${type}.`),
                 );
 
                 nodeCheckers?.forEach(name => {
                     const key = name.replace(`${type}.`, '');
-                    const validators = dataValidators[name] || dataValidators[key] || {};
+                    const checkerMap = validators[name] || validators[key] || {};
 
-                    Object.values(validators).forEach(validator => {
+                    Object.values(checkerMap).forEach(validator => {
                         const result = validator(parameters[key], key);
                         if (result && result !== true) {
                             tempResult.errMsgs.push(result);
@@ -900,7 +903,7 @@ const useValidate = () => {
 
             return Object.values(result).some(item => item.errMsgs.length) ? result : undefined;
         },
-        [dataValidators, nodeConfigs, getIntlText, getNodes],
+        [dataValidators, nodeConfigs, getIntlText, getNodes, getDynamicValidators],
     );
 
     return {

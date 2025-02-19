@@ -1,9 +1,17 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import { cloneDeep } from 'lodash-es';
 import { type WorkflowAPISchema, type FlowNodeTraceInfo } from '@/services/http';
 import { basicNodeConfigs } from '../../config';
 import type { NodesDataValidResult } from './hooks';
 import type { NodeConfigItem, NodeDataValidator } from './typings';
+
+type DynamicValidatorItem = {
+    nodeId: string;
+    nodeType: WorkflowNodeType;
+    fieldName: string;
+    validators: NodeDataValidator[] | null;
+};
 
 export interface FlowStore {
     selectedNode?: WorkflowNode;
@@ -49,7 +57,12 @@ export interface FlowStore {
 
     logDetailLoading?: boolean;
 
-    dynamicValidators?: Record<`${WorkflowNodeType}.${string}`, Record<string, NodeDataValidator>>;
+    /**
+     * Dynamic Validators
+     *
+     * key: `${nodeId}.${nodeType}.${fieldName}`
+     */
+    dynamicValidators?: Record<`${string}.${WorkflowNodeType}.${string}`, DynamicValidatorItem>;
 
     isLogMode: () => boolean;
 
@@ -75,11 +88,12 @@ export interface FlowStore {
         logPanelMode?: FlowStore['logPanelMode'],
     ) => void;
 
-    setDynamicValidator: (
-        name: `${WorkflowNodeType}.${string}`,
-        checkerName: string,
-        validator?: NodeDataValidator | null,
-    ) => void;
+    setDynamicValidators: (props: DynamicValidatorItem) => void;
+
+    getDynamicValidators: (
+        nodeId: string,
+        nodeType: WorkflowNodeType,
+    ) => Record<`${WorkflowNodeType}.${string}`, Record<string, NodeDataValidator>>;
 }
 
 const useFlowStore = create(
@@ -163,22 +177,48 @@ const useFlowStore = create(
             // console.log(logDetail);
             set({ openLogPanel: true, logPanelMode, logDetail: { traceInfos } });
         },
-        setDynamicValidator(name, checkerName, validator) {
+        setDynamicValidators({ nodeId, nodeType, fieldName, validators }) {
             set(state => {
-                if (!validator) {
-                    delete state.dynamicValidators?.[name]?.[checkerName];
+                const key = `${nodeId}.${nodeType}.${fieldName}` as const;
+
+                if (!validators?.length) {
+                    delete state.dynamicValidators?.[key];
                 } else {
                     state.dynamicValidators = {
                         ...state.dynamicValidators,
-                        [name]: {
-                            ...state.dynamicValidators?.[name],
-                            [checkerName]: validator,
+                        [key]: {
+                            nodeId,
+                            nodeType,
+                            fieldName,
+                            validators,
                         },
                     };
                 }
 
                 return state;
             });
+        },
+
+        getDynamicValidators(nodeId, nodeType) {
+            const { dynamicValidators } = get();
+            const validators = Object.values(dynamicValidators || {}).filter(item => {
+                return item.nodeId === nodeId && item.nodeType === nodeType;
+            });
+            const result = cloneDeep(validators).reduce(
+                (acc, item) => {
+                    const key = `${item.nodeType}.${item.fieldName}` as const;
+                    acc[key] = acc[key] || {};
+
+                    item.validators?.forEach((validator, index) => {
+                        acc[key][`dynamicChecker${index}`] = validator;
+                    });
+
+                    return acc;
+                },
+                {} as ReturnType<FlowStore['getDynamicValidators']>,
+            );
+
+            return result;
         },
     })),
 );

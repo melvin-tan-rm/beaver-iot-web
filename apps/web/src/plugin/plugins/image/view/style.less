@@ -13,16 +13,23 @@
 
     &__header {
         margin-bottom: @margin-xxs;
-        .text-size(@font-size-base);
+        font-weight: @font-weight-medium;
+        .text-size(@font-size-lg);
     }
 
     &__content {
         display: flex;
         flex: 1;
         align-items: center;
+        justify-content: center;
         height: 0;
         overflow: hidden;
         border-radius: @border-radius-base;
+    }
+
+    &__empty_icon {
+        font-size: @font-size-7;
+        color: var(--icon-color-gray-light);
     }
 
     &__img {

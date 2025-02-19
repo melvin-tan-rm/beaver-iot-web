@@ -255,18 +255,21 @@ const IfElseNode: React.FC<NodeProps<IfElseNode>> = props => {
                                                     className="name"
                                                     title={param?.valueName || expressionValue?.key}
                                                 />
-                                                <span className="operator">{operatorText}</span>
-                                                <Tooltip autoEllipsis className="value" title="" />
-                                                {index === block.conditions.length && (
-                                                    <span className="logic-operator">
-                                                        {logicOperatorText}
-                                                    </span>
-                                                )}
+                                                <Tooltip
+                                                    autoEllipsis
+                                                    className="operator"
+                                                    title={operatorText}
+                                                />
                                                 <Tooltip
                                                     autoEllipsis
                                                     className="value"
                                                     title={valueLabel}
                                                 />
+                                                {index === block.conditions.length && (
+                                                    <span className="logic-operator">
+                                                        {logicOperatorText}
+                                                    </span>
+                                                )}
                                             </>
                                         )}
                                         {index !== block.conditions.length - 1 && (
