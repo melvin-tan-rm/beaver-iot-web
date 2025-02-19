@@ -2,7 +2,6 @@ import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import { BrokenImageIcon } from '@milesight/shared/src/components';
 import { entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import ws, { getExChangeTopic } from '@/services/ws';
-import emptyImage from './empty.svg';
 
 import './style.less';
 
