@@ -337,7 +337,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
                             </Button>
                         </div>
                     )}
-                    {logDetail?.traceInfos?.length ? (
+                    {logDetail?.traceInfos?.length && !logDetailLoading ? (
                         <div className="log-detail-area">
                             <ActionLog
                                 logType={logPanelMode === 'feVerify' ? 'validate' : undefined}
