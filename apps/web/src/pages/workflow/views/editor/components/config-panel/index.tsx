@@ -59,7 +59,11 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
     const { clearExcessEdges } = useWorkflow();
     const { control, setValue, getValues, watch, reset } = useForm<FormDataProps>();
     const commonFormItems = useCommonFormItems();
-    const nodeFormGroups = useNodeFormItems({ nodeType: finalSelectedNode?.type, readonly });
+    const nodeFormGroups = useNodeFormItems({
+        nodeId: finalSelectedNode?.id,
+        nodeType: finalSelectedNode?.type,
+        readonly,
+    });
     const formDataInit = useRef(false);
     const fields = useMemo(() => {
         const result: string[] = [];

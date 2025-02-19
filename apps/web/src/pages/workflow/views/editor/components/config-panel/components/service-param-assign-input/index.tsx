@@ -34,10 +34,9 @@ type ServiceParamAssignInputProps = {
     onChange?: (value: ServiceParamAssignInputValueType) => void;
     filterModel?: EntityFilterParams;
     name: string;
+    nodeId?: string;
     nodeType: WorkflowNodeType;
 };
-
-const DEFAULT_PARAMS_VALIDATOR_NAME = 'checkParamsRequired';
 
 const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
     required,
@@ -45,6 +44,7 @@ const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
     helperText,
     filterModel = { type: ['SERVICE'], excludeChildren: true },
     name,
+    nodeId,
     nodeType,
     ...props
 }) => {
@@ -177,36 +177,43 @@ const ServiceParamAssignInput: React.FC<ServiceParamAssignInputProps> = ({
     );
 
     // ---------- Generate validators ----------
-    const setDynamicValidator = useFlowStore(state => state.setDynamicValidator);
+    const setDynamicValidators = useFlowStore(state => state.setDynamicValidators);
 
     useEffect(() => {
+        if (!nodeId) return;
+
         const requiredEntities = subEntityList?.filter(item => item.required);
         if (!requiredEntities?.length) {
-            setDynamicValidator(`${nodeType}.${name}`, DEFAULT_PARAMS_VALIDATOR_NAME, null);
+            setDynamicValidators({ nodeId, nodeType, fieldName: name, validators: null });
             return;
         }
 
-        setDynamicValidator(
-            `${nodeType}.${name}`,
-            DEFAULT_PARAMS_VALIDATOR_NAME,
-            (
-                value: NonNullable<ServiceNodeDataType['parameters']>['serviceInvocationSetting'],
-                fieldName,
-            ) => {
-                const params = value?.serviceParams;
-                if (
-                    !params ||
-                    requiredEntities.some(
-                        item => isNil(params[item.key]) || params[item.key] === '',
-                    )
-                ) {
-                    return getIntlText('workflow.valid.required', { 1: fieldName });
-                }
+        setDynamicValidators({
+            nodeId,
+            nodeType,
+            fieldName: name,
+            validators: [
+                (
+                    value: NonNullable<
+                        ServiceNodeDataType['parameters']
+                    >['serviceInvocationSetting'],
+                    fieldName,
+                ) => {
+                    const params = value?.serviceParams;
+                    if (
+                        !params ||
+                        requiredEntities.some(
+                            item => isNil(params[item.key]) || params[item.key] === '',
+                        )
+                    ) {
+                        return getIntlText('workflow.valid.required', { 1: fieldName });
+                    }
 
-                return true;
-            },
-        );
-    }, [name, nodeType, subEntityList, setDynamicValidator, getIntlText]);
+                    return true;
+                },
+            ],
+        });
+    }, [name, nodeId, nodeType, subEntityList, setDynamicValidators, getIntlText]);
 
     return (
         <div className="ms-service-invocation-setting">
