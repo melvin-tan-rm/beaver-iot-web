@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useCallback, useEffect } from 'react';
+import { BrokenImageIcon } from '@milesight/shared/src/components';
 import { entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import ws, { getExChangeTopic } from '@/services/ws';
 import emptyImage from './empty.svg';
@@ -121,14 +122,18 @@ const View = (props: ViewProps) => {
         <div className={`image-wrapper ${isPreview ? 'image-wrapper__preview' : ''}`}>
             {label && <div className="image-wrapper__header">{label}</div>}
             <div className="image-wrapper__content">
-                <img
-                    className="image-wrapper__img"
-                    // style={{
-                    //     height: label ? 'calc(100% - 40px)' : '100%',
-                    // }}
-                    src={convertImageSrc || emptyImage}
-                    alt="failed"
-                />
+                {!convertImageSrc ? (
+                    <BrokenImageIcon className="image-wrapper__empty_icon" />
+                ) : (
+                    <img
+                        className="image-wrapper__img"
+                        // style={{
+                        //     height: label ? 'calc(100% - 40px)' : '100%',
+                        // }}
+                        src={convertImageSrc}
+                        alt="failed"
+                    />
+                )}
             </div>
         </div>
     );
