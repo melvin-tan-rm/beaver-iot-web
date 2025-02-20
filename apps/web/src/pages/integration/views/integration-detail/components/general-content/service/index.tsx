@@ -84,7 +84,7 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
             }),
             async onConfirm() {
                 const [error, resp] = await awaitWrap(
-                    entityAPI.callService({ exchange: { [service.key]: null } }),
+                    entityAPI.callService({ exchange: { [service.key]: {} } }),
                 );
                 if (error || !isRequestSuccess(resp)) return;
                 onUpdateSuccess?.();
