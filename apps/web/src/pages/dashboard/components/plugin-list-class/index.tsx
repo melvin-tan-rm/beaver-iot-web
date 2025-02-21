@@ -57,7 +57,7 @@ export default (props: PluginListProps) => {
     return (
         <div className="dashboard-plugin-class">
             <div className="dashboard-plugin-class-list">
-                <Grid container>
+                <Grid container gap={1}>
                     {pluginList
                         ? Object.keys(pluginList).map((pluginClass: string) => {
                               return (
@@ -68,13 +68,14 @@ export default (props: PluginListProps) => {
                                       <div className="dashboard-plugin-class-grid-title">
                                           {getIntlText(pluginList[pluginClass].name)}
                                       </div>
-                                      <Grid container>
+                                      <Grid container gap={1}>
                                           {pluginList[pluginClass]?.list?.map(
                                               (pluginConfig: any) => {
                                                   return (
                                                       <Grid
                                                           size={3}
                                                           className="dashboard-plugin-class-item"
+                                                          sx={{ width: 80, height: 80 }}
                                                       >
                                                           <div
                                                               className="dashboard-plugin-class-item-content"

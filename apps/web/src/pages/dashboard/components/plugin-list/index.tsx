@@ -20,10 +20,15 @@ export default (props: PluginListProps) => {
 
     return (
         <div className="dashboard-plugin-list">
-            <Grid container>
+            <Grid container gap={2}>
                 {pluginsConfigs?.map((pluginConfig: any) => {
                     return (
-                        <Grid key={pluginConfig.type} size={2} className="dashboard-plugin-item">
+                        <Grid
+                            key={pluginConfig.type}
+                            size={2}
+                            className="dashboard-plugin-item"
+                            sx={{ width: 120, height: 120 }}
+                        >
                             <div
                                 className="dashboard-plugin-item-content"
                                 onClick={() => handleClick(pluginConfig)}

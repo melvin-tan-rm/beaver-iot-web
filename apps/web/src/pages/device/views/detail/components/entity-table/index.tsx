@@ -53,7 +53,7 @@ const EntityTable: React.FC<Props> = ({ data, onRefresh }) => {
                 filterOperators: getGridStringOperators().filter(item => item.value === 'contains'),
             },
             {
-                field: 'id',
+                field: 'key',
                 headerName: getIntlText('device.label.param_entity_id'),
                 flex: 1,
                 minWidth: 150,
