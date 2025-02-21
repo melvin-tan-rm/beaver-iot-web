@@ -1,6 +1,6 @@
 .dashboard-plugin {
     &-list {
-        width: 80%;
+        max-width: 936px;
         margin: @margin-xxl auto;
     }
 
@@ -11,16 +11,17 @@
     }
 
     &-item {
-        padding: 0 @padding-xs;
-        margin-bottom: @margin-xxl;
-
         &-content {
-            padding: @padding-sm @padding-md;
+            padding: @padding-sm 0;
             text-align: center;
             background: var(--gray-color-1);
             border: 1px solid transparent;
             border-radius: @border-radius-md;
             cursor: pointer;
+
+            span {
+                .text-size(@font-size-base);
+            }
 
             &:hover {
                 border: 1px solid var(--primary-color-base);
@@ -28,9 +29,9 @@
 
             &-icon {
                 display: block;
-                width: 80px;
-                height: 80px;
-                margin: 0 auto @margin-xs;
+                width: 66px;
+                height: 66px;
+                margin: 0 auto @margin-xxs;
             }
         }
     }
