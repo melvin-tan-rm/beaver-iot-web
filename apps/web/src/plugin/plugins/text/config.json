@@ -44,6 +44,34 @@
                     }
                 }
             ]
+        },
+        {
+            "style": "width: 100%",
+            "components": [
+                {
+                    "type": "input",
+                    "title": "Font Size",
+                    "key": "fontSize",
+                    "style": "width: 100%",
+                    "defaultValue": "14",
+                    "componentProps": {
+                        "size": "small"
+                    },
+                    "rules": {
+                        "valueAsNumber": true,
+                        "min": {
+                            "value": 12
+                        },
+                        "max": {
+                            "value": 50
+                        },
+                        "pattern": {
+                            "value": "^[1-9][0-9]*$",
+                            "message": "Please enter a valid number"
+                        }
+                    }
+                }
+            ]
         }
     ],
     "view": []

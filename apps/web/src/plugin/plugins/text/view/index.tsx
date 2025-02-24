@@ -8,6 +8,7 @@ export interface ViewProps {
     config: {
         entity?: EntityOptionType;
         label?: string;
+        fontSize?: number;
     };
     configJson: {
         isPreview?: boolean;
@@ -16,7 +17,7 @@ export interface ViewProps {
 
 const View = (props: ViewProps) => {
     const { config, configJson } = props;
-    const { entity, label } = config || {};
+    const { entity, label, fontSize = 14 } = config || {};
     const { isPreview } = configJson || {};
 
     const [textContent, setTextContent] = useState('');
@@ -83,7 +84,12 @@ const View = (props: ViewProps) => {
     return (
         <div className={`text-wrapper ${isPreview ? 'text-wrapper__preview' : ''}`}>
             {label && <div className="text-wrapper__label">{label}</div>}
-            <div className="text-wrapper__content bg-custom-scrollbar">{textContent}</div>
+            <div
+                className="text-wrapper__content bg-custom-scrollbar"
+                style={{ fontSize: `${fontSize}px`, lineHeight: `${Number(fontSize) + 8}px` }}
+            >
+                {textContent}
+            </div>
         </div>
     );
 };
