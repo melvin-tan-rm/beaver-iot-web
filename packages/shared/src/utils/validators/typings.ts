@@ -2,7 +2,7 @@ export type Message = string;
 export type ValidateResult = Message | Message[] | boolean | undefined;
 export type Validate<TFieldValue = any, TFormValues = Record<string, any>> = (
     value: TFieldValue,
-    formValues: TFormValues,
+    formValues?: TFormValues,
 ) => ValidateResult | Promise<ValidateResult>;
 
 type RuleType = {
