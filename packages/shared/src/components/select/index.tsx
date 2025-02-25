@@ -13,6 +13,10 @@ import { type FieldError } from 'react-hook-form';
 
 type Props<T extends ApiKey> = {
     /**
+     * If true, the outline is notched to accommodate the label
+     */
+    notched?: boolean;
+    /**
      * Field error
      */
     error?: FieldError;
