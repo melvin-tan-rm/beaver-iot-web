@@ -11,7 +11,11 @@ interface IProps {
 }
 export default React.memo(({ header, children }: IProps) => {
     return (
-        <Accordion className="ms-log-tree" defaultExpanded>
+        <Accordion
+            className="ms-log-tree"
+            defaultExpanded
+            slotProps={{ transition: { unmountOnExit: true } }}
+        >
             <AccordionSummary expandIcon={<ArrowRightIcon />} className="ms-log-tree__header">
                 {header}
             </AccordionSummary>

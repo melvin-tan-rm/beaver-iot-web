@@ -91,6 +91,15 @@ export type NodeConfigItemType = {
  * Basic node configs
  */
 export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
+    timer: {
+        type: 'timer',
+        componentName: 'simpleTimer',
+        labelIntlKey: 'workflow.label.timer_node_name',
+        descIntlKey: 'workflow.label.timer_node_desc',
+        icon: <TimerIcon />,
+        iconBgColor: '#3491FA',
+        category: 'entry',
+    },
     trigger: {
         type: 'trigger',
         componentName: 'trigger',
@@ -106,15 +115,6 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
             },
         ],
         outputKeys: ['entityConfigs'],
-    },
-    timer: {
-        type: 'timer',
-        componentName: 'simpleTimer',
-        labelIntlKey: 'workflow.label.timer_node_name',
-        descIntlKey: 'workflow.label.timer_node_desc',
-        icon: <TimerIcon />,
-        iconBgColor: '#3491FA',
-        category: 'entry',
     },
     listener: {
         type: 'listener',
