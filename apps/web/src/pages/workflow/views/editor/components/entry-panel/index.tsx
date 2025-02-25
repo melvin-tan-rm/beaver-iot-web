@@ -5,7 +5,7 @@ import { useSize } from 'ahooks';
 import { Button, CircularProgress } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Empty } from '@/components';
-import { basicNodeConfigs } from '@/pages/workflow/config';
+import useFlowStore from '../../store';
 import { DEFAULT_NODE_HEIGHT } from '../../constants';
 import useInteractions from '../../hooks/useInteractions';
 import './style.less';
@@ -19,12 +19,15 @@ interface Props {
 
 // The height of the page topbar
 const DEFAULT_TOPBAR_HEIGHT = 57;
-const entryNodeConfigs = Object.values(basicNodeConfigs).filter(node => node.category === 'entry');
 
 const EntryModal: React.FC<Props> = ({ isEditing, loading }) => {
     const { getIntlText } = useI18n();
-    const { height: bodyHeight = 600 } = useSize(document.querySelector('body')) || {};
+
     const nodes = useNodes();
+    const nodeConfigs = useFlowStore(state => state.nodeConfigs);
+    const entryNodeConfigs = Object.values(nodeConfigs).filter(node => node.category === 'entry');
+
+    const { height: bodyHeight = 600 } = useSize(document.querySelector('body')) || {};
     const { setViewport, screenToFlowPosition } = useReactFlow<WorkflowNode, WorkflowEdge>();
     const { addNode } = useInteractions();
     const [selectedNodeType, setSelectedNodeType] = useState<WorkflowNodeType>();
