@@ -29,7 +29,11 @@ const useNodeTypes = () => {
                 acc[type] = props => (
                     <NodeContainer
                         {...config}
-                        title={getIntlText(config.labelIntlKey)}
+                        title={
+                            config.labelIntlKey
+                                ? getIntlText(config.labelIntlKey)
+                                : config.label || ''
+                        }
                         handles={generateHandle(type, props)}
                         nodeProps={props}
                     />

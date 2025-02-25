@@ -8,6 +8,7 @@ import {
     basicNodeConfigs,
     type NodeConfigItemType,
 } from '@/pages/workflow/config';
+import useFlowStore from '../../store';
 import useInteractions, { type AddNodeClosestPayloadParam } from '../../hooks/useInteractions';
 import './style.less';
 
@@ -32,6 +33,7 @@ const NodeMenu = ({
     ...menuProps
 }: Props) => {
     const { getIntlText } = useI18n();
+    const nodeConfigs = useFlowStore(state => state.nodeConfigs);
     const menuOptions = useMemo(() => {
         const result: Partial<
             Record<
@@ -43,21 +45,23 @@ const NodeMenu = ({
             >
         > = {};
 
-        Object.values(basicNodeConfigs).forEach(item => {
-            const { category, labelIntlKey } = item;
+        Object.values(nodeConfigs).forEach(item => {
+            const { category, labelIntlKey, label } = item;
             const cateConfig = nodeCategoryConfigs[category];
 
             if (!category || category === 'entry') return;
             result[category] = result[category] || [];
             result[category].push({
                 ...item,
-                nodeName: getIntlText(labelIntlKey),
-                categoryName: getIntlText(cateConfig.labelIntlKey),
+                nodeName: labelIntlKey ? getIntlText(labelIntlKey) : label || '',
+                categoryName: cateConfig?.labelIntlKey
+                    ? getIntlText(cateConfig.labelIntlKey)
+                    : category,
             });
         });
 
         return result;
-    }, [getIntlText]);
+    }, [nodeConfigs, getIntlText]);
 
     // ---------- Menu Open ----------
     const { zoom } = useViewport();

@@ -254,7 +254,9 @@ const useWorkflow = () => {
                         nodeId: id,
                         nodeName,
                         nodeType: type,
-                        nodeLabel: config?.labelIntlKey ? getIntlText(config.labelIntlKey) : '',
+                        nodeLabel: config?.labelIntlKey
+                            ? getIntlText(config.labelIntlKey)
+                            : config.label || '',
                         outputs: [],
                     };
 

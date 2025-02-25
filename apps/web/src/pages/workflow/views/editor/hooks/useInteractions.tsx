@@ -10,7 +10,6 @@ import { useSize } from 'ahooks';
 import { cloneDeep, maxBy, isNil } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { useConfirm } from '@/components';
-import { basicNodeConfigs } from '@/pages/workflow/config';
 import { genUuid } from '../helper';
 import {
     NODE_SPACING_X,
@@ -63,6 +62,7 @@ const useInteractions = () => {
         flowToScreenPosition,
     } = useReactFlow<WorkflowNode, WorkflowEdge>();
     const isLogMode = useFlowStore(state => state.isLogMode());
+    const nodeConfigs = useFlowStore(state => state.nodeConfigs);
     const { checkParallelLimit, checkNestedParallelLimit } = useWorkflow();
     const { width: bodyWidth, height: bodyHeight } = useSize(document.querySelector('body')) || {};
     const { getIntlText } = useI18n();
@@ -147,9 +147,9 @@ const useInteractions = () => {
             const edges = cloneDeep(getEdges());
             const prevNode = nodes.find(node => node.id === prevNodeId);
             const nextNode = nodes.find(node => node.id === nextNodeId);
-            const nodeConfig = basicNodeConfigs[nodeType] || {};
+            const nodeConfig = nodeConfigs[nodeType] || {};
             const sameTypeNodes = nodes.filter(item => item.type === nodeType);
-            const defaultNodeName = `${getIntlText(nodeConfig.labelIntlKey)}${!sameTypeNodes.length ? '' : ` ${sameTypeNodes.length + 1}`}`;
+            const defaultNodeName = `${nodeConfig.labelIntlKey ? getIntlText(nodeConfig.labelIntlKey) : nodeConfig.label || ''}${!sameTypeNodes.length ? '' : ` ${sameTypeNodes.length + 1}`}`;
             const newNode: WorkflowNode = {
                 id: genUuid('node'),
                 type: nodeType,

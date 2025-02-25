@@ -7,7 +7,6 @@ import { Menu, MenuItem } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { CheckCircleIcon, ErrorIcon, LoopIcon } from '@milesight/shared/src/components';
 import { Tooltip } from '@/components';
-import { basicNodeConfigs } from '@/pages/workflow/config';
 import useFlowStore from '../../store';
 import Handle from '../handle';
 import './style.less';
@@ -69,10 +68,6 @@ const statusMap: Record<
     },
 };
 
-const entryNodeTypes = Object.values(basicNodeConfigs)
-    .filter(item => item.category === 'entry')
-    .map(item => item.type);
-
 /**
  * Common Node Container
  */
@@ -105,6 +100,7 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
     const [searchParams] = useSearchParams();
     const isEditing = !!searchParams.get('wid');
     const isLogMode = useFlowStore(state => state.isLogMode());
+    const nodeConfigs = useFlowStore(state => state.nodeConfigs);
     const [contextMenu, setContextMenu] = useState<{
         mouseX: number;
         mouseY: number;
@@ -112,7 +108,7 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>();
     const nodeId = finalProps?.id;
     const nodeType = finalProps?.type as WorkflowNodeType;
-    const isEntryNode = basicNodeConfigs[nodeType]?.category === 'entry';
+    const isEntryNode = nodeConfigs[nodeType]?.category === 'entry';
 
     /**
      * Collection of modifiable node menus
@@ -120,12 +116,18 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
      * Note: The entry node can not be deleted.
      */
     const entryNodeConfigs = useMemo(() => {
-        const result = Object.values(basicNodeConfigs).filter(item => {
+        const result = Object.values(nodeConfigs).filter(item => {
             return item.category === 'entry' && item.type !== nodeType;
         });
 
         return result;
-    }, [nodeType]);
+    }, [nodeType, nodeConfigs]);
+
+    const entryNodeTypes = useMemo(() => {
+        return Object.values(nodeConfigs)
+            .filter(item => item.category === 'entry')
+            .map(item => item.type);
+    }, [nodeConfigs]);
 
     /**
      * Set Context Menu Position
@@ -152,7 +154,6 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
      * Menu Item click callback
      */
     const { updateNode, deleteElements } = useReactFlow<WorkflowNode, WorkflowEdge>();
-    const nodeConfigs = useFlowStore(state => state.nodeConfigs);
     const handleMenuItemClick = useCallback(
         async (
             e: React.MouseEvent<HTMLLIElement, MouseEvent>,
@@ -176,7 +177,9 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
                         type: targetNodeType,
                         componentName: nodeConfig.componentName,
                         data: {
-                            nodeName: getIntlText(nodeConfig.labelIntlKey),
+                            nodeName: nodeConfig.labelIntlKey
+                                ? getIntlText(nodeConfig.labelIntlKey)
+                                : nodeConfig.label || '',
                         },
                     });
                     break;
@@ -218,7 +221,7 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
         }
 
         return result;
-    }, [isEditing, isEntryNode, nodeType, getIntlText, handleMenuItemClick]);
+    }, [isEditing, isEntryNode, nodeType, entryNodeTypes, getIntlText, handleMenuItemClick]);
 
     return (
         <>
@@ -245,21 +248,7 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
                             : undefined
                     }
                 >
-                    {isEntryNode && (
-                        <MenuItem
-                            onClick={e => {
-                                e.stopPropagation();
-                                setAnchorEl(e.currentTarget);
-                            }}
-                        >
-                            {getIntlText('workflow.context_menu.title_change_node')}
-                        </MenuItem>
-                    )}
-                    {!entryNodeTypes.includes(nodeProps.type as WorkflowNodeType) && (
-                        <MenuItem onClick={e => handleMenuItemClick(e, { type: 'delete' })}>
-                            {getIntlText('common.label.delete')}
-                        </MenuItem>
-                    )}
+                    {menuItems}
                 </Menu>
                 <Menu
                     className="ms-workflow-node-contextmenu-sub"
@@ -289,7 +278,11 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
                             <span className="icon" style={{ backgroundColor: node.iconBgColor }}>
                                 {node.icon}
                             </span>
-                            <span className="title">{getIntlText(node.labelIntlKey)}</span>
+                            <span className="title">
+                                {node.labelIntlKey
+                                    ? getIntlText(node.labelIntlKey)
+                                    : node.label || ''}
+                            </span>
                         </MenuItem>
                     ))}
                 </Menu>
