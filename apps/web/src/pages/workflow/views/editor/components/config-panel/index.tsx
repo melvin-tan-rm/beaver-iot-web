@@ -115,16 +115,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
         Object.keys(data).forEach(key => {
             setValue(key, data[key]);
         });
-        /**
-         * Since node form items are rendered dynamically, `SetTimeout` is used here to
-         * ensure that the initial data is filled in after the rendering is complete.
-         */
-        setTimeout(() => {
-            // Object.keys(data).forEach(key => {
-            //     setValue(key, data[key]);
-            // });
-            formDataInit.current = true;
-        }, 100);
+        formDataInit.current = true;
     }, [finalSelectedNode, reset, setValue, getValues, clearExcessEdges]);
 
     // Save node data
