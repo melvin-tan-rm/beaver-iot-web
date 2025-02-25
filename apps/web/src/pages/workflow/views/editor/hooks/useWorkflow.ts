@@ -267,7 +267,8 @@ const useWorkflow = () => {
                         switch (param) {
                             // Data Type: { identify?: string; name: string; type: string }[]
                             case 'entityConfigs':
-                            case 'payload': {
+                            case 'payload':
+                            case 'message': {
                                 if (!Array.isArray(data)) return;
                                 data.forEach((item: Record<string, any>) => {
                                     if (!item?.name || !item?.type) return;

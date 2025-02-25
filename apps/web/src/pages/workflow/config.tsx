@@ -141,7 +141,7 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <ConnectWithoutContactIcon />,
         iconBgColor: '#3491FA',
         category: 'entry',
-        outputKeys: ['payload'],
+        outputKeys: ['message'],
     },
     ifelse: {
         type: 'ifelse',
