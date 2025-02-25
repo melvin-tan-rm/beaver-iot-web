@@ -59,7 +59,7 @@ export enum PERMISSIONS {
 }
 
 // Entity Pattern
-export enum ENTITY_AEECSS_MODE {
+export enum ENTITY_ACCESS_MODE {
     R = 'R',
     RW = 'RW',
     W = 'W',

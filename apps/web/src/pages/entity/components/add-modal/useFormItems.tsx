@@ -9,7 +9,7 @@ import {
     checkMaxLength,
     isMaxLength,
 } from '@milesight/shared/src/utils/validators';
-import { ENTITY_AEECSS_MODE, entityTypeOptions } from '@/constants';
+import { ENTITY_ACCESS_MODE, entityTypeOptions } from '@/constants';
 import { BooleanInput, DataTypeRadio, type DataTypeRadioProps, EnumsInput } from './components';
 
 type ExtendControllerProps<T extends FieldValues> = ControllerProps<T> & {
@@ -110,17 +110,17 @@ const useFormItems = () => {
                                     label: getIntlText(
                                         'entity.label.entity_type_of_access_readonly',
                                     ),
-                                    value: ENTITY_AEECSS_MODE.R,
+                                    value: ENTITY_ACCESS_MODE.R,
                                 },
                                 {
                                     label: getIntlText('entity.label.entity_type_of_access_write'),
-                                    value: ENTITY_AEECSS_MODE.W,
+                                    value: ENTITY_ACCESS_MODE.W,
                                 },
                                 {
                                     label: getIntlText(
                                         'entity.label.entity_type_of_access_read_and_write',
                                     ),
-                                    value: ENTITY_AEECSS_MODE.RW,
+                                    value: ENTITY_ACCESS_MODE.RW,
                                 },
                             ]}
                             formControlProps={{
