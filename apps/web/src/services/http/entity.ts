@@ -144,6 +144,7 @@ export interface EntityAPISchema extends APISchema {
     createCustomEntity: {
         request: {
             name: string;
+            identifier: string;
             access_mod: EntityAccessMode;
             value_type: EntityValueDataType;
             value_attribute: Record<string, any>;

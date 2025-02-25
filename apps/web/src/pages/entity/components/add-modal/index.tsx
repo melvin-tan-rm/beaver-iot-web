@@ -1,152 +1,206 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
+import { v4 } from 'uuid';
+import cls from 'classnames';
+import { useMemoizedFn } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { Modal, Form } from '@milesight/shared/src/components';
+import { Modal, toast, type ModalProps } from '@milesight/shared/src/components';
 import { entityAPI, awaitWrap, isRequestSuccess } from '@/services/http';
 import { ENTITY_TYPE } from '@/constants';
 import { TableRowDataType } from '../../hooks/useColumns';
-import useForm from './useForm';
-import './style.less';
+import useFormItems, { type FormDataProps } from './useFormItems';
 
-interface IProps {
-    onCancel: () => void;
-    onOk: (data: Record<string, any>) => void;
+interface Props extends Omit<ModalProps, 'onOk'> {
     data?: TableRowDataType | null;
+
+    /** Add a failed callback */
+    onError?: (err: any) => void;
+
+    /** Adding a successful callback */
+    onSuccess?: () => void;
 }
 
-const AddEntity = (props: IProps) => {
+const AddModal: React.FC<Props> = ({ visible, data, onCancel, onError, onSuccess, ...props }) => {
     const { getIntlText } = useI18n();
-    const { onOk, onCancel, data } = props;
-    const [formValues, setFormValues] = useState<Record<string, any>>({});
-    const [defaultValues, setDefaultValues] = useState<Record<string, any>>();
-    const formRef = useRef<any>();
-    const formValuesRef = useRef<Record<string, any>>({});
+    const entityId = data?.entityId;
 
-    const setFormValuesRef = (values: Record<string, any>) => {
-        formValuesRef.current = { ...values };
-    };
-
-    const formItems = useForm({
-        formValues,
-        data,
-        defaultValues,
-        preFormValues: { ...formValuesRef.current },
-        setPreFormValues: setFormValuesRef,
+    // ---------- Render form items ----------
+    const [disabled, setDisabled] = useState(false);
+    const { control, formState, watch, handleSubmit, reset, setValue } = useForm<FormDataProps>({
+        shouldUnregister: true,
     });
-
-    const handleClose = () => {
-        onCancel();
-    };
-
-    const handleOk = () => {
-        formRef.current?.handleSubmit();
-    };
-
-    // Form submission
-    const handleSubmit = async (values: Record<string, any>) => {
-        const resultValues: Record<string, any> = { value_attribute: {} };
-        Object.keys(values).forEach((key: string) => {
-            if (key.indexOf(`temp_${values.value_type}_key_`) > -1) {
-                if (!resultValues.value_attribute.enum) {
-                    resultValues.value_attribute.enum = {};
-                }
-                resultValues.value_attribute.enum[values[key]] =
-                    values[key.replace('key', 'value')];
-            } else if (
-                key.indexOf(`temp_${values.value_type}_value_`) > -1 &&
-                values.value_type === 'BOOLEAN'
-            ) {
-                if (!resultValues.value_attribute.enum) {
-                    resultValues.value_attribute.enum = {};
-                }
-                const keyIndex = Number(key.replace(`temp_${values.value_type}_value_`, '')) || 1;
-                resultValues.value_attribute.enum[keyIndex === 1 ? 'true' : 'false'] = values[key];
-            } else if (['min', 'max', 'minLength', 'maxLength'].includes(key)) {
-                resultValues.value_attribute[key] = values[key];
-            } else if (key.indexOf(`temp_${values.value_type}_value_`) === -1) {
-                resultValues[key] = values[key];
-            }
-        });
-        if (data?.entityId) {
-            const [err, res] = await awaitWrap(
-                entityAPI.editEntity({
-                    name: resultValues.name,
-                    id: data?.entityId,
-                }),
-            );
-            if (!err && isRequestSuccess(res)) {
-                onOk(resultValues);
-            }
-        } else {
-            const [err, res] = await awaitWrap(
-                entityAPI.createCustomEntity({
-                    ...(resultValues as any),
-                    type: ENTITY_TYPE.PROPERTY,
-                    entityId: data?.entityId,
-                }),
-            );
-            if (!err && isRequestSuccess(res)) {
-                onOk(resultValues);
-            }
-        }
-    };
+    const formItems = useFormItems();
+    const valueType = watch('valueType');
+    const dataType = watch('dataType') || 'value';
 
     useEffect(() => {
-        if (data) {
-            const resultFormValues: Record<string, any> = {
-                name: data.entityName,
-                identifier: data.identifier,
-                access_mod: data.entityAccessMod,
-                value_type: data.entityValueType,
-            };
-            if (data.entityValueAttribute?.enum) {
-                Object.keys(data.entityValueAttribute.enum).forEach(
-                    (key: string, index: number) => {
-                        resultFormValues[`temp_${data.entityValueType}_key_${index + 1}`] = key;
-                        resultFormValues[`temp_${data.entityValueType}_value_${index + 1}`] =
-                            data.entityValueAttribute.enum[key];
-                    },
-                );
-            } else if (data.entityValueAttribute?.min || data.entityValueAttribute?.min === 0) {
-                resultFormValues.min = data.entityValueAttribute.min;
-                resultFormValues.max = data.entityValueAttribute.max;
-            } else if (
-                data.entityValueAttribute?.minLength ||
-                data.entityValueAttribute?.minLength === 0
-            ) {
-                resultFormValues.minLength = data.entityValueAttribute.minLength;
-                resultFormValues.maxLength = data.entityValueAttribute.maxLength;
-            }
-            if (data?.entityKey) {
-                resultFormValues.identifier =
-                    data.entityKey.split('.')[data.entityKey.split('.').length - 1];
-            }
-            setFormValues(resultFormValues);
-            setDefaultValues(resultFormValues);
+        if (!visible) {
+            setTimeout(() => {
+                reset();
+                setDisabled(false);
+            }, 100);
+            return;
         }
-    }, [data]);
 
-    const handleChange = (values: any) => {
-        setFormValues(values);
-    };
+        if (data?.entityId) {
+            const { entityValueType, entityValueAttribute } = data;
+            const { min, max, minLength, maxLength, enum: enums } = entityValueAttribute || {};
+
+            setDisabled(true);
+            setValue('name', data.entityName);
+            setValue('identifier', data.entityKey?.split('.').pop() || '');
+            setValue('accessMod', data.entityAccessMod, { shouldDirty: true });
+            setValue('valueType', data.entityValueType);
+
+            if (enums) {
+                setValue('dataType', 'enums');
+
+                if (entityValueType === 'BOOLEAN') {
+                    setValue('boolEnums', enums);
+                } else {
+                    setValue('enums', enums);
+                }
+            } else {
+                setValue('dataType', 'value');
+
+                if (entityValueType === 'LONG' || entityValueType === 'DOUBLE') {
+                    setValue('min', min);
+                    setValue('max', max);
+                } else {
+                    setValue('minLength', minLength);
+                    setValue('maxLength', maxLength);
+                }
+            }
+        } else {
+            setValue('dataType', 'value');
+            setValue('identifier', v4().replace(/-/g, ''));
+        }
+    }, [data, visible, reset, setValue]);
+
+    // ---------- Cancel & Submit ----------
+    const handleCancel = useMemoizedFn(() => {
+        reset();
+        onCancel?.();
+    });
+
+    const onSubmit: SubmitHandler<FormDataProps> = useMemoizedFn(async (formData, all) => {
+        // Edit entity
+        if (entityId) {
+            const { name } = formData;
+            const [err, resp] = await awaitWrap(
+                entityAPI.editEntity({
+                    id: entityId,
+                    name,
+                }),
+            );
+
+            if (err || !isRequestSuccess(resp)) {
+                onError?.(err);
+            } else {
+                onSuccess?.();
+                toast.success(getIntlText('common.message.operation_success'));
+            }
+
+            return;
+        }
+
+        // Add entity
+        const {
+            name,
+            identifier,
+            accessMod,
+            valueType,
+            dataType = 'value',
+            min,
+            max,
+            minLength,
+            maxLength,
+            enums,
+            boolEnums,
+        } = formData;
+        const valueAttribute: Record<string, any> = {};
+
+        switch (valueType) {
+            case 'BOOLEAN':
+                valueAttribute.enum = boolEnums;
+                break;
+            case 'LONG':
+                if (dataType === 'enums') {
+                    valueAttribute.enum = enums;
+                } else {
+                    valueAttribute.min = min;
+                    valueAttribute.max = max;
+                }
+                break;
+            case 'DOUBLE':
+                valueAttribute.min = min;
+                valueAttribute.max = max;
+                break;
+            case 'STRING':
+                if (dataType === 'enums') {
+                    valueAttribute.enum = enums;
+                } else {
+                    valueAttribute.min_length = minLength;
+                    valueAttribute.max_length = maxLength;
+                }
+                break;
+            default:
+                break;
+        }
+
+        const [err, resp] = await awaitWrap(
+            entityAPI.createCustomEntity({
+                name,
+                identifier,
+                type: ENTITY_TYPE.PROPERTY,
+                access_mod: accessMod,
+                value_type: valueType,
+                value_attribute: valueAttribute,
+            }),
+        );
+
+        if (err || !isRequestSuccess(resp)) {
+            onError?.(err);
+            return;
+        }
+
+        onSuccess?.();
+        toast.success(getIntlText('common.message.add_success'));
+    });
 
     return (
         <Modal
-            visible
             size="lg"
-            className="ms-add-entity-modal"
-            onCancel={handleClose}
-            onOk={handleOk}
-            onOkText={getIntlText('common.button.save')}
+            visible={visible}
             title={getIntlText('entity.label.create_entity_only')}
+            className={cls('ms-add-entity-modal', { loading: formState.isSubmitting })}
+            onOkText={getIntlText('common.button.save')}
+            onOk={handleSubmit(onSubmit)}
+            onCancel={handleCancel}
+            {...props}
         >
-            <Form<TableRowDataType>
-                ref={formRef}
-                formItems={formItems}
-                onOk={handleSubmit}
-                onChange={handleChange}
-            />
+            {formItems.map(({ shouldRender, ...props }) => {
+                const formData = {
+                    valueType: entityId ? data.entityValueType : valueType,
+                    dataType: entityId
+                        ? data.entityValueAttribute?.enum
+                            ? 'enums'
+                            : 'value'
+                        : dataType,
+                };
+
+                if (shouldRender && !shouldRender(formData)) return null;
+                return (
+                    <Controller<FormDataProps>
+                        {...props}
+                        key={props.name}
+                        control={control}
+                        disabled={disabled && props.name !== 'name'}
+                    />
+                );
+            })}
         </Modal>
     );
 };
 
-export default AddEntity;
+export default AddModal;
