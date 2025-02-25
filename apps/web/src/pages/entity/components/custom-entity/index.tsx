@@ -1,5 +1,4 @@
 import { useState, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button, Stack, Menu, MenuItem } from '@mui/material';
 import { useRequest } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -20,7 +19,6 @@ import AddModal from '../add-modal';
 import AddFromWorkflow from '../add-from-workflow';
 
 export default () => {
-    const navigate = useNavigate();
     const { getIntlText } = useI18n();
     const { hasPermission } = useUserPermissions();
 
@@ -31,15 +29,6 @@ export default () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [workflowModalOpen, setWorkflowModalOpen] = useState(false);
     const [detail, setDetail] = useState<TableRowDataType | null>(null);
-    const open = Boolean(anchorEl);
-
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
 
     const {
         data: entityData,
@@ -60,8 +49,15 @@ export default () => {
             const data = getResponseData(resp);
 
             if (error || !data || !isRequestSuccess(resp)) return;
+            const camelData = objectToCamelCase(data);
 
-            return objectToCamelCase(data);
+            // Custom enums don't do camelCase conversions
+            camelData.content.forEach((item, index) => {
+                if (!item.entityValueAttribute) return;
+                item.entityValueAttribute.enum = data.content[index].entity_value_attribute.enum;
+            });
+
+            return camelData;
         },
         {
             debounceWait: 300,
@@ -95,21 +91,11 @@ export default () => {
         [confirm, getIntlText, getList, selectedIds],
     );
 
-    /** Details/Add event related */
-    const handleAdd = (data?: TableRowDataType) => {
-        !!data && setDetail(data);
+    const handleShowAddOnly = useCallback(() => {
         setModalOpen(true);
-    };
-
-    const handleAddClose = () => {
-        setModalOpen(false);
         setDetail(null);
-    };
-
-    const handleShowAddOnly = () => {
-        setModalOpen(true);
-        handleClose();
-    };
+        setAnchorEl(null);
+    }, []);
 
     const toolbarRender = useMemo(() => {
         return (
@@ -146,7 +132,8 @@ export default () => {
         (type, record) => {
             switch (type) {
                 case 'edit': {
-                    handleAdd(record);
+                    setDetail(record);
+                    setModalOpen(true);
                     break;
                 }
                 case 'delete': {
@@ -158,14 +145,14 @@ export default () => {
                 }
             }
         },
-        [navigate, handleDeleteConfirm],
+        [handleDeleteConfirm],
     );
     const columns = useColumns<TableRowDataType>({ onButtonClick: handleTableBtnClick });
 
-    const handleAddFromWorkflow = () => {
-        setWorkflowModalOpen(true);
-        handleClose();
-    };
+    // const handleAddFromWorkflow = () => {
+    //     setWorkflowModalOpen(true);
+    //     handleClose();
+    // };
 
     const handleSearch = useCallback((value: string) => {
         setKeyword(value);
@@ -190,16 +177,15 @@ export default () => {
                 onSearch={handleSearch}
                 onRefreshButtonClick={getList}
             />
-            {modalOpen && (
-                <AddModal
-                    onCancel={handleAddClose}
-                    onOk={() => {
-                        getList();
-                        handleAddClose();
-                    }}
-                    data={detail}
-                />
-            )}
+            <AddModal
+                visible={modalOpen}
+                data={detail}
+                onCancel={() => setModalOpen(false)}
+                onSuccess={() => {
+                    getList();
+                    setModalOpen(false);
+                }}
+            />
             {workflowModalOpen && (
                 <AddFromWorkflow
                     onCancel={() => setWorkflowModalOpen(false)}
@@ -213,8 +199,8 @@ export default () => {
             <Menu
                 id="add-menu"
                 anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
+                open={!!anchorEl}
+                onClose={() => setAnchorEl(null)}
                 MenuListProps={{
                     'aria-labelledby': 'basic-button',
                 }}

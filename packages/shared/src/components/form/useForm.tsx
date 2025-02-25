@@ -37,21 +37,27 @@ const useForm = (props: useFormProps) => {
             (rules?.minLength?.value || rules?.minLength?.value === 0) &&
             !rules?.minLength?.message
         ) {
-            rules.minLength.message = getIntlText('valid.input.max_length', {
+            rules.minLength.message = getIntlText('valid.input.min_length', {
                 0: rules?.minLength?.value,
             });
         }
         if ((rules?.min?.value || rules?.min?.value === 0) && !rules?.min?.message) {
-            rules.min.message = getIntlText('valid.input.max_value', {
+            rules.min.message = getIntlText('valid.input.min_value', {
                 0: rules?.min?.value,
             });
         }
+
+        if (rules?.pattern?.value && typeof rules.pattern.value === 'string') {
+            rules.pattern.value = new RegExp(rules.pattern.value);
+        }
+
         const children: FormItemsProps[] = [];
         if (item.children) {
             item.children.forEach((child, i) => {
                 children.push(getResultItem(child, i));
             });
         }
+
         return {
             ...formItem,
             rules,

@@ -5,11 +5,17 @@ import {
     ListSubheader,
     MenuItem,
     FormControl,
+    FormHelperText,
     FormControlProps as MuiFormControlProps,
     InputLabel,
 } from '@mui/material';
+import { type FieldError } from 'react-hook-form';
 
 type Props<T extends ApiKey> = {
+    /**
+     * Field error
+     */
+    error?: FieldError;
     /**
      * Drop-down option
      */
@@ -25,10 +31,11 @@ type Props<T extends ApiKey> = {
     formControlProps?: MuiFormControlProps;
 };
 
-export type SelectProps<T extends ApiKey> = Props<T> & MuiSelectProps<T>;
+export type SelectProps<T extends ApiKey> = Props<T> & Omit<MuiSelectProps<T>, 'error'>;
 
 const Select = <T extends ApiKey = ApiKey>(props: SelectProps<T>) => {
-    const { options, renderOptions, style, label, formControlProps, ...rest } = props;
+    const { options, renderOptions, style, label, error, disabled, formControlProps, ...rest } =
+        props;
 
     // Conversion of down pull option data on of down pull option data
     const getMenuItems = useMemo(() => {
@@ -52,7 +59,13 @@ const Select = <T extends ApiKey = ApiKey>(props: SelectProps<T>) => {
     return (
         <FormControl sx={{ ...style }} fullWidth {...(formControlProps || {})}>
             {!!label && (
-                <InputLabel size={rest?.size as any} required={rest?.required} id="select-label">
+                <InputLabel
+                    id="select-label"
+                    size={rest?.size as any}
+                    required={rest?.required}
+                    error={!!error}
+                    disabled={disabled}
+                >
                     {label}
                 </InputLabel>
             )}
@@ -62,6 +75,8 @@ const Select = <T extends ApiKey = ApiKey>(props: SelectProps<T>) => {
                 notched
                 label={label}
                 labelId="select-label"
+                error={!!error}
+                disabled={disabled}
             >
                 {renderOptions
                     ? renderOptions(options)
@@ -75,6 +90,7 @@ const Select = <T extends ApiKey = ApiKey>(props: SelectProps<T>) => {
                           );
                       })}
             </MuiSelect>
+            {!!error && <FormHelperText error>{error.message}</FormHelperText>}
         </FormControl>
     );
 };
