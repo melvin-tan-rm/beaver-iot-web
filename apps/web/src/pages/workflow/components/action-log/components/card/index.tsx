@@ -14,7 +14,11 @@ export default React.memo(({ header, children }: IProps) => {
     const hasChildren = React.Children.toArray(children).length > 0;
 
     return (
-        <Accordion className="ms-log-accordion" expanded={!hasChildren ? false : undefined}>
+        <Accordion
+            className="ms-log-accordion"
+            expanded={!hasChildren ? false : undefined}
+            slotProps={{ transition: { unmountOnExit: true } }}
+        >
             <AccordionSummary
                 classes={{
                     expandIconWrapper: cls({
