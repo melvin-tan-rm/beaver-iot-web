@@ -12,6 +12,7 @@ import {
     FactCheckIcon,
     CheckCircleIcon,
     ErrorIcon,
+    ConnectWithoutContactIcon,
     // FlagIcon,
 } from '@milesight/shared/src/components';
 
@@ -131,6 +132,16 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
             },
         ],
         outputKeys: ['entities'],
+    },
+    mqtt: {
+        type: 'mqtt',
+        componentName: 'simpleMqtt',
+        labelIntlKey: 'workflow.label.mqtt_node_name',
+        descIntlKey: '',
+        icon: <ConnectWithoutContactIcon />,
+        iconBgColor: '#3491FA',
+        category: 'entry',
+        outputKeys: ['payload'],
     },
     ifelse: {
         type: 'ifelse',

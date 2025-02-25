@@ -126,6 +126,7 @@ export {
     AddCircleOutline as AddCircleOutlineIcon,
     Logout as LogoutIcon,
     Language as LanguageIcon,
+    ConnectWithoutContact as ConnectWithoutContactIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';

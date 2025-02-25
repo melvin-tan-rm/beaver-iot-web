@@ -27,6 +27,7 @@ declare type ReactFlowViewport = import('@xyflow/react').Viewport;
  * @param trigger Trigger Node
  * @param timer Timer Node
  * @param listener Listener Node
+ * @param mqtt Mqtt Node
  * @param ifelse IfElse Node
  * @param code Code Node
  * @param service Service Node
@@ -39,6 +40,7 @@ declare type WorkflowNodeType =
     | 'trigger'
     | 'timer'
     | 'listener'
+    | 'mqtt'
     | 'ifelse'
     | 'code'
     | 'service'
