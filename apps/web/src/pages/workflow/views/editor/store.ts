@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep, pickBy } from 'lodash-es';
 import { type WorkflowAPISchema, type FlowNodeTraceInfo } from '@/services/http';
 import { basicNodeConfigs } from '../../config';
 import type { NodesDataValidResult } from './hooks';
@@ -98,7 +98,7 @@ export interface FlowStore {
 
 const useFlowStore = create(
     immer<FlowStore>((set, get) => ({
-        nodeConfigs: basicNodeConfigs,
+        nodeConfigs: pickBy(basicNodeConfigs, item => !item.isRemote) as FlowStore['nodeConfigs'],
 
         testLogs: [],
 

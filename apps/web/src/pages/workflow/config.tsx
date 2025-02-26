@@ -86,6 +86,10 @@ export type NodeConfigItemType = {
      * The keys that can be referenced in downstream node
      */
     outputKeys?: string[];
+    /**
+     * Whether the node is loaded from remote
+     */
+    isRemote?: boolean;
 };
 
 /**
@@ -142,6 +146,7 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         iconBgColor: '#3491FA',
         category: 'entry',
         outputKeys: ['message'],
+        isRemote: true,
     },
     ifelse: {
         type: 'ifelse',
