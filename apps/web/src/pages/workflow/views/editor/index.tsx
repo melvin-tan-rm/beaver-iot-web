@@ -1,7 +1,7 @@
 import { memo, useState, useCallback, useEffect } from 'react';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import { useRequest, useDebounceEffect } from 'ahooks';
-import { merge, isEmpty, isEqual, cloneDeep } from 'lodash-es';
+import { merge, isEmpty, isEqual, isNil, pickBy, cloneDeep } from 'lodash-es';
 import {
     ReactFlow,
     Background,
@@ -137,20 +137,26 @@ const WorkflowEditor = () => {
                     }
                     case 'replace': {
                         const { id: nodeId, data: nodeData } = change.item;
-                        const { nodeName, nodeRemark } = nodeData;
                         const node = nodes.find(item => item.id === nodeId);
-                        const {
-                            nodeName: originNodeName,
-                            nodeRemark: originNodeRemark,
-                            parameters: originParameters,
-                        } = node?.data || {};
-                        const isEq =
-                            ((!originNodeName && !nodeName) || originNodeName === nodeName) &&
-                            ((!originNodeRemark && !nodeRemark) ||
-                                originNodeRemark === nodeRemark) &&
-                            isEqual(originParameters, nodeData.parameters);
+                        const originNodeData = node?.data || {};
+                        const originData = pickBy(
+                            {
+                                nodeName: originNodeData.nodeName,
+                                nodeRemark: originNodeData.nodeRemark,
+                                ...originNodeData.parameters,
+                            },
+                            item => !isNil(item),
+                        );
+                        const currentData = pickBy(
+                            {
+                                nodeName: nodeData.nodeName,
+                                nodeRemark: nodeData.nodeRemark,
+                                ...nodeData.parameters,
+                            },
+                            item => !isNil(item),
+                        );
 
-                        return !isEq;
+                        return !isEqual(originData, currentData);
                     }
                     default: {
                         return false;
