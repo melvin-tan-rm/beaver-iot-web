@@ -303,6 +303,7 @@ const useInteractions = () => {
         [
             bodyWidth,
             bodyHeight,
+            nodeConfigs,
             getNodes,
             getEdges,
             setNodes,
