@@ -12,6 +12,7 @@ import {
     FactCheckIcon,
     CheckCircleIcon,
     ErrorIcon,
+    ConnectWithoutContactIcon,
     // FlagIcon,
 } from '@milesight/shared/src/components';
 
@@ -85,6 +86,10 @@ export type NodeConfigItemType = {
      * The keys that can be referenced in downstream node
      */
     outputKeys?: string[];
+    /**
+     * Whether the node is loaded from remote
+     */
+    isRemote?: boolean;
 };
 
 /**
@@ -131,6 +136,17 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
             },
         ],
         outputKeys: ['entities'],
+    },
+    mqtt: {
+        type: 'mqtt',
+        componentName: 'simpleMqtt',
+        labelIntlKey: 'workflow.label.mqtt_node_name',
+        descIntlKey: '',
+        icon: <ConnectWithoutContactIcon />,
+        iconBgColor: '#3491FA',
+        category: 'entry',
+        outputKeys: ['message'],
+        isRemote: true,
     },
     ifelse: {
         type: 'ifelse',

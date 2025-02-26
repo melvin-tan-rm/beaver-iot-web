@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Position, type NodeProps } from '@xyflow/react';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { basicNodeConfigs } from '@/pages/workflow/config';
+import useFlowStore from '../store';
 import { Handle, IfElseNode, NodeContainer } from '../components';
 
 /**
@@ -9,39 +9,31 @@ import { Handle, IfElseNode, NodeContainer } from '../components';
  */
 const useNodeTypes = () => {
     const { getIntlText } = useI18n();
+    const nodeConfigs = useFlowStore(state => state.nodeConfigs);
 
     const nodeTypes = useMemo(() => {
-        const result = (Object.keys(basicNodeConfigs) as WorkflowNodeType[]).reduce(
+        const entryNodeConfigs = Object.values(nodeConfigs).filter(
+            config => config.category === 'entry',
+        );
+        const result = (Object.keys(nodeConfigs) as WorkflowNodeType[]).reduce(
             (acc, type) => {
-                const config = { ...basicNodeConfigs[type] };
+                const config = { ...nodeConfigs[type] };
                 const generateHandle = (type: WorkflowNodeType, props: NodeProps<WorkflowNode>) => {
-                    switch (type) {
-                        case 'trigger':
-                        case 'timer':
-                        case 'listener': {
-                            return [
-                                <Handle
-                                    type="source"
-                                    position={Position.Right}
-                                    nodeProps={props}
-                                />,
-                            ];
-                        }
-                        // case 'end': {
-                        //     return [
-                        //         <Handle type="target" position={Position.Left} nodeProps={props} />,
-                        //     ];
-                        // }
-                        default: {
-                            break;
-                        }
+                    if (entryNodeConfigs.find(item => item.type === type)) {
+                        return [
+                            <Handle type="source" position={Position.Right} nodeProps={props} />,
+                        ];
                     }
                 };
 
                 acc[type] = props => (
                     <NodeContainer
                         {...config}
-                        title={getIntlText(config.labelIntlKey)}
+                        title={
+                            config.labelIntlKey
+                                ? getIntlText(config.labelIntlKey)
+                                : config.label || ''
+                        }
                         handles={generateHandle(type, props)}
                         nodeProps={props}
                     />
@@ -54,7 +46,7 @@ const useNodeTypes = () => {
         );
 
         return result;
-    }, [getIntlText]);
+    }, [nodeConfigs, getIntlText]);
 
     return nodeTypes;
 };

@@ -61,4 +61,16 @@ export const DEFAULT_VALUES: Partial<Record<WorkflowNodeType, Record<string, any
     service: {
         payload: [],
     },
+    mqtt: {
+        message: [
+            {
+                name: 'topic',
+                type: 'STRING',
+            },
+            {
+                name: 'payload',
+                type: 'STRING',
+            },
+        ],
+    },
 };

@@ -74,10 +74,14 @@ const EntryModal: React.FC<Props> = ({ isEditing, loading }) => {
                                     </div>
                                     <div className="ms-node-item-info">
                                         <div className="ms-node-item-name">
-                                            {getIntlText(config.labelIntlKey)}
+                                            {config.labelIntlKey
+                                                ? getIntlText(config.labelIntlKey)
+                                                : config.label}
                                         </div>
                                         <div className="ms-node-item-desc">
-                                            {getIntlText(config.descIntlKey || '')}
+                                            {config.descIntlKey
+                                                ? getIntlText(config.descIntlKey)
+                                                : ''}
                                         </div>
                                     </div>
                                 </div>

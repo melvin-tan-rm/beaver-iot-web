@@ -619,9 +619,10 @@ const useValidate = () => {
                 const { id, type, data } = nodes[i];
                 const nodeName = data?.nodeName;
                 const nodeType = type as WorkflowNodeType;
-                const nodeLabel = !nodeConfigs[nodeType]
-                    ? undefined
-                    : getIntlText(nodeConfigs[nodeType]?.labelIntlKey);
+                const nodeConfig = nodeConfigs[nodeType];
+                const nodeLabel = nodeConfig?.labelIntlKey
+                    ? getIntlText(nodeConfig.labelIntlKey)
+                    : nodeConfig.label || '';
                 const errMsgs: string[] = [];
 
                 if (nodesMap.has(id)) {
@@ -844,7 +845,9 @@ const useValidate = () => {
                 if (!tempResult) {
                     tempResult = {
                         type: nodeType,
-                        label: config ? getIntlText(config.labelIntlKey) : undefined,
+                        label: config?.labelIntlKey
+                            ? getIntlText(config.labelIntlKey)
+                            : config.label || '',
                         name: nodeName,
                         status: 'SUCCESS',
                         errMsgs: [],
