@@ -48,7 +48,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
 
     useDebounceEffect(
         () => {
-            formDataInit.current = false;
+            setFormDataReady(false);
             setFinalSelectedNode(selectedNode);
         },
         [selectedNode],
@@ -64,7 +64,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
         nodeType: finalSelectedNode?.type,
         readonly,
     });
-    const formDataInit = useRef(false);
+    const [formDataReady, setFormDataReady] = useState(false);
     const fields = useMemo(() => {
         const result: string[] = [];
 
@@ -104,7 +104,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
         if (!finalSelectedNode) {
             reset();
             clearExcessEdges();
-            formDataInit.current = false;
+            setFormDataReady(false);
             return;
         }
         const defaultValue = cloneDeep(DEFAULT_VALUES[finalSelectedNode.type!]);
@@ -115,18 +115,22 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
         Object.keys(data).forEach(key => {
             setValue(key, data[key]);
         });
-        formDataInit.current = true;
+        /**
+         * Since node form items are rendered dynamically, `SetTimeout` is used here to
+         * ensure that the initial data of current node is ready.
+         */
+        setTimeout(() => setFormDataReady(true), 100);
     }, [finalSelectedNode, reset, setValue, getValues, clearExcessEdges]);
 
     // Save node data
     useThrottleEffect(
         () => {
-            if (!openPanel || !finalSelectedNode?.id || !formDataInit.current) return;
+            if (!openPanel || !finalSelectedNode?.id || !formDataReady) return;
             const { nodeName, nodeRemark, ...formData } = latestFormData || {};
 
             updateNodeData(finalSelectedNode.id, { nodeName, nodeRemark, parameters: formData });
         },
-        [openPanel, latestFormData, updateNodeData],
+        [openPanel, formDataReady, latestFormData, updateNodeData],
         { wait: 50 },
     );
 
