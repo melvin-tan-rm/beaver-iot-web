@@ -5,13 +5,14 @@ import {
     FormControl,
     // FormLabel,
     FormControlLabel,
-    InputLabel,
-    Select,
-    MenuItem,
+    // InputLabel,
+    // Select,
+    // MenuItem,
     FormHelperText,
     Switch,
+    Autocomplete,
 } from '@mui/material';
-import { isNil } from 'lodash-es';
+import { isNil, isEqual } from 'lodash-es';
 import {
     checkRequired,
     checkMinValue,
@@ -171,35 +172,60 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                             field: { onChange, value, disabled },
                             fieldState: { error },
                         }) => {
+                            const options = Object.entries(attr.enum || {}).map(([key, value]) => ({
+                                label: value,
+                                value: key,
+                            }));
+                            const innerValue = options.find(item => item.value === value);
                             return (
                                 <FormControl
                                     disabled={disabled}
                                     fullWidth
                                     size="small"
-                                    sx={{ my: 1.5 }}
+                                    sx={{ mb: 1.5 }}
                                 >
-                                    <InputLabel
+                                    {/* <InputLabel
                                         required={!attr.optional}
                                         id={`select-label-${entity.name}`}
                                         error={!!error}
                                     >
                                         {entity.name}
-                                    </InputLabel>
-                                    <Select
+                                    </InputLabel> */}
+                                    {/* <Select
                                         notched
                                         label={entity.name}
                                         labelId={`select-label-${entity.name}`}
                                         required={!attr.optional}
                                         error={!!error}
                                         value={value}
-                                        onChange={onChange}
+                                        onChange={e => console.log(e)}
                                     >
                                         {Object.entries(attr.enum || {}).map(([key, value]) => (
                                             <MenuItem key={value} value={key}>
                                                 {value}
                                             </MenuItem>
                                         ))}
-                                    </Select>
+                                    </Select> */}
+                                    <Autocomplete
+                                        options={options}
+                                        isOptionEqualToValue={(option, value) =>
+                                            isEqual(option, value)
+                                        }
+                                        renderInput={params => (
+                                            <TextField
+                                                {...params}
+                                                label={entity.name}
+                                                error={!!error}
+                                                required={!attr.optional}
+                                                InputProps={{
+                                                    ...params.InputProps,
+                                                    size: 'small',
+                                                }}
+                                            />
+                                        )}
+                                        value={innerValue || null}
+                                        onChange={(_, option) => onChange(option?.value)}
+                                    />
                                     {!!error && (
                                         <FormHelperText error>{error.message}</FormHelperText>
                                     )}

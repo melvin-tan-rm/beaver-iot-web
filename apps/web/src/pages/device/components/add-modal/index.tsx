@@ -56,11 +56,21 @@ const AddModal: React.FC<Props> = ({ visible, onCancel, onError, onSuccess, ...p
 
             if (error || !respData || !isRequestSuccess(resp)) return;
 
-            const data = objectToCamelCase(respData);
-            const addDeviceKey = data.addDeviceServiceKey;
-            const list = data.integrationEntities?.filter(item => {
-                return `${item.key}`.includes(`${addDeviceKey}`);
-            });
+            const {
+                add_device_service_key: addDeviceKey,
+                integration_entities: integrationEntities,
+            } = respData;
+            const list = integrationEntities
+                ?.map(item => {
+                    const data = objectToCamelCase(item);
+
+                    if (data.valueAttribute.enum) {
+                        data.valueAttribute.enum = item.value_attribute.enum;
+                    }
+
+                    return data;
+                })
+                .filter(item => `${item.key}`.includes(`${addDeviceKey}`));
 
             return list;
         },
