@@ -1,21 +1,13 @@
-import React, { useMemo, useState, useCallback, useEffect } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
+import { useMemoizedFn } from 'ahooks';
+
 import { BrokenImageIcon } from '@milesight/shared/src/components';
+import { isURL } from '@milesight/shared/src/utils/validators/asserts';
+
 import { entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import ws, { getExChangeTopic } from '@/services/ws';
 
 import './style.less';
-
-/**
- * Determines whether is valid url
- */
-const isValidURL = (url: string): boolean => {
-    try {
-        const newUrl = new URL(url);
-        return Boolean(newUrl);
-    } catch {
-        return false;
-    }
-};
 
 /**
  * Determines whether is valid base64
@@ -46,6 +38,7 @@ const View = (props: ViewProps) => {
     const { isPreview } = configJson || {};
 
     const [imageSrc, setImageSrc] = useState('');
+    const [imageFailed, setImageFailed] = useState(false);
 
     /**
      * Request physical state function
@@ -110,27 +103,42 @@ const View = (props: ViewProps) => {
      * Determines whether is valid image src
      */
     const convertImageSrc = useMemo(() => {
-        if (isValidURL(imageSrc) || isBase64(imageSrc)) {
+        setImageFailed(false);
+
+        if (
+            isURL(imageSrc, {
+                protocols: ['http', 'https'],
+                require_protocol: true,
+            }) ||
+            isBase64(imageSrc)
+        ) {
             return imageSrc;
         }
 
         return '';
     }, [imageSrc]);
 
+    /**
+     * handle image loading error failed
+     */
+    const handleImageFailed = useMemoizedFn(() => {
+        if (imageFailed) return;
+
+        setImageFailed(true);
+    });
+
     return (
         <div className={`image-wrapper ${isPreview ? 'image-wrapper__preview' : ''}`}>
             {label && <div className="image-wrapper__header">{label}</div>}
             <div className="image-wrapper__content">
-                {!convertImageSrc ? (
+                {!convertImageSrc || imageFailed ? (
                     <BrokenImageIcon className="image-wrapper__empty_icon" />
                 ) : (
                     <img
                         className="image-wrapper__img"
-                        // style={{
-                        //     height: label ? 'calc(100% - 40px)' : '100%',
-                        // }}
                         src={convertImageSrc}
-                        alt="failed"
+                        alt=""
+                        onError={handleImageFailed}
                     />
                 )}
             </div>
