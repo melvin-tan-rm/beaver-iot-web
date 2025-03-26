@@ -9,6 +9,56 @@
     "minCol": 2,
     "configProps": [
         {
+            "components": [
+                {
+                    "type": "input",
+                    "title": "Title",
+                    "key": "title",
+                    "defaultValue": "Title",
+                    "componentProps": {
+                        "size": "small",
+                        "inputProps": {
+                            "maxLength": 35
+                        }
+                    },
+                    "rules": {
+                        "required": true
+                    }
+                }
+            ]
+        },
+        {
+            "style": "width: 100%",
+            "components": [
+                {
+                    "type": "chartEntityPosition",
+                    "title": "entityPosition",
+                    "key": "entityPosition",
+                    "style": "width: 100%",
+                    "getDataUrl": "",
+                    "valueType": "array",
+                    "rules": {
+                        "required": true
+                    }
+                }
+            ]
+        },
+        {
+            "style": "width: 100%;",
+            "components": [
+                {
+                    "type": "ChartTimeSelect",
+                    "title": "Time",
+                    "key": "time",
+                    "style": "width: 100%;",
+                    "componentProps": {
+                        "size": "small"
+                    },
+                    "defaultValue": 86400000
+                }
+            ]
+        },
+        {
             "style": "width: 100%",
             "components": [
                 {
@@ -26,37 +76,6 @@
                     "rules": {
                         "required": true
                     }
-                }
-            ]
-        },
-        {
-            "components": [
-                {
-                    "type": "input",
-                    "title": "Title",
-                    "key": "title",
-                    "defaultValue": "Title",
-                    "componentProps": {
-                        "size": "small",
-                        "inputProps": {
-                            "maxLength": 35
-                        }
-                    }
-                }
-            ]
-        },
-        {
-            "style": "width: 100%;",
-            "components": [
-                {
-                    "type": "ChartTimeSelect",
-                    "title": "Time",
-                    "key": "time",
-                    "style": "width: 100%;",
-                    "componentProps": {
-                        "size": "small"
-                    },
-                    "defaultValue": 86400000
                 }
             ]
         }

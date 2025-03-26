@@ -27,5 +27,8 @@
     "dashboard.plugin_class_operate": "Operable Widgets",
     "dashboard.plugin_class_other": "Other",
     "dashboard.switch_title_off": "Off",
-    "dashboard.switch_title_on": "On"
+    "dashboard.switch_title_on": "On",
+    "dashboard.label.left_y_axis": "LeftY",
+    "dashboard.label.right_y_axis": "RightY",
+    "dashboard.label.y_axis": "Y Axis"
 }

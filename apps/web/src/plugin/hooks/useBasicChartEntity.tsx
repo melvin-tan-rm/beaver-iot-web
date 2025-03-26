@@ -14,6 +14,7 @@ export interface UseBasicChartEntityProps {
 
 /** Types of the data required for the chart */
 export interface ChartShowDataProps {
+    key: string;
     entityLabel: string;
     entityValues: (string | number | null)[];
 }
@@ -163,6 +164,7 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
 
                 if (entityLabel) {
                     newChartShowData.push({
+                        key: (entity || [])[index]?.rawData?.entityKey || '',
                         entityLabel,
                         entityValues: chartData,
                     });
