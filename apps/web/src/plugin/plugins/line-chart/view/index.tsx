@@ -15,6 +15,8 @@ export interface ViewProps {
         entityPosition: ChartEntityPositionValueType[];
         title: string;
         time: number;
+        leftYAxisUnit: string;
+        rightYAxisUnit: string;
     };
     configJson: {
         isPreview?: boolean;
@@ -23,7 +25,7 @@ export interface ViewProps {
 
 const View = (props: ViewProps) => {
     const { config, configJson } = props;
-    const { entityPosition, title, time } = config || {};
+    const { entityPosition, title, time, leftYAxisUnit, rightYAxisUnit } = config || {};
     const { isPreview } = configJson || {};
 
     const entity = useMemo(() => {
@@ -84,6 +86,10 @@ const View = (props: ViewProps) => {
                                     autoSkip: true,
                                     autoSkipPadding: 20,
                                 },
+                                title: {
+                                    display: true,
+                                    text: leftYAxisUnit,
+                                },
                             },
                             y1: {
                                 type: 'linear',
@@ -97,6 +103,10 @@ const View = (props: ViewProps) => {
                                 // grid line settings
                                 grid: {
                                     drawOnChartArea: false, // only want the grid lines for one axis to show up
+                                },
+                                title: {
+                                    display: true,
+                                    text: rightYAxisUnit,
                                 },
                             },
                             x: {
@@ -154,7 +164,7 @@ const View = (props: ViewProps) => {
         } catch (error) {
             console.error(error);
         }
-    }, [chartLabels, newChartShowData, isDisplayY1]);
+    }, [chartLabels, newChartShowData, isDisplayY1, leftYAxisUnit, rightYAxisUnit]);
 
     return (
         <div className={styles['line-chart-wrapper']}>
