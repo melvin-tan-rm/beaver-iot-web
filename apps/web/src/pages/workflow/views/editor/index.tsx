@@ -329,7 +329,13 @@ const WorkflowEditor = () => {
                 const newNodes = normalizeNodes(nodes, [...FROZEN_NODE_PROPERTY_KEYS, 'measured']);
                 const newEdges = normalizeEdges(edges);
 
-                if (!checkWorkflowValid(newNodes, newEdges)) return;
+                if (!nodes.length) {
+                    // Allow switching when nodes is empty
+                    setDesignMode(mode);
+                } else if (!checkWorkflowValid(newNodes, newEdges)) {
+                    return;
+                }
+
                 const selectedNode = nodes.find(node => node.selected);
 
                 if (selectedNode) updateNode(selectedNode.id, { selected: false });
@@ -346,6 +352,11 @@ const WorkflowEditor = () => {
                 }
                 const { nodes, edges } = data;
 
+                // Allow switching when nodes is empty
+                if (!nodes?.length) {
+                    setDesignMode(mode);
+                    return;
+                }
                 if (!checkWorkflowValid(nodes, edges)) return;
                 if (
                     checkNodesId(nodes, { validateFirst: true }) ||
