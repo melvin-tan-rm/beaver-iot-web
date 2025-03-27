@@ -54,7 +54,7 @@ const View = (props: ViewProps) => {
     useEffect(() => {
         try {
             let chart: Chart<'line', (string | number | null)[], string> | null = null;
-            const resultColor = getChartColor(chartShowData);
+            const resultColor = getChartColor(newChartShowData);
             if (chartRef.current) {
                 chart = new Chart(chartRef.current, {
                     type: 'line',
@@ -93,6 +93,10 @@ const View = (props: ViewProps) => {
                                 ticks: {
                                     autoSkip: true,
                                     autoSkipPadding: 20,
+                                },
+                                // grid line settings
+                                grid: {
+                                    drawOnChartArea: false, // only want the grid lines for one axis to show up
                                 },
                             },
                             x: {
@@ -150,7 +154,7 @@ const View = (props: ViewProps) => {
         } catch (error) {
             console.error(error);
         }
-    }, [chartLabels, newChartShowData, isDisplayY1, chartRef]);
+    }, [chartLabels, newChartShowData, isDisplayY1]);
 
     return (
         <div className={styles['line-chart-wrapper']}>

@@ -27,7 +27,7 @@ export function useLineChart(props: UseLineChartProps) {
         if (!Array.isArray(chartShowData)) return [];
 
         return chartShowData.map(data => {
-            const newEntity = entityPosition?.find(e => e.key === data.key);
+            const newEntity = entityPosition?.find(e => e.id === data.id);
             if (!newEntity) return data;
 
             return {
@@ -39,7 +39,7 @@ export function useLineChart(props: UseLineChartProps) {
 
     const isDisplayY1 = useMemo(() => {
         return newChartShowData.some(data => data.yAxisID === 'y1');
-    }, []);
+    }, [newChartShowData]);
 
     return {
         /**

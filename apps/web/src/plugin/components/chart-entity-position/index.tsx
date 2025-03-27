@@ -20,7 +20,7 @@ export enum POSITION_AXIS {
 }
 
 export interface ChartEntityPositionValueType {
-    key: string;
+    id: ApiKey;
     entity: EntitySelectOption | null;
     position: POSITION_AXIS;
 }
@@ -44,8 +44,6 @@ const MAX_VALUE_LENGTH = 5;
  * Note: use in line chart multiple y axis
  */
 const ChartEntityPosition: React.FC<ChartEntityPositionProps> = ({
-    label,
-    required = true,
     multiple = true,
     error,
     helperText,
@@ -67,13 +65,13 @@ const ChartEntityPosition: React.FC<ChartEntityPositionProps> = ({
                 value: POSITION_AXIS.RIGHT,
             },
         ];
-    }, []);
+    }, [getIntlText]);
 
     useLayoutEffect(() => {
         if (
             isEqual(
                 data,
-                list.filter(item => Boolean(item.key)),
+                list.filter(item => Boolean(item.id)),
             )
         ) {
             return;
@@ -83,7 +81,7 @@ const ChartEntityPosition: React.FC<ChartEntityPositionProps> = ({
     }, [data, resetList]);
 
     useEffect(() => {
-        setData?.(list.filter(item => Boolean(item.key)));
+        setData?.(list.filter(item => Boolean(item.id)));
     }, [list, setData]);
 
     return (
@@ -96,15 +94,16 @@ const ChartEntityPosition: React.FC<ChartEntityPositionProps> = ({
                     <div className="ms-entity-assign-select-item" key={getKey(index)}>
                         <EntitySelect
                             required
+                            fieldName="entityId"
                             className="ms-entity-select"
                             label={getIntlText('common.label.entity')}
                             popupIcon={<KeyboardArrowDownIcon />}
-                            value={item.key}
+                            value={String(item?.id || '')}
                             onChange={option => {
                                 if (!option) return;
 
                                 replace(index, {
-                                    key: option?.rawData?.entityKey || '',
+                                    id: option?.rawData?.entityId || '',
                                     entity: option,
                                     position: item.position,
                                 });
@@ -122,7 +121,7 @@ const ChartEntityPosition: React.FC<ChartEntityPositionProps> = ({
                                 if (!value) return;
 
                                 replace(index, {
-                                    key: item.key,
+                                    id: item.id,
                                     entity: item.entity,
                                     position: value as POSITION_AXIS,
                                 });
@@ -143,7 +142,7 @@ const ChartEntityPosition: React.FC<ChartEntityPositionProps> = ({
                         onClick={() => {
                             if (list.length >= MAX_VALUE_LENGTH) return;
                             insert(list.length, {
-                                key: '',
+                                id: '',
                                 entity: null,
                                 position: POSITION_AXIS.LEFT,
                             });
