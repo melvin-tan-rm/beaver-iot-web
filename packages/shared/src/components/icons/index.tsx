@@ -127,6 +127,7 @@ export {
     Logout as LogoutIcon,
     Language as LanguageIcon,
     ConnectWithoutContact as ConnectWithoutContactIcon,
+    BackHandOutlined as BackHandOutlinedIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';

@@ -45,7 +45,7 @@ import {
     TestButton,
     type TopbarProps,
 } from './components';
-import { type DesignMode } from './typings';
+import type { DesignMode, MoveMode } from './typings';
 
 import '@xyflow/react/dist/style.css';
 import './style.less';
@@ -385,6 +385,10 @@ const WorkflowEditor = () => {
         updateNode(selectedNode?.id, { selected: false });
     };
 
+    // ---------- Move Mode Change ----------
+    const [moveMode, setMoveMode] = useState<MoveMode>('hand');
+    const isPanMode = moveMode === 'hand';
+
     // ---------- Save Workflow ----------
     const navigate = useNavigate();
     const [saveLoading, setSaveLoading] = useState(false);
@@ -544,7 +548,8 @@ const WorkflowEditor = () => {
                         minZoom={MIN_ZOOM}
                         maxZoom={MAX_ZOOM}
                         deleteKeyCode={DELETE_KEY_CODE}
-                        selectionOnDrag={false}
+                        panOnDrag={isPanMode}
+                        selectionOnDrag={!isPanMode}
                         selectNodesOnDrag={false}
                         selectionKeyCode={null}
                         multiSelectionKeyCode={null}
@@ -562,7 +567,13 @@ const WorkflowEditor = () => {
                         onEdgeMouseLeave={handleEdgeMouseLeave}
                     >
                         <Background />
-                        <Controls minZoom={MIN_ZOOM} maxZoom={MAX_ZOOM} addable={!isLogMode} />
+                        <Controls
+                            minZoom={MIN_ZOOM}
+                            maxZoom={MAX_ZOOM}
+                            addable={!isLogMode}
+                            moveMode={moveMode}
+                            onMoveModeChange={setMoveMode}
+                        />
                         <HelperLines
                             horizontal={helperLineHorizontal}
                             vertical={helperLineVertical}
