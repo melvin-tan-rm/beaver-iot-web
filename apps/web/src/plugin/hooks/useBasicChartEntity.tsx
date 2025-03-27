@@ -17,6 +17,7 @@ export interface ChartShowDataProps {
     key: string;
     entityLabel: string;
     entityValues: (string | number | null)[];
+    yAxisID?: string;
 }
 
 /**

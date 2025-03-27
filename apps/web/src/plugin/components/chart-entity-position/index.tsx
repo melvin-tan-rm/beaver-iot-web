@@ -75,8 +75,10 @@ const ChartEntityPosition: React.FC<ChartEntityPositionProps> = ({
                 data,
                 list.filter(item => Boolean(item.key)),
             )
-        )
+        ) {
             return;
+        }
+
         resetList(data);
     }, [data, resetList]);
 

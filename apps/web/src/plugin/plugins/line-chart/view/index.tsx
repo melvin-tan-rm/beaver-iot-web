@@ -1,15 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Chart from 'chart.js/auto';
 
 import { useBasicChartEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
+import { type ChartEntityPositionValueType } from '@/plugin/components/chart-entity-position';
+import { type ChartShowDataProps } from '@/plugin/hooks/useBasicChartEntity';
+import { useLineChart } from './hooks';
+
 import styles from './style.module.less';
 
 export interface ViewProps {
     config: {
-        entity?: EntityOptionType[];
-        title?: string;
+        entityPosition: ChartEntityPositionValueType[];
+        title: string;
         time: number;
     };
     configJson: {
@@ -19,8 +23,15 @@ export interface ViewProps {
 
 const View = (props: ViewProps) => {
     const { config, configJson } = props;
-    const { entity, title, time } = config || {};
+    const { entityPosition, title, time } = config || {};
     const { isPreview } = configJson || {};
+
+    const entity = useMemo(() => {
+        if (!Array.isArray(entityPosition)) return [];
+
+        return entityPosition.map(e => e.entity).filter(Boolean) as EntityOptionType[];
+    }, [entityPosition]);
+
     const {
         chartShowData,
         chartLabels,
@@ -35,6 +46,11 @@ const View = (props: ViewProps) => {
         isPreview,
     });
 
+    const { newChartShowData, isDisplayY1 } = useLineChart({
+        entityPosition,
+        chartShowData,
+    });
+
     useEffect(() => {
         try {
             let chart: Chart<'line', (string | number | null)[], string> | null = null;
@@ -44,19 +60,35 @@ const View = (props: ViewProps) => {
                     type: 'line',
                     data: {
                         labels: chartLabels,
-                        datasets: chartShowData.map((chart: any, index: number) => ({
-                            label: chart.entityLabel,
-                            data: chart.entityValues,
-                            borderWidth: 1,
-                            spanGaps: true,
-                            color: resultColor[index],
-                        })),
+                        datasets: newChartShowData.map(
+                            (chart: ChartShowDataProps, index: number) => ({
+                                label: chart.entityLabel,
+                                data: chart.entityValues,
+                                borderWidth: 1,
+                                spanGaps: true,
+                                color: resultColor[index],
+                                yAxisID: chart.yAxisID,
+                            }),
+                        ),
                     },
                     options: {
                         responsive: true, // Respond to the chart
                         maintainAspectRatio: false,
                         scales: {
                             y: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                beginAtZero: true,
+                                ticks: {
+                                    autoSkip: true,
+                                    autoSkipPadding: 20,
+                                },
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: isDisplayY1,
+                                position: 'right',
                                 beginAtZero: true,
                                 ticks: {
                                     autoSkip: true,
@@ -118,7 +150,7 @@ const View = (props: ViewProps) => {
         } catch (error) {
             console.error(error);
         }
-    }, [chartLabels, chartShowData, chartRef]);
+    }, [chartLabels, newChartShowData, isDisplayY1, chartRef]);
 
     return (
         <div className={styles['line-chart-wrapper']}>
