@@ -111,6 +111,27 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 @padding-xxl 0 @padding-md;
+
+            .home-dashboard {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: @padding-xs;
+                font-size: @font-size-5;
+                background: var(--component-background);
+                border: 1px solid var(--gray-3);
+                border-radius: @border-radius-base;
+                cursor: pointer;
+
+                &.active {
+                    color: var(--primary-color-base);
+                }
+
+                &:hover {
+                    color: var(--primary-color-base);
+                    border-color: var(--primary-color-base);
+                }
+            }
         }
 
         &-empty {
