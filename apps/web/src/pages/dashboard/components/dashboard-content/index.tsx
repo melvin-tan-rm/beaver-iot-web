@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Button, Popover } from '@mui/material';
+import { Button, Popover, Stack, Tooltip } from '@mui/material';
 import {
     AddIcon as Add,
     DeleteOutlineIcon as DeleteOutline,
@@ -16,7 +16,7 @@ import { dashboardAPI, awaitWrap, isRequestSuccess } from '@/services/http';
 import { DashboardDetail, WidgetDetail } from '@/services/http/dashboard';
 import { useConfirm, PermissionControlHidden, PermissionControlDisabled } from '@/components';
 import { PERMISSIONS } from '@/constants';
-import { useGetPluginConfigs } from '../../hooks';
+import { useGetPluginConfigs, useHomeDashboard } from '../../hooks';
 import AddWidget from '../add-widget';
 import PluginList from '../plugin-list';
 import PluginListClass from '../plugin-list-class';
@@ -34,6 +34,13 @@ interface DashboardContentProps {
 
 export default (props: DashboardContentProps) => {
     const { getIntlText } = useI18n();
+    const {
+        isHome,
+        toggleHomeDashboard,
+        homeDashboardClassName,
+        homeDashboardIcon,
+        homeDashboardTip,
+    } = useHomeDashboard();
     const { pluginsConfigs } = useGetPluginConfigs();
     const confirm = useConfirm();
     const { dashboardDetail, getDashboards, onChangeIsEdit, isEdit, isTooSmallScreen } = props;
@@ -288,9 +295,14 @@ export default (props: DashboardContentProps) => {
                     </div>
                 ) : !widgets?.length && !loading ? null : (
                     <div className="dashboard-content-operate-right">
-                        <div onClick={enterFullscreen} className="dashboard-fullscreen">
-                            <FullscreenIcon className="dashboard-fullscreen-icon" />
-                        </div>
+                        <Stack direction="row" spacing={1.5}>
+                            <Tooltip onClick={toggleHomeDashboard} title={homeDashboardTip}>
+                                <div className={homeDashboardClassName}>{homeDashboardIcon}</div>
+                            </Tooltip>
+                            <div onClick={enterFullscreen} className="dashboard-fullscreen">
+                                <FullscreenIcon className="dashboard-fullscreen-icon" />
+                            </div>
+                        </Stack>
                     </div>
                 )}
             </div>
