@@ -1,19 +1,14 @@
 import { useMemo } from 'react';
 import { Stack, IconButton } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
-import {
-    DeleteOutlineIcon,
-    DevicesOtherIcon,
-    TuneOutlinedIcon,
-} from '@milesight/shared/src/components';
+import { DeleteOutlineIcon } from '@milesight/shared/src/components';
 import { Tooltip, type ColumnType } from '@/components';
 import { GatewayAPISchema } from '@/services/http/embedded-ns';
-import GatewayStatus from '../component/gateway-status';
 
 type OperationType = 'device' | 'detail' | 'delete';
 
 export type TableRowDataType = ObjectToCamelCase<
-    GatewayAPISchema['getList']['response']['gateways'][0]
+    GatewayAPISchema['getSyncedDevices']['response'][0]
 >;
 
 export interface UseColumnsProps<T> {
@@ -31,43 +26,26 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
         return [
             {
                 field: 'name',
-                headerName: getIntlText('setting.integration.label.name'),
+                headerName: getIntlText('device.label.param_device_name'),
                 flex: 1,
-                minWidth: 200,
+                minWidth: 180,
                 ellipsis: true,
             },
             {
-                field: 'status',
-                headerName: getIntlText('setting.integration.label.status'),
+                field: 'eui',
+                headerName: getIntlText('setting.integration.label.device.eui'),
                 flex: 1,
-                minWidth: 200,
+                minWidth: 180,
                 ellipsis: true,
-                renderCell({ row }) {
-                    return <GatewayStatus status={row.status} />;
-                },
             },
             {
-                field: 'credentialId',
-                headerName: getIntlText('setting.integration.label.credential_id'),
-                ellipsis: true,
-                flex: 1,
-                minWidth: 200,
-            },
-            {
-                field: 'applicationId',
-                headerName: getIntlText('setting.integration.label.application_id'),
-                ellipsis: true,
-                flex: 1,
-                minWidth: 200,
-            },
-            {
-                field: 'deviceCount',
-                headerName: getIntlText('setting.integration.label.device_count'),
+                field: 'createdAt',
+                headerName: getIntlText('common.label.create_time'),
                 ellipsis: true,
                 flex: 1,
                 minWidth: 200,
                 renderCell({ value }) {
-                    return String(value);
+                    return value ? getTimeFormat(value) : '';
                 },
             },
             {
@@ -84,25 +62,10 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                             spacing="4px"
                             sx={{ height: '100%', alignItems: 'center', justifyContent: 'end' }}
                         >
-                            <Tooltip title={getIntlText('setting.integration.label.device')}>
-                                <IconButton
-                                    sx={{ width: 30, height: 30 }}
-                                    onClick={() => onButtonClick('device', row)}
-                                >
-                                    <DevicesOtherIcon sx={{ width: 20, height: 20 }} />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title={getIntlText('common.label.detail')}>
-                                <IconButton
-                                    sx={{ width: 30, height: 30 }}
-                                    onClick={() => onButtonClick('detail', row)}
-                                >
-                                    <TuneOutlinedIcon sx={{ width: 20, height: 20 }} />
-                                </IconButton>
-                            </Tooltip>
                             <Tooltip title={getIntlText('common.label.delete')}>
                                 <IconButton
                                     color="error"
+                                    // disabled={!row.deletable}
                                     sx={{
                                         width: 30,
                                         height: 30,
