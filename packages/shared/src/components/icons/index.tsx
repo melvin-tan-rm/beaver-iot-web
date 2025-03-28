@@ -128,6 +128,8 @@ export {
     Language as LanguageIcon,
     ConnectWithoutContact as ConnectWithoutContactIcon,
     BackHandOutlined as BackHandOutlinedIcon,
+    CloudSyncOutlined as CloudSyncOutlinedIcon,
+    TuneOutlined as TuneOutlinedIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';
