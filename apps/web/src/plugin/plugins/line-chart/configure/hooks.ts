@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useMemoizedFn } from 'ahooks';
 
 import {
@@ -74,11 +74,16 @@ export function useLineChartConfig(props: CustomComponentProps) {
      * get the chart y axis default display unit
      */
     const getDefaultUnit = useMemoizedFn((p: POSITION_AXIS) => {
-        if (!newEntityPosition) return '';
+        if (!newEntityPosition) return undefined;
 
-        const leftEntity = newEntityPosition.find(e => e.position === p);
-        const entityName = leftEntity?.entity?.rawData?.entityName;
-        const unit = leftEntity?.entity?.rawData?.entityValueAttribute?.unit;
+        const newEntity = newEntityPosition.find(e => e.position === p);
+        /**
+         * No corresponding entity data found
+         */
+        if (!newEntity) return undefined;
+
+        const entityName = newEntity?.entity?.rawData?.entityName;
+        const unit = newEntity?.entity?.rawData?.entityValueAttribute?.unit;
         if (entityName && unit) {
             return `${entityName}(${unit})`;
         }
@@ -94,14 +99,19 @@ export function useLineChartConfig(props: CustomComponentProps) {
         return props?.config?.rightYAxisUnit ?? getDefaultUnit(POSITION_AXIS.RIGHT);
     }, [getDefaultUnit, props]);
 
+    /**
+     * Default value assignment for leftYAxisUnit/rightYAxisUnit
+     */
+    useEffect(() => {
+        if (!props?.config) return;
+
+        Reflect.set(props.config, 'leftYAxisUnit', leftYAxisUnit);
+        Reflect.set(props.config, 'rightYAxisUnit', rightYAxisUnit);
+    }, [props.config, leftYAxisUnit, rightYAxisUnit]);
+
     return {
         newConfig: {
             ...props,
-            config: {
-                ...props.config,
-                leftYAxisUnit,
-                rightYAxisUnit,
-            },
             configProps: [...props.configProps, ...units],
         },
     };

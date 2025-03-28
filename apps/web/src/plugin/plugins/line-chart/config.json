@@ -34,6 +34,7 @@
                     "type": "chartEntityPosition",
                     "title": "entityPosition",
                     "key": "entityPosition",
+                    "defaultValue": "",
                     "style": "width: 100%",
                     "getDataUrl": "",
                     "valueType": "array",
@@ -50,31 +51,10 @@
                     "type": "ChartTimeSelect",
                     "title": "Time",
                     "key": "time",
+                    "defaultValue": 86400000,
                     "style": "width: 100%;",
                     "componentProps": {
                         "size": "small"
-                    },
-                    "defaultValue": 86400000
-                }
-            ]
-        },
-        {
-            "style": "width: 100%",
-            "components": [
-                {
-                    "type": "multiEntitySelect",
-                    "title": "Entity",
-                    "key": "entity",
-                    "style": "width: 100%",
-                    "getDataUrl": "",
-                    "valueType": "array",
-                    "componentProps": {
-                        "size": "small",
-                        "entityType": ["PROPERTY", "EVENT"],
-                        "entityValueTypes": ["LONG", "DOUBLE"]
-                    },
-                    "rules": {
-                        "required": true
                     }
                 }
             ]
