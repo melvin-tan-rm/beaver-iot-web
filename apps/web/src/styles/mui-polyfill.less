@@ -130,16 +130,24 @@ input.@{mui-prefix}InputBase-input {
     }
 }
 
-// ---------- Select ----------
+// ---------- Checkbox ----------
 .@{mui-prefix}Checkbox-root.@{mui-prefix}-disabled {
     color: var(--border-color-gray);
 
-    &::after {
-        position: absolute;
-        inset: 13px;
-        background-color: var(--gray-color-1);
-        border-radius: 2px;
-        content: '';
+    &:not(.@{mui-prefix}-checked) {
+        color: var(--border-color-gray);
+
+        &::after {
+            position: absolute;
+            inset: 13px;
+            background-color: var(--gray-color-1);
+            border-radius: 2px;
+            content: '';
+        }
+    }
+
+    &.@{mui-prefix}-checked {
+        color: var(--border-color-gray);
     }
 }
 
@@ -161,6 +169,7 @@ input.@{mui-prefix}InputBase-input {
     .@{mui-prefix}MenuItem-root {
         &:hover {
             background-color: var(--component-background-gray);
+            transition: background-color 0.1s ease;
         }
     }
 }
@@ -215,5 +224,12 @@ input.@{mui-prefix}InputBase-input {
         margin: 0;
         color: var(--text-color-tertiary);
         .text-size(@font-size-md);
+    }
+}
+
+// ---------- Dialog ----------
+.@{mui-prefix}Dialog-root {
+    .@{mui-prefix}Backdrop-root {
+        background-color: rgba(0, 0, 0, 0.38);
     }
 }
