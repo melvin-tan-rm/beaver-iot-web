@@ -3,13 +3,13 @@ import { useMemoizedFn } from 'ahooks';
 import classNames from 'classnames';
 
 import { useI18n } from '@milesight/shared/src/hooks';
-import { StarOutlinedIcon, StarIcon, ErrorIcon } from '@milesight/shared/src/components';
+import { StarOutlinedIcon, StarIcon, ErrorIcon, toast } from '@milesight/shared/src/components';
 import { useConfirm } from '@/components';
 
 /**
  * Set or unset the home dashboard
  */
-function useHomeDashboard() {
+function useHomeDashboard(refreshDashboards?: () => void) {
     const { getIntlText } = useI18n();
     const confirm = useConfirm();
 
@@ -32,6 +32,9 @@ function useHomeDashboard() {
             },
             onConfirm: () => {
                 setIsHome(!isHome);
+
+                // refreshDashboards?.();
+                toast.success(getIntlText('common.message.operation_success'));
             },
         });
     });

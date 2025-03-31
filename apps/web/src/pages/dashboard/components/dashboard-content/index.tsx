@@ -40,7 +40,7 @@ export default (props: DashboardContentProps) => {
         homeDashboardClassName,
         homeDashboardIcon,
         homeDashboardTip,
-    } = useHomeDashboard();
+    } = useHomeDashboard(props.getDashboards);
     const { pluginsConfigs } = useGetPluginConfigs();
     const confirm = useConfirm();
     const { dashboardDetail, getDashboards, onChangeIsEdit, isEdit, isTooSmallScreen } = props;
