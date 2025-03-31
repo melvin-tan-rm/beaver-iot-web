@@ -15,7 +15,7 @@ const View = (props: Props) => {
     const { config } = props;
     const { entity, title, time, metrics } = config || {};
     const chartRef = useRef<HTMLCanvasElement>(null);
-    const { blue, grey } = useTheme();
+    const { blue, purple, grey } = useTheme();
     const { aggregateHistoryData } = useSource({ entity, metrics, time });
 
     // Calculate the most suitable maximum scale value
@@ -116,7 +116,7 @@ const View = (props: Props) => {
                         radiusPercentage: 1.5,
                         widthPercentage: 3,
                         lengthPercentage: 80,
-                        color: blue[600],
+                        color: purple[600],
                     },
                     circumference,
                     rotation,

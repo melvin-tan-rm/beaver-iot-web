@@ -3,3 +3,21 @@
     padding: @padding-lg;
     background: var(--component-background);
 }
+
+.users-role-chip {
+    margin-right: @margin-xs;
+}
+
+:global {
+    .@{mui-prefix}Tooltip-tooltip {
+        .@{mui-prefix}Chip-root {
+            background-color: var(--gray-2);
+        }
+    }
+
+    .@{prefix}-tooltip-cont {
+        .@{mui-prefix}Chip-root {
+            background-color: var(--gray-2);
+        }
+    }
+}

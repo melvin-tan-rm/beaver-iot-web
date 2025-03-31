@@ -87,7 +87,7 @@
                     "type": "iconColorSelect",
                     "key": "onIconColor",
                     "style": "flex: 1;",
-                    "defaultValue": "#4A90E2",
+                    "defaultValue": "#8E66FF",
                     "componentProps": {
                         "size": "small"
                     }
