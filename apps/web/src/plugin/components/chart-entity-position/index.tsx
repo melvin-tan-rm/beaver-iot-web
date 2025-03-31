@@ -152,7 +152,7 @@ const ChartEntityPosition: React.FC<ChartEntityPositionProps> = ({
                     </Button>
                 )}
             </div>
-            <FormHelperText error={error}>{helperText}</FormHelperText>
+            <FormHelperText error={Boolean(error)}>{helperText}</FormHelperText>
         </div>
     );
 };
