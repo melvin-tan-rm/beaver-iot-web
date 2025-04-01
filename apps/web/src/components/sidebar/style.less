@@ -95,15 +95,15 @@
                 .ellipsis();
             }
 
-            .@{prefix}-icon {
-                transition: 0.3s;
-            }
+            // .@{prefix}-icon {
+            //     transition: 0.3s;
+            // }
 
-            &.active {
-                .@{prefix}-icon {
-                    transform: rotate(180deg);
-                }
-            }
+            // &.active {
+            //     .@{prefix}-icon {
+            //         transform: rotate(180deg);
+            //     }
+            // }
         }
 
         .@{prefix}-oprt-shrink {
@@ -124,6 +124,9 @@
                 .@{prefix}-name {
                     display: none;
                 }
+            }
+            .@{prefix}-oprt-shrink {
+                transform: rotate(180deg);
             }
         }
     }

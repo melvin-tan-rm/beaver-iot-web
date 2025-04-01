@@ -78,6 +78,14 @@ export default React.memo((props: IProps) => {
         };
     }, [handleScroll]);
 
+    useEffect(() => {
+        if (tabType === 'device') return;
+
+        // Clear the submenu when switching to the Entity tab
+        setMenuAnchorEl(null);
+        setMenuList([]);
+    }, [tabType]);
+
     // Define popper modifiers
     const modifiers = useMemo(
         () => [
@@ -92,7 +100,7 @@ export default React.memo((props: IProps) => {
     );
     return (
         <>
-            <div {...rest} ref={containerRef}>
+            <div {...rest} ref={containerRef} key={tabType}>
                 <div ref={listRef}>
                     {(virtualList || []).map(({ data: option }) => {
                         const { value } = option || {};
@@ -127,15 +135,17 @@ export default React.memo((props: IProps) => {
                     })}
                 </div>
             </div>
-            <EntityMenuPopper
-                open={open}
-                anchorEl={menuAnchorEl}
-                menuList={menuList}
-                modifiers={modifiers}
-                maxCount={maxCount}
-                selectedEntityMap={selectedEntityMap}
-                onEntityChange={onEntityChange}
-            />
+            {tabType === 'device' && (
+                <EntityMenuPopper
+                    open={open}
+                    anchorEl={menuAnchorEl}
+                    menuList={menuList}
+                    modifiers={modifiers}
+                    maxCount={maxCount}
+                    selectedEntityMap={selectedEntityMap}
+                    onEntityChange={onEntityChange}
+                />
+            )}
         </>
     );
 });
