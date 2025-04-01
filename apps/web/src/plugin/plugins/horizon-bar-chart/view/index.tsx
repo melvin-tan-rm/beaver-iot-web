@@ -61,6 +61,9 @@ const View = (props: ViewProps) => {
                                     autoSkip: true,
                                     autoSkipPadding: 20,
                                 },
+                                grid: {
+                                    display: false, // Remove the lines
+                                },
                             },
                             y: {
                                 type: 'time',

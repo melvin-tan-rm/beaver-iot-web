@@ -77,6 +77,9 @@ const View = (props: ViewProps) => {
                                         enabled: true, // Enable the main scale
                                     },
                                 },
+                                grid: {
+                                    display: false, // Remove the lines
+                                },
                             },
                         },
                         plugins: {
