@@ -49,7 +49,7 @@ const View = (props: ViewProps) => {
                             data: chart.entityValues,
                             borderWidth: 1,
                             spanGaps: true,
-                            color: resultColor[index],
+                            backgroundColor: resultColor[index],
                         })),
                     },
                     options: {
