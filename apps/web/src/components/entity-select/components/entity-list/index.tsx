@@ -18,6 +18,8 @@ interface IProps
     > {
     children: React.ReactNode;
 }
+// Give a large height for popper layer positioning
+const GREAT_HEIGHT = window.innerHeight;
 export default React.memo((props: IProps) => {
     const {
         children: _children,
@@ -101,7 +103,7 @@ export default React.memo((props: IProps) => {
     return (
         <>
             <div {...rest} ref={containerRef} key={tabType}>
-                <div ref={listRef}>
+                <div ref={listRef} style={{ height: GREAT_HEIGHT }}>
                     {(virtualList || []).map(({ data: option }) => {
                         const { value } = option || {};
 
