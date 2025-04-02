@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
-import { Paper, Typography, Button } from '@mui/material';
+import { Paper, Button } from '@mui/material';
 import cls from 'classnames';
 import { useRequest } from 'ahooks';
 import { oauthClientID, oauthClientSecret } from '@milesight/shared/src/config';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Logo } from '@milesight/shared/src/components';
 import { iotLocalStorage, TOKEN_CACHE_KEY } from '@milesight/shared/src/utils/storage';
+import { GradientBgContainer } from '@/components';
 import { useUserStore } from '@/stores';
 import { globalAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import useFormItems, { type FormDataProps } from '../useFormItems';
@@ -66,29 +67,35 @@ export default () => {
     );
 
     return (
-        <div className="ms-view-login">
-            <Logo />
-            <Paper
-                className={cls('ms-auth-container', { hidden: loading !== false })}
-                elevation={3}
-            >
-                <Typography variant="h5" align="center">
-                    {getIntlText('common.document.title')}
-                </Typography>
-                <div className="ms-auth-form">
-                    {formItems.map(props => (
-                        <Controller<FormDataProps> key={props.name} {...props} control={control} />
-                    ))}
-                </div>
-                <Button
-                    fullWidth
-                    sx={{ mt: 2.5, textTransform: 'none' }}
-                    onClick={handleSubmit(onSubmit)}
-                    variant="contained"
+        <GradientBgContainer>
+            <div className="ms-view-login">
+                <Paper
+                    className={cls('ms-auth-container', { hidden: loading !== false })}
+                    elevation={3}
                 >
-                    {getIntlText('common.label.login')}
-                </Button>
-            </Paper>
-        </div>
+                    <div className="ms-auth-logo">
+                        <Logo />
+                    </div>
+                    <div className="ms-auth-form">
+                        {formItems.map(props => (
+                            <Controller<FormDataProps>
+                                key={props.name}
+                                {...props}
+                                control={control}
+                            />
+                        ))}
+                    </div>
+                    <Button
+                        fullWidth
+                        sx={{ textTransform: 'none' }}
+                        onClick={handleSubmit(onSubmit)}
+                        variant="contained"
+                        className="ms-auth-submit"
+                    >
+                        {getIntlText('common.label.login')}
+                    </Button>
+                </Paper>
+            </div>
+        </GradientBgContainer>
     );
 };

@@ -90,6 +90,7 @@ input.@{mui-prefix}InputBase-input {
         -webkit-text-fill-color: var(--text-color-base);
     }
 }
+
 // Adjust the default border style for the Input component
 .@{mui-prefix}InputBase-root.@{mui-prefix}OutlinedInput-root {
     &:hover {
@@ -183,12 +184,20 @@ input.@{mui-prefix}InputBase-input {
     }
 
     .@{mui-prefix}InputBase-root {
+        padding-right: @padding-sm;
+        padding-left: @padding-sm;
+
         .@{mui-prefix}InputAdornment-root {
             color: var(--text-color-tertiary);
+            .text-size(@font-size-1);
 
             .@{mui-prefix}ButtonBase-root {
                 color: var(--icon-color-gray-secondary);
             }
+        }
+
+        .@{mui-prefix}InputBase-input {
+            padding-left: 0;
         }
     }
 

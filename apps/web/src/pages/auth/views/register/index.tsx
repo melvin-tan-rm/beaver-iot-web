@@ -11,6 +11,7 @@ import {
     TOKEN_CACHE_KEY,
     REGISTERED_KEY,
 } from '@milesight/shared/src/utils/storage';
+import { GradientBgContainer } from '@/components';
 import { globalAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import useFormItems, { type FormDataProps } from '../useFormItems';
 import './style.less';
@@ -72,32 +73,43 @@ export default () => {
     };
 
     return (
-        <div className="ms-view-register">
-            <Logo />
-            <Paper
-                className={cls('ms-auth-container', { hidden: loading !== false || registered })}
-                elevation={3}
-            >
-                <Typography variant="h5" align="center">
-                    {getIntlText('common.document.title')}
-                </Typography>
-                <Typography align="center" variant="body2" color="textSecondary">
-                    {getIntlText('common.message.register_helper_text')}
-                </Typography>
-                <div className="ms-auth-form">
-                    {formItems.map(props => (
-                        <Controller<FormDataProps> key={props.name} {...props} control={control} />
-                    ))}
-                </div>
-                <Button
-                    fullWidth
-                    sx={{ mt: 2.5, textTransform: 'none' }}
-                    onClick={handleSubmit(onSubmit)}
-                    variant="contained"
+        <GradientBgContainer>
+            <div className="ms-view-register ms-gradient-background">
+                <Paper
+                    className={cls('ms-auth-container', {
+                        hidden: loading !== false || registered,
+                    })}
+                    elevation={3}
                 >
-                    {getIntlText('common.button.confirm')}
-                </Button>
-            </Paper>
-        </div>
+                    <div className="ms-auth-logo">
+                        <Logo />
+                    </div>
+                    {/* <Typography variant="h5" align="center">
+                    {getIntlText('common.document.title')}
+                </Typography> */}
+                    <Typography align="center" variant="body2" color="textSecondary">
+                        {getIntlText('common.message.register_helper_text')}
+                    </Typography>
+                    <div className="ms-auth-form">
+                        {formItems.map(props => (
+                            <Controller<FormDataProps>
+                                key={props.name}
+                                {...props}
+                                control={control}
+                            />
+                        ))}
+                    </div>
+                    <Button
+                        fullWidth
+                        sx={{ mt: 2.5, textTransform: 'none' }}
+                        onClick={handleSubmit(onSubmit)}
+                        variant="contained"
+                        className="ms-auth-submit"
+                    >
+                        {getIntlText('common.button.confirm')}
+                    </Button>
+                </Paper>
+            </div>
+        </GradientBgContainer>
     );
 };
