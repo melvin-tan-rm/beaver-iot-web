@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import cls from 'classnames';
 import { useRequest } from 'ahooks';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
-import { Paper, Typography, Button } from '@mui/material';
+import { Paper, Typography, Button, Box } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Logo, toast } from '@milesight/shared/src/components';
 import {
@@ -74,7 +74,11 @@ export default () => {
 
     return (
         <GradientBgContainer>
-            <div className="ms-view-register ms-gradient-background">
+            <Box
+                component="form"
+                onSubmit={handleSubmit(onSubmit)}
+                className="ms-view-register ms-gradient-background"
+            >
                 <Paper
                     className={cls('ms-auth-container', {
                         hidden: loading !== false || registered,
@@ -101,15 +105,15 @@ export default () => {
                     </div>
                     <Button
                         fullWidth
+                        type="submit"
                         sx={{ mt: 2.5, textTransform: 'none' }}
-                        onClick={handleSubmit(onSubmit)}
                         variant="contained"
                         className="ms-auth-submit"
                     >
                         {getIntlText('common.button.confirm')}
                     </Button>
                 </Paper>
-            </div>
+            </Box>
         </GradientBgContainer>
     );
 };

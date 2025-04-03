@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
-import { Paper, Button } from '@mui/material';
+import { Paper, Button, Box } from '@mui/material';
 import cls from 'classnames';
 import { useRequest } from 'ahooks';
 import { oauthClientID, oauthClientSecret } from '@milesight/shared/src/config';
@@ -68,7 +68,7 @@ export default () => {
 
     return (
         <GradientBgContainer>
-            <div className="ms-view-login">
+            <Box component="form" onSubmit={handleSubmit(onSubmit)} className="ms-view-login">
                 <Paper
                     className={cls('ms-auth-container', { hidden: loading !== false })}
                     elevation={3}
@@ -87,15 +87,15 @@ export default () => {
                     </div>
                     <Button
                         fullWidth
+                        type="submit"
                         sx={{ textTransform: 'none' }}
-                        onClick={handleSubmit(onSubmit)}
                         variant="contained"
                         className="ms-auth-submit"
                     >
                         {getIntlText('common.label.login')}
                     </Button>
                 </Paper>
-            </div>
+            </Box>
         </GradientBgContainer>
     );
 };

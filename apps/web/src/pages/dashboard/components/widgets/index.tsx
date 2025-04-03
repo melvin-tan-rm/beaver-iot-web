@@ -4,6 +4,7 @@ import { useMemoizedFn } from 'ahooks';
 import { get } from 'lodash-es';
 
 import { useTheme } from '@milesight/shared/src/hooks';
+import { hexToRgba } from '@milesight/shared/src/utils/tools';
 
 import { WidgetDetail } from '@/services/http/dashboard';
 import Widget from './widget';
@@ -163,7 +164,8 @@ const Widgets = (props: WidgetProps) => {
 
                 ctx.beginPath();
                 ctx.setLineDash([8, 8]);
-                ctx.strokeStyle = getCSSVariableValue('--gray-4') || '#C9CDD4';
+                const borderColor = hexToRgba(getCSSVariableValue('--gray-10'), 0.12);
+                ctx.strokeStyle = borderColor || '#C9CDD4';
                 ctx.lineWidth = 1;
                 ctx.strokeRect(1, 1, gridWidth - GRID_LAYOUT_MARGIN - 2, GRID_ROW_HEIGHT - 2);
                 ctx.closePath();
@@ -234,7 +236,11 @@ const Widgets = (props: WidgetProps) => {
             margin={[GRID_LAYOUT_MARGIN, GRID_LAYOUT_MARGIN]}
             onLayoutChange={handleChangeWidgets}
             draggableCancel=".dashboard-content-widget-icon-img,.dashboard-custom-resizable-handle"
-            className={`${isEdit ? 'dashboard-content-widget-grid-edit' : 'dashboard-content-widget-grid-not-edit'} slow-transition-react-grid-layout`}
+            className={`${
+                isEdit
+                    ? 'dashboard-content-widget-grid-edit'
+                    : 'dashboard-content-widget-grid-not-edit'
+            } slow-transition-react-grid-layout`}
             resizeHandle={
                 <span className="dashboard-custom-resizable-handle dashboard-custom-resizable-handle-se" />
             }
