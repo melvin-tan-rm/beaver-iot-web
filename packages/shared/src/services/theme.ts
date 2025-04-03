@@ -481,6 +481,11 @@ export const getMuiComponents = (mode: ThemeType = 'light') => {
                 },
             },
         },
+        MuiButtonBase: {
+            defaultProps: {
+                disableRipple: true,
+            },
+        },
     };
 
     const theme = getThemes()[mode];

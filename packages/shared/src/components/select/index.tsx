@@ -12,7 +12,7 @@ import {
     FormControlProps as MuiFormControlProps,
     InputLabel,
 } from '@mui/material';
-import { useI18n } from '#/hooks';
+import { useI18n } from '../../hooks';
 import './style.less';
 
 type Props<T extends ApiKey> = {
