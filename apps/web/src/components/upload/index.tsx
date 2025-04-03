@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo, Fragment } from 'react';
-import { useRequest } from 'ahooks';
 import cls from 'classnames';
+import { useRequest, useUpdateEffect } from 'ahooks';
+import { FieldError } from 'react-hook-form';
 import { Button, IconButton, CircularProgress } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { UploadFileIcon, ImageIcon, DeleteIcon } from '@milesight/shared/src/components';
@@ -19,7 +20,7 @@ const enum UploadStatus {
     Canceled = 'canceled',
 }
 
-type UploadFile = FileWithPath & {
+export type UploadFile = FileWithPath & {
     /**
      * File Upload status
      */
@@ -48,8 +49,15 @@ type UploadFile = FileWithPath & {
     url?: string;
 };
 
+export type FileValueType = Pick<UploadFile, 'name' | 'size' | 'path' | 'url' | 'preview'>;
+
 type Props = UseDropzoneProps & {
     // type?: string;
+
+    /**
+     * The Basic value for files
+     */
+    value?: null | FileValueType | FileValueType[];
 
     /**
      * Form item label
@@ -60,6 +68,16 @@ type Props = UseDropzoneProps & {
      * Whether the form item is required
      */
     required?: boolean;
+
+    /**
+     * Form item error message
+     */
+    error?: FieldError;
+
+    /**
+     * Form item helper text
+     */
+    helperText?: React.ReactNode;
 
     /**
      * The maximum parallel number of uploading files, default is 5
@@ -75,18 +93,35 @@ type Props = UseDropzoneProps & {
      * Callback for uploading file
      * @param files Uploaded file(s)
      */
-    onChange?: (files?: UploadFile[]) => void;
+    onChange?: (data: Props['value'], files?: null | UploadFile | UploadFile[]) => void;
+};
+
+const getFileJsonValue = (file: UploadFile) => {
+    const { name, size, path, url, preview } = file;
+    return {
+        name,
+        size,
+        path,
+        // lastModified,
+        url,
+        preview,
+    };
 };
 
 const Upload: React.FC<Props> = ({
     // type,
+    value,
     label,
+    error,
+    required,
+    helperText,
     accept = {
         'image/*': ['.jpg', '.jpeg', '.png', '.gif', '.svg'],
     },
     parallel = DEFAULT_PARALLEL_UPLOADING_FILES,
     minSize = DEFAULT_MIN_SIZE,
     maxSize = DEFAULT_MAX_SIZE,
+    multiple,
     children,
     onChange,
     ...props
@@ -97,6 +132,7 @@ const Upload: React.FC<Props> = ({
         accept,
         minSize,
         maxSize,
+        multiple,
     });
     const acceptString = useMemo(() => {
         const result: string[] = [];
@@ -212,7 +248,7 @@ const Upload: React.FC<Props> = ({
         if (!file) return result;
         result.push(
             <Fragment key={file.path}>
-                <Tooltip autoEllipsis className="name" title={file.name} />
+                <Tooltip autoEllipsis className="name" title={file.url} />
                 {`(${getSizeString(file.size)})`}
             </Fragment>,
         );
@@ -221,7 +257,7 @@ const Upload: React.FC<Props> = ({
             const names = rest
                 .map(file => (
                     <Fragment key={file.path}>
-                        {`${file.name} (${getSizeString(file.size)})`}
+                        {`${file.url} (${getSizeString(file.size)})`}
                     </Fragment>
                 ))
                 .join('\n');
@@ -244,12 +280,12 @@ const Upload: React.FC<Props> = ({
     // Update uploading status
     useEffect(() => {
         // console.log({ files });
-        const hasError = files?.some(file => file.status === UploadStatus.Error);
+        const hasError = error || files?.some(file => file.status === UploadStatus.Error);
 
         if (hasError) {
             setFileError({
                 code: SERVER_ERROR,
-                message: getIntlText(errorIntlKey[SERVER_ERROR]),
+                message: helperText || error?.message || getIntlText(errorIntlKey[SERVER_ERROR]),
             });
             setIsUploading(false);
             setIsAllDone(false);
@@ -261,20 +297,63 @@ const Upload: React.FC<Props> = ({
             files?.length && files.every(file => file.status === UploadStatus.Done)
         );
 
+        setFileError(null);
         setIsUploading(uploading);
         setIsAllDone(isAllDone);
-    }, [files, getIntlText]);
+    }, [files, error, helperText, getIntlText]);
 
     // Trigger callback when files change
+    useUpdateEffect(() => {
+        const resultFiles = multiple ? files : files?.[0];
+        let resultValues: Props['value'] = null;
+
+        if (files?.length) {
+            if (!multiple) {
+                const file = files[0];
+                resultValues = getFileJsonValue(file);
+            } else {
+                resultValues = files?.map(file => {
+                    return getFileJsonValue(file);
+                });
+            }
+        }
+
+        onChange?.(resultValues, resultFiles);
+    }, [files, multiple, onChange]);
+
     useEffect(() => {
-        onChange?.(files);
-    }, [files, onChange]);
+        if (!value) {
+            setFiles(files => {
+                if (!files?.length) return files;
+                return [];
+            });
+            return;
+        }
+
+        setFiles(files => {
+            let values = Array.isArray(value) ? value : [value];
+            values = values.map(item => ({ ...item, status: UploadStatus.Done }));
+
+            const isReset = !values.every(item => {
+                return files?.some(file => {
+                    if (item.url) {
+                        return file.url === item.url;
+                    }
+
+                    return file.path === item.path && file.size === item.size;
+                });
+            });
+
+            if (isReset) return values as UploadFile[];
+            return files;
+        });
+    }, [value]);
 
     return (
         <section className={cls('ms-upload', { error: !!fileError })}>
             {label && (
                 <div className="label">
-                    <span className="asterisk">*</span> {label}
+                    {required && <span className="asterisk">*</span>} {label}
                 </div>
             )}
             <div {...getRootProps({ className: 'ms-upload-dropzone' })}>
@@ -323,4 +402,4 @@ const Upload: React.FC<Props> = ({
 };
 
 Upload.displayName = 'Upload';
-export default Upload;
+export default React.memo(Upload);

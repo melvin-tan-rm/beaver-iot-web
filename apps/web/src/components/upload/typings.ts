@@ -11,7 +11,7 @@ export type ErrorCodeType =
     | 'server_error';
 
 export interface FileError {
-    message: string;
+    message: React.ReactNode;
     code: ErrorCodeType;
 }
 

@@ -89,10 +89,14 @@
 
     .helper-text {
         margin-top: @margin-xxs;
-        .text-size(@font-size-sm);
+        .text-size(@font-size-base);
     }
 
     &.error {
+        .label {
+            color: var(--text-color-error);
+        }
+
         .@{prefix}-upload-dropzone {
             > [class*=~"@{prefix}-upload-cont"] {
                 border-color: var(--border-color-red);
