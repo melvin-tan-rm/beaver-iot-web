@@ -473,6 +473,14 @@ export const getMuiComponents = (mode: ThemeType = 'light') => {
                 disableRipple: true,
             },
         },
+        MuiPaper: {
+            styleOverrides: {
+                root: {
+                    marginTop: '4px',
+                    marginBottom: '4px',
+                },
+            },
+        },
     };
 
     const theme = getThemes()[mode];

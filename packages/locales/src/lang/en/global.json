@@ -206,5 +206,6 @@
     "valid_http_address": "Invalid address",
     "common.label.refresh": "Refresh Page",
     "common.label.settings": "Settings",
-    "common.confirm.execute": "Are you sure to execute the update operation?"
+    "common.confirm.execute": "Are you sure to execute the update operation?",
+    "common.label.no_options": "No options"
 }
