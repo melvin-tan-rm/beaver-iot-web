@@ -213,5 +213,7 @@
     "common.message.upload_error_file_too_large": "File is larger than {1}",
     "common.message.upload_error_file_too_small": "File is smaller than {1}",
     "common.message.upload_error_too_many_files": "Too many files",
-    "common.message.upload_error_server_error": "Upload failed, please try again later"
+    "common.message.upload_error_server_error": "Upload failed, please try again later",
+    "common.label.select_entity": "Select Entity",
+    "common.label.local_upload": "Local Upload"
 }
