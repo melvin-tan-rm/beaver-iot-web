@@ -85,6 +85,16 @@ type Props = UseDropzoneProps & {
     parallel?: number;
 
     /**
+     * The style of the upload area
+     */
+    style?: React.CSSProperties;
+
+    /**
+     * The class name of the upload area
+     */
+    className?: string;
+
+    /**
      * Customize the contents in upload area
      */
     children?: React.ReactNode;
@@ -122,6 +132,8 @@ const Upload: React.FC<Props> = ({
     minSize = DEFAULT_MIN_SIZE,
     maxSize = DEFAULT_MAX_SIZE,
     multiple,
+    style,
+    className,
     children,
     onChange,
     ...props
@@ -350,7 +362,7 @@ const Upload: React.FC<Props> = ({
     }, [value]);
 
     return (
-        <section className={cls('ms-upload', { error: !!fileError })}>
+        <section className={cls('ms-upload', className, { error: !!fileError })} style={style}>
             {label && (
                 <div className="label">
                     {required && <span className="asterisk">*</span>} {label}
