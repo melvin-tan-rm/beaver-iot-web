@@ -39,12 +39,10 @@ const useFormData = (value: any, config: CustomComponentProps) => {
         const props: ConfigProps[] = [
             ...configProps,
             {
-                style: 'width: 100%',
                 components: [
                     {
                         type: 'ToggleRadio',
                         key: 'dataType',
-                        style: 'width: 100%',
                         componentProps: {
                             options,
                         },
@@ -80,7 +78,6 @@ const useFormData = (value: any, config: CustomComponentProps) => {
             case 'upload': {
                 data.file = file;
                 props.push({
-                    style: 'width: 100%',
                     components: [
                         {
                             type: 'Upload',
@@ -88,6 +85,7 @@ const useFormData = (value: any, config: CustomComponentProps) => {
                             rules: {
                                 required: true,
                             },
+                            style: 'margin-bottom: 12px;',
                             componentProps: {
                                 label: 'Upload Image',
                                 multiple: false,
