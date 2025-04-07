@@ -16,7 +16,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            height: calc(100vh - 56px - 60px);
+            height: calc(100vh - 48px - 60px);
         }
     }
 
@@ -53,6 +53,7 @@
         line-height: 1;
         background: var(--component-background);
         cursor: pointer;
+        .text-size(@font-size-md);
 
         &:hover &-icon {
             color: var(--primary-color-6);
@@ -63,10 +64,24 @@
         }
 
         &-contain {
+            position: relative;
             flex: 1;
             height: 100%;
-            padding: 18px 20px 0 0;
+            padding: 18px 20px 0 @padding-sm;
             color: var(--text-color-secondary);
+
+            &-list {
+                &::before {
+                    position: absolute;
+                    top: calc((100% + 8px) / 2);
+                    left: -1px;
+                    width: 1px;
+                    height: 14px;
+                    background-color: var(--gray-3);
+                    content: '';
+                    transform: translateY(-50%);
+                }
+            }
         }
     }
 
