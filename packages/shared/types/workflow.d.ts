@@ -109,7 +109,10 @@ declare type TimePeriodType =
     | 'THURSDAY'
     | 'FRIDAY'
     | 'SATURDAY'
-    | 'SUNDAY';
+    | 'SUNDAY'
+    | 'WEEKDAY'
+    | 'WEEKEND'
+    | 'EVERYDAY';
 
 declare type TimerIntervalType = 'SECONDS' | 'MINUTES' | 'HOURS' | 'DAYS';
 

@@ -1,19 +1,37 @@
 .@{prefix}-timer-input {
     &-exec-queue {
         position: relative;
-        padding: @padding-md;
-        border: 1px solid var(--border-color-base);
-        border-radius: @border-radius-base;
 
         > .label {
-            position: absolute;
-            top: -(@font-size-sm / 2);
-            left: @margin-xs;
-            padding: 0 @padding-xxs;
-            font-size: @font-size-sm;
-            line-height: @font-size-sm;
-            color: var(--text-color-secondary);
-            background-color: var(--component-background);
+            display: flex;
+            margin-bottom: @margin-xxs;
+            .text-size(@font-size-base);
+
+            .asterisk {
+                margin-right: @margin-xxs;
+                color: var(--text-color-red);
+                .text-size(@font-size-base);
+            }
+        }
+
+        .queue-list {
+            padding: @padding-md;
+            background-color: var(--component-background-gray);
+            border-radius: @border-radius-base;
+
+            &-labels {
+                display: flex;
+                gap: @margin-xs;
+                margin-bottom: @margin-xs;
+
+                &.narrow {
+                    padding-right: (@margin-xs + 28px);
+                }
+            }
+
+            &-label {
+                flex: 1;
+            }
         }
 
         .queue-item {
@@ -25,11 +43,40 @@
             > .@{mui-prefix}FormControl-root {
                 flex: 1;
                 margin: 0;
+                background-color: var(--component-background);
+                border-radius: @border-radius-base;
+
+                &.@{prefix}-timer-input-queue-time {
+                    .@{mui-prefix}InputBase-root {
+                        padding-right: @padding-xs;
+                    }
+
+                    .@{mui-prefix}InputBase-input {
+                        padding: 3px @padding-sm;
+                    }
+
+                    .@{mui-prefix}InputAdornment-root .@{mui-prefix}ButtonBase-root {
+                        padding: @padding-xxs;
+                    }
+                }
             }
 
-            &:last-child {
-                margin-bottom: 0;
+            &-last {
+                margin-bottom: @margin-sm;
             }
+
+            .btn-delete {
+                color: var(--icon-color-gray-light);
+
+                &:hover {
+                    color: var(--icon-color-gray-secondary);
+                }
+            }
+        }
+
+        .btn-add {
+            min-width: auto;
+            padding: @padding-xxs @padding-xs;
         }
     }
 
@@ -41,6 +88,21 @@
         > .@{mui-prefix}FormControl-root {
             flex: 1;
             margin: 0;
+        }
+    }
+
+    &-queue-time-picker {
+        .@{mui-prefix}List-root {
+            .@{mui-prefix}MenuItem-root {
+                padding: @padding-xxs @padding-md;
+            }
+        }
+
+        .@{mui-prefix}DialogActions-root {
+            .@{mui-prefix}Button-root {
+                min-width: auto;
+                padding: 2px @padding-sm;
+            }
         }
     }
 }

@@ -120,5 +120,8 @@
     "workflow.valid.range_length": "The length of the {1} field value should be greater than or equal to {2} and less than or equal to {3}.",
     "workflow.valid.required": "The {1} field is required.",
     "workflow.editor.input_placeholder_remark": "Add descriptions...",
-    "workflow.label.mqtt_node_name": "MQTT"
+    "workflow.label.mqtt_node_name": "MQTT",
+    "workflow.editor.form_param_timer_period_weekday": "Weekday",
+    "workflow.editor.form_param_timer_period_weekend": "Weekend",
+    "workflow.editor.form_param_timer_period_everyday": "Everyday"
 }
