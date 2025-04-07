@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Chart from 'chart.js/auto';
 
 import { useBasicChartEntity } from '@/plugin/hooks';
@@ -17,6 +17,7 @@ export interface ViewProps {
     };
 }
 
+const MAX_VALUE_RATIO = 1.1;
 const View = (props: ViewProps) => {
     const { config, configJson } = props;
     const { entity, title, time } = config || {};
@@ -35,6 +36,18 @@ const View = (props: ViewProps) => {
         isPreview,
     });
 
+    // Find the maximum value of the entity data
+    const maxEntityValue = useMemo(() => {
+        if (!chartShowData?.length) return;
+
+        return (
+            Math.max(
+                ...chartShowData.map(item =>
+                    Math.max(...(item.entityValues || []).map(v => Number(v))),
+                ),
+            ) * MAX_VALUE_RATIO
+        );
+    }, [chartShowData]);
     useEffect(() => {
         try {
             let chart: Chart<'line', (string | number | null)[], string> | null = null;
@@ -47,9 +60,12 @@ const View = (props: ViewProps) => {
                         datasets: chartShowData.map((chart: any, index: number) => ({
                             label: chart.entityLabel,
                             data: chart.entityValues,
-                            borderWidth: 1,
+                            borderWidth: 2,
                             spanGaps: true,
                             backgroundColor: resultColor[index],
+                            borderColor: resultColor[index],
+                            pointBorderWidth: 0.1,
+                            pointRadius: 2,
                         })),
                     },
                     options: {
@@ -62,6 +78,7 @@ const View = (props: ViewProps) => {
                                     autoSkip: true,
                                     autoSkipPadding: 20,
                                 },
+                                suggestedMax: maxEntityValue,
                             },
                             x: {
                                 type: 'time',
@@ -121,7 +138,7 @@ const View = (props: ViewProps) => {
         } catch (error) {
             console.error(error);
         }
-    }, [chartLabels, chartShowData, chartRef]);
+    }, [chartLabels, chartShowData, chartRef, maxEntityValue]);
 
     return (
         <div className={styles['line-chart-wrapper']}>

@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Chart from 'chart.js/auto';
+import { hexToRgba } from '@milesight/shared/src/utils/tools';
 import { useBasicChartEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
@@ -16,6 +17,8 @@ export interface ViewProps {
     };
 }
 
+const MAX_VALUE_RATIO = 1.1;
+const CHART_BG_COLOR_OPACITY = 0.2;
 const View = (props: ViewProps) => {
     const { config, configJson } = props;
     const { entity, title, time } = config || {};
@@ -34,6 +37,19 @@ const View = (props: ViewProps) => {
         isPreview,
     });
 
+    // Find the maximum value of the entity data
+    const maxEntityValue = useMemo(() => {
+        if (!chartShowData?.length) return;
+
+        return (
+            Math.max(
+                ...chartShowData.map(item =>
+                    Math.max(...(item.entityValues || []).map(v => Number(v))),
+                ),
+            ) * MAX_VALUE_RATIO
+        );
+    }, [chartShowData]);
+
     useEffect(() => {
         try {
             let chartMain: Chart<'line', (string | number | null)[], string> | null = null;
@@ -46,10 +62,14 @@ const View = (props: ViewProps) => {
                         datasets: chartShowData.map((chart: any, index: number) => ({
                             label: chart.entityLabel,
                             data: chart.entityValues,
-                            borderWidth: 1,
+                            borderWidth: 2,
                             fill: true,
                             spanGaps: true,
-                            backgroundColor: resultColor[index],
+                            backgroundColor: hexToRgba(resultColor[index], CHART_BG_COLOR_OPACITY),
+                            pointBackgroundColor: resultColor[index],
+                            borderColor: resultColor[index],
+                            pointBorderWidth: 0.1,
+                            pointRadius: 2,
                         })),
                     },
                     options: {
@@ -62,6 +82,7 @@ const View = (props: ViewProps) => {
                                     autoSkip: true,
                                     autoSkipPadding: 20,
                                 },
+                                suggestedMax: maxEntityValue,
                             },
                             x: {
                                 type: 'time',
@@ -121,7 +142,7 @@ const View = (props: ViewProps) => {
         } catch (error) {
             console.error(error);
         }
-    }, [chartShowData, chartLabels]);
+    }, [chartShowData, chartLabels, maxEntityValue]);
 
     return (
         <div className={styles['area-chart-wrapper']}>

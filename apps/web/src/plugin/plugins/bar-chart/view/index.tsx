@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Chart from 'chart.js/auto';
 import { useBasicChartEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
@@ -16,6 +16,7 @@ export interface ViewProps {
     };
 }
 
+const MAX_VALUE_RATIO = 1.1;
 const View = (props: ViewProps) => {
     const { config, configJson } = props;
     const { entity, title, time } = config || {};
@@ -35,6 +36,18 @@ const View = (props: ViewProps) => {
         isPreview,
     });
 
+    // Find the maximum value of the entity data
+    const maxEntityValue = useMemo(() => {
+        if (!chartShowData?.length) return;
+
+        return (
+            Math.max(
+                ...chartShowData.map(item =>
+                    Math.max(...(item.entityValues || []).map(v => Number(v))),
+                ),
+            ) * MAX_VALUE_RATIO
+        );
+    }, [chartShowData]);
     useEffect(() => {
         try {
             let chart: Chart<'bar', (string | number | null)[], string> | null = null;
@@ -61,6 +74,7 @@ const View = (props: ViewProps) => {
                                     autoSkip: true,
                                     autoSkipPadding: 20,
                                 },
+                                suggestedMax: maxEntityValue,
                             },
                             x: {
                                 type: 'time',
@@ -120,7 +134,7 @@ const View = (props: ViewProps) => {
         } catch (error) {
             console.error(error);
         }
-    }, [chartLabels, chartShowData, chartRef]);
+    }, [chartLabels, chartShowData, chartRef, maxEntityValue]);
 
     return (
         <div className={styles['bar-chart-wrapper']}>
