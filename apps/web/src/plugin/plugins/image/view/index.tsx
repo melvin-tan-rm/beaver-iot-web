@@ -7,7 +7,7 @@ import { isURL } from '@milesight/shared/src/utils/validators/asserts';
 import { FileValueType } from '@/components/upload';
 import { entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import ws, { getExChangeTopic } from '@/services/ws';
-import { ImageDataType } from '../typings';
+import { ImageDataType, ImageConfigType } from '../typings';
 
 import './style.less';
 
@@ -25,20 +25,13 @@ const isBase64 = (url: string): boolean => {
 };
 
 export interface ViewProps {
-    config: {
-        label?: string;
-        dataType?: ImageDataType;
-        entity?: EntityOptionType;
-        file?: FileValueType;
-        url?: string;
-    };
+    config: ImageConfigType;
     configJson: {
         isPreview?: boolean;
     };
 }
 
 const View = (props: ViewProps) => {
-    console.log(1111, { props });
     const { config, configJson } = props;
     const { label, dataType, entity, file, url } = config || {};
     const { isPreview } = configJson || {};
