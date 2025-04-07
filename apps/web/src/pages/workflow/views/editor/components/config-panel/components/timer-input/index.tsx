@@ -219,6 +219,9 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                         data.executionEpochSecond ? getTime(data.executionEpochSecond * 1000) : null
                     }
                     sx={{ width: '100%' }}
+                    slotProps={{
+                        textField: { required },
+                    }}
                     onChange={time => {
                         setData({
                             ...data,
