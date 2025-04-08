@@ -22,10 +22,15 @@
 
 .@{mui-prefix}ButtonBase-root.@{mui-prefix}Button-containedPrimary {
     color: var(--white);
+    background-color: var(--primary-color-7);
 
     &:hover {
         color: var(--white);
-        background-color: var(--primary-color-9);
+        background-color: var(--primary-color-8);
+    }
+
+    &:active {
+        box-shadow: none;
     }
 
     &.@{mui-prefix}-disabled {
@@ -54,6 +59,24 @@
             font-weight: @font-weight-medium;
             visibility: hidden;
             content: attr(title);
+        }
+    }
+}
+
+// ---------- Switch ----------
+.@{mui-prefix}Switch-root {
+    .@{mui-prefix}Switch-switchBase {
+        &.@{mui-prefix}-checked,
+        & {
+            &:hover {
+                background-color: unset;
+            }
+        }
+    }
+
+    .@{mui-prefix}-checked {
+        .@{mui-prefix}Switch-thumb {
+            background-color: var(--primary-color-7);
         }
     }
 }
