@@ -19,7 +19,7 @@
 
     & &-chip {
         position: absolute;
-        bottom: @margin-xxs;
+        bottom: @margin-xs;
         left: @margin-sm;
         max-width: calc(100% - 72px);
         border-radius: @border-radius-base;
@@ -71,5 +71,9 @@
         }
     }
 
-    // &.size-small {}
+    &.size-small {
+        .@{prefix}-param-input-select-chip {
+            bottom: @margin-xxs;
+        }
+    }
 }
