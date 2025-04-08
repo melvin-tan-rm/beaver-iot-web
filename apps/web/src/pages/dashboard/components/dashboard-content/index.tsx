@@ -299,8 +299,8 @@ export default (props: DashboardContentProps) => {
                             <Tooltip onClick={toggleHomeDashboard} title={homeDashboardTip}>
                                 <div className={homeDashboardClassName}>{homeDashboardIcon}</div>
                             </Tooltip>
-                            <div onClick={enterFullscreen} className="dashboard-fullscreen">
-                                <FullscreenIcon className="dashboard-fullscreen-icon" />
+                            <div onClick={enterFullscreen} className="dashboard-button-icon">
+                                <FullscreenIcon />
                             </div>
                         </Stack>
                     </div>

@@ -50,7 +50,7 @@ function useHomeDashboard(refreshDashboards?: () => void) {
     }, [isHome]);
 
     const homeDashboardClassName = useMemo(() => {
-        return classNames('home-dashboard', {
+        return classNames('dashboard-button-icon', {
             active: isHome,
         });
     }, [isHome]);
