@@ -215,5 +215,6 @@
     "common.message.upload_error_too_many_files": "Too many files",
     "common.message.upload_error_server_error": "Upload failed, please try again later",
     "common.label.select_entity": "Select Entity",
-    "common.label.local_upload": "Local Upload"
+    "common.label.local_upload": "Local Upload",
+    "common.label.required": "Required"
 }

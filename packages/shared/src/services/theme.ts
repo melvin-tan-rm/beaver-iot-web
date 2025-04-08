@@ -445,8 +445,18 @@ export const getMuiComponents = (mode: ThemeType = 'light') => {
             },
         },
         MuiCheckbox: {
-            defaultProps: {
-                size: 'small',
+            styleOverrides: {
+                sizeSmall: {
+                    padding: '4px',
+                    '.MuiSvgIcon-root': {
+                        fontSize: '1.25rem',
+                    },
+                },
+                sizeMedium: {
+                    '.MuiSvgIcon-root': {
+                        fontSize: '1.25rem',
+                    },
+                },
             },
         },
         MuiSelect: {

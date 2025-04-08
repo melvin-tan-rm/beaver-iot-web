@@ -99,6 +99,7 @@ declare type TriggerNodeDataType = BaseNodeDataType<{
         identify: string;
         name: string;
         type: EntityValueDataType;
+        required?: boolean;
     }[];
 }>;
 
