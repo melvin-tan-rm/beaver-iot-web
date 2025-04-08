@@ -207,5 +207,6 @@
     "common.label.settings": "设置",
     "common.confirm.execute": "确认执行更新操作？",
     "common.label.no_options": "没有选项",
-    "common.label.404_not_found": "404 没有找到"
+    "common.label.404_not_found": "404 没有找到",
+    "common.label.loading": "加载中..."
 }
