@@ -3,7 +3,7 @@ import { Button, IconButton } from '@mui/material';
 import { isEqual, isNil } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { DeleteOutlineIcon, AddIcon } from '@milesight/shared/src/components';
+import { DeleteOutlineIcon, AddIcon, CloseIcon } from '@milesight/shared/src/components';
 import useWorkflow from '../../../../hooks/useWorkflow';
 import { DEFAULT_BOOLEAN_DATA_ENUMS } from '../../../../constants';
 import EntitySelect, { type EntitySelectProps } from '../entity-select';
@@ -105,6 +105,7 @@ const EntityAssignSelect: React.FC<EntityAssignSelectProps> = ({
             {list.map((item, index) => (
                 <div className="ms-entity-assign-select-item" key={getKey(index)}>
                     <EntitySelect
+                        size="small"
                         required={required}
                         filterModel={filterModel}
                         value={item?.[0] || ''}
@@ -114,6 +115,7 @@ const EntityAssignSelect: React.FC<EntityAssignSelectProps> = ({
                         dropdownMatchSelectWidth={360}
                     />
                     <ParamInputSelect
+                        size="small"
                         required={required}
                         value={item?.[1]}
                         valueType={entityDetails[index]?.type}
@@ -122,16 +124,15 @@ const EntityAssignSelect: React.FC<EntityAssignSelectProps> = ({
                             replace(index, [item?.[0] || '', isNil(data) ? '' : data]);
                         }}
                     />
-                    <IconButton onClick={() => remove(index)}>
-                        <DeleteOutlineIcon />
+                    <IconButton className="btn-delete" onClick={() => remove(index)}>
+                        <CloseIcon sx={{ fontSize: 18 }} />
                     </IconButton>
                 </div>
             ))}
             {multiple && (
                 <Button
-                    fullWidth
-                    variant="outlined"
-                    className="ms-entity-assign-select-add-btn"
+                    variant="text"
+                    className="btn-add"
                     startIcon={<AddIcon />}
                     disabled={list.length >= MAX_VALUE_LENGTH}
                     onClick={() => {

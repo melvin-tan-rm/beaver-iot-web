@@ -116,7 +116,7 @@ const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
                 <Divider
                     variant="middle"
                     orientation="vertical"
-                    sx={{ height: 16, marginLeft: 0.5 }}
+                    sx={{ height: 16, m: 0, ml: 0.5 }}
                 />,
             );
         }

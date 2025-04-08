@@ -476,10 +476,26 @@ export const getMuiComponents = (mode: ThemeType = 'light') => {
         },
         MuiAutocomplete: {
             styleOverrides: {
-                inputRoot: {
-                    '&.MuiInputBase-sizeSmall.MuiAutocomplete-inputRoot .MuiAutocomplete-input': {
-                        paddingTop: '1px',
-                        paddingBottom: '1px',
+                root: {
+                    '.MuiInputBase-root': {
+                        paddingTop: '6px',
+                        paddingBottom: '6px',
+                        '&.MuiInputBase-sizeSmall': {
+                            paddingTop: '2px',
+                            paddingBottom: '2px',
+
+                            '.MuiIconButton-sizeSmall .MuiSvgIcon-root': {
+                                fontSize: '1.125rem',
+                            },
+                        },
+                        '.MuiInputBase-input.MuiAutocomplete-input': {
+                            paddingTop: '1px',
+                            paddingBottom: '1px',
+                            paddingLeft: '3px',
+                        },
+                        '.MuiIconButton-root': {
+                            padding: '2px',
+                        },
                     },
                 },
             },
