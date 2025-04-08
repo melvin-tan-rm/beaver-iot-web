@@ -3,7 +3,7 @@ import { Button, IconButton, TextField } from '@mui/material';
 import { isEqual, isNil } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { DeleteOutlineIcon, AddIcon } from '@milesight/shared/src/components';
+import { DeleteOutlineIcon, AddIcon, CloseIcon } from '@milesight/shared/src/components';
 import ParamInputSelect from '../param-input-select';
 import './style.less';
 
@@ -67,12 +67,16 @@ const ParamAssignInput: React.FC<ParamAssignInputProps> = ({
                 <div className="ms-param-assign-input-item" key={getKey(index) || index}>
                     <TextField
                         autoComplete="off"
+                        slotProps={{
+                            input: { size: 'small' },
+                        }}
                         label={label?.[0] || getIntlText('common.label.name')}
                         required={required}
                         value={item?.[0] || ''}
                         onChange={e => replace(index, [e.target.value, item?.[1] || ''])}
                     />
                     <ParamInputSelect
+                        size="small"
                         label={label?.[1]}
                         required={required}
                         value={item?.[1]}
@@ -80,16 +84,15 @@ const ParamAssignInput: React.FC<ParamAssignInputProps> = ({
                             replace(index, [item?.[0] || '', isNil(data) ? '' : `${data}`]);
                         }}
                     />
-                    <IconButton onClick={() => remove(index)}>
-                        <DeleteOutlineIcon />
+                    <IconButton className="btn-delete" onClick={() => remove(index)}>
+                        <CloseIcon sx={{ fontSize: 18 }} />
                     </IconButton>
                 </div>
             ))}
             {multiple && (
                 <Button
-                    fullWidth
-                    variant="outlined"
-                    className="ms-param-assign-input-add-btn"
+                    variant="text"
+                    className="btn-add"
                     startIcon={<AddIcon />}
                     disabled={list.length >= MAX_VALUE_LENGTH}
                     onClick={() => {

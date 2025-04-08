@@ -1,4 +1,5 @@
 import { useLayoutEffect, useState, useRef, useCallback, useMemo } from 'react';
+import cls from 'classnames';
 import { isEmpty, isNil } from 'lodash-es';
 import { useControllableValue, useSize } from 'ahooks';
 import {
@@ -9,6 +10,7 @@ import {
     Divider,
     Menu,
     MenuItem,
+    type TextFieldProps,
     type PopoverProps,
 } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -27,6 +29,11 @@ export interface ParamInputSelectProps {
     label?: string;
 
     required?: boolean;
+
+    /**
+     * The size of the input
+     */
+    size?: TextFieldProps['size'];
 
     /**
      * Param Select Placeholder
@@ -52,6 +59,7 @@ export interface ParamInputSelectProps {
 const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
     label,
     required = true,
+    size = 'medium',
     placeholder,
     valueType,
     enums,
@@ -184,7 +192,10 @@ const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
     }, [data, options, enums, isEnumValue]);
 
     return (
-        <div className="ms-param-input-select" ref={containerRef}>
+        <div
+            ref={containerRef}
+            className={cls('ms-param-input-select', { 'size-small': size === 'small' })}
+        >
             <TextField
                 fullWidth
                 color="primary"
@@ -199,6 +210,7 @@ const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
                 }
                 slotProps={{
                     input: {
+                        size,
                         readOnly: !!selectValue || isEnumValue,
                         endAdornment,
                     },

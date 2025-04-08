@@ -366,6 +366,9 @@ export const getMuiComponents = (mode: ThemeType = 'light') => {
             styleOverrides: {
                 root: {
                     fontSize: '0.875rem', // 14px
+                    '.MuiInputBase-inputSizeSmall': {
+                        padding: '3px 12px',
+                    },
                 },
             },
         },

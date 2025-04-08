@@ -7,11 +7,19 @@
 
     .@{mui-prefix}InputBase-root {
         padding-right: @padding-xxs;
+
+        .@{mui-prefix}IconButton-sizeSmall {
+            padding: @padding-xxs;
+
+            .@{mui-prefix}SvgIcon-root {
+                font-size: @font-size-lg;
+            }
+        }
     }
 
     & &-chip {
         position: absolute;
-        top: @margin-xs;
+        bottom: @margin-xxs;
         left: @margin-sm;
         max-width: calc(100% - 72px);
         border-radius: @border-radius-base;
@@ -62,4 +70,6 @@
             }
         }
     }
+
+    // &.size-small {}
 }
