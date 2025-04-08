@@ -3,7 +3,7 @@ import { Button, IconButton } from '@mui/material';
 import { isEqual } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { DeleteOutlineIcon, AddIcon } from '@milesight/shared/src/components';
+import { AddIcon, CloseIcon } from '@milesight/shared/src/components';
 import EntitySelect, { type EntitySelectProps } from '../entity-select';
 import './style.less';
 
@@ -57,6 +57,7 @@ const EntityMultipleSelect: React.FC<EntityMultipleSelectProps> = ({
                 <div className="ms-entity-filter-select-item" key={getKey(index) || index}>
                     <EntitySelect
                         label=""
+                        size="small"
                         placeholder={getIntlText('common.label.entity')}
                         required={required}
                         disabled={disabled}
@@ -67,17 +68,16 @@ const EntityMultipleSelect: React.FC<EntityMultipleSelectProps> = ({
                         }}
                     />
                     {list.length > 1 && (
-                        <IconButton onClick={() => remove(index)}>
-                            <DeleteOutlineIcon />
+                        <IconButton className="btn-delete" onClick={() => remove(index)}>
+                            <CloseIcon sx={{ fontSize: 18 }} />
                         </IconButton>
                     )}
                 </div>
             ))}
             {multiple && (
                 <Button
-                    fullWidth
-                    variant="outlined"
-                    className="ms-entity-filter-select-add-btn"
+                    variant="text"
+                    className="btn-add"
                     startIcon={<AddIcon />}
                     disabled={list.length >= MAX_VALUE_LENGTH}
                     onClick={() => {
