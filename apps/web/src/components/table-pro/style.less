@@ -30,6 +30,12 @@
         flex: 1;
         overflow: auto;
 
+        .@{mui-prefix}DataGrid-columnHeaders {
+            .@{mui-prefix}DataGrid-row--borderBottom {
+                background-color: var(--gray-1);
+            }
+        }
+
         // Override Mui style: Remove the focus border
         .@{mui-prefix}DataGrid-cell:focus,
         .@{mui-prefix}DataGrid-cell:focus-within,
