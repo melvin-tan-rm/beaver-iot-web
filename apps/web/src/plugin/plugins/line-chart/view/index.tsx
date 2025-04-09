@@ -119,6 +119,14 @@ const View = (props: ViewProps) => {
                                     onZoomStart: chartZoomRef.current?.show,
                                 },
                             },
+                            legend: {
+                                labels: {
+                                    boxWidth: 10,
+                                    boxHeight: 10,
+                                    useBorderRadius: true,
+                                    borderRadius: 1,
+                                },
+                            },
                         } as any,
                     },
                 });
