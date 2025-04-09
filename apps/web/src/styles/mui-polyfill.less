@@ -219,6 +219,29 @@ input.@{mui-prefix}InputBase-input {
     color: var(--text-color-error);
 }
 
+label.@{mui-prefix}FormControlLabel-root {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    margin-left: 0;
+
+    & > div {
+        display: flex;
+        flex-direction: row-reverse;
+    }
+
+    .@{mui-prefix}FormControlLabel-label {
+        display: inline-block;
+        margin-bottom: @margin-xxs;
+        color: var(--text-color-primary);
+        .text-size(@font-size-md);
+    }
+
+    .@{mui-prefix}FormControlLabel-asterisk {
+        margin-right: @margin-xxs;
+    }
+}
+
 .@{mui-prefix}FormControl-root {
     div&,
     &.@{mui-prefix}FormControl-fullWidth&,
@@ -241,29 +264,6 @@ input.@{mui-prefix}InputBase-input {
 
         .@{mui-prefix}InputBase-input {
             padding-left: 0;
-        }
-    }
-
-    .@{mui-prefix}FormControlLabel-root {
-        display: flex;
-        flex-direction: column-reverse;
-        align-items: flex-start;
-        margin-left: 0;
-
-        & > div {
-            display: flex;
-            flex-direction: row-reverse;
-        }
-
-        .@{mui-prefix}FormControlLabel-label {
-            display: inline-block;
-            margin-bottom: @margin-xxs;
-            color: var(--text-color-primary);
-            .text-size(@font-size-md);
-        }
-
-        .@{mui-prefix}FormControlLabel-asterisk {
-            margin-right: @margin-xxs;
         }
     }
 
