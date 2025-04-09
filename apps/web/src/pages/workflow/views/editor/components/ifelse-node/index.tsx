@@ -1,5 +1,6 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import { Position, useReactFlow, useUpdateNodeInternals, type NodeProps } from '@xyflow/react';
+import cls from 'classnames';
 import { isString, isNil } from 'lodash-es';
 import { useDebounceEffect } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -221,21 +222,33 @@ const IfElseNode: React.FC<NodeProps<IfElseNode>> = props => {
                                         isEmpty =
                                             !expressionValue?.key ||
                                             !expressionValue?.operator ||
+                                            expressionValue?.value === '' ||
                                             isNil(expressionValue?.value);
                                         valueLabel = expressionValue?.value?.toString();
                                     }
-                                }
 
-                                if (param?.enums) {
-                                    const enumItem = param?.enums.find(
-                                        item => item.key === valueLabel,
-                                    );
+                                    const valueParam = nodeParams?.find(item => {
+                                        return item.valueKey === expressionValue?.value;
+                                    });
 
-                                    valueLabel = enumItem?.label || valueLabel;
+                                    if (valueParam) {
+                                        valueLabel = valueParam.valueName;
+                                    } else if (param?.enums) {
+                                        const enumItem = param?.enums.find(
+                                            item => item.key === valueLabel,
+                                        );
+
+                                        valueLabel = enumItem?.label || valueLabel;
+                                    }
                                 }
 
                                 return (
-                                    <div className="ms-condition-item" key={condition.id}>
+                                    <div
+                                        className={cls('ms-condition-item', {
+                                            narrow: block.conditions.length > 1,
+                                        })}
+                                        key={condition.id}
+                                    >
                                         {isEmpty ? (
                                             <span className="placeholder">
                                                 {getIntlText(

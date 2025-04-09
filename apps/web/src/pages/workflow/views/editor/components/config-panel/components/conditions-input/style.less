@@ -146,15 +146,25 @@
                     }
                 }
 
-                > .@{mui-prefix}InputBase-root,
-                > .@{mui-prefix}FormControl-root {
-                    margin: 0;
-                    margin-top: -1px;
+                .@{prefix}-param-input-select {
+                    > .@{mui-prefix}FormControl-root {
+                        margin-top: -1px !important;
 
-                    .@{mui-prefix}OutlinedInput-notchedOutline {
-                        border-radius: 0 0 @border-radius-base @border-radius-base;
+                        .@{mui-prefix}OutlinedInput-notchedOutline {
+                            border-radius: 0 0 @border-radius-base @border-radius-base;
+                        }
                     }
                 }
+
+                // > .@{mui-prefix}InputBase-root,
+                // > .@{mui-prefix}FormControl-root {
+                //     margin: 0;
+                //     margin-top: -1px;
+
+                //     .@{mui-prefix}OutlinedInput-notchedOutline {
+                //         border-radius: 0 0 @border-radius-base @border-radius-base;
+                //     }
+                // }
 
                 &.hidden-value-input {
                     > .select {
@@ -166,7 +176,7 @@
                             border-radius: 0 @border-radius-base @border-radius-base 0;
                         }
                     }
-                    > .@{mui-prefix}FormControl-root {
+                    > .@{prefix}-param-input-select {
                         display: none;
                     }
                 }

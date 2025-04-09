@@ -20,7 +20,7 @@ import useWorkflow, {
     type FlattenNodeParamType,
 } from '@/pages/workflow/views/editor/hooks/useWorkflow';
 import { isRefParamKey } from '@/pages/workflow/views/editor/helper';
-import UpstreamNodeList from '../upstream-node-list';
+import UpstreamNodeList, { type UpstreamNodeListProps } from '../upstream-node-list';
 import './style.less';
 
 type ParamInputSelectValueType = string | boolean | undefined;
@@ -39,6 +39,8 @@ export interface ParamInputSelectProps {
      * Param Select Placeholder
      */
     placeholder?: string;
+
+    filter?: UpstreamNodeListProps['filter'];
 
     value?: ParamInputSelectValueType;
 
@@ -61,6 +63,7 @@ const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
     required = true,
     size = 'medium',
     placeholder,
+    filter,
     valueType,
     enums,
     ...props
@@ -269,6 +272,7 @@ const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
                 {...commonPopoverProps}
             >
                 <UpstreamNodeList
+                    filter={filter}
                     value={selectValue}
                     onChange={node => {
                         setFocused(false);

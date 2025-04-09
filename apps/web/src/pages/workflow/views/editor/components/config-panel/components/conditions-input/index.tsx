@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useMemo } from 'react';
 import cls from 'classnames';
-import { isEqual, cloneDeep, merge } from 'lodash-es';
+import { isEqual, isNil, cloneDeep, merge } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
 import {
     ToggleButtonGroup,
@@ -26,6 +26,7 @@ import { genUuid } from '../../../../helper';
 import { logicOperatorMap, conditionOperatorMap } from '../../../../constants';
 import useWorkflow from '../../../../hooks/useWorkflow';
 import ParamSelect from '../param-select';
+import ParamInputSelect from '../param-input-select';
 import CodeEditor, { DEFAULT_LANGUAGE, type CodeEditorData } from '../code-editor';
 import './style.less';
 
@@ -46,6 +47,7 @@ type RefParamDetailType = Record<
     {
         key: ApiKey;
         type?: EntityValueDataType;
+        enums?: Record<string, any>;
         options?: React.ReactNode[];
     }
 >;
@@ -136,9 +138,8 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
         replaceBlock(blockIndex, { ...block, conditions });
     };
 
-    const checkEmptyOperator = (condition: ConditionValueType) => {
+    const checkEmptyOperator = (expressionValue: ConditionValueType['expressionValue']) => {
         const emptyOperators: WorkflowFilterOperator[] = ['IS_EMPTY', 'IS_NOT_EMPTY'];
-        const { expressionValue } = condition;
 
         return (
             typeof expressionValue !== 'string' &&
@@ -181,11 +182,18 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
                 acc[id] = {
                     key: detail.valueKey,
                     type: detail.valueType,
-                    options: detail.enums?.map(({ key, label }) => (
-                        <MenuItem key={key} value={key}>
-                            {label}
-                        </MenuItem>
-                    )),
+                    enums: detail.enums?.reduce(
+                        (acc, { key, label }) => {
+                            acc[key] = label;
+                            return acc;
+                        },
+                        {} as Record<string, any>,
+                    ),
+                    // options: detail.enums?.map(({ key, label }) => (
+                    //     <MenuItem key={key} value={key}>
+                    //         {label}
+                    //     </MenuItem>
+                    // )),
                 };
             });
 
@@ -313,7 +321,6 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
                                 {conditions.map((condition, index) => {
                                     const { expressionValue } = condition;
                                     const detail = refParamDetails[condition.id];
-                                    const options = detail?.options;
 
                                     if (typeof expressionValue === 'string') return null;
                                     return (
@@ -321,7 +328,7 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
                                             <div
                                                 className={cls('input-wrapper', {
                                                     'hidden-value-input':
-                                                        checkEmptyOperator(condition),
+                                                        checkEmptyOperator(expressionValue),
                                                 })}
                                             >
                                                 <div className="select">
@@ -334,6 +341,7 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
                                                                 {
                                                                     expressionValue: {
                                                                         key: e.target.value,
+                                                                        value: '',
                                                                     },
                                                                 },
                                                                 block,
@@ -350,19 +358,26 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
                                                             className: 'ms-param-select-menu',
                                                         }}
                                                         value={expressionValue?.operator || ''}
-                                                        onChange={e =>
+                                                        onChange={e => {
+                                                            const expVal: ConditionValueType['expressionValue'] =
+                                                                {
+                                                                    operator: e.target
+                                                                        .value as WorkflowFilterOperator,
+                                                                    value: expressionValue?.value,
+                                                                };
+
+                                                            if (checkEmptyOperator(expVal)) {
+                                                                expVal.value = '';
+                                                            }
                                                             replaceCondition(
                                                                 index,
                                                                 {
-                                                                    expressionValue: {
-                                                                        operator: e.target
-                                                                            .value as WorkflowFilterOperator,
-                                                                    },
+                                                                    expressionValue: expVal,
                                                                 },
                                                                 block,
                                                                 blockIndex,
-                                                            )
-                                                        }
+                                                            );
+                                                        }}
                                                     >
                                                         {Object.entries(conditionOperatorMap).map(
                                                             ([key, oprt]) => (
@@ -373,56 +388,34 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
                                                         )}
                                                     </Select>
                                                 </div>
-                                                {options?.length ? (
-                                                    <Select
-                                                        fullWidth
-                                                        defaultValue=""
-                                                        IconComponent={KeyboardArrowDownIcon}
-                                                        value={
-                                                            expressionValue?.value?.toString() || ''
+                                                <ParamInputSelect
+                                                    label=""
+                                                    enums={detail?.enums}
+                                                    valueType={detail?.type}
+                                                    filter={data => {
+                                                        return (
+                                                            data.valueKey !== expressionValue?.key
+                                                        );
+                                                    }}
+                                                    value={expressionValue?.value}
+                                                    onChange={val => {
+                                                        let value: string | boolean = !isNil(val)
+                                                            ? val
+                                                            : '';
+                                                        if (detail?.type === 'BOOLEAN') {
+                                                            value = val === 'true';
                                                         }
-                                                        onChange={e => {
-                                                            let value: string | boolean =
-                                                                e.target?.value;
 
-                                                            if (detail.type === 'BOOLEAN') {
-                                                                value = e.target.value === 'true';
-                                                            }
-
-                                                            replaceCondition(
-                                                                index,
-                                                                {
-                                                                    expressionValue: { value },
-                                                                },
-                                                                block,
-                                                                blockIndex,
-                                                            );
-                                                        }}
-                                                    >
-                                                        {options}
-                                                    </Select>
-                                                ) : (
-                                                    <TextField
-                                                        fullWidth
-                                                        autoComplete="off"
-                                                        placeholder={getIntlText(
-                                                            'common.label.value',
-                                                        )}
-                                                        value={expressionValue?.value || ''}
-                                                        onChange={e => {
-                                                            replaceCondition(
-                                                                index,
-                                                                {
-                                                                    expressionValue: {
-                                                                        value: e.target.value,
-                                                                    },
-                                                                },
-                                                                block,
-                                                                blockIndex,
-                                                            );
-                                                        }}
-                                                    />
-                                                )}
+                                                        replaceCondition(
+                                                            index,
+                                                            {
+                                                                expressionValue: { value },
+                                                            },
+                                                            block,
+                                                            blockIndex,
+                                                        );
+                                                    }}
+                                                />
                                             </div>
                                             {isMultipleConditions && (
                                                 <IconButton
