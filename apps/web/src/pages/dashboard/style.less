@@ -108,6 +108,7 @@
             position: relative;
             flex: 1;
             width: 100%;
+            padding-top: 68px;
             overflow: hidden scroll;
             background: var(--gray-color-2);
 
@@ -125,11 +126,18 @@
         }
 
         &-operate {
-            position: relative;
+            position: absolute;
+            top: 48px;
+            left: 8px;
+            z-index: 99;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: @padding-md @padding-xxl @padding-md @padding-md;
+            width: calc(100% - 8px);
+            padding: @padding-md @padding-md @padding-md @padding-md;
+            margin-left: -@margin-xs;
+            background: rgba(242, 243, 245, 0.8);
+            backdrop-filter: blur(16px);
         }
 
         &-empty {
