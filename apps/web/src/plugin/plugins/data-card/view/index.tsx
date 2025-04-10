@@ -70,7 +70,7 @@ const View = (props: Props) => {
                             <Icon
                                 sx={{
                                     color: iconColor || getCSSVariableValue('--gray-5'),
-                                    fontSize: 20,
+                                    // fontSize: 20,
                                 }}
                             />
                         )}

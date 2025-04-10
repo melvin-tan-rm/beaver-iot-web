@@ -49,23 +49,29 @@
             margin-bottom: @margin-xxs;
         }
 
+        &__header svg, 
+        &__title {
+            font-size: clamp(14px, min(6.67cqw, 12.5cqh), 32px);
+        }
+
         &__title {
             max-width: calc(100% - 28px);
             margin-left: @margin-xxs;
+            font-weight: 300;
+            // .text-size(@font-size-base);
             color: var(--text-color-secondary);
-            .text-size(@font-size-base);
         }
 
         &__content {
             display: flex;
             flex-direction: column;
             padding-left: 2cqw;
-            font-weight: @font-weight-medium;
 
             div:nth-of-type(2) {
                 display: inline-block;
                 max-width: 100%;
                 font-size: clamp(16px, min(10cqw, 25cqh), 120px);
+                font-weight: @font-weight-medium;
             }
         }
     }
