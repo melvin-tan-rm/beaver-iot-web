@@ -23,7 +23,7 @@ declare type ReactFlowEdge<
 declare type ReactFlowViewport = import('@xyflow/react').Viewport;
 
 /**
- * Node Type
+ * Built in Node Type
  * @param trigger Trigger Node
  * @param timer Timer Node
  * @param listener Listener Node
@@ -35,6 +35,7 @@ declare type ReactFlowViewport = import('@xyflow/react').Viewport;
  * @param select Select Node
  * @param email Email Node
  * @param webhook Webhook Node
+ * @param output Output Node
  */
 declare type WorkflowNodeType =
     | 'trigger'
@@ -47,7 +48,8 @@ declare type WorkflowNodeType =
     | 'assigner'
     | 'select'
     | 'email'
-    | 'webhook';
+    | 'webhook'
+    | 'output';
 
 /**
  * Edge Type
@@ -309,6 +311,14 @@ declare type WebhookNodeDataType = BaseNodeDataType<{
 }>;
 
 /**
+ * Output Node Parameters
+ */
+declare type OutputNodeDataType = BaseNodeDataType<{
+    /** Outputs */
+    outputs: Record<ApiKey, string>;
+}>;
+
+/**
  * Workflow Node Model
  */
 declare type WorkflowNode<T extends WorkflowNodeType | undefined = undefined> = T extends 'trigger'
@@ -331,7 +341,9 @@ declare type WorkflowNode<T extends WorkflowNodeType | undefined = undefined> = 
                     ? ReactFlowNode<Partial<EmailNodeDataType>, 'email'>
                     : T extends 'webhook'
                       ? ReactFlowNode<Partial<WebhookNodeDataType>, 'webhook'>
-                      : ReactFlowNode<Partial<BaseNodeDataType>, WorkflowNodeType>;
+                      : T extends 'output'
+                        ? ReactFlowNode<Partial<OutputNodeDataType>, 'output'>
+                        : ReactFlowNode<Partial<BaseNodeDataType>, WorkflowNodeType>;
 
 /**
  * Workflow Edge Model

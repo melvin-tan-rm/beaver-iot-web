@@ -143,6 +143,22 @@ const useFlowStore = create(
                 {} as FlowStore['nodeConfigs'],
             );
 
+            // Demo Data
+            // result.output = {
+            //     ...basicNodeConfigs.output,
+            //     schema: {
+            //         properties: {
+            //             // @ts-ignore
+            //             outputConfig: {
+            //                 autowired: false,
+            //                 displayName: 'Output Variables',
+            //                 uiComponent: 'paramAssignInput',
+            //             },
+            //         },
+            //     },
+            // };
+
+            // console.log('node configs', result);
             set({ nodeConfigs: result });
         },
         setLogPanelMode: logPanelMode => set({ logPanelMode }),

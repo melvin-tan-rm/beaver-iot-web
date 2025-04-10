@@ -451,6 +451,39 @@ const useWorkflow = () => {
         [getNodes, getEdges, getUpstreamNodes, getIntlText],
     );
 
+    // Check if the Output node complies with the following rules:
+    // 1. The entry node must be Trigger
+    // 2. There is only one Output node
+    const checkOutputNodeLimit = useCallback(
+        (nodes?: WorkflowNode[]) => {
+            nodes = nodes || getNodes();
+            const hasTriggerNode = nodes.some(node => node.type === 'trigger');
+            const outputNodes = nodes.filter(node => node.type === 'output');
+
+            if (!hasTriggerNode) {
+                if (outputNodes.length) {
+                    toast.error({
+                        key: 'output-node-limit',
+                        content: getIntlText('workflow.valid.output_node_limit_has_trigger_tip'),
+                    });
+                    return false;
+                }
+                return true;
+            }
+
+            if (outputNodes.length > 1) {
+                toast.error({
+                    key: 'output-node-limit',
+                    content: getIntlText('workflow.valid.output_node_limit_count_tip'),
+                });
+                return false;
+            }
+
+            return true;
+        },
+        [getNodes, getIntlText],
+    );
+
     // Check if the workflow nodes&edges is valid
     const checkWorkflowValid = useCallback(
         (nodes: WorkflowNode[], edges: WorkflowEdge[]) => {
@@ -458,10 +491,17 @@ const useWorkflow = () => {
             if (checkFreeNodeLimit(nodes, edges)) return false;
             if (!checkNestedParallelLimit(nodes, edges)) return false;
             if (nodes.some(node => !checkParallelLimit(node.id, undefined, edges))) return false;
+            if (!checkOutputNodeLimit(nodes)) return false;
 
             return true;
         },
-        [checkNodeNumberLimit, checkFreeNodeLimit, checkNestedParallelLimit, checkParallelLimit],
+        [
+            checkNodeNumberLimit,
+            checkFreeNodeLimit,
+            checkNestedParallelLimit,
+            checkParallelLimit,
+            checkOutputNodeLimit,
+        ],
     );
 
     // Update node status

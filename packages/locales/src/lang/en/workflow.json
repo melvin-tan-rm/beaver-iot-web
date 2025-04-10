@@ -123,5 +123,8 @@
     "workflow.label.mqtt_node_name": "MQTT",
     "workflow.editor.form_param_timer_period_weekday": "Weekday",
     "workflow.editor.form_param_timer_period_weekend": "Weekend",
-    "workflow.editor.form_param_timer_period_everyday": "Everyday"
+    "workflow.editor.form_param_timer_period_everyday": "Everyday",
+    "workflow.label.output_node_name": "Output",
+    "workflow.valid.output_node_limit_has_trigger_tip": "The workflow has output node and the entry node must be trigger node.",
+    "workflow.valid.output_node_limit_count_tip": "Only one Output node is allowed in the workflow."
 }

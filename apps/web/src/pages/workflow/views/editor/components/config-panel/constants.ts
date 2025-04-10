@@ -55,6 +55,9 @@ export const DEFAULT_VALUES: Partial<Record<WorkflowNodeType, Record<string, any
             },
         ],
     },
+    webhook: {
+        inputArguments: null,
+    },
     select: {
         entities: [''],
     },

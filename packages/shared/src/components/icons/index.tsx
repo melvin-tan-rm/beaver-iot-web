@@ -131,6 +131,7 @@ export {
     CloudSyncOutlined as CloudSyncOutlinedIcon,
     TuneOutlined as TuneOutlinedIcon,
     Image as ImageIcon,
+    Output as OutputIcon,
     // ImageOutlined as ImageOutlinedIcon,
 } from '@mui/icons-material';
 

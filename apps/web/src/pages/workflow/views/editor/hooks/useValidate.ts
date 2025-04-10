@@ -622,7 +622,7 @@ const useValidate = () => {
                 const nodeConfig = nodeConfigs[nodeType];
                 const nodeLabel = nodeConfig?.labelIntlKey
                     ? getIntlText(nodeConfig.labelIntlKey)
-                    : nodeConfig.label || '';
+                    : nodeConfig?.label || '';
                 const errMsgs: string[] = [];
 
                 if (nodesMap.has(id)) {

@@ -1,4 +1,4 @@
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, Icon } from '@mui/material';
 import {
     SettingsEthernetIcon,
     EntityIcon,
@@ -13,6 +13,7 @@ import {
     CheckCircleIcon,
     ErrorIcon,
     ConnectWithoutContactIcon,
+    OutputIcon,
     // FlagIcon,
 } from '@milesight/shared/src/components';
 
@@ -251,6 +252,14 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
             },
         ],
         outputKeys: ['inputArguments'],
+    },
+    output: {
+        type: 'output',
+        componentName: 'output',
+        labelIntlKey: 'workflow.label.output_node_name',
+        icon: <OutputIcon />,
+        iconBgColor: '#7E57C2',
+        category: 'external',
     },
 };
 
