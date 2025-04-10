@@ -93,3 +93,27 @@
         }
     }
 }
+
+.@{mui-prefix}DataGrid-filterForm {
+    .@{mui-prefix}FormControl-root {
+        margin-bottom: 0;
+
+        .@{mui-prefix}FormControl-root.@{mui-prefix}FormControl-fullWidth {
+            margin-bottom: 0;
+        }
+
+        .@{mui-prefix}InputBase-root {
+            margin-top: 0;
+
+            &::before {
+                border-bottom-color: var(--border-color-base);
+            }
+
+            &:hover:not(.Mui-disabled, .Mui-error) {
+                &::before {
+                    border-bottom-color: var(--border-color-hover);
+                }
+            }
+        }
+    }
+}
