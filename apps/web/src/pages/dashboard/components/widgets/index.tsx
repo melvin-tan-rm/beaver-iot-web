@@ -13,7 +13,7 @@ import './style.less';
 
 const ReactGridLayout = WidthProvider(GRL);
 
-const GRID_LAYOUT_MARGIN = 16;
+const GRID_LAYOUT_MARGIN = 12;
 const GRID_LAYOUT_COLS = 12;
 const GRID_ROW_HEIGHT = 88;
 const HELPER_RECT_HEIGHT = GRID_LAYOUT_MARGIN + GRID_ROW_HEIGHT;

@@ -115,6 +115,7 @@ const View = (props: ViewProps) => {
                                     wheel: {
                                         enabled: true, // Enable rolling wheel scaling
                                         speed: 0.05,
+                                        modifierKey: 'ctrl',
                                     },
                                     pinch: {
                                         enabled: true, // Enable touch shrinkage
