@@ -94,6 +94,13 @@ const View = (props: IProps) => {
                     plugins: {
                         legend: {
                             position: 'right', // Legend position
+                            labels: {
+                                // Legend box size
+                                boxWidth: 10,
+                                boxHeight: 10,
+                                useBorderRadius: true,
+                                borderRadius: 1,
+                            },
                         },
                         tooltip: {
                             enabled: Boolean(data?.length), // Enlightenment prompts

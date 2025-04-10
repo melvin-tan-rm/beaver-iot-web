@@ -43,6 +43,12 @@
         .@{mui-prefix}DataGrid-columnHeader:focus-within {
             outline: none;
         }
+        //  Override Mui style: Remove the checkbox hover style
+        .@{mui-prefix}DataGrid-cellCheckbox .MuiCheckbox-root:hover,
+        .@{mui-prefix}DataGrid-columnHeader .MuiCheckbox-root:hover {
+            background-color: unset;
+        }
+
 
         // Override the Mui style: Avoid hiding the separator line in the Header when focusing
         .@{mui-prefix}DataGrid-columnHeader:focus .@{mui-prefix}DataGrid-columnSeparator,
