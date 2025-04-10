@@ -1,8 +1,9 @@
-import { memo, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useMatches } from 'react-router';
 import { Link } from 'react-router-dom';
 import cls from 'classnames';
 import { MenuList, MenuItem, IconButton, type MenuItemProps } from '@mui/material';
+import { iotLocalStorage, SIDEBAR_COLLAPSE_KEY } from '@milesight/shared/src/utils/storage';
 import { Logo, FormatIndentDecreaseIcon } from '@milesight/shared/src/components';
 import { useUserStore } from '@/stores';
 import Tooltip from '../tooltip';
@@ -28,7 +29,12 @@ const Sidebar: React.FC<Props> = memo(({ menus, logoLinkTo = '/' }) => {
     const routes = useMatches().slice(1);
     const userInfo = useUserStore(state => state.userInfo);
     const selectedKeys = routes.map(route => route.pathname);
-    const [shrink, setShrink] = useState(true);
+
+    const [shrink, setShrink] = useState(!!iotLocalStorage.getItem(SIDEBAR_COLLAPSE_KEY));
+
+    useEffect(() => {
+        iotLocalStorage.setItem(SIDEBAR_COLLAPSE_KEY, shrink);
+    }, [shrink]);
 
     // console.log({ userInfo });
     return (
