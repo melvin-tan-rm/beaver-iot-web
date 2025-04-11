@@ -56,6 +56,10 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
         show: () => {
             chartZoomIconRef.current?.style.setProperty('display', 'block');
         },
+        /** hide chart reset zoom icon */
+        hide: () => {
+            chartZoomIconRef.current?.style.setProperty('display', 'none');
+        },
         /** store chart reset zoom function */
         storeReset: (chart: { resetZoom: () => void; [key: string]: any }) => {
             resetChartZoomRef.current = () => {

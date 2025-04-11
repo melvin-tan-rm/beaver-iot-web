@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { useMemoizedFn } from 'ahooks';
 import Chart from 'chart.js/auto';
 import { hexToRgba } from '@milesight/shared/src/utils/tools';
 import { useBasicChartEntity } from '@/plugin/hooks';
@@ -23,6 +24,7 @@ const View = (props: ViewProps) => {
     const { config, configJson } = props;
     const { entity, title, time } = config || {};
     const { isPreview } = configJson || {};
+    const chartWrapperRef = useRef<HTMLDivElement>(null);
     const {
         chartShowData,
         chartLabels,
@@ -136,6 +138,8 @@ const View = (props: ViewProps) => {
                     },
                 });
 
+                hoverZoomBtn(chartMain);
+
                 /**
                  * store reset zoom state function
                  */
@@ -153,8 +157,29 @@ const View = (props: ViewProps) => {
         }
     }, [chartShowData, chartLabels, maxEntityValue]);
 
+    /** Display zoom button when mouse hover */
+    const hoverZoomBtn = useMemoizedFn(
+        (chartMain: Chart<'line', (string | number | null)[], string>) => {
+            const chartNode = chartWrapperRef.current;
+            if (!chartNode) return;
+
+            chartZoomRef.current?.hide();
+
+            chartNode.onmouseenter = () => {
+                if (!chartMain?.isZoomedOrPanned()) return;
+
+                chartZoomRef.current?.show();
+            };
+            chartNode.onmouseleave = () => {
+                if (!chartMain?.isZoomedOrPanned()) return;
+
+                chartZoomRef.current?.hide();
+            };
+        },
+    );
+
     return (
-        <div className={styles['area-chart-wrapper']}>
+        <div className={styles['area-chart-wrapper']} ref={chartWrapperRef}>
             <Tooltip className={styles.name} autoEllipsis title={title} />
             <div className={styles['area-chart-content']}>
                 <canvas ref={chartRef} />

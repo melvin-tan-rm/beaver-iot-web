@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { useMemoizedFn } from 'ahooks';
 import Chart from 'chart.js/auto';
-
 import { useBasicChartEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
@@ -35,6 +35,7 @@ const View = (props: ViewProps) => {
         time,
         isPreview,
     });
+    const chartWrapperRef = useRef<HTMLDivElement>(null);
 
     // Find the maximum value of the entity data
     const maxEntityValue = useMemo(() => {
@@ -132,6 +133,8 @@ const View = (props: ViewProps) => {
                     },
                 });
 
+                hoverZoomBtn(chart);
+
                 /**
                  * store reset zoom state function
                  */
@@ -149,8 +152,28 @@ const View = (props: ViewProps) => {
         }
     }, [chartLabels, chartShowData, chartRef, maxEntityValue]);
 
+    /** Display zoom button when mouse hover */
+    const hoverZoomBtn = useMemoizedFn(
+        (chartMain: Chart<'line', (string | number | null)[], string>) => {
+            const chartNode = chartWrapperRef.current;
+            if (!chartNode) return;
+
+            chartZoomRef.current?.hide();
+
+            chartNode.onmouseenter = () => {
+                if (!chartMain?.isZoomedOrPanned()) return;
+
+                chartZoomRef.current?.show();
+            };
+            chartNode.onmouseleave = () => {
+                if (!chartMain?.isZoomedOrPanned()) return;
+
+                chartZoomRef.current?.hide();
+            };
+        },
+    );
     return (
-        <div className={styles['line-chart-wrapper']}>
+        <div className={styles['line-chart-wrapper']} ref={chartWrapperRef}>
             <Tooltip className={styles.name} autoEllipsis title={title} />
             <div className={styles['line-chart-content']}>
                 <canvas ref={chartRef} />
