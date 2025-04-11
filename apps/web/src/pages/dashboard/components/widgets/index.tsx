@@ -26,7 +26,17 @@ const DEFAULT_GRID_HEIGHT = {
     operate: 1,
     data_card: 2,
 };
+/**
+ * Gets the default height of the widget for a screen that is too small
+ */
+const getSmallScreenH = (data: WidgetDetail['data']) => {
+    const DEFAULT_HEIGHT = 3;
+    const { class: widgetClass, type: widgetType } = data || {};
+    if (!widgetClass || !widgetType) return DEFAULT_HEIGHT;
 
+    if (widgetType === 'iconRemaining') return 1;
+    return get(DEFAULT_GRID_HEIGHT, widgetClass, DEFAULT_HEIGHT);
+};
 interface WidgetProps {
     onChangeWidgets: (widgets: any[]) => void;
     widgets: WidgetDetail[];
@@ -258,7 +268,7 @@ const Widgets = (props: WidgetProps) => {
                     ...data.data.pos,
                     w: isTooSmallScreen ? 12 : data.data?.pos?.w || data.data.minCol || 2,
                     h: isTooSmallScreen
-                        ? get(DEFAULT_GRID_HEIGHT, data?.data?.class, 3)
+                        ? getSmallScreenH(data?.data)
                         : data.data?.pos?.h || data.data.minRow || 2,
                     minW: data.data.minCol || 2,
                     minH: data.data.minRow || 2,

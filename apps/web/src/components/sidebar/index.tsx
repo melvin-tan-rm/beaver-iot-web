@@ -36,7 +36,19 @@ const Sidebar: React.FC<Props> = memo(({ menus, logoLinkTo = '/' }) => {
         iotLocalStorage.setItem(SIDEBAR_COLLAPSE_KEY, shrink);
     }, [shrink]);
 
-    // console.log({ userInfo });
+    useEffect(() => {
+        // Monitor screen changes
+        window.addEventListener('resize', () => {
+            const windowWidth =
+                document.body.clientWidth ||
+                document.documentElement.clientWidth ||
+                window.innerWidth;
+            const isTooSmall = windowWidth <= 720;
+
+            // When the small screen is reached, the sidebar automatically collapses
+            isTooSmall && setShrink(true);
+        });
+    }, []);
     return (
         <div
             className={cls('ms-layout-left ms-sidebar', {
