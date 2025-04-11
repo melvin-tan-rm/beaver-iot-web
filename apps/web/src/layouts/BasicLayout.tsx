@@ -13,7 +13,7 @@ import { globalAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/servi
 import { Sidebar, RouteLoadingIndicator } from '@/components';
 import { useUserPermissions } from '@/hooks';
 import { useRoutePermission } from './hooks';
-import LayoutSkeleton from './components/layout-skeleton';
+import { LayoutSkeleton } from './components';
 
 function BasicLayout() {
     const { lang } = useI18n();

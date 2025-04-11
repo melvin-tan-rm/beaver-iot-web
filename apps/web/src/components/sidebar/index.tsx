@@ -30,11 +30,17 @@ const Sidebar: React.FC<Props> = memo(({ menus, logoLinkTo = '/' }) => {
     const userInfo = useUserStore(state => state.userInfo);
     const selectedKeys = routes.map(route => route.pathname);
 
-    const [shrink, setShrink] = useState(!!iotLocalStorage.getItem(SIDEBAR_COLLAPSE_KEY));
+    // init storage status
+    const [shrink, setShrink] = useState(
+        iotLocalStorage.getItem(SIDEBAR_COLLAPSE_KEY) !== undefined
+            ? !!iotLocalStorage.getItem(SIDEBAR_COLLAPSE_KEY)
+            : true,
+    );
 
-    useEffect(() => {
-        iotLocalStorage.setItem(SIDEBAR_COLLAPSE_KEY, shrink);
-    }, [shrink]);
+    const changeShrink = () => {
+        setShrink(!shrink);
+        iotLocalStorage.setItem(SIDEBAR_COLLAPSE_KEY, !shrink);
+    };
 
     // console.log({ userInfo });
     return (
@@ -74,7 +80,7 @@ const Sidebar: React.FC<Props> = memo(({ menus, logoLinkTo = '/' }) => {
                 )}
                 <IconButton
                     className="ms-oprt-shrink"
-                    onClick={() => setShrink(!shrink)}
+                    onClick={changeShrink}
                     sx={{
                         padding: '10px',
                     }}

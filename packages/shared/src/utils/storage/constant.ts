@@ -8,4 +8,4 @@ export const TOKEN_CACHE_KEY = 'token';
 export const REGISTERED_KEY = 'registered';
 
 /** sidebar collapse key */
-export const SIDEBAR_COLLAPSE_KEY = 'sideBarCollapsed';
+export const SIDEBAR_COLLAPSE_KEY = 'sidebar-collapsed';
