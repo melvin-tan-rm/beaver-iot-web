@@ -3,6 +3,14 @@
     text-transform: none;
 }
 
+// ---------- IconButton ----------
+.@{mui-prefix}ButtonBase-root.@{mui-prefix}IconButton-root {
+    &:hover {
+        color: var(--primary-color-7);
+        background-color: unset;
+    }
+}
+
 .@{mui-prefix}ButtonBase-root.@{mui-prefix}Button-outlinedPrimary {
     color: var(--text-color-primary);
     background-color: var(--component-background);
@@ -141,6 +149,7 @@ input.@{mui-prefix}InputBase-input {
 
 .@{mui-prefix}Dialog-container {
     .@{mui-prefix}Paper-root.@{mui-prefix}Dialog-paper {
+        min-width: 444px; // all dialog min width
         border-radius: @border-radius-md;
     }
 }
@@ -262,6 +271,10 @@ label.@{mui-prefix}FormControlLabel-root {
 
             .@{mui-prefix}ButtonBase-root {
                 color: var(--icon-color-gray-secondary);
+
+                &:hover {
+                    color: var(--primary-color-7);
+                }
             }
         }
 
