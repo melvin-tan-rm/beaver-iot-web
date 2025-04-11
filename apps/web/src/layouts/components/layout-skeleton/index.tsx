@@ -19,7 +19,12 @@ function CusSkeleton(props: CusSkeletonType) {
 
 /** layout Skeleton */
 function LayoutSkeleton() {
-    const [collapsed, setCollapsed] = useState(!!iotLocalStorage.getItem(SIDEBAR_COLLAPSE_KEY));
+    // init storage status
+    const [collapsed, setCollapsed] = useState(
+        iotLocalStorage.getItem(SIDEBAR_COLLAPSE_KEY) !== undefined
+            ? !!iotLocalStorage.getItem(SIDEBAR_COLLAPSE_KEY)
+            : true,
+    );
 
     const renderLeftSideSkeleton = useMemoizedFn(() => {
         // left sidebar skeleton number
