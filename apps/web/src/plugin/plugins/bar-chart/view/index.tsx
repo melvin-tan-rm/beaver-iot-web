@@ -31,6 +31,7 @@ const View = (props: ViewProps) => {
         displayFormats,
         xAxisRange,
         chartZoomRef,
+        xAxisConfig,
     } = useBasicChartEntity({
         entity,
         time,
@@ -52,6 +53,8 @@ const View = (props: ViewProps) => {
     }, [chartShowData]);
     useEffect(() => {
         try {
+            const { suggestXAxisRange, stepSize, unit, maxTicksLimit } = xAxisConfig || {};
+
             let chart: Chart<'bar', (string | number | null)[], string> | null = null;
             const resultColor = getChartColor(chartShowData);
             if (chartRef.current) {
@@ -83,15 +86,17 @@ const View = (props: ViewProps) => {
                                 time: {
                                     tooltipFormat: format,
                                     displayFormats,
+                                    unit, // Unit for the time axis
                                 },
-                                min: xAxisRange[0], // The minimum value of time range
-                                max: xAxisRange[1], // The maximum value of time range
+                                min: suggestXAxisRange[0], // The minimum value of time range
+                                max: suggestXAxisRange[1], // The maximum value of time range
                                 ticks: {
                                     autoSkip: true, // Automatically skip the scale
-                                    maxTicksLimit: 8,
+                                    maxTicksLimit,
                                     major: {
                                         enabled: true, // Enable the main scale
                                     },
+                                    stepSize, // Step size between ticks
                                 },
                                 grid: {
                                     display: false, // Remove the lines
@@ -147,7 +152,7 @@ const View = (props: ViewProps) => {
         } catch (error) {
             console.error(error);
         }
-    }, [chartLabels, chartShowData, chartRef, maxEntityValue]);
+    }, [chartLabels, chartShowData, chartRef, maxEntityValue, xAxisConfig]);
 
     /** Display zoom button when mouse hover */
     const hoverZoomBtn = useMemoizedFn(
