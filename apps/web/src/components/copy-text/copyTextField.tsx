@@ -25,10 +25,13 @@ const CopyTextField: React.FC<CopyTextFieldProps> = props => {
 
     // copy text value
     const handleClickCopy = (event?: any) => {
-        handleCopy(
-            value ? String(value) : '',
-            (event?.target as HTMLElement).parentElement || undefined,
-        );
+        // fix when parentElement is svg or path copy fail
+        let parentElement = event?.target?.parentElement;
+        if (parentElement.localName === 'svg') {
+            parentElement = event?.target?.parentElement?.parentElement;
+        }
+        console.log(event?.target, parentElement);
+        handleCopy(value ? String(value) : '', parentElement);
     };
 
     // switch password or text

@@ -33,7 +33,7 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
             },
             {
                 field: 'eui',
-                headerName: getIntlText('setting.integration.label.device.eui'),
+                headerName: getIntlText('setting.integration.label.device_eui'),
                 flex: 1,
                 minWidth: 180,
                 ellipsis: true,
