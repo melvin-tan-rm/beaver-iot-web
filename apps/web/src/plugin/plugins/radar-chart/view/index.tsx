@@ -12,7 +12,7 @@ interface IProps {
 const View = (props: IProps) => {
     const { config } = props;
     const { entityList, title, metrics, time } = config || {};
-    const { blue, white } = useTheme();
+    const { purple, white } = useTheme();
     const { aggregateHistoryList } = useSource({ entityList, metrics, time });
 
     const chartRef = useRef<HTMLCanvasElement>(null);
@@ -110,12 +110,12 @@ const View = (props: IProps) => {
                 {
                     data: historyList.map((item: AggregateHistoryList) => item?.data?.value || 0),
                     fill: true,
-                    backgroundColor: blue[300],
-                    borderColor: blue[600],
-                    pointBackgroundColor: blue[700],
+                    backgroundColor: purple[300],
+                    borderColor: purple[600],
+                    pointBackgroundColor: purple[700],
                     pointBorderColor: white,
                     pointHoverBackgroundColor: white,
-                    pointHoverBorderColor: blue[700],
+                    pointHoverBorderColor: purple[700],
                 },
             ],
         };

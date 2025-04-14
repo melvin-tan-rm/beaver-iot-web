@@ -18,6 +18,55 @@ export interface ChartShowDataProps {
     entityValues: (string | number | null)[];
 }
 
+const MAX_TICKS_LIMIT = 7;
+const X_RANGE_MAP: Record<number, { stepSize: number; unit: 'minute' | 'hour' | 'day' }> = {
+    /** 3 hours */
+    [3 * 60 * 60 * 1000]: {
+        stepSize: 10,
+        unit: 'minute',
+    },
+    /** 6 hours */
+    [6 * 60 * 60 * 1000]: {
+        stepSize: 10,
+        unit: 'minute',
+    },
+    /** 12 hours */
+    [12 * 60 * 60 * 1000]: {
+        stepSize: 30,
+        unit: 'minute',
+    },
+    /** 1 day */
+    [24 * 60 * 60 * 1000]: {
+        stepSize: 60,
+        unit: 'minute',
+    },
+    /** 1 week */
+    [7 * 24 * 60 * 60 * 1000]: {
+        stepSize: 8,
+        unit: 'hour',
+    },
+    /** 1 month */
+    [30 * 24 * 60 * 60 * 1000]: {
+        stepSize: 6,
+        unit: 'day',
+    },
+    /** 3 months */
+    [90 * 24 * 60 * 60 * 1000]: {
+        stepSize: 6,
+        unit: 'day',
+    },
+    /** 6 months */
+    [180 * 24 * 60 * 60 * 1000]: {
+        stepSize: 10,
+        unit: 'day',
+    },
+    /** 1 year */
+    [365 * 24 * 60 * 60 * 1000]: {
+        stepSize: 15,
+        unit: 'day',
+    },
+};
+
 /**
  * Basic chart data uniform processing logic hooks
  * Currently used in (column diagram, horizontal column diagram, folding drawing, area diagram)
@@ -25,7 +74,7 @@ export interface ChartShowDataProps {
 export function useBasicChartEntity(props: UseBasicChartEntityProps) {
     const { entity, time, isPreview } = props;
 
-    const { getTimeFormat } = useTime();
+    const { getTimeFormat, getTime } = useTime();
 
     /**
      * Canvas ref
@@ -55,6 +104,10 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
         /** show chart reset zoom icon */
         show: () => {
             chartZoomIconRef.current?.style.setProperty('display', 'block');
+        },
+        /** hide chart reset zoom icon */
+        hide: () => {
+            chartZoomIconRef.current?.style.setProperty('display', 'none');
         },
         /** store chart reset zoom function */
         storeReset: (chart: { resetZoom: () => void; [key: string]: any }) => {
@@ -226,6 +279,35 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
         return [Date.now() - time, Date.now()];
     }, [time]);
 
+    // Calculate the suggested X-axis range
+    const xAxisConfig = useMemo(() => {
+        /** default configuration */
+        if (!xAxisRange?.length || !time || !X_RANGE_MAP[time as keyof typeof X_RANGE_MAP]) {
+            return {
+                suggestXAxisRange: xAxisRange,
+                maxTicksLimit: MAX_TICKS_LIMIT,
+                stepSize: void 0,
+                unit: void 0,
+            };
+        }
+
+        const { stepSize, unit } = X_RANGE_MAP[time as keyof typeof X_RANGE_MAP];
+
+        // Calculate the time range on the x-axis
+        const [, end] = xAxisRange || [];
+        const startTime = getTime(end)
+            .subtract(MAX_TICKS_LIMIT * stepSize, unit)
+            .valueOf();
+        const endTime = getTime(end).valueOf();
+
+        return {
+            suggestXAxisRange: [startTime, endTime],
+            stepSize,
+            unit,
+            maxTicksLimit: MAX_TICKS_LIMIT,
+        };
+    }, [xAxisRange, getTime, time]);
+
     return {
         /**
          * Canvas ref
@@ -255,6 +337,10 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
          * X -axis scale range
          */
         xAxisRange,
+        /**
+         * X -axis scale configuration
+         */
+        xAxisConfig,
         /**
          * chart zoom ref
          */

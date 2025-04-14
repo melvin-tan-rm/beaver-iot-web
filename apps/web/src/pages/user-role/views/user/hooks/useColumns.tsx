@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
-import { Stack, IconButton } from '@mui/material';
+import { Stack, IconButton, Chip } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import { DeleteOutlineIcon, EditIcon, CachedIcon } from '@milesight/shared/src/components';
 import { Tooltip, type ColumnType } from '@/components';
 import { type UserAPISchema } from '@/services/http';
+import styles from '../style.module.less';
 
 type OperationType = 'resetPassword' | 'edit' | 'delete';
 
@@ -39,7 +40,14 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 ellipsis: true,
                 renderCell({ value }) {
                     const roles: TableRowDataType['roles'] = value || [];
-                    return roles.map(r => r.roleName).join(', ');
+
+                    return roles.map(r => (
+                        <Chip
+                            key={r.roleId}
+                            label={r?.roleName || ''}
+                            className={styles['users-role-chip']}
+                        />
+                    ));
                 },
             },
             {
@@ -91,12 +99,12 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                             </Tooltip>
                             <Tooltip title={getIntlText('common.label.delete')}>
                                 <IconButton
-                                    color="error"
+                                    // color="error"
                                     sx={{
                                         width: 30,
                                         height: 30,
                                         color: 'text.secondary',
-                                        '&:hover': { color: 'error.light' },
+                                        // '&:hover': { color: 'error.light' },
                                     }}
                                     onClick={() => onButtonClick('delete', row)}
                                 >

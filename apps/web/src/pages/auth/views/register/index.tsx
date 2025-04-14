@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import cls from 'classnames';
 import { useRequest } from 'ahooks';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
-import { Paper, Typography, Button } from '@mui/material';
+import { Paper, Typography, Button, Box } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Logo, toast } from '@milesight/shared/src/components';
 import {
@@ -11,6 +11,7 @@ import {
     TOKEN_CACHE_KEY,
     REGISTERED_KEY,
 } from '@milesight/shared/src/utils/storage';
+import { GradientBgContainer } from '@/components';
 import { globalAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import useFormItems, { type FormDataProps } from '../useFormItems';
 import './style.less';
@@ -72,32 +73,47 @@ export default () => {
     };
 
     return (
-        <div className="ms-view-register">
-            <Logo />
-            <Paper
-                className={cls('ms-auth-container', { hidden: loading !== false || registered })}
-                elevation={3}
+        <GradientBgContainer>
+            <Box
+                component="form"
+                onSubmit={handleSubmit(onSubmit)}
+                className="ms-view-register ms-gradient-background"
             >
-                <Typography variant="h5" align="center">
-                    {getIntlText('common.document.title')}
-                </Typography>
-                <Typography align="center" variant="body2" color="textSecondary">
-                    {getIntlText('common.message.register_helper_text')}
-                </Typography>
-                <div className="ms-auth-form">
-                    {formItems.map(props => (
-                        <Controller<FormDataProps> key={props.name} {...props} control={control} />
-                    ))}
-                </div>
-                <Button
-                    fullWidth
-                    sx={{ mt: 2.5, textTransform: 'none' }}
-                    onClick={handleSubmit(onSubmit)}
-                    variant="contained"
+                <Paper
+                    className={cls('ms-auth-container', {
+                        hidden: loading !== false || registered,
+                    })}
+                    elevation={3}
                 >
-                    {getIntlText('common.button.confirm')}
-                </Button>
-            </Paper>
-        </div>
+                    <div className="ms-auth-logo">
+                        <Logo />
+                    </div>
+                    {/* <Typography variant="h5" align="center">
+                    {getIntlText('common.document.title')}
+                </Typography> */}
+                    <Typography align="center" variant="body2" color="textSecondary">
+                        {getIntlText('common.message.register_helper_text')}
+                    </Typography>
+                    <div className="ms-auth-form">
+                        {formItems.map(props => (
+                            <Controller<FormDataProps>
+                                key={props.name}
+                                {...props}
+                                control={control}
+                            />
+                        ))}
+                    </div>
+                    <Button
+                        fullWidth
+                        type="submit"
+                        sx={{ mt: 2.5, textTransform: 'none' }}
+                        variant="contained"
+                        className="ms-auth-submit"
+                    >
+                        {getIntlText('common.button.confirm')}
+                    </Button>
+                </Paper>
+            </Box>
+        </GradientBgContainer>
     );
 };

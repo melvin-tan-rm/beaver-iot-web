@@ -7,6 +7,7 @@
     "defaultCol": 2,
     "minRow": 1,
     "minCol": 1,
+    "maxRow": 1,
     "configProps": [
         {
             "style": "width: 100%",
@@ -66,7 +67,7 @@
                     "type": "iconColorSelect",
                     "key": "bgColor",
                     "style": "flex: 1;",
-                    "defaultValue": "#3491FA",
+                    "defaultValue": "#8E66FF",
                     "componentProps": {
                         "size": "small"
                     }
