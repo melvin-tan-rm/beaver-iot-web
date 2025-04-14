@@ -236,7 +236,7 @@
   "setting.integration.codec.customize_tip": "请输入编解码文件的地址用于对设备数据进行编解码。",
   "setting.integration.configuration": "集成配置",
   "setting.integration.data_access_service": "数据访问服务",
-  "setting.integration.device.sync_tip": "此操作将把您添加到网关的节点设备的有效负载编解码器重置为空。请谨慎操作。",
+  "setting.integration.device.sync_tip": "此操作会将对应的节点设备在网关上使用的负载编解码器置空，请谨慎操作。",
   "setting.integration.device.update_codec": "更新编解码文件",
   "setting.integration.device.update_codec_desc": "用于从指定获的地址获取最新的产品编解码器。注意：新的编解码器只对新添加的设备有效。",
   "setting.integration.device.update_codec_title": "更新编解码文件",
