@@ -61,12 +61,8 @@ function LayoutSkeleton() {
     const leftSkeleton = useMemo(() => {
         return (
             <>
-                <div>
-                    <div>
-                        <Logo className="ms-skeleton-left-logo" mini={collapsed} />
-                    </div>
-                    {renderLeftSideSkeleton()}
-                </div>
+                <Logo className="ms-skeleton-left-logo" mini={collapsed} />
+                <div>{renderLeftSideSkeleton()}</div>
                 <div>{renderBottomLeftSideSkeleton()}</div>
             </>
         );
