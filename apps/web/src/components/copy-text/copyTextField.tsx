@@ -30,7 +30,6 @@ const CopyTextField: React.FC<CopyTextFieldProps> = props => {
         if (parentElement.localName === 'svg') {
             parentElement = event?.target?.parentElement?.parentElement;
         }
-        console.log(event?.target, parentElement);
         handleCopy(value ? String(value) : '', parentElement);
     };
 
