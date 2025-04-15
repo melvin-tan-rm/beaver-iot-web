@@ -136,7 +136,8 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
     );
 
     // ---------- Process Extra Render ----------
-    const { renderFormGroupAction, renderFormGroupContent, renderFormGroup } = useExtraRender();
+    const { renderFormGroupAction, renderFormGroupContent, renderFormGroupFooter } =
+        useExtraRender();
 
     // ---------- Show Test Drawer ----------
     const { checkNodesData } = useValidate();
@@ -312,7 +313,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                                 </div>
                             ),
                         )}
-                        {renderFormGroup({ node: finalSelectedNode, data: latestFormData })}
+                        {renderFormGroupFooter({ node: finalSelectedNode, data: latestFormData })}
                     </div>
                 </div>
                 <TestDrawer

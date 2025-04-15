@@ -31,3 +31,4 @@ export { default as HttpCurlDialog } from './http-curl-dialog';
 export { default as HttpBodyInput } from './http-body-input';
 export { default as HttpCurlInfo } from './http-curl-info';
 export { default as HttpOutputInfo, type Props as HttpOutputInfoProps } from './http-output-info';
+export { default as ParamsList, type Props as ParamsListProps } from './params-list';

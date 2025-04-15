@@ -3,7 +3,9 @@ import {
     HttpCurlDialog,
     HttpCurlInfo,
     HttpOutputInfo,
+    ParamsList,
     type HttpOutputInfoProps,
+    type ParamsListProps,
 } from '../components';
 
 interface RenderFunctionProps {
@@ -85,7 +87,7 @@ const useExtraRender = () => {
     /**
      * Render extra form group in the end of group list
      */
-    const renderFormGroup = useCallback(({ node, data }: RenderGroupProps) => {
+    const renderFormGroupFooter = useCallback(({ node, data }: RenderGroupProps) => {
         switch (node?.type) {
             case 'http': {
                 const options: HttpOutputInfoProps['options'] = [
@@ -108,7 +110,47 @@ const useExtraRender = () => {
                 return <HttpOutputInfo title="Output Variables" options={options} />;
             }
             case 'mqtt': {
-                return <HttpOutputInfo />;
+                const paramsOptions: ParamsListProps['options'] = [
+                    {
+                        label: 'Broker Address',
+                        value: 'https://exampleaddress,https://exampleaddress,https://exampleaddress',
+                    },
+                    {
+                        label: 'Broker Port',
+                        value: '8080',
+                    },
+                    {
+                        label: 'Client ID',
+                        value: 'dj1wioj231ahu43jhoi',
+                    },
+                    {
+                        label: 'Username',
+                        value: 'example@tenatid',
+                    },
+                    {
+                        label: 'Password',
+                        value: 'S86yd5dY612312',
+                        type: 'password',
+                    },
+                ];
+                const outputOptions: HttpOutputInfoProps['options'] = [
+                    {
+                        name: 'Topic',
+                        type: 'object',
+                        placeholder: 'Topic of the message',
+                    },
+                    {
+                        name: 'Payload',
+                        type: 'object',
+                        placeholder: 'Load content of message',
+                    },
+                ];
+                return (
+                    <>
+                        <ParamsList title="Connection parameters" options={paramsOptions} />
+                        <HttpOutputInfo title="Output Variables" options={outputOptions} />
+                    </>
+                );
             }
             default: {
                 break;
@@ -132,7 +174,7 @@ const useExtraRender = () => {
         /**
          * Render extra form group in the end of group list
          */
-        renderFormGroup,
+        renderFormGroupFooter,
     };
 };
 

@@ -299,11 +299,13 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                 };
                                 break;
                             }
-                            case 'topicInput': {
+                            case 'mqttTopicInput': {
                                 formItem.render = ({ field: { onChange, value } }) => {
                                     return (
                                         <ActionInput
                                             // size="small"
+                                            autoComplete="off"
+                                            label={displayName}
                                             required={required}
                                             value={value}
                                             onChange={onChange}
