@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { useMemoizedFn } from 'ahooks';
 import Chart from 'chart.js/auto';
 import { hexToRgba } from '@milesight/shared/src/utils/tools';
+import { useTheme } from '@milesight/shared/src/hooks';
 import { useBasicChartEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
@@ -38,6 +39,7 @@ const View = (props: ViewProps) => {
         time,
         isPreview,
     });
+    const { getCSSVariableValue } = useTheme();
 
     // Find the maximum value of the entity data
     const maxEntityValue = useMemo(() => {
@@ -138,7 +140,19 @@ const View = (props: ViewProps) => {
                                     borderRadius: 1,
                                 },
                             },
+                            crosshair: {
+                                enabled: true,
+                                line: {
+                                    color: getCSSVariableValue('--gray-7'), // crosshair line color
+                                    width: 1, // crosshair line width
+                                    dashPattern: [4, 4],
+                                },
+                            },
                         } as any,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
                     },
                 });
 
