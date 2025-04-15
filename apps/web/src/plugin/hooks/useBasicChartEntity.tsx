@@ -256,9 +256,9 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
 
     const format = useMemo(() => {
         if (timeUnit !== 'hour') {
-            return 'yyyy-MM-dd';
+            return 'yyyy-MM-dd HH:mm:ss';
         }
-        return 'MM-dd';
+        return 'MM-dd HH:mm:ss';
     }, [timeUnit]);
 
     const displayFormats = useMemo(() => {

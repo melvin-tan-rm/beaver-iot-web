@@ -158,10 +158,13 @@ const View = (props: Props) => {
                             filter: tooltipItem => tooltipItem.dataIndex === 0, // Displays only the tooltip of the first data item
                             callbacks: {
                                 label: context => {
-                                    const { raw, dataset } = context || {};
-                                    const label = dataset.label || '';
+                                    const { raw } = context || {};
+                                    const { rawData } = entity || {};
+                                    const { entityValueAttribute } = rawData || {};
+                                    const { unit } = entityValueAttribute || {};
 
-                                    return `${label} ${raw}`;
+                                    if (!unit) return `${raw}`;
+                                    return `${raw}${unit}`;
                                 },
                             },
                         },

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useMemoizedFn } from 'ahooks';
-import Chart from 'chart.js/auto';
+import Chart, { type TooltipItem } from 'chart.js/auto';
 import { hexToRgba } from '@milesight/shared/src/utils/tools';
 import { useTheme } from '@milesight/shared/src/hooks';
 import { useBasicChartEntity } from '@/plugin/hooks';
@@ -113,6 +113,20 @@ const View = (props: ViewProps) => {
                             },
                         },
                         plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label(tooltipItem: TooltipItem<'line'>) {
+                                        const { datasetIndex, parsed } = tooltipItem || {};
+                                        const { y } = parsed || {};
+                                        const { rawData } = entity?.[datasetIndex] || {};
+                                        const { entityValueAttribute } = rawData || {};
+                                        const { unit } = entityValueAttribute || {};
+
+                                        if (!unit) return y;
+                                        return `${y}${unit}`;
+                                    },
+                                },
+                            },
                             zoom: {
                                 pan: {
                                     enabled: true,
