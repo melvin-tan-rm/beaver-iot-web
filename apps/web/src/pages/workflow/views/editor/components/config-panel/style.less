@@ -123,9 +123,14 @@
             }
 
             .@{prefix}-node-form-group-item:last-child {
-                > .@{mui-prefix}FormControl-root:only-child {
+                > .@{mui-prefix}FormControl-root:last-child {
                     margin-bottom: 0;
                 }
+            }
+
+            &-header {
+                display: flex;
+                justify-content: space-between;
             }
 
             &-title {

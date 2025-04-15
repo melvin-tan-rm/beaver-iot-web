@@ -15,6 +15,7 @@ import { DEFAULT_VALUES } from './constants';
 import {
     useCommonFormItems,
     useNodeFormItems,
+    useExtraRender,
     type CommonFormDataProps,
     type NodeFormDataProps,
 } from './hooks';
@@ -134,6 +135,9 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
         { wait: 50 },
     );
 
+    // ---------- Process Extra Render ----------
+    const { renderFormGroupAction, renderFormGroupContent, renderFormGroup } = useExtraRender();
+
     // ---------- Show Test Drawer ----------
     const { checkNodesData } = useValidate();
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -252,22 +256,30 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                                     // eslint-disable-next-line react/no-array-index-key
                                     key={`${groupName || ''}-${index}`}
                                 >
-                                    {!!groupName && (
-                                        <div className="ms-node-form-group-title">
-                                            {groupName}
-                                            {helperText && (
-                                                <Tooltip
-                                                    enterDelay={300}
-                                                    enterNextDelay={300}
-                                                    title={helperText}
-                                                >
-                                                    <IconButton size="small">
-                                                        <HelpIcon sx={{ fontSize: 16 }} />
-                                                    </IconButton>
-                                                </Tooltip>
-                                            )}
-                                        </div>
-                                    )}
+                                    <div className="ms-node-form-group-header">
+                                        {!!groupName && (
+                                            <div className="ms-node-form-group-title">
+                                                {groupName}
+                                                {helperText && (
+                                                    <Tooltip
+                                                        enterDelay={300}
+                                                        enterNextDelay={300}
+                                                        title={helperText}
+                                                    >
+                                                        <IconButton size="small">
+                                                            <HelpIcon sx={{ fontSize: 16 }} />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                )}
+                                            </div>
+                                        )}
+                                        {renderFormGroupAction({
+                                            node: finalSelectedNode,
+                                            formGroupName: groupName || '',
+                                            formGroupIndex: index,
+                                            onChange: setLatestFormData,
+                                        })}
+                                    </div>
                                     <div className="ms-node-form-group-item">
                                         {formItems?.map(props => {
                                             const { shouldRender, ...restProps } = props;
@@ -291,10 +303,16 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                                                 />
                                             );
                                         })}
+                                        {renderFormGroupContent({
+                                            node: finalSelectedNode,
+                                            formGroupName: groupName || '',
+                                            data: latestFormData,
+                                        })}
                                     </div>
                                 </div>
                             ),
                         )}
+                        {renderFormGroup({ node: finalSelectedNode, data: latestFormData })}
                     </div>
                 </div>
                 <TestDrawer

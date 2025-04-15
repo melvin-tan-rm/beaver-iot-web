@@ -10,6 +10,7 @@ import {
     MenuItem,
 } from '@mui/material';
 import { cloneDeep } from 'lodash-es';
+import { KeyboardArrowDownIcon } from '@milesight/shared/src/components';
 import { NodeFormItemValueType } from '../../../typings';
 import useFlowStore from '../../../store';
 import {
@@ -25,6 +26,7 @@ import {
     ServiceParamAssignInput,
     EmailSendSource,
     EmailRecipients,
+    HttpBodyInput,
     type EntityAssignSelectProps,
     type EntityMultipleSelectProps,
 } from '../components';
@@ -160,7 +162,7 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                 formItem.render = ({ field: { onChange, value } }) => {
                                     return (
                                         <ParamAssignInput
-                                            required={required}
+                                            required={!!required}
                                             minCount={nodeType === 'output' ? 1 : 0}
                                             disableInput={nodeType === 'output'}
                                             value={value}
@@ -281,11 +283,23 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                 };
                                 break;
                             }
+                            case 'httpBodyInput': {
+                                formItem.render = ({ field: { onChange, value } }) => {
+                                    return (
+                                        <HttpBodyInput
+                                            required={required}
+                                            value={value}
+                                            onChange={onChange}
+                                        />
+                                    );
+                                };
+                                break;
+                            }
                             default: {
                                 break;
                             }
                         }
-                    } else if (enums?.length) {
+                    } else if (enums && Object.keys(enums).length) {
                         formItem.render = ({ field: { onChange, value } }) => {
                             return (
                                 <FormControl fullWidth size="small" sx={{ my: 1.5 }}>
@@ -296,13 +310,14 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                         notched
                                         label={displayName}
                                         labelId={`select-label-${name}`}
+                                        IconComponent={KeyboardArrowDownIcon}
                                         required={required}
-                                        value={value}
+                                        value={value || ''}
                                         onChange={onChange}
                                     >
-                                        {Object.entries(enums || {}).map(([key, value]) => (
-                                            <MenuItem key={value} value={key}>
-                                                {value}
+                                        {Object.entries(enums || {}).map(([key, label]) => (
+                                            <MenuItem key={key} value={key}>
+                                                {label}
                                             </MenuItem>
                                         ))}
                                     </Select>

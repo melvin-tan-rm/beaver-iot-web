@@ -85,7 +85,7 @@ const Select = <T extends ApiKey = ApiKey>(props: SelectProps<T>) => {
                 {renderOptions
                     ? renderOptions(options)
                     : getMenuItems?.map((item: OptionsProps) => {
-                          return item?.value ? (
+                          return item?.value !== undefined ? (
                               <MenuItem value={item.value} key={item.value}>
                                   {item.label}
                               </MenuItem>

@@ -1,4 +1,4 @@
-import { CircularProgress, Icon } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 import {
     SettingsEthernetIcon,
     EntityIcon,
@@ -14,6 +14,8 @@ import {
     ErrorIcon,
     ConnectWithoutContactIcon,
     OutputIcon,
+    HttpIcon,
+    AutoAwesomeIcon,
     // FlagIcon,
 } from '@milesight/shared/src/components';
 
@@ -138,6 +140,14 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         ],
         outputKeys: ['entities'],
     },
+    httpin: {
+        type: 'httpin',
+        componentName: 'httpIn',
+        labelIntlKey: 'workflow.label.http_in_node_name',
+        icon: <HttpIcon />,
+        iconBgColor: '#3491FA',
+        category: 'entry',
+    },
     mqtt: {
         type: 'mqtt',
         componentName: 'simpleMqtt',
@@ -258,6 +268,14 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         componentName: 'output',
         labelIntlKey: 'workflow.label.output_node_name',
         icon: <OutputIcon />,
+        iconBgColor: '#7E57C2',
+        category: 'external',
+    },
+    http: {
+        type: 'http',
+        componentName: 'httpRequest',
+        labelIntlKey: 'workflow.label.http_node_name',
+        icon: <HttpIcon />,
         iconBgColor: '#7E57C2',
         category: 'external',
     },

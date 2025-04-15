@@ -52,7 +52,7 @@ const arrayToObject = (arr: ParamAssignInputInnerValueType[]) => {
  */
 const ParamAssignInput: React.FC<ParamAssignInputProps> = ({
     label,
-    required = true,
+    required = false,
     multiple = true,
     minCount = 0,
     disableInput,
@@ -70,7 +70,10 @@ const ParamAssignInput: React.FC<ParamAssignInputProps> = ({
     }, [data, resetList]);
 
     useEffect(() => {
-        setData?.(arrayToObject(list));
+        const result = arrayToObject(list);
+
+        if (Object.keys(result).every(item => !item)) return;
+        setData?.(result);
     }, [list, setData]);
 
     return (

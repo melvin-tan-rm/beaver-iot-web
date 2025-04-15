@@ -36,6 +36,8 @@ declare type ReactFlowViewport = import('@xyflow/react').Viewport;
  * @param email Email Node
  * @param webhook Webhook Node
  * @param output Output Node
+ * @param http Http Node
+ * @param http Http in Node
  */
 declare type WorkflowNodeType =
     | 'trigger'
@@ -49,7 +51,9 @@ declare type WorkflowNodeType =
     | 'select'
     | 'email'
     | 'webhook'
-    | 'output';
+    | 'output'
+    | 'http'
+    | 'httpin';
 
 /**
  * Edge Type
@@ -316,6 +320,21 @@ declare type WebhookNodeDataType = BaseNodeDataType<{
 declare type OutputNodeDataType = BaseNodeDataType<{
     /** Outputs */
     outputs: Record<ApiKey, string>;
+}>;
+
+declare type HttpNodeDataType = BaseNodeDataType<{
+    /** HTTP Method */
+    method: HttpMethodType;
+    /** URL */
+    url: string;
+    /** Headers */
+    headers?: Record<string, string>;
+    /** Query Parameters */
+    params?: Record<string, string>;
+    /** Content Type */
+    bodyType?: string;
+    /** Body */
+    body?: string | Record<string, string>;
 }>;
 
 /**

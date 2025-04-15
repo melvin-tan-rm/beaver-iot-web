@@ -132,6 +132,9 @@ export {
     TuneOutlined as TuneOutlinedIcon,
     Image as ImageIcon,
     Output as OutputIcon,
+    Http as HttpIcon,
+    ExitToApp as ExitToAppIcon,
+    AutoAwesome as AutoAwesomeIcon,
     // ImageOutlined as ImageOutlinedIcon,
 } from '@mui/icons-material';
 

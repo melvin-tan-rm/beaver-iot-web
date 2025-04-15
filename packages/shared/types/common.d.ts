@@ -158,3 +158,14 @@ declare interface OptionsProps<T extends string | number = string | number> {
 declare type FixedForwardRef = <T, P = object>(
     render: (props: P, ref: React.Ref<T>) => React.ReactNode,
 ) => (props: P & React.RefAttributes<T>) => React.ReactNode;
+
+declare type HttpMethodType =
+    | 'GET'
+    | 'POST'
+    | 'PUT'
+    | 'DELETE'
+    | 'HEAD'
+    | 'OPTIONS'
+    | 'CONNECT'
+    | 'TRACE'
+    | 'PATCH';

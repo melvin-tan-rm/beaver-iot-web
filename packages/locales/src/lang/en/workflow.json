@@ -126,5 +126,11 @@
     "workflow.editor.form_param_timer_period_everyday": "Everyday",
     "workflow.label.output_node_name": "Output",
     "workflow.valid.output_node_limit_has_trigger_tip": "The workflow has output node and the entry node must be trigger node.",
-    "workflow.valid.output_node_limit_count_tip": "Only one Output node is allowed in the workflow."
+    "workflow.valid.output_node_limit_count_tip": "Only one Output node is allowed in the workflow.",
+    "workflow.label.http_node_name": "HTTP",
+    "workflow.label.http_in_node_name": "HTTP in",
+    "workflow.label.import_from_curl": "Import from cURL",
+    "workflow.label.placeholder_please_enter_curl": "Please enter the cURL command here...",
+    "workflow.label.placeholder_please_enter_json": "Please enter JSON",
+    "workflow.label.placeholder_please_enter_raw_text": "Please enter Raw Text"
 }

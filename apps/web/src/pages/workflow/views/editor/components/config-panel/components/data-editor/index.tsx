@@ -18,14 +18,55 @@ import UpstreamNodeList from '../upstream-node-list';
 import './style.less';
 
 export interface DataEditorProps {
+    /**
+     * Title
+     */
     title?: string;
+    /**
+     * Editor language
+     */
     lang?: EditorSupportLang;
+    /**
+     * Placeholder text
+     */
     placeholder?: EditorProps['placeholder'];
+    /**
+     * Whether to enable read-only mode
+     */
+    readonly?: boolean;
+    /**
+     * Whether to enable the ability to copy the value
+     */
+    copyable?: boolean;
+    /**
+     * Whether to enable the ability to edit in the modal
+     */
+    extendable?: boolean;
+    /**
+     * Whether to enable the ability to select upstream variables
+     */
+    variableSelectable?: boolean;
+    /**
+     * Value
+     */
     value: string;
-    onChange: (value: string) => void;
+    /**
+     * Callback when the value changes
+     */
+    onChange?: (value: string) => void;
 }
 
-const DataEditor: React.FC<DataEditorProps> = ({ title, lang, placeholder, value, onChange }) => {
+const DataEditor: React.FC<DataEditorProps> = ({
+    title,
+    lang,
+    placeholder,
+    readonly = false,
+    copyable = true,
+    extendable = true,
+    variableSelectable = true,
+    value,
+    onChange,
+}) => {
     const { handleCopy } = useCopy();
     const editorRef = useRef<EditorHandlers>(null);
 
@@ -92,33 +133,51 @@ const DataEditor: React.FC<DataEditorProps> = ({ title, lang, placeholder, value
                     </div>
                     <div className="ms-data-editor-header-actions">
                         <div className="ms-data-editor-header-action">
-                            {renderNodeParamSelect(
-                                !inModal ? editorRef.current : modalEditorRef.current,
+                            {!readonly || !variableSelectable
+                                ? null
+                                : renderNodeParamSelect(
+                                      !inModal ? editorRef.current : modalEditorRef.current,
+                                  )}
+                            {copyable && (
+                                <IconButton
+                                    disabled={!value}
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        if (!value) return;
+                                        handleCopy(
+                                            value,
+                                            e.currentTarget.parentNode as HTMLElement,
+                                        );
+                                    }}
+                                >
+                                    <ContentCopyIcon />
+                                </IconButton>
                             )}
-                            <IconButton
-                                disabled={!value}
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    if (!value) return;
-                                    handleCopy(value, e.currentTarget.parentNode as HTMLElement);
-                                }}
-                            >
-                                <ContentCopyIcon />
-                            </IconButton>
-                            <IconButton
-                                onClick={() => {
-                                    if (!inModal) setModalEditorCont(value || '');
-                                    setShowModal(!inModal);
-                                }}
-                            >
-                                {inModal ? <CloseIcon /> : <OpenInFullIcon />}
-                            </IconButton>
+                            {extendable && (
+                                <IconButton
+                                    onClick={() => {
+                                        if (!inModal) setModalEditorCont(value || '');
+                                        setShowModal(!inModal);
+                                    }}
+                                >
+                                    {inModal ? <CloseIcon /> : <OpenInFullIcon />}
+                                </IconButton>
+                            )}
                         </div>
                     </div>
                 </div>
             );
         },
-        [lang, title, renderNodeParamSelect, handleCopy],
+        [
+            lang,
+            title,
+            readonly,
+            copyable,
+            extendable,
+            variableSelectable,
+            renderNodeParamSelect,
+            handleCopy,
+        ],
     );
 
     return (
@@ -126,6 +185,8 @@ const DataEditor: React.FC<DataEditorProps> = ({ title, lang, placeholder, value
             <CodeEditor
                 ref={editorRef}
                 editorLang={lang}
+                readOnly={readonly}
+                editable={!readonly}
                 placeholder={placeholder}
                 renderHeader={({ editorValue }) => renderHeader(editorValue)}
                 value={value}
@@ -146,13 +207,15 @@ const DataEditor: React.FC<DataEditorProps> = ({ title, lang, placeholder, value
                         setModalEditorCont('');
                     }}
                     onOk={() => {
-                        onChange(modalEditorCont);
+                        onChange?.(modalEditorCont);
                         setShowModal(false);
                     }}
                 >
                     <CodeEditor
                         ref={modalEditorRef}
                         editorLang={lang}
+                        readOnly={readonly}
+                        editable={!readonly}
                         placeholder={placeholder}
                         renderHeader={() => null}
                         value={modalEditorCont}
