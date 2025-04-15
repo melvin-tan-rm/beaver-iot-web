@@ -8,9 +8,12 @@ import {
     Select,
     Switch,
     MenuItem,
+    IconButton,
 } from '@mui/material';
 import { cloneDeep } from 'lodash-es';
-import { KeyboardArrowDownIcon } from '@milesight/shared/src/components';
+import { useCopy } from '@milesight/shared/src/hooks';
+import { KeyboardArrowDownIcon, ContentCopyIcon } from '@milesight/shared/src/components';
+import { ActionInput } from '@/components';
 import { NodeFormItemValueType } from '../../../typings';
 import useFlowStore from '../../../store';
 import {
@@ -67,6 +70,7 @@ const assignerNodeEntityFilterModel: EntityAssignSelectProps['filterModel'] = {
 
 const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
     const nodeConfigs = useFlowStore(state => state.nodeConfigs);
+    const { handleCopy } = useCopy();
 
     const formConfigs = useMemo(() => {
         if (!Object.keys(nodeConfigs).length) return {};
@@ -295,6 +299,36 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                 };
                                 break;
                             }
+                            case 'topicInput': {
+                                formItem.render = ({ field: { onChange, value } }) => {
+                                    return (
+                                        <ActionInput
+                                            // size="small"
+                                            required={required}
+                                            value={value}
+                                            onChange={onChange}
+                                            // TODO: Replace with a real topic prefix
+                                            startAdornment={<>Prefix-</>}
+                                            endAdornment={
+                                                <IconButton
+                                                    aria-label="copy text"
+                                                    disabled={!value}
+                                                    onClick={e => {
+                                                        handleCopy(
+                                                            value || '',
+                                                            (e.target as HTMLElement)
+                                                                ?.parentElement,
+                                                        );
+                                                    }}
+                                                >
+                                                    <ContentCopyIcon />
+                                                </IconButton>
+                                            }
+                                        />
+                                    );
+                                };
+                                break;
+                            }
                             default: {
                                 break;
                             }
@@ -373,7 +407,7 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
         });
 
         return result;
-    }, [nodeConfigs, nodeId, readonly]);
+    }, [nodeConfigs, nodeId, readonly, handleCopy]);
 
     return !nodeType ? [] : formConfigs[nodeType] || [];
 };
