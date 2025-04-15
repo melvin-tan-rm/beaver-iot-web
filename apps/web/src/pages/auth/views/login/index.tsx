@@ -8,7 +8,6 @@ import { oauthClientID, oauthClientSecret } from '@milesight/shared/src/config';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Logo } from '@milesight/shared/src/components';
 import { iotLocalStorage, TOKEN_CACHE_KEY } from '@milesight/shared/src/utils/storage';
-import { GradientBgContainer } from '@/components';
 import { useUserStore } from '@/stores';
 import { globalAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import useFormItems, { type FormDataProps } from '../useFormItems';
@@ -67,35 +66,29 @@ export default () => {
     );
 
     return (
-        <GradientBgContainer>
-            <Box component="form" onSubmit={handleSubmit(onSubmit)} className="ms-view-login">
-                <Paper
-                    className={cls('ms-auth-container', { hidden: loading !== false })}
-                    elevation={3}
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} className="ms-view-login">
+            <Paper
+                className={cls('ms-auth-container', { hidden: loading !== false })}
+                elevation={3}
+            >
+                <div className="ms-auth-logo">
+                    <Logo />
+                </div>
+                <div className="ms-auth-form">
+                    {formItems.map(props => (
+                        <Controller<FormDataProps> key={props.name} {...props} control={control} />
+                    ))}
+                </div>
+                <Button
+                    fullWidth
+                    type="submit"
+                    sx={{ textTransform: 'none' }}
+                    variant="contained"
+                    className="ms-auth-submit"
                 >
-                    <div className="ms-auth-logo">
-                        <Logo />
-                    </div>
-                    <div className="ms-auth-form">
-                        {formItems.map(props => (
-                            <Controller<FormDataProps>
-                                key={props.name}
-                                {...props}
-                                control={control}
-                            />
-                        ))}
-                    </div>
-                    <Button
-                        fullWidth
-                        type="submit"
-                        sx={{ textTransform: 'none' }}
-                        variant="contained"
-                        className="ms-auth-submit"
-                    >
-                        {getIntlText('common.label.login')}
-                    </Button>
-                </Paper>
-            </Box>
-        </GradientBgContainer>
+                    {getIntlText('common.label.login')}
+                </Button>
+            </Paper>
+        </Box>
     );
 };
