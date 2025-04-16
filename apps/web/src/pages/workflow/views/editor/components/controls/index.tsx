@@ -1,12 +1,14 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Panel, useNodes, useReactFlow, useViewport } from '@xyflow/react';
-import { Stack, Paper, ButtonGroup, Button } from '@mui/material';
+import { Stack, Paper, ButtonGroup, Button, Tooltip } from '@mui/material';
 import cls from 'classnames';
+import { useI18n } from '@milesight/shared/src/hooks';
 import {
     ZoomInIcon,
     ZoomOutIcon,
     MyLocationIcon,
-    AddCircleIcon,
+    // AddCircleIcon,
+    AddCircleOutlineIcon,
     PointerIcon,
     BackHandOutlinedIcon,
 } from '@milesight/shared/src/components';
@@ -58,6 +60,7 @@ const Controls: React.FC<ControlsProps> = ({
         WorkflowNode,
         WorkflowEdge
     >();
+    const { getIntlHtml } = useI18n();
 
     // ---------- Add Button Click Callback ----------
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -66,9 +69,9 @@ const Controls: React.FC<ControlsProps> = ({
         e.stopPropagation();
     }, []);
 
-    // ---------- Edit Mode Change ----------
+    // ---------- Move Mode Change ----------
     const isPanMode = moveMode === 'hand';
-    const handleEditModeChange = useCallback(
+    const handleMoveModeChange = useCallback(
         (mode: MoveMode) => {
             onMoveModeChange(mode);
 
@@ -89,6 +92,29 @@ const Controls: React.FC<ControlsProps> = ({
         },
         [getNodes, setNodes, getEdges, setEdges, onMoveModeChange],
     );
+
+    useEffect(() => {
+        const handleKeypress = (e: KeyboardEvent) => {
+            switch (e.key) {
+                case 'v': {
+                    handleMoveModeChange('pointer');
+                    break;
+                }
+                case 'h': {
+                    handleMoveModeChange('hand');
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        };
+
+        window.addEventListener('keypress', handleKeypress);
+        return () => {
+            window.removeEventListener('keypress', handleKeypress);
+        };
+    }, [handleMoveModeChange]);
 
     return (
         <Panel
@@ -119,20 +145,38 @@ const Controls: React.FC<ControlsProps> = ({
                             sx={{ minWidth: 'auto' }}
                             onClick={handleClick}
                         >
-                            <AddCircleIcon sx={{ fontSize: 20 }} />
+                            <AddCircleOutlineIcon sx={{ fontSize: 20 }} />
                         </Button>
-                        <Button
-                            className={cls({ active: !isPanMode })}
-                            onClick={() => handleEditModeChange('pointer')}
+                        <Tooltip
+                            enterDelay={300}
+                            enterNextDelay={300}
+                            slotProps={{
+                                popper: { className: 'ms-workflow-controls-tooltip-popper' },
+                            }}
+                            title={getIntlHtml('workflow.editor.move_mode_pointer')}
                         >
-                            <PointerIcon sx={{ fontSize: 18 }} />
-                        </Button>
-                        <Button
-                            className={cls({ active: isPanMode })}
-                            onClick={() => handleEditModeChange('hand')}
+                            <Button
+                                className={cls({ active: !isPanMode })}
+                                onClick={() => handleMoveModeChange('pointer')}
+                            >
+                                <PointerIcon sx={{ fontSize: 18 }} />
+                            </Button>
+                        </Tooltip>
+                        <Tooltip
+                            enterDelay={300}
+                            enterNextDelay={300}
+                            slotProps={{
+                                popper: { className: 'ms-workflow-controls-tooltip-popper' },
+                            }}
+                            title={getIntlHtml('workflow.editor.move_mode_hand')}
                         >
-                            <BackHandOutlinedIcon sx={{ fontSize: 18 }} />
-                        </Button>
+                            <Button
+                                className={cls({ active: isPanMode })}
+                                onClick={() => handleMoveModeChange('hand')}
+                            >
+                                <BackHandOutlinedIcon sx={{ fontSize: 18 }} />
+                            </Button>
+                        </Tooltip>
                     </ButtonGroup>
                     <NodeMenu
                         anchorOrigin={{

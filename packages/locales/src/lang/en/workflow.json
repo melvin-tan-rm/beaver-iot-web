@@ -132,5 +132,7 @@
     "workflow.label.import_from_curl": "Import from cURL",
     "workflow.label.placeholder_please_enter_curl": "Please enter the cURL command here...",
     "workflow.label.placeholder_please_enter_json": "Please enter JSON",
-    "workflow.label.placeholder_please_enter_raw_text": "Please enter Raw Text"
+    "workflow.label.placeholder_please_enter_raw_text": "Please enter Raw Text",
+    "workflow.editor.move_mode_pointer": "Pointer Mode <b>V</b>",
+    "workflow.editor.move_mode_hand": "Hand Mode <b>H</b>"
 }
