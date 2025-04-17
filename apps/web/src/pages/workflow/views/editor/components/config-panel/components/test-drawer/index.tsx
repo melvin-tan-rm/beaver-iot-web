@@ -121,6 +121,7 @@ const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
             // TODO: Generate different type data based on reference key type ?
             switch (param) {
                 case 'entities': {
+                    if (!data) return;
                     data.forEach((key: string) => {
                         result[key] = genRandomString(8, { lowerCase: true });
                     });
@@ -130,6 +131,7 @@ const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
                 case 'inputArguments':
                 case 'serviceInvocationSetting':
                 case 'exchangePayload': {
+                    if (!data) return;
                     if (param === 'serviceInvocationSetting') {
                         data = data.serviceParams;
                     }
