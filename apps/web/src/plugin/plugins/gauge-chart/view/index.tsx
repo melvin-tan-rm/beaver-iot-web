@@ -22,7 +22,7 @@ const TICK_FONTSIZE: Record<string, number> = {
 /** value fontsize */
 const VALUE_FONTSIZE: Record<string, number> = {
     min: 14,
-    max: 80,
+    max: 60,
     default: 13,
     percent: 0.07,
 };
@@ -213,23 +213,31 @@ const View = (props: Props) => {
         debounce(entries => {
             for (const entry of entries) {
                 const cr = entry.contentRect;
-                if (lastContentRect.current?.width === cr.width) {
+                if (lastContentRect.current?.height === cr.height) {
                     return;
                 }
                 lastContentRect.current = cr;
-                setValueFontSize(
-                    Math.min(
-                        Math.max(cr.width * VALUE_FONTSIZE.percent, VALUE_FONTSIZE.min),
-                        VALUE_FONTSIZE.max,
-                    ),
-                );
+                if (chartRef.current) {
+                    setValueFontSize(
+                        Math.min(
+                            Math.max(
+                                chartRef.current.width * VALUE_FONTSIZE.percent,
+                                VALUE_FONTSIZE.min,
+                            ),
+                            VALUE_FONTSIZE.max,
+                        ),
+                    );
 
-                setTickFontSize(
-                    Math.min(
-                        Math.max(cr.width * TICK_FONTSIZE.percent, TICK_FONTSIZE.min),
-                        TICK_FONTSIZE.max,
-                    ),
-                );
+                    setTickFontSize(
+                        Math.min(
+                            Math.max(
+                                chartRef.current.width * TICK_FONTSIZE.percent,
+                                TICK_FONTSIZE.min,
+                            ),
+                            TICK_FONTSIZE.max,
+                        ),
+                    );
+                }
             }
         }, 400),
     );
