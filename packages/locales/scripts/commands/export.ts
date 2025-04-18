@@ -244,23 +244,23 @@ async function checkFile({
     }
 
     createFile(
-        pathtool.resolve(cwd, outputPath, 'new_copy.json'),
+        pathtool.resolve(cwd, outputPath, 'new_texts.json'),
         JSON.stringify(newResult, null, 4),
     );
     createFile(
-        pathtool.resolve(cwd, outputPath, 'deleted_copy.json'),
+        pathtool.resolve(cwd, outputPath, 'deleted_texts.json'),
         JSON.stringify(updateResult.delete, null, 4),
     );
     createFile(
-        pathtool.resolve(cwd, outputPath, 'invalid_key.json'),
+        pathtool.resolve(cwd, outputPath, 'invalid_keys.json'),
         JSON.stringify(specResult, null, 4),
     );
     createFile(
-        pathtool.resolve(cwd, outputPath, 'duplicate_key.json'),
+        pathtool.resolve(cwd, outputPath, 'duplicate_keys.json'),
         JSON.stringify(repeatResult, null, 4),
     );
     createFile(
-        pathtool.resolve(cwd, outputPath, 'duplicate_content.json'),
+        pathtool.resolve(cwd, outputPath, 'duplicate_contents.json'),
         JSON.stringify(repeatValueResult, null, 4),
     );
     console.timeEnd('The export time is');
