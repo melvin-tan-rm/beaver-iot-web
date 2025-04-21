@@ -7,6 +7,7 @@ import {
     type GridValidRowModel,
     type GridColDef,
 } from '@mui/x-data-grid';
+import { useI18n } from '@milesight/shared/src/hooks';
 import { SearchIcon } from '@milesight/shared/src/components';
 import Tooltip from '../tooltip';
 import { Footer, NoDataOverlay, NoResultsOverlay } from './components';
@@ -60,6 +61,8 @@ const TablePro = <DataType extends GridValidRowModel>({
     paginationMode = 'server',
     ...props
 }: Props<DataType>) => {
+    const { getIntlText } = useI18n();
+
     const memoColumns = useMemo(() => {
         const result = columns.map((column, index) => {
             const col = { ...column };
@@ -111,7 +114,7 @@ const TablePro = <DataType extends GridValidRowModel>({
                     {!!onSearch && (
                         <div className="ms-table-pro__topbar-search">
                             <OutlinedInput
-                                placeholder="Search"
+                                placeholder={getIntlText('common.label.search')}
                                 sx={{ width: 220 }}
                                 onChange={e => onSearch?.(e.target.value)}
                                 startAdornment={
