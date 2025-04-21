@@ -153,7 +153,8 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                 formItem.render = ({ field: { onChange, value } }) => {
                                     return (
                                         <ParamInput
-                                            // required={required}
+                                            required={required}
+                                            showRequired={nodeType === 'trigger'}
                                             isOutput={nodeType === 'code' || nodeType === 'service'}
                                             value={value}
                                             onChange={onChange}
@@ -335,7 +336,16 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                 break;
                             }
                         }
-                    } else if (enums && Object.keys(enums).length) {
+                    } else if (enums && (enums.length || Object.keys(enums).length)) {
+                        const options = !Array.isArray(enums)
+                            ? enums
+                            : enums.reduce(
+                                  (acc, item) => {
+                                      acc[item] = item;
+                                      return acc;
+                                  },
+                                  {} as Record<string, string>,
+                              );
                         formItem.render = ({ field: { onChange, value } }) => {
                             return (
                                 <FormControl fullWidth size="small" sx={{ my: 1.5 }}>
@@ -351,7 +361,7 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                         value={value || ''}
                                         onChange={onChange}
                                     >
-                                        {Object.entries(enums || {}).map(([key, label]) => (
+                                        {Object.entries(options).map(([key, label]) => (
                                             <MenuItem key={key} value={key}>
                                                 {label}
                                             </MenuItem>

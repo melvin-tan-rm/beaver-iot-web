@@ -34,6 +34,18 @@
 
         > .@{prefix}-param-input-required {
             flex: 0;
+
+            .@{mui-prefix}Checkbox-root {
+                &:not(.@{mui-prefix}-checked):not(.@{mui-prefix}-disabled) {
+                    &::after {
+                        position: absolute;
+                        inset: 9px 8px 8px 9px;
+                        background-color: var(--component-background);
+                        border-radius: 2px;
+                        content: '';
+                    }
+                }
+            }
         }
 
         .@{prefix}-param-input-name .@{mui-prefix}FormControl-root,

@@ -87,8 +87,46 @@ export type NodeConfigItemType = {
     }[];
     /**
      * The keys that can be referenced in downstream node
+     * @deprecated Use `outputs` instead
      */
     outputKeys?: string[];
+
+    /**
+     * The output params definition
+     */
+    outputs?: {
+        /** Output param key */
+        key: string;
+        /**
+         * Output param type
+         * @template static - The static param will always exist when the node is in workflow
+         * @template url - The url param will be passed to the downstream node when the url is
+         * entered, the format is: `string`
+         * @template object - It is a dynamic param, and the value will be passed to the
+         * downstream node when the data is not empty, the format is:
+         * `Record<string, string>`
+         * @template objectArray - It is a dynamic param, and the value will be passed to the
+         * downstream node, the format is:
+         * `{ identify?: string; name: string; type: string }[]`
+         * @template entities - The entity param will be passed to the downstream node when the
+         * entity is selected, the format is: `string[]`
+         * @template objectEntities - The entity param will be passed to the downstream node when
+         * the entity is selected, the format is:
+         * `{ [entityKey: string]: string }`
+         */
+        type: 'static' | 'url' | 'object' | 'objectArray' | 'entities' | 'objectEntities';
+        /** Output param value type */
+        // valueType?: 'string' | 'long' | 'number' | 'boolean' | 'array' | 'object';
+        valueType?: EntityValueDataType;
+        /** Output param path in parameters */
+        path?: string | string[];
+        /** Custom output param label */
+        label?: string;
+        /** Output param description */
+        // desc?: string;
+        /** I18n key for param description */
+        descIntlKey?: string;
+    }[];
     /**
      * Whether the node is loaded from remote
      */
@@ -122,7 +160,12 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
                 type: 'array',
             },
         ],
-        outputKeys: ['entityConfigs'],
+        outputs: [
+            {
+                key: 'entityConfigs',
+                type: 'objectArray',
+            },
+        ],
     },
     listener: {
         type: 'listener',
@@ -138,7 +181,12 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
                 type: 'array',
             },
         ],
-        outputKeys: ['entities'],
+        outputs: [
+            {
+                key: 'entities',
+                type: 'entities',
+            },
+        ],
     },
     httpin: {
         type: 'httpin',
@@ -147,6 +195,28 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <HttpIcon />,
         iconBgColor: '#3491FA',
         category: 'entry',
+        outputs: [
+            {
+                key: 'header',
+                type: 'static',
+                valueType: 'STRING',
+                descIntlKey: 'workflow.editor.output_desc_request_header',
+            },
+            {
+                key: 'body',
+                type: 'static',
+                valueType: 'STRING',
+                descIntlKey: 'workflow.editor.output_desc_request_body',
+            },
+            {
+                key: 'url',
+                path: 'url',
+                type: 'url',
+                label: 'URL',
+                valueType: 'STRING',
+                descIntlKey: 'workflow.editor.output_desc_variables_in_path',
+            },
+        ],
     },
     mqtt: {
         type: 'mqtt',
@@ -156,8 +226,23 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <ConnectWithoutContactIcon />,
         iconBgColor: '#3491FA',
         category: 'entry',
-        outputKeys: ['message'],
-        isRemote: true,
+        // isRemote: true,
+        outputs: [
+            {
+                key: 'topic',
+                label: 'Topic',
+                type: 'static',
+                valueType: 'STRING',
+                descIntlKey: 'workflow.editor.output_desc_mqtt_topic',
+            },
+            {
+                key: 'payload',
+                label: 'Payload',
+                type: 'static',
+                valueType: 'STRING',
+                descIntlKey: 'workflow.editor.output_desc_mqtt_payload',
+            },
+        ],
     },
     ifelse: {
         type: 'ifelse',
@@ -187,7 +272,12 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
                 type: 'object',
             },
         ],
-        outputKeys: ['payload'],
+        outputs: [
+            {
+                key: 'payload',
+                type: 'objectArray',
+            },
+        ],
     },
     assigner: {
         type: 'assigner',
@@ -202,7 +292,12 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
                 type: 'object',
             },
         ],
-        outputKeys: ['exchangePayload'],
+        outputs: [
+            {
+                key: 'exchangePayload',
+                type: 'objectEntities',
+            },
+        ],
     },
     service: {
         type: 'service',
@@ -217,7 +312,12 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
                 type: 'object',
             },
         ],
-        outputKeys: ['payload'],
+        outputs: [
+            {
+                key: 'payload',
+                type: 'objectArray',
+            },
+        ],
     },
     select: {
         type: 'select',
@@ -232,7 +332,12 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
                 type: 'array',
             },
         ],
-        outputKeys: ['entities'],
+        outputs: [
+            {
+                key: 'entities',
+                type: 'entities',
+            },
+        ],
     },
     email: {
         type: 'email',
@@ -261,21 +366,40 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
                 type: 'object',
             },
         ],
-        outputKeys: ['inputArguments'],
-    },
-    output: {
-        type: 'output',
-        componentName: 'output',
-        labelIntlKey: 'workflow.label.output_node_name',
-        icon: <OutputIcon />,
-        iconBgColor: '#7E57C2',
-        category: 'external',
     },
     http: {
         type: 'http',
         componentName: 'httpRequest',
         labelIntlKey: 'workflow.label.http_node_name',
         icon: <HttpIcon />,
+        iconBgColor: '#7E57C2',
+        category: 'external',
+        outputs: [
+            {
+                key: 'header',
+                type: 'static',
+                valueType: 'STRING',
+                descIntlKey: 'workflow.editor.output_desc_response_header',
+            },
+            {
+                key: 'body',
+                type: 'static',
+                valueType: 'STRING',
+                descIntlKey: 'workflow.editor.output_desc_response_body',
+            },
+            {
+                key: 'status_code',
+                type: 'static',
+                valueType: 'LONG',
+                descIntlKey: 'workflow.editor.output_desc_response_code',
+            },
+        ],
+    },
+    output: {
+        type: 'output',
+        componentName: 'output',
+        labelIntlKey: 'workflow.label.output_node_name',
+        icon: <OutputIcon />,
         iconBgColor: '#7E57C2',
         category: 'external',
     },

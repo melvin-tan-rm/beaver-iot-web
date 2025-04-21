@@ -95,6 +95,7 @@ const Controls: React.FC<ControlsProps> = ({
 
     useEffect(() => {
         const handleKeypress = (e: KeyboardEvent) => {
+            if (!e.ctrlKey) return;
             switch (e.key) {
                 case 'v': {
                     handleMoveModeChange('pointer');

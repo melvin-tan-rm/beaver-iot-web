@@ -133,7 +133,7 @@ const DataEditor: React.FC<DataEditorProps> = ({
                     </div>
                     <div className="ms-data-editor-header-actions">
                         <div className="ms-data-editor-header-action">
-                            {!readonly || !variableSelectable
+                            {readonly || !variableSelectable
                                 ? null
                                 : renderNodeParamSelect(
                                       !inModal ? editorRef.current : modalEditorRef.current,

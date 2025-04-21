@@ -3,7 +3,7 @@ import './style.less';
 
 type OptionItem = {
     name: string;
-    type: string;
+    type?: string;
     placeholder: string;
     copyable?: boolean;
 };
@@ -26,7 +26,7 @@ const HttpOutputInfo: React.FC<Props> = ({ title, options }) => {
                         <div className="ms-http-output-info-item" key={option.name}>
                             <div className="ms-http-output-info-item-title">
                                 <span className="label">{option.name}</span>
-                                <span className="type">{option.type}</span>
+                                {!!option.type && <span className="type">{option.type}</span>}
                             </div>
                             <div className="ms-http-output-info-item-body">
                                 <span className="placeholder">{option.placeholder}</span>

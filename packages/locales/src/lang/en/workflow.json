@@ -133,6 +133,14 @@
     "workflow.label.placeholder_please_enter_curl": "Please enter the cURL command here...",
     "workflow.label.placeholder_please_enter_json": "Please enter JSON",
     "workflow.label.placeholder_please_enter_raw_text": "Please enter Raw Text",
-    "workflow.editor.move_mode_pointer": "Pointer Mode <b>V</b>",
-    "workflow.editor.move_mode_hand": "Hand Mode <b>H</b>"
+    "workflow.editor.move_mode_pointer": "Pointer Mode <b>Ctrl + V</b>",
+    "workflow.editor.move_mode_hand": "Hand Mode <b>Ctrl + H</b>",
+    "workflow.editor.output_desc_request_header": "Request header",
+    "workflow.editor.output_desc_request_body": "Request content",
+    "workflow.editor.output_desc_variables_in_path": "Variables in path",
+    "workflow.editor.output_desc_mqtt_topic": "Topic of the message",
+    "workflow.editor.output_desc_mqtt_payload": "Load content of message",
+    "workflow.editor.output_desc_response_header": "Response header",
+    "workflow.editor.output_desc_response_body": "Response Content",
+    "workflow.editor.output_desc_response_code": "Response Code"
 }

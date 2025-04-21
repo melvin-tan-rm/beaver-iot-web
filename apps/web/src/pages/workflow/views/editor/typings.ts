@@ -31,7 +31,7 @@ export type NodeFormItemConfig = {
     defaultValue: string;
     description: string;
     index: number;
-    enum?: Record<string, string>;
+    enum?: string[] | Record<string, string>;
     required?: boolean;
     secret?: boolean;
     autowired?: boolean;

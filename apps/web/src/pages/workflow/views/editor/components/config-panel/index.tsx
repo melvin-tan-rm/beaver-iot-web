@@ -307,6 +307,8 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                                         {renderFormGroupContent({
                                             node: finalSelectedNode,
                                             formGroupName: groupName || '',
+                                            formGroupIndex: index,
+                                            isLastFormGroup: index === nodeFormGroups.length - 1,
                                             data: latestFormData,
                                         })}
                                     </div>
