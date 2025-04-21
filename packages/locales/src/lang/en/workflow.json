@@ -66,7 +66,7 @@
     "workflow.label.free_node_limit_tip": "No stray nodes allowed in the workflow",
     "workflow.label.handle_tooltip": "<b>Click</b> to add Node<br /><b>Drag</b> to connect",
     "workflow.label.ifelse_node_name": "IF/ELSE",
-    "workflow.label.listener_node_desc": "The workflow is conditionally triggered by changes in the monitored entity object, without the need for active triggering. The initial node is an entity listener node.",
+    "workflow.label.listener_node_desc": "Triggers the workflow to run when the value of any of the listened-to entity objects changes.",
     "workflow.label.listener_node_name": "Entity Listener",
     "workflow.label.logic_keyword_and": "AND",
     "workflow.label.logic_keyword_else": "ELSE",
@@ -87,9 +87,9 @@
     "workflow.label.param_type_other": "OTHER",
     "workflow.label.select_node_name": "Entity Selection",
     "workflow.label.service_node_name": "Service Invocation",
-    "workflow.label.timer_node_desc": "Workflow is triggered based on the scheduled time or cycle, without the need for active triggering. The starting node is a timer node.",
+    "workflow.label.timer_node_desc": "Trigger a workflow run at regular intervals or periodically.",
     "workflow.label.timer_node_name": "Timer",
-    "workflow.label.trigger_node_desc": "The entire workflow needs to be manually triggered by the user. The starting node is a trigger node that allows input parameters to be set when triggered.",
+    "workflow.label.trigger_node_desc": "The running of the workflow is triggered manually by the user.",
     "workflow.label.trigger_node_name": "Trigger",
     "workflow.label.webhook_node_name": "Webhook Push",
     "workflow.message.delete_tip": "Are you sure you want to delete the workflow? It cannot be restore after deletion.",
@@ -142,5 +142,7 @@
     "workflow.editor.output_desc_mqtt_payload": "Load content of message",
     "workflow.editor.output_desc_response_header": "Response header",
     "workflow.editor.output_desc_response_body": "Response Content",
-    "workflow.editor.output_desc_response_code": "Response Code"
+    "workflow.editor.output_desc_response_code": "Response Code",
+    "workflow.label.httpin_node_desc": "Listen for incoming HTTP requests to trigger a running workflow. ",
+    "workflow.label.mqtt_node_desc": "Listen for incoming MQTT messages to trigger a running workflow."
 }

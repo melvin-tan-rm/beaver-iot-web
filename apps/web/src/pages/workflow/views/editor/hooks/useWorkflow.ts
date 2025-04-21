@@ -15,7 +15,7 @@ import {
     DEFAULT_BOOLEAN_DATA_ENUMS,
     URL_PARAM_PATTERN,
 } from '../constants';
-import { genRefParamKey, isRefParamKey } from '../helper';
+import { genRefParamKey, isRefParamKey, getUrlParams } from '../helper';
 import { getParallelInfo } from './utils';
 
 export type NodeParamType = {
@@ -283,14 +283,10 @@ const useWorkflow = () => {
                             }
                             case 'url': {
                                 if (!outputData) return;
-                                const params = [];
-                                let match;
-                                // eslint-disable-next-line no-cond-assign
-                                while ((match = URL_PARAM_PATTERN.exec(outputData)) !== null) {
-                                    params.push(match[1]);
-                                }
 
+                                const params = getUrlParams(outputData);
                                 if (!params.length) return;
+
                                 params.forEach(param => {
                                     const typeOption = entityTypeOptions.find(
                                         it => it.value === valueType,

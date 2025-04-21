@@ -4,7 +4,7 @@ import cls from 'classnames';
 import { useSize } from 'ahooks';
 import { Button, CircularProgress } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { Empty } from '@/components';
+import { Tooltip, Empty } from '@/components';
 import useFlowStore from '../../store';
 import { DEFAULT_NODE_HEIGHT } from '../../constants';
 import useInteractions from '../../hooks/useInteractions';
@@ -78,11 +78,20 @@ const EntryModal: React.FC<Props> = ({ isEditing, loading }) => {
                                                 ? getIntlText(config.labelIntlKey)
                                                 : config.label}
                                         </div>
-                                        <div className="ms-node-item-desc">
+                                        <Tooltip
+                                            className="ms-node-item-desc"
+                                            autoEllipsis
+                                            title={
+                                                config.descIntlKey
+                                                    ? getIntlText(config.descIntlKey)
+                                                    : ''
+                                            }
+                                        />
+                                        {/* <div className="ms-node-item-desc">
                                             {config.descIntlKey
                                                 ? getIntlText(config.descIntlKey)
                                                 : ''}
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </div>
                             ))}

@@ -14,6 +14,9 @@ export interface Props {
     options?: OptionItem[];
 }
 
+/**
+ * Render HTTP output info
+ */
 const HttpOutputInfo: React.FC<Props> = ({ title, options }) => {
     return (
         <div className="ms-node-form-group">
