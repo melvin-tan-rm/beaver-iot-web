@@ -1,4 +1,5 @@
 import minimistParser from 'minimist';
+import { merge as mergeObject } from 'lodash-es';
 import options from './options';
 import { convertor } from './convertor';
 
@@ -22,7 +23,7 @@ function matchArgv(s: string): string[] {
         });
 }
 
-interface Result {
+export interface Result {
     url?: string;
     header?: Record<string, string>;
     data?: any;
@@ -63,7 +64,7 @@ export function curl2Json(data: string | string[]): Result {
             result[name] = value;
         }
     });
-    Object.assign(result, extraFields);
+    mergeObject(result, extraFields);
 
     if (result.url) {
         const url = new URL(result.url);
