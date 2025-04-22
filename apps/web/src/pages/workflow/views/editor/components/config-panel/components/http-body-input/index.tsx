@@ -20,15 +20,13 @@ interface HttpBodyInputProps {
     onChange: (value?: ValueType | null) => void;
 }
 
-type BodyContentType = 'application/x-www-form-urlencoded' | 'application/json' | 'text/plain';
-
 const NONE_VALUE = '__NONE__' as const;
 
 const contentTypeOptions: {
     label: string;
     labelIntlKey?: string;
     key?: string;
-    value: BodyContentType | typeof NONE_VALUE;
+    value: HttpBodyContentType | typeof NONE_VALUE;
 }[] = [
     {
         label: 'None',

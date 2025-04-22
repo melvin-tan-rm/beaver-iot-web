@@ -1,5 +1,7 @@
 import { useCallback } from 'react';
 import { useI18n } from '@milesight/shared/src/hooks';
+import { safeJsonParse } from '@milesight/shared/src/utils/tools';
+import { Result as ParseResult } from '@milesight/shared/src/utils/curl-parser';
 import {
     HttpCurlDialog,
     HttpCurlInfo,
@@ -59,10 +61,57 @@ const useExtraRender = () => {
         ({ node, formGroupIndex, onChange }: RenderActionProps) => {
             switch (node?.type) {
                 case 'http': {
-                    if (formGroupIndex === 0) {
-                        return <HttpCurlDialog onChange={onChange} />;
-                    }
-                    break;
+                    if (formGroupIndex !== 0) return null;
+                    const handleCurlCmdChange = ({
+                        url,
+                        header,
+                        data,
+                        params,
+                        method,
+                    }: ParseResult) => {
+                        const result: Partial<HttpNodeDataType['parameters']> = {
+                            url,
+                            params: params || {},
+                            method: method?.toLocaleUpperCase() as HttpMethodType,
+                        };
+                        const { 'Content-Type': contentType, ...restHeaders } = header || {};
+                        const body: NonNullable<HttpNodeDataType['parameters']>['body'] = {
+                            type: '',
+                            value: '',
+                        };
+
+                        switch (contentType as HttpBodyContentType) {
+                            case 'text/plain': {
+                                body.type = contentType as HttpBodyContentType;
+                                body.value =
+                                    typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
+                                break;
+                            }
+                            case 'application/json': {
+                                body.type = contentType as HttpBodyContentType;
+                                body.value =
+                                    typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
+                                break;
+                            }
+                            case 'application/x-www-form-urlencoded': {
+                                body.type = contentType as HttpBodyContentType;
+                                body.value =
+                                    typeof data === 'object' ? data : safeJsonParse(data, {});
+                                break;
+                            }
+                            default: {
+                                break;
+                            }
+                        }
+
+                        result.header = restHeaders || {};
+                        result.body = body;
+
+                        // console.log({ restHeaders, data, contentType, result });
+                        onChange?.(result);
+                    };
+
+                    return <HttpCurlDialog onChange={handleCurlCmdChange} />;
                 }
                 default: {
                     break;
@@ -82,7 +131,7 @@ const useExtraRender = () => {
             switch (node?.type) {
                 case 'httpin': {
                     if (isLastFormGroup) {
-                        return <HttpCurlInfo data={data} />;
+                        return <HttpCurlInfo data={data as HttpinNodeDataType['parameters']} />;
                     }
                     break;
                 }

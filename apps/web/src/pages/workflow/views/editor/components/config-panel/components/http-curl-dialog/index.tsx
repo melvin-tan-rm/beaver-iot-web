@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Modal, ExitToAppIcon } from '@milesight/shared/src/components';
-import { curl2Json } from '@milesight/shared/src/utils/curl-parser';
+import { curl2Json, type Result as ParseResult } from '@milesight/shared/src/utils/curl-parser';
 import { CodeEditor } from '@/components';
 
 import './style.less';
 
 export interface HttpCurlDialogProps {
-    onChange?: (data: Record<string, any>) => void;
+    onChange?: (data: ParseResult) => void;
 }
 
 const HttpCurlDialog: React.FC<HttpCurlDialogProps> = ({ onChange }) => {
@@ -15,6 +15,7 @@ const HttpCurlDialog: React.FC<HttpCurlDialogProps> = ({ onChange }) => {
     const [visible, setVisible] = useState(false);
     const [content, setContent] = useState('');
     const handleConfirm = () => {
+        if (!content) return;
         const result = curl2Json(content);
         setVisible(false);
         onChange?.(result);
@@ -37,6 +38,9 @@ const HttpCurlDialog: React.FC<HttpCurlDialogProps> = ({ onChange }) => {
                 className="ms-http-curl-import-modal"
                 visible={visible}
                 title={getIntlText('workflow.label.import_from_curl')}
+                okButtonProps={{
+                    disabled: !content,
+                }}
                 onCancel={() => setVisible(false)}
                 onOk={handleConfirm}
             >

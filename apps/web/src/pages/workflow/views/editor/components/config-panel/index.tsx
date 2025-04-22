@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, useCallback } from 'react';
 import { Panel, useReactFlow } from '@xyflow/react';
 import cls from 'classnames';
 import { isEqual, isEmpty, cloneDeep } from 'lodash-es';
@@ -138,6 +138,14 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
     // ---------- Process Extra Render ----------
     const { renderFormGroupAction, renderFormGroupContent, renderFormGroupFooter } =
         useExtraRender();
+    const handleFormGroupAction = useCallback(
+        (data: Record<string, any>) => {
+            Object.keys(data).forEach(key => {
+                setValue(key, data[key]);
+            });
+        },
+        [setValue],
+    );
 
     // ---------- Show Test Drawer ----------
     const { checkNodesData } = useValidate();
@@ -278,7 +286,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                                             node: finalSelectedNode,
                                             formGroupName: groupName || '',
                                             formGroupIndex: index,
-                                            onChange: setLatestFormData,
+                                            onChange: handleFormGroupAction,
                                         })}
                                     </div>
                                     <div className="ms-node-form-group-item">

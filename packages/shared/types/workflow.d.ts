@@ -334,6 +334,11 @@ declare type WebhookNodeDataType = BaseNodeDataType<{
     secretKey?: string;
 }>;
 
+declare type HttpBodyContentType =
+    | 'text/plain'
+    | 'application/json'
+    | 'application/x-www-form-urlencoded';
+
 /**
  * Http Node Parameters
  */
@@ -343,15 +348,15 @@ declare type HttpNodeDataType = BaseNodeDataType<{
     /** URL */
     url: string;
     /** Headers */
-    headers: Record<ApiKey, string>;
+    header: Record<ApiKey, string>;
     /** Query Parameters */
     params: Record<ApiKey, string>;
     /** Body */
     body: {
         /** Content Type */
-        type: string;
+        type: '' | HttpBodyContentType;
         /** Body Content */
-        value: Record<ApiKey, string>;
+        value: string | Record<ApiKey, string>;
     };
 }>;
 
