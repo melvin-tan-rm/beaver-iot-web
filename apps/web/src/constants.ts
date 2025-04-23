@@ -85,7 +85,6 @@ export enum ENTITY_VALUE_TYPE {
     STRING = 'STRING',
     DOUBLE = 'DOUBLE',
     BOOLEAN = 'BOOLEAN',
-    ENUM = 'ENUM',
 }
 
 // Entity Data Value Type
