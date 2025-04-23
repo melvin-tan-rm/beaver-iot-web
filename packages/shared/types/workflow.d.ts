@@ -337,6 +337,7 @@ declare type WebhookNodeDataType = BaseNodeDataType<{
 declare type HttpBodyContentType =
     | 'text/plain'
     | 'application/json'
+    | 'multipart/form-data'
     | 'application/x-www-form-urlencoded';
 
 /**

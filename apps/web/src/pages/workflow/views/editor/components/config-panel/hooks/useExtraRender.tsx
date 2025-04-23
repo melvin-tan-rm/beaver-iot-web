@@ -93,13 +93,26 @@ const useExtraRender = () => {
                                     typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
                                 break;
                             }
+                            /**
+                             * Attention: There is no `multipart/form-data` type in the select
+                             * options now, so we need to convert it to
+                             * `application/x-www-form-urlencoded` type.
+                             * The `multipart/form-data` type is used to upload files, and the
+                             * `application/x-www-form-urlencoded` type is used to submit
+                             * form data.
+                             */
+                            case 'multipart/form-data':
                             case 'application/x-www-form-urlencoded': {
-                                body.type = contentType as HttpBodyContentType;
+                                body.type = 'application/x-www-form-urlencoded';
                                 body.value =
                                     typeof data === 'object' ? data : safeJsonParse(data, {});
                                 break;
                             }
                             default: {
+                                body.type = 'text/plain';
+                                body.value =
+                                    typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
+                                if (contentType) restHeaders['Content-Type'] = contentType;
                                 break;
                             }
                         }

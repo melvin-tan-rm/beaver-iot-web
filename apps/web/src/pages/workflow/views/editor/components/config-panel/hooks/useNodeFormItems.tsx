@@ -168,7 +168,7 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                     return (
                                         <ParamAssignInput
                                             required={!!required}
-                                            minCount={nodeType === 'output' ? 1 : 0}
+                                            minCount={1}
                                             disableInput={nodeType === 'output'}
                                             value={value}
                                             onChange={onChange}
