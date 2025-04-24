@@ -33,17 +33,17 @@ interface DashboardContentProps {
 }
 
 export default (props: DashboardContentProps) => {
+    const { dashboardDetail, getDashboards, onChangeIsEdit, isEdit, isTooSmallScreen } = props;
+
     const { getIntlText } = useI18n();
-    const {
-        isHome,
-        toggleHomeDashboard,
-        homeDashboardClassName,
-        homeDashboardIcon,
-        homeDashboardTip,
-    } = useHomeDashboard(props.getDashboards);
     const { pluginsConfigs } = useGetPluginConfigs();
     const confirm = useConfirm();
-    const { dashboardDetail, getDashboards, onChangeIsEdit, isEdit, isTooSmallScreen } = props;
+    const { toggleHomeDashboard, homeDashboardClassName, homeDashboardIcon, homeDashboardTip } =
+        useHomeDashboard({
+            dashboardDetail,
+            refreshDashboards: getDashboards,
+        });
+
     const [isShowAddWidget, setIsShowAddWidget] = useState(false);
     const [isShowEditDashboard, setIsShowEditDashboard] = useState(false);
     const [widgets, setWidgets] = useState<WidgetDetail[]>([]);
