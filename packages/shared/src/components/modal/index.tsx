@@ -31,7 +31,7 @@ export interface ModalProps {
     /**
      * Bomber title
      */
-    title?: string;
+    title?: string | React.ReactNode;
     /**
      * Custom bomb frame width
      * @description Value is that the size attribute does not take effect
@@ -156,15 +156,18 @@ const Modal: React.FC<ModalProps> = ({
             sx={{ '& .MuiDialog-paper': { width: ModalWidth, maxWidth: 'none' }, ...(sx || {}) }}
             disableScrollLock={disableScrollLock}
         >
-            {!!title && (
-                <DialogTitle
-                    id="customized-dialog-title"
-                    className="ms-modal-title"
-                    sx={{ m: 0, paddingX: 3, paddingY: 2 }}
-                >
-                    {title}
-                </DialogTitle>
-            )}
+            {!!title &&
+                (typeof title === 'string' ? (
+                    <DialogTitle
+                        id="customized-dialog-title"
+                        className="ms-modal-title"
+                        sx={{ m: 0, paddingX: 3, paddingY: 2 }}
+                    >
+                        {title}
+                    </DialogTitle>
+                ) : (
+                    title
+                ))}
             {showCloseIcon && (
                 <IconButton
                     aria-label="close"

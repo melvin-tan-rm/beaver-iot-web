@@ -10,7 +10,9 @@ import {
     InfoIcon,
     toast,
 } from '@milesight/shared/src/components';
+import cls from 'classnames';
 import { cloneDeep } from 'lodash-es';
+import { useFullscreen } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { dashboardAPI, awaitWrap, isRequestSuccess } from '@/services/http';
 import { DashboardDetail, WidgetDetail } from '@/services/http/dashboard';
@@ -56,6 +58,7 @@ export default (props: DashboardContentProps) => {
     const widgetsRef = useRef<any[]>([]);
     /** normal screen widget position info storage */
     const normalWidgetRef = useRef<any[]>([]);
+    const [isFullscreen, { enterFullscreen }] = useFullscreen(mainRef);
 
     useEffect(() => {
         // Merge the data in the database with the local one to ensure that the component configuration is locally up to date
@@ -217,13 +220,6 @@ export default (props: DashboardContentProps) => {
         }
     };
 
-    // Go to full screen
-    const enterFullscreen = () => {
-        if (mainRef.current?.requestFullscreen) {
-            mainRef.current.requestFullscreen();
-        }
-    };
-
     return (
         <div className="dashboard-content">
             <div className="dashboard-content-operate">
@@ -335,7 +331,13 @@ export default (props: DashboardContentProps) => {
                     </div>
                 </PermissionControlDisabled>
             ) : (
-                <div className="dashboard-content-main bg-custom-scrollbar" ref={mainRef}>
+                <div
+                    className={cls(
+                        'dashboard-content-main bg-custom-scrollbar ms-perfect-scrollbar',
+                        { 'dashboard-content-main__fullscreen': isFullscreen },
+                    )}
+                    ref={mainRef}
+                >
                     <Widgets
                         widgets={widgets}
                         onChangeWidgets={handleChangeWidgets}

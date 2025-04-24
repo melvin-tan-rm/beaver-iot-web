@@ -22,7 +22,7 @@
     "dashboard.label_sum_value": "Sum. Value",
     "dashboard.leave_to_new_dashboard_description": "Whether or not you want to jump to the newly created dashboard, please note that the current dashboard your changes will not be saved.",
     "dashboard.plugin.trigger_confirm_text": "Is the execution of the operation confirmed?",
-    "dashboard.plugin_class_data_card": "Data Card",
+    "dashboard.plugin_class_data_card": "Data Display",
     "dashboard.plugin_class_data_chart": "Data Charts",
     "dashboard.plugin_class_operate": "Operable Widgets",
     "dashboard.plugin_class_other": "Other",

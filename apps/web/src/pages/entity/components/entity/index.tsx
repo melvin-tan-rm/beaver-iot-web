@@ -158,6 +158,7 @@ export default () => {
                         sx={{ height: 36, textTransform: 'none' }}
                         startIcon={<IosShareIcon />}
                         onClick={handleShowExport}
+                        disabled={!selectedIds.length}
                     >
                         {getIntlText('common.label.export')}
                     </Button>

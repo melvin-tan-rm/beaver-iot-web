@@ -9,7 +9,6 @@
 
     .@{prefix}-tab-content {
         flex: 1;
-        padding: @padding-lg 0 0 0;
         overflow: hidden;
         background: var(--gray-color-2);
 
@@ -17,7 +16,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            height: calc(100vh - 56px - 60px);
+            height: calc(100vh - 48px - 60px);
         }
     }
 
@@ -54,6 +53,7 @@
         line-height: 1;
         background: var(--component-background);
         cursor: pointer;
+        .text-size(@font-size-md);
 
         &:hover &-icon {
             color: var(--primary-color-6);
@@ -64,10 +64,24 @@
         }
 
         &-contain {
+            position: relative;
             flex: 1;
             height: 100%;
-            padding: 18px 20px 0 0;
+            padding: 18px 20px 0 @padding-sm;
             color: var(--text-color-secondary);
+
+            &-list {
+                &::before {
+                    position: absolute;
+                    top: calc((100% + 8px) / 2);
+                    left: -1px;
+                    width: 1px;
+                    height: 14px;
+                    background-color: var(--gray-3);
+                    content: '';
+                    transform: translateY(-50%);
+                }
+            }
         }
     }
 
@@ -75,7 +89,7 @@
         display: flex;
         min-height: 0 !important;
         padding: 0 !important;
-        background: #fff;
+        background: var(--component-background);
     }
 
     &-widget-grid-edit {
@@ -94,8 +108,14 @@
             position: relative;
             flex: 1;
             width: 100%;
+            padding: 74px @padding-xxs 0;
+            margin-bottom: @margin-xxs;
             overflow: hidden scroll;
             background: var(--gray-color-2);
+
+            &__fullscreen {
+                padding-top: @margin-md;
+            }
 
             & > div {
                 height: 100%;
@@ -107,10 +127,18 @@
         }
 
         &-operate {
+            position: absolute;
+            top: 48px;
+            left: 8px;
+            z-index: 600;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 @padding-xxl 0 @padding-md;
+            width: calc(100% - 8px);
+            padding: @padding-md;
+            margin-left: -@margin-xs;
+            background: rgba(242, 243, 245, 0.8);
+            backdrop-filter: blur(16px);
 
             .dashboard-button-icon {
                 display: flex;
@@ -206,7 +234,7 @@
     &-custom-resizable-handle {
         position: absolute;
         right: -6px;
-        bottom: -4px;
+        bottom: -5px;
         z-index: 10;
         display: none;
         box-sizing: border-box;
@@ -214,7 +242,7 @@
         height: 16px;
         overflow: hidden;
         background: var(--primary-color-base);
-        border: 2px solid var(--primary-color-base);
+        border: 2px solid var(--component-background);
         border-radius: 50%;
         cursor: nwse-resize;
     }
@@ -234,7 +262,7 @@
             &::before {
                 position: absolute;
                 inset: -1px;
-                border: 2px solid transparent;
+                border: 1px solid transparent;
                 border-radius: @border-radius-md;
                 pointer-events: none;
                 content: '';
@@ -273,34 +301,4 @@
     &-confirm-delete-icon {
         color: var(--orange-6);
     }
-}
-
-.bg-custom-scrollbar::-webkit-scrollbar {
-    position: absolute;
-    inset: 0;
-    width: 11px;
-    height: 12px;
-}
-
-.bg-custom-scrollbar::-webkit-scrollbar-corner {
-    background-color: transparent;
-}
-
-.bg-custom-scrollbar::-webkit-scrollbar-thumb {
-    min-height: 24px;
-    background: transparent;
-    background-clip: padding-box;
-    border: 2px solid transparent;
-    border-radius: 6px;
-}
-
-.bg-custom-scrollbar:hover::-webkit-scrollbar-thumb:hover {
-    background: var(--gray-4);
-    background-clip: content-box;
-}
-
-.bg-custom-scrollbar:hover::-webkit-scrollbar-thumb {
-    background: var(--gray-4);
-    background-clip: padding-box;
-    border: 2px solid transparent;
 }

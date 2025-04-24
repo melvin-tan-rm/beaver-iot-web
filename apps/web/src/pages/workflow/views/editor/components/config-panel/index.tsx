@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useRef, useState } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { Panel, useReactFlow } from '@xyflow/react';
 import cls from 'classnames';
 import { isEqual, isEmpty, cloneDeep } from 'lodash-es';
@@ -233,7 +233,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                         />
                     </div>
                 </div>
-                <div className="ms-workflow-panel-config-body">
+                <div className="ms-workflow-panel-config-body ms-perfect-scrollbar">
                     {/* <div className="ms-common-form-items">
                         {commonFormItems.map(props => (
                             <Controller<CommonFormDataProps>

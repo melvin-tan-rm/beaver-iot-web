@@ -1,4 +1,15 @@
-.@{prefix}-code-editor-config {
-    width: 100%;
-    height: 240px;
+.ms-code-editor {
+    &-header {
+        & &__title {
+            .@{mui-prefix}FormControl-root {
+                margin: 0;
+
+                .@{mui-prefix}-focused {
+                    .@{mui-prefix}OutlinedInput-notchedOutline {
+                        box-shadow: unset;
+                    }
+                }
+            }
+        }
+    }
 }

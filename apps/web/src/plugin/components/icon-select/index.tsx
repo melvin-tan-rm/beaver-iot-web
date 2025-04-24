@@ -52,6 +52,11 @@ const IconSelect = (props: any) => {
                     </MenuItem>
                 );
             }}
+            MenuProps={{
+                classes: {
+                    paper: 'ms-icon-select-menu-paper',
+                },
+            }}
         />
     );
 };
