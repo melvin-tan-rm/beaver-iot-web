@@ -143,6 +143,25 @@ const useFlowStore = create(
                 {} as FlowStore['nodeConfigs'],
             );
 
+            // Mock data
+            // result.mqtt = {
+            //     ...basicNodeConfigs.mqtt,
+            //     schema: {
+            //         properties: {
+            //             // @ts-ignore
+            //             topic: {
+            //                 name: 'topic',
+            //                 type: 'string',
+            //                 required: true,
+            //                 displayName: 'Topic',
+            //                 uiComponentGroup: 'Topic Subscription',
+            //                 uiComponent: 'mqttTopicInput',
+            //             },
+            //         },
+            //     },
+            // };
+
+            // console.log('node configs', { nodeConfigs, basicNodeConfigs, result });
             set({ nodeConfigs: result });
         },
         setLogPanelMode: logPanelMode => set({ logPanelMode }),

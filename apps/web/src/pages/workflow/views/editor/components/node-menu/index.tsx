@@ -4,6 +4,7 @@ import { Menu, MenuItem, type MenuProps } from '@mui/material';
 import { useDebounceFn } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { nodeCategoryConfigs, type NodeConfigItemType } from '@/pages/workflow/config';
+import { NodeAvatar } from '@/pages/workflow/components';
 import useFlowStore from '../../store';
 import useInteractions, { type AddNodeClosestPayloadParam } from '../../hooks/useInteractions';
 import './style.less';
@@ -142,9 +143,12 @@ const NodeMenu = ({
                                 handleClick(e, menu.type);
                             }}
                         >
-                            <span className="icon" style={{ backgroundColor: menu.iconBgColor }}>
-                                {menu.icon}
-                            </span>
+                            <NodeAvatar
+                                name={menu.nodeName}
+                                type={menu.type}
+                                icon={menu.icon}
+                                iconBgColor={menu.iconBgColor}
+                            />
                             <span className="title">{menu.nodeName}</span>
                         </MenuItem>
                     )),

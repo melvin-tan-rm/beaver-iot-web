@@ -7,6 +7,7 @@ import { Stack, IconButton, Divider } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { useI18n, useStoreShallow } from '@milesight/shared/src/hooks';
 import { CloseIcon, PlayArrowIcon, HelpIcon } from '@milesight/shared/src/components';
+import { NodeAvatar } from '@/pages/workflow/components';
 import { Tooltip } from '@/components';
 import useFlowStore from '../../store';
 import useWorkflow from '../../hooks/useWorkflow';
@@ -168,12 +169,12 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                             spacing={1}
                             sx={{ flex: 1, width: 0, alignItems: 'center' }}
                         >
-                            <span
-                                className="icon"
-                                style={{ backgroundColor: nodeConfig?.iconBgColor }}
-                            >
-                                {nodeConfig?.icon}
-                            </span>
+                            <NodeAvatar
+                                name={nodeConfig?.label || ''}
+                                type={nodeConfig?.type}
+                                icon={nodeConfig?.icon}
+                                iconBgColor={nodeConfig?.iconBgColor}
+                            />
                             <Controller
                                 key="nodeName"
                                 name="nodeName"

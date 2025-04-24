@@ -399,12 +399,9 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
                                                     }}
                                                     value={expressionValue?.value}
                                                     onChange={val => {
-                                                        let value: string | boolean = !isNil(val)
+                                                        const value: string | boolean = !isNil(val)
                                                             ? val
                                                             : '';
-                                                        if (detail?.type === 'BOOLEAN') {
-                                                            value = val === 'true';
-                                                        }
 
                                                         replaceCondition(
                                                             index,
