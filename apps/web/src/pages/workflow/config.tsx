@@ -43,6 +43,34 @@ export const nodeCategoryConfigs: Record<WorkflowNodeCategoryType, NodeCategoryC
 };
 
 /**
+ * Node param type
+ *
+ * Attention: The param type only used in the front-end to match different data generation methods
+ *
+ * @template static - The static param will always exist when the node is in workflow
+ * @template url - The url param will be passed to the downstream node when the url is
+ * entered, the format is: `string`
+ * @template object - It is a dynamic param, and the value will be passed to the
+ * downstream node when the data is not empty, the format is:
+ * `Record<string, string>`
+ * @template objectArray - It is a dynamic param, and the value will be passed to the
+ * downstream node, the format is:
+ * `{ identify?: string; name: string; type: string }[]`
+ * @template entities - The entity param will be passed to the downstream node when the
+ * entity is selected, the format is: `string[]`
+ * @template objectEntities - The entity param will be passed to the downstream node when
+ * the entity is selected, the format is:
+ * `{ [entityKey: string]: string }`
+ */
+export type NodeParamValueType =
+    | 'static'
+    | 'url'
+    | 'object'
+    | 'objectArray'
+    | 'entities'
+    | 'objectEntities';
+
+/**
  * Node config item type
  */
 export type NodeConfigItemType = {
@@ -80,10 +108,25 @@ export type NodeConfigItemType = {
     testable?: boolean;
     /**
      * The keys that can be used in test input
+     * @deprecated Use `testInputs` instead
      */
     testInputKeys?: {
         key: string;
         type: 'object' | 'array' | 'string';
+    }[];
+
+    /**
+     * The params definition that can be used in single node test
+     */
+    testInputs?: {
+        /** Test input param key */
+        key: string;
+        /** Param path in parameters */
+        path?: string | string[];
+        /** Test param value type */
+        type: 'string' | 'array' | 'object';
+        /** Pre-defined simulated data */
+        mocks?: any[];
     }[];
     /**
      * The keys that can be referenced in downstream node
@@ -97,24 +140,8 @@ export type NodeConfigItemType = {
     outputs?: {
         /** Output param key */
         key: string;
-        /**
-         * Output param type
-         * @template static - The static param will always exist when the node is in workflow
-         * @template url - The url param will be passed to the downstream node when the url is
-         * entered, the format is: `string`
-         * @template object - It is a dynamic param, and the value will be passed to the
-         * downstream node when the data is not empty, the format is:
-         * `Record<string, string>`
-         * @template objectArray - It is a dynamic param, and the value will be passed to the
-         * downstream node, the format is:
-         * `{ identify?: string; name: string; type: string }[]`
-         * @template entities - The entity param will be passed to the downstream node when the
-         * entity is selected, the format is: `string[]`
-         * @template objectEntities - The entity param will be passed to the downstream node when
-         * the entity is selected, the format is:
-         * `{ [entityKey: string]: string }`
-         */
-        type: 'static' | 'url' | 'object' | 'objectArray' | 'entities' | 'objectEntities';
+        /** Output param type */
+        type: NodeParamValueType;
         /** Output param value type */
         // valueType?: 'string' | 'long' | 'number' | 'boolean' | 'array' | 'object';
         valueType?: EntityValueDataType;
@@ -122,8 +149,12 @@ export type NodeConfigItemType = {
         path?: string | string[];
         /** Custom output param label */
         label?: string;
-        /** Output param description */
-        // desc?: string;
+        /**
+         * Output param testable
+         *
+         * @description If `false`, the param will not be displayed in the workflow test input
+         */
+        testable?: boolean;
         /** I18n key for param description */
         descIntlKey?: string;
     }[];
@@ -154,12 +185,12 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <InputIcon />,
         iconBgColor: '#3491FA',
         category: 'entry',
-        testInputKeys: [
-            {
-                key: 'entityConfigs',
-                type: 'array',
-            },
-        ],
+        // testInputKeys: [
+        //     {
+        //         key: 'entityConfigs',
+        //         type: 'array',
+        //     },
+        // ],
         outputs: [
             {
                 key: 'entityConfigs',
@@ -175,12 +206,6 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <HearingIcon />,
         iconBgColor: '#3491FA',
         category: 'entry',
-        testInputKeys: [
-            {
-                key: 'entities',
-                type: 'array',
-            },
-        ],
         outputs: [
             {
                 key: 'entities',
@@ -234,6 +259,7 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
                 label: 'Topic',
                 type: 'static',
                 valueType: 'STRING',
+                testable: false,
                 descIntlKey: 'workflow.editor.output_desc_mqtt_topic',
             },
             {
@@ -267,16 +293,16 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <SettingsEthernetIcon />,
         iconBgColor: '#26A69A',
         category: 'action',
-        testInputKeys: [
-            {
-                key: 'inputArguments',
-                type: 'object',
-            },
-        ],
         outputs: [
             {
                 key: 'payload',
                 type: 'objectArray',
+            },
+        ],
+        testInputs: [
+            {
+                key: 'inputArguments',
+                type: 'object',
             },
         ],
     },
@@ -287,12 +313,6 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <EntityIcon />,
         iconBgColor: '#26A69A',
         category: 'action',
-        testInputKeys: [
-            {
-                key: 'exchangePayload',
-                type: 'object',
-            },
-        ],
         outputs: [
             {
                 key: 'exchangePayload',
@@ -307,12 +327,6 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <RoomServiceIcon />,
         iconBgColor: '#26A69A',
         category: 'action',
-        testInputKeys: [
-            {
-                key: 'serviceInvocationSetting.serviceParams',
-                type: 'object',
-            },
-        ],
         outputs: [
             {
                 key: 'payload',
@@ -327,12 +341,6 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <FactCheckIcon />,
         iconBgColor: '#26A69A',
         category: 'action',
-        testInputKeys: [
-            {
-                key: 'entities',
-                type: 'array',
-            },
-        ],
         outputs: [
             {
                 key: 'entities',
@@ -347,7 +355,7 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <EmailIcon />,
         iconBgColor: '#7E57C2',
         category: 'external',
-        testInputKeys: [
+        testInputs: [
             {
                 key: 'content',
                 type: 'string',
@@ -361,7 +369,7 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <WebhookIcon />,
         iconBgColor: '#7E57C2',
         category: 'external',
-        testInputKeys: [
+        testInputs: [
             {
                 key: 'inputArguments',
                 type: 'object',
@@ -395,6 +403,20 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
                 descIntlKey: 'workflow.editor.output_desc_response_code',
             },
         ],
+        testInputs: [
+            {
+                key: 'header',
+                type: 'object',
+            },
+            {
+                key: 'params',
+                type: 'object',
+            },
+            {
+                key: 'body',
+                type: 'object',
+            },
+        ],
     },
     output: {
         type: 'output',
@@ -403,6 +425,12 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         icon: <OutputIcon />,
         iconBgColor: '#7E57C2',
         category: 'external',
+        testInputs: [
+            {
+                key: 'outputVariables',
+                type: 'object',
+            },
+        ],
     },
 };
 

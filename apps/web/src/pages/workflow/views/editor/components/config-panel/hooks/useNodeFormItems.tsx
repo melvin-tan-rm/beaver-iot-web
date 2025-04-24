@@ -302,6 +302,8 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                             }
                             case 'mqttTopicInput': {
                                 formItem.render = ({ field: { onChange, value } }) => {
+                                    // TODO: Replace with a real topic prefix
+                                    const topicPrefix = 'beaver-iot/$username/';
                                     return (
                                         <ActionInput
                                             // size="small"
@@ -310,8 +312,7 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                             required={required}
                                             value={value}
                                             onChange={onChange}
-                                            // TODO: Replace with a real topic prefix
-                                            startAdornment={<>Prefix-</>}
+                                            startAdornment={topicPrefix}
                                             endAdornment={
                                                 <IconButton
                                                     aria-label="copy text"

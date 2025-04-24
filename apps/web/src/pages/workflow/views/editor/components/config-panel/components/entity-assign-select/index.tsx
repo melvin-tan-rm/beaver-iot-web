@@ -3,7 +3,7 @@ import { Button, IconButton } from '@mui/material';
 import { isEqual, isNil } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { DeleteOutlineIcon, AddIcon, CloseIcon } from '@milesight/shared/src/components';
+import { AddIcon, CloseIcon } from '@milesight/shared/src/components';
 import useWorkflow from '../../../../hooks/useWorkflow';
 import { DEFAULT_BOOLEAN_DATA_ENUMS } from '../../../../constants';
 import EntitySelect, { type EntitySelectProps } from '../entity-select';
