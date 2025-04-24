@@ -1,7 +1,4 @@
-import { useLayoutEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import cls from 'classnames';
-import { useRequest } from 'ahooks';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
 import { Paper, Typography, Button, Box } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -11,8 +8,7 @@ import {
     TOKEN_CACHE_KEY,
     REGISTERED_KEY,
 } from '@milesight/shared/src/utils/storage';
-import { GradientBgContainer } from '@/components';
-import { globalAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
+import { globalAPI, awaitWrap, isRequestSuccess } from '@/services/http';
 import useFormItems, { type FormDataProps } from '../useFormItems';
 import './style.less';
 
@@ -20,32 +16,32 @@ export default () => {
     const navigate = useNavigate();
 
     // ---------- Register Judge ----------
-    const [registered, setRegistered] = useState(false);
-    const [loading, setLoading] = useState<boolean>();
+    // const [registered, setRegistered] = useState(false);
+    // const [loading, setLoading] = useState<boolean>();
 
-    useRequest(
-        async () => {
-            setLoading(true);
+    // useRequest(
+    //     async () => {
+    //         setLoading(true);
 
-            const [error, resp] = await awaitWrap(globalAPI.getUserStatus());
+    //         const [error, resp] = await awaitWrap(globalAPI.getUserStatus());
 
-            setLoading(false);
-            if (error || !isRequestSuccess(resp)) return;
-            const isInit = !!getResponseData(resp)?.init;
+    //         setLoading(false);
+    //         if (error || !isRequestSuccess(resp)) return;
+    //         const isInit = !!getResponseData(resp)?.init;
 
-            setRegistered(isInit);
-            iotLocalStorage.setItem(REGISTERED_KEY, isInit);
-        },
-        {
-            debounceWait: 300,
-        },
-    );
+    //         setRegistered(isInit);
+    //         iotLocalStorage.setItem(REGISTERED_KEY, isInit);
+    //     },
+    //     {
+    //         debounceWait: 300,
+    //     },
+    // );
 
     // If you have registered an account, the login page is automatically redirected
-    useLayoutEffect(() => {
-        if (!registered) return;
-        navigate('/auth/login', { replace: true });
-    }, [registered, navigate]);
+    // useLayoutEffect(() => {
+    //     if (!registered) return;
+    //     navigate('/auth/login', { replace: true });
+    // }, [registered, navigate]);
 
     // ---------- Form data processing ----------
     const { getIntlText } = useI18n();
@@ -73,47 +69,33 @@ export default () => {
     };
 
     return (
-        <GradientBgContainer>
-            <Box
-                component="form"
-                onSubmit={handleSubmit(onSubmit)}
-                className="ms-view-register ms-gradient-background"
-            >
-                <Paper
-                    className={cls('ms-auth-container', {
-                        hidden: loading !== false || registered,
-                    })}
-                    elevation={3}
+        <Box
+            component="form"
+            onSubmit={handleSubmit(onSubmit)}
+            className="ms-view-register ms-gradient-background"
+        >
+            <Paper className="ms-auth-container" elevation={3}>
+                <div className="ms-auth-logo">
+                    <Logo />
+                </div>
+                <Typography align="center" variant="body2" color="textSecondary">
+                    {getIntlText('common.message.register_helper_text')}
+                </Typography>
+                <div className="ms-auth-form">
+                    {formItems.map(props => (
+                        <Controller<FormDataProps> key={props.name} {...props} control={control} />
+                    ))}
+                </div>
+                <Button
+                    fullWidth
+                    type="submit"
+                    sx={{ mt: 2.5, textTransform: 'none' }}
+                    variant="contained"
+                    className="ms-auth-submit"
                 >
-                    <div className="ms-auth-logo">
-                        <Logo />
-                    </div>
-                    {/* <Typography variant="h5" align="center">
-                    {getIntlText('common.document.title')}
-                </Typography> */}
-                    <Typography align="center" variant="body2" color="textSecondary">
-                        {getIntlText('common.message.register_helper_text')}
-                    </Typography>
-                    <div className="ms-auth-form">
-                        {formItems.map(props => (
-                            <Controller<FormDataProps>
-                                key={props.name}
-                                {...props}
-                                control={control}
-                            />
-                        ))}
-                    </div>
-                    <Button
-                        fullWidth
-                        type="submit"
-                        sx={{ mt: 2.5, textTransform: 'none' }}
-                        variant="contained"
-                        className="ms-auth-submit"
-                    >
-                        {getIntlText('common.button.confirm')}
-                    </Button>
-                </Paper>
-            </Box>
-        </GradientBgContainer>
+                    {getIntlText('common.button.confirm')}
+                </Button>
+            </Paper>
+        </Box>
     );
 };

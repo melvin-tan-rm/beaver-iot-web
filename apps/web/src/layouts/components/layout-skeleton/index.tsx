@@ -29,16 +29,18 @@ function LayoutSkeleton() {
     const renderLeftSideSkeleton = useMemoizedFn(() => {
         // left sidebar skeleton number
         const sideTopLeft = Array.from({ length: 7 });
-        let singleSkeleton = <CusSkeleton />;
-        if (!collapsed) {
-            singleSkeleton = (
-                <div className="ms-skeleton-left-collapsed-left">
+        return sideTopLeft.map((value: unknown, index: number) => {
+            return collapsed ? (
+                // eslint-disable-next-line react/no-array-index-key
+                <CusSkeleton key={index} />
+            ) : (
+                // eslint-disable-next-line react/no-array-index-key
+                <div key={index} className="ms-skeleton-left-collapsed-left">
                     <CusSkeleton />
                     <CusSkeleton />
                 </div>
             );
-        }
-        return sideTopLeft.map(() => singleSkeleton);
+        });
     });
 
     const renderBottomLeftSideSkeleton = useMemoizedFn(() => {
@@ -61,12 +63,8 @@ function LayoutSkeleton() {
     const leftSkeleton = useMemo(() => {
         return (
             <>
-                <div>
-                    <div>
-                        <Logo className="ms-skeleton-left-logo" mini={collapsed} />
-                    </div>
-                    {renderLeftSideSkeleton()}
-                </div>
+                <Logo className="ms-skeleton-left-logo" mini={collapsed} />
+                <div>{renderLeftSideSkeleton()}</div>
                 <div>{renderBottomLeftSideSkeleton()}</div>
             </>
         );
@@ -77,8 +75,9 @@ function LayoutSkeleton() {
         const sideTop = Array.from({ length: 7 });
         return (
             <div>
-                {sideTop.map(() => (
-                    <CusSkeleton />
+                {sideTop.map((value: unknown, index: number) => (
+                    // eslint-disable-next-line react/no-array-index-key
+                    <CusSkeleton key={index} />
                 ))}
                 <CusSkeleton />
             </div>

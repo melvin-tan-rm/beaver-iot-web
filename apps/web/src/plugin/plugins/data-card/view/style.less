@@ -17,6 +17,8 @@
     }
 
     &-card {
+        --title-font-size: clamp(14px, min(6.67cqw, 12.5cqh), 32px);
+
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -47,16 +49,16 @@
             display: flex;
             align-items: center;
             margin-bottom: @margin-xxs;
-        }
 
-        &__header svg, 
-        &__title {
-            font-size: clamp(14px, min(6.67cqw, 12.5cqh), 32px);
+            svg {
+                margin-right: @margin-xxs;
+                font-size: calc(var(--title-font-size) * 1.4);
+            }
         }
 
         &__title {
             max-width: calc(100% - 28px);
-            margin-left: @margin-xxs;
+            font-size: var(--title-font-size);
             font-weight: @font-weight-regular;
             // .text-size(@font-size-base);
             color: var(--text-color-secondary);

@@ -149,8 +149,11 @@ input.@{mui-prefix}InputBase-input {
 
 .@{mui-prefix}Dialog-container {
     .@{mui-prefix}Paper-root.@{mui-prefix}Dialog-paper {
-        min-width: 444px; // all dialog min width
         border-radius: @border-radius-md;
+
+        .@{mui-prefix}DialogContent-root {
+            min-width: 444px; // all dialog min width
+        }
     }
 }
 
@@ -232,9 +235,9 @@ input.@{mui-prefix}InputBase-input {
 }
 
 label.@{mui-prefix}FormControlLabel-root {
-    display: flex;
-    flex-direction: column-reverse;
-    align-items: flex-start;
+    // display: flex;
+    // flex-direction: column-reverse;
+    // align-items: flex-start;
     margin-left: 0;
 
     & > div {

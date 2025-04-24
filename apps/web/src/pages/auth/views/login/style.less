@@ -18,8 +18,11 @@
         width: 444px;
         padding: 48px;
         border-radius: @border-radius-md;
-        box-shadow: unset;
         transform: translate(-50%, -50%);
+
+        &.@{mui-prefix}Paper-root {
+            box-shadow: unset;
+        }
 
         &.hidden {
             display: none;
@@ -38,7 +41,7 @@
     .@{prefix}-auth-form {
         margin: 40px 0 @margin-md;
 
-        .@{mui-prefix}FormControl-root {
+        div.@{mui-prefix}FormControl-root {
             margin-bottom: @margin-xl;
         }
     }

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useMemoizedFn } from 'ahooks';
-import Chart from 'chart.js/auto';
+import Chart, { type TooltipItem } from 'chart.js/auto';
 import { useBasicChartEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
@@ -128,6 +128,20 @@ const View = (props: ViewProps) => {
                                     boxHeight: 10,
                                     useBorderRadius: true,
                                     borderRadius: 0.5,
+                                },
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label(tooltipItem: TooltipItem<'bar'>) {
+                                        const { datasetIndex, parsed } = tooltipItem || {};
+                                        const { x } = parsed || {};
+                                        const { rawData } = entity?.[datasetIndex] || {};
+                                        const { entityValueAttribute } = rawData || {};
+                                        const { unit } = entityValueAttribute || {};
+
+                                        if (!unit) return x;
+                                        return `${x}${unit}`;
+                                    },
                                 },
                             },
                         } as any,
