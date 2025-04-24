@@ -112,7 +112,7 @@ const ChartEntityPosition: React.FC<ChartEntityPositionProps> = ({
                         />
                         <Select
                             title={getIntlText('dashboard.label.y_axis')}
-                            sx={{ width: '90px' }}
+                            sx={{ width: '100px' }}
                             options={positionOptions}
                             defaultValue={POSITION_AXIS.LEFT}
                             value={item.position}
