@@ -1,5 +1,5 @@
+import { apiOrigin } from '@milesight/shared/src/config';
 import { client, attachAPI, API_PREFIX } from './client';
-
 import { type UserType, type UserMenuType } from './user';
 
 export interface GlobalAPISchema extends APISchema {
@@ -70,15 +70,28 @@ export interface GlobalAPISchema extends APISchema {
         };
     };
 
-    fileUpload: {
+    /** Get upload configuration */
+    getUploadConfig: {
         request: {
-            file: File;
+            name?: string;
+            file_name: string;
+            description?: string;
         };
         response: {
-            originalname: string;
-            filename: string;
-            location: string;
+            key: string;
+            upload_url: string;
+            resource_url: string;
         };
+    };
+
+    /** Upload file */
+    fileUpload: {
+        request: {
+            url: string;
+            file: File;
+            mimeType: string;
+        };
+        response: unknown;
     };
 }
 
@@ -97,13 +110,22 @@ export default attachAPI<GlobalAPISchema>(client, {
         oauthRegister: `POST ${API_PREFIX}/user/register`,
         getUserStatus: `GET ${API_PREFIX}/user/status`,
         getUserInfo: `GET ${API_PREFIX}/user`,
-        fileUpload: {
-            method: 'POST',
-            // TODO: Replace with the actual upload path
-            path: '/mock/api/v1/files/upload',
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
+        getUploadConfig: `POST ${API_PREFIX}/resource/upload-config`,
+        async fileUpload(params, options) {
+            const { url, file, mimeType } = params;
+            const apiUrl = url.startsWith('http')
+                ? url
+                : `${API_PREFIX}${url.startsWith('/') ? '' : '/'}${url}`;
+
+            return client.request({
+                method: 'PUT',
+                url: apiUrl,
+                headers: {
+                    'Content-Type': mimeType,
+                },
+                data: file,
+                ...options,
+            });
         },
     },
 });

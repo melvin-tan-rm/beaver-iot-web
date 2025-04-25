@@ -3,9 +3,17 @@ import cls from 'classnames';
 import { useRequest, useUpdateEffect } from 'ahooks';
 import { FieldError } from 'react-hook-form';
 import { Button, IconButton, CircularProgress } from '@mui/material';
+import { apiOrigin } from '@milesight/shared/src/config';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { UploadFileIcon, ImageIcon, DeleteIcon } from '@milesight/shared/src/components';
-import { globalAPI, awaitWrap, pLimit, getResponseData, GlobalAPISchema } from '@/services/http';
+import {
+    globalAPI,
+    awaitWrap,
+    pLimit,
+    getResponseData,
+    isRequestSuccess,
+    API_PREFIX,
+} from '@/services/http';
 import Tooltip from '../tooltip';
 import useDropzone from './useDropzone';
 import { DEFAULT_MIN_SIZE, DEFAULT_MAX_SIZE, DEFAULT_PARALLEL_UPLOADING_FILES } from './constants';
@@ -106,16 +114,13 @@ type Props = UseDropzoneProps & {
     onChange?: (data: Props['value'], files?: null | UploadFile | UploadFile[]) => void;
 };
 
-const getFileJsonValue = (file: UploadFile) => {
-    const { name, size, path, url, preview } = file;
-    return {
-        name,
-        size,
-        path,
-        // lastModified,
-        url,
-        preview,
-    };
+// Generate full url for uploading file
+const genFullUrl = (path: string) => {
+    const origin = apiOrigin.endsWith('/') ? apiOrigin.slice(0, -1) : apiOrigin;
+
+    return path.startsWith('http')
+        ? path
+        : `${origin}${API_PREFIX}${path.startsWith('/') ? '' : '/'}${path}`;
 };
 
 const Upload: React.FC<Props> = ({
@@ -160,21 +165,32 @@ const Upload: React.FC<Props> = ({
     const [fileError, setFileError] = useState<FileError | null>();
     const { run: uploadFiles } = useRequest(
         async (files: UploadFile[]) => {
-            const limit = pLimit<GlobalAPISchema['fileUpload']['response'] | undefined>(parallel);
+            const limit = pLimit<{ resource: string } | undefined>(parallel);
             const uploadTasks = files.map(file =>
                 limit(async () => {
                     const [err, resp] = await awaitWrap(
+                        globalAPI.getUploadConfig({ file_name: file.name }),
+                    );
+                    const uploadConfig = getResponseData(resp);
+
+                    if (err || !uploadConfig || !isRequestSuccess(resp)) return;
+                    const resourceUrl = genFullUrl(uploadConfig.resource_url);
+                    const [uploadErr] = await awaitWrap(
                         globalAPI.fileUpload(
-                            { file },
-                            { signal: file.abortController?.signal, $ignoreError: true },
+                            {
+                                url: uploadConfig.upload_url,
+                                mimeType: file.type,
+                                file,
+                            },
+                            {
+                                $ignoreError: true,
+                                signal: file.abortController?.signal,
+                            },
                         ),
                     );
 
-                    if (err) return;
-
-                    // TODO: Replace with real response data
-                    return resp.data as unknown as GlobalAPISchema['fileUpload']['response'];
-                    // return getResponseData(resp);
+                    if (uploadErr) return;
+                    return { resource: resourceUrl };
                 }),
             );
 
@@ -185,11 +201,11 @@ const Upload: React.FC<Props> = ({
                     const item = result[index];
                     const isCanceled = file.status === UploadStatus.Canceled;
                     return Object.assign(file, {
-                        url: item?.location,
-                        progress: !isCanceled && item?.location ? 1 : undefined,
+                        url: item?.resource,
+                        progress: !isCanceled && item?.resource ? 1 : undefined,
                         status: isCanceled
                             ? UploadStatus.Canceled
-                            : item?.location
+                            : item?.resource
                               ? UploadStatus.Done
                               : UploadStatus.Error,
                         abortController: undefined,
@@ -320,13 +336,20 @@ const Upload: React.FC<Props> = ({
         let resultValues: Props['value'] = null;
 
         if (files?.length) {
+            resultValues = files?.map(file => {
+                const { name, size, path, url, preview } = file;
+                return {
+                    name,
+                    size,
+                    path,
+                    // lastModified,
+                    url,
+                    preview,
+                };
+            });
+
             if (!multiple) {
-                const file = files[0];
-                resultValues = getFileJsonValue(file);
-            } else {
-                resultValues = files?.map(file => {
-                    return getFileJsonValue(file);
-                });
+                resultValues = resultValues[0];
             }
         }
 
