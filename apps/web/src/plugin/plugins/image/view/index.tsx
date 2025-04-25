@@ -1,13 +1,9 @@
 import { useMemo, useState, useCallback, useEffect, memo } from 'react';
 import { useMemoizedFn } from 'ahooks';
-
 import { BrokenImageIcon } from '@milesight/shared/src/components';
-import { isURL } from '@milesight/shared/src/utils/validators/asserts';
-
-import { FileValueType } from '@/components/upload';
 import { entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import ws, { getExChangeTopic } from '@/services/ws';
-import { ImageDataType, ImageConfigType } from '../typings';
+import { ImageConfigType } from '../typings';
 
 import './style.less';
 
@@ -116,11 +112,8 @@ const View = (props: ViewProps) => {
         setImageFailed(false);
 
         if (
-            isURL(imageSrc, {
-                protocols: ['http', 'https'],
-                require_protocol: true,
-            }) ||
-            isBase64(imageSrc)
+            isBase64(imageSrc) ||
+            /(.?\/)+.+(\.(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif))$/i.test(imageSrc)
         ) {
             return imageSrc;
         }

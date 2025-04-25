@@ -3,7 +3,6 @@ import cls from 'classnames';
 import { useRequest, useUpdateEffect } from 'ahooks';
 import { FieldError } from 'react-hook-form';
 import { Button, IconButton, CircularProgress } from '@mui/material';
-import { apiOrigin } from '@milesight/shared/src/config';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { UploadFileIcon, ImageIcon, DeleteIcon } from '@milesight/shared/src/components';
 import {
@@ -116,11 +115,10 @@ type Props = UseDropzoneProps & {
 
 // Generate full url for uploading file
 const genFullUrl = (path: string) => {
-    const origin = apiOrigin.endsWith('/') ? apiOrigin.slice(0, -1) : apiOrigin;
-
+    // const origin = apiOrigin.endsWith('/') ? apiOrigin.slice(0, -1) : apiOrigin;
     return path.startsWith('http')
         ? path
-        : `${origin}${API_PREFIX}${path.startsWith('/') ? '' : '/'}${path}`;
+        : `${API_PREFIX}${path.startsWith('/') ? '' : '/'}${path}`;
 };
 
 const Upload: React.FC<Props> = ({
