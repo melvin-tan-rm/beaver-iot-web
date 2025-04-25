@@ -1,11 +1,9 @@
 import { useMemo, useState, useCallback, useEffect, memo } from 'react';
 import { useMemoizedFn } from 'ahooks';
-
 import { BrokenImageIcon } from '@milesight/shared/src/components';
-import { isURL } from '@milesight/shared/src/utils/validators/asserts';
-
 import { entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import ws, { getExChangeTopic } from '@/services/ws';
+import { ImageConfigType } from '../typings';
 
 import './style.less';
 
@@ -23,10 +21,7 @@ const isBase64 = (url: string): boolean => {
 };
 
 export interface ViewProps {
-    config: {
-        entity?: EntityOptionType;
-        label?: string;
-    };
+    config: ImageConfigType;
     configJson: {
         isPreview?: boolean;
     };
@@ -34,7 +29,7 @@ export interface ViewProps {
 
 const View = (props: ViewProps) => {
     const { config, configJson } = props;
-    const { entity, label } = config || {};
+    const { label, dataType, entity, file, url } = config || {};
     const { isPreview } = configJson || {};
 
     const [imageSrc, setImageSrc] = useState('');
@@ -57,24 +52,35 @@ const View = (props: ViewProps) => {
         }
 
         const entityStatus = getResponseData(res);
-        setImageSrc(entityStatus?.value || '');
+        setImageSrc(!entityStatus?.value ? '' : `${entityStatus.value}`);
     }, [entity]);
 
     /**
-     * Get the state of the selected entity
+     * Set image src based on dataType
      */
     useEffect(() => {
-        (async () => {
-            if (entity) {
-                requestEntityStatus();
-            } else {
-                /**
-                 * No entity, initialization data
-                 */
+        switch (dataType) {
+            case 'entity':
+                if (entity) {
+                    requestEntityStatus();
+                } else {
+                    /**
+                     * No entity, initialization data
+                     */
+                    setImageSrc('');
+                }
+                break;
+            case 'upload':
+                setImageSrc(file?.url || '');
+                break;
+            case 'url':
+                setImageSrc(url || '');
+                break;
+            default:
                 setImageSrc('');
-            }
-        })();
-    }, [entity, requestEntityStatus]);
+                break;
+        }
+    }, [dataType, entity, file, url, requestEntityStatus]);
 
     /**
      * webSocket subscription theme
@@ -106,11 +112,8 @@ const View = (props: ViewProps) => {
         setImageFailed(false);
 
         if (
-            isURL(imageSrc, {
-                protocols: ['http', 'https'],
-                require_protocol: true,
-            }) ||
-            isBase64(imageSrc)
+            isBase64(imageSrc) ||
+            /(.?\/)+.+(\.(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif))$/i.test(imageSrc)
         ) {
             return imageSrc;
         }

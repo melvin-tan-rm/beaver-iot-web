@@ -209,6 +209,15 @@
     "valid.input.value": "Input value: {0} only.",
     "valid.input.version": "The version number does not comply with the specification.",
     "valid.resp.at_least_one": "Please select at least one {1}.",
-    "common.label.data_source": "Data Source",
-    "valid_http_address": "Invalid address"
+    "valid_http_address": "Invalid address",
+    "common.label.uploading": "Uploading",
+    "common.message.click_to_upload_file": "Click here or drag file to this area to upload",
+    "common.message.upload_error_file_invalid_type": "File type must be {1}",
+    "common.message.upload_error_file_too_large": "File is larger than {1}",
+    "common.message.upload_error_file_too_small": "File is smaller than {1}",
+    "common.message.upload_error_too_many_files": "Too many files",
+    "common.message.upload_error_server_error": "Upload failed, please try again later",
+    "common.label.select_entity": "Select Entity",
+    "common.label.local_upload": "Local Upload",
+    "common.label.data_source": "Data Source"
 }
