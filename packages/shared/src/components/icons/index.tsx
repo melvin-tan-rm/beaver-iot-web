@@ -132,8 +132,11 @@ export {
     TuneOutlined as TuneOutlinedIcon,
     Image as ImageIcon,
     // ImageOutlined as ImageOutlinedIcon,
+    StarOutline as StarOutlinedIcon,
+    Star as StarIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';
+export * from './ant-icons';
 // Export all custom SVG Icon components
 export * from './components';

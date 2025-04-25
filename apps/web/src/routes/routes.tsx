@@ -229,7 +229,11 @@ const routes: RouteObjectType[] = [
         handle: {
             layout: 'blank',
         },
-        element: <Outlet />,
+        // element: <Outlet />,
+        async lazy() {
+            const { default: Component } = await import('@/pages/auth');
+            return { Component };
+        },
         ErrorBoundary,
         children: [
             {
