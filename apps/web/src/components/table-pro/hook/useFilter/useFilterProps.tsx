@@ -11,7 +11,6 @@ import { FilterDropdownFooter } from '../../components/filter-down/filterDown';
 const useFilterProps = () => {
     const { getIntlText } = useI18n();
     const searchInput = useRef<HTMLInputElement>(null);
-    const rangePicker = useRef<any>(null);
 
     /** assembly filterProps by filterSearchType */
     const getColumnFilterProps = useCallback(
@@ -26,8 +25,7 @@ const useFilterProps = () => {
             ) => {
                 if (visible) {
                     setTimeout(() => {
-                        searchInput?.current?.select();
-                        rangePicker?.current?.getRef()?.focus();
+                        searchInput?.current?.focus();
                     }, 50);
                 }
             };
@@ -49,13 +47,23 @@ const useFilterProps = () => {
                     switch (type) {
                         case 'search': {
                             return (
-                                <div className="ms-table-pro-popover-filter-searchInput">
+                                <div
+                                    className="ms-table-pro-popover-filter-searchInput"
+                                    onKeyDown={e => {
+                                        e.stopPropagation();
+                                    }}
+                                >
                                     <OutlinedInput
                                         inputRef={searchInput}
                                         placeholder={getIntlText('common.label.search')}
                                         value={selectedKeys?.[0]}
                                         onChange={e => {
                                             setSelectedKeys(e.target.value ? [e.target.value] : []);
+                                        }}
+                                        onKeyDown={event => {
+                                            if (event.key === 'Enter') {
+                                                confirm();
+                                            }
                                         }}
                                     />
                                 </div>

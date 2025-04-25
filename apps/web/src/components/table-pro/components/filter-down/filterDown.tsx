@@ -124,6 +124,7 @@ const FilterDropdown = (props: FilterDropdownProps) => {
         internalTriggerFilter(filteredKeys);
     };
 
+    // Popover close event
     const onClose = () => {
         triggerVisible(false);
         if (!isEqual(wrapStringListType(propFilteredKeys), filteredKeys)) {
@@ -134,6 +135,7 @@ const FilterDropdown = (props: FilterDropdownProps) => {
     /** click reset event */
     const onReset = () => {
         triggerVisible(false);
+        setFilteredKeys([]);
         internalTriggerFilter([]);
     };
 
@@ -283,14 +285,13 @@ const FilterDropdown = (props: FilterDropdownProps) => {
     return (
         <div className="ms-table-pro-columns-header">
             <div className="'ms-table-pro-columns-header-label">{column.headerName}</div>
-            <IconButton
-                aria-label="filter"
+            <div
                 onClick={() => {
                     triggerVisible(true);
                 }}
             >
                 {getFilterIcon()}
-            </IconButton>
+            </div>
             <Popover
                 open={visible}
                 anchorEl={openColumn}

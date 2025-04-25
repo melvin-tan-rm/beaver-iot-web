@@ -107,7 +107,7 @@ const useColumns = <T extends TableRowDataType>({
             },
             {
                 field: 'unit',
-                headerName: getIntlText('entity.label.unit'),
+                headerName: getIntlText('common.label.unit'),
                 align: 'left',
                 headerAlign: 'left',
                 flex: 1,

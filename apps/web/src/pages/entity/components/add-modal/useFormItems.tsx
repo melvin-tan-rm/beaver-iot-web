@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { type ControllerProps, type FieldValues } from 'react-hook-form';
-import { TextField, FormControl, FormHelperText } from '@mui/material';
+import { TextField, FormControl, FormHelperText, Box } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Select } from '@milesight/shared/src/components';
 import {
@@ -179,6 +179,16 @@ const useFormItems = () => {
                                 sx: { my: 1.5 },
                             }}
                             value={(value as FormDataProps['valueType']) || ''}
+                            renderValue={() => {
+                                const label = entityValueTypeOptions.find(
+                                    v => v.value === value,
+                                )?.label;
+                                return (
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                        {label ? getIntlText(label) : value}
+                                    </Box>
+                                );
+                            }}
                             onChange={onChange}
                         />
                     );
@@ -479,7 +489,7 @@ const useFormItems = () => {
                             fullWidth
                             type="text"
                             autoComplete="off"
-                            label={getIntlText('entity.label.unit')}
+                            label={getIntlText('common.label.unit')}
                             error={!!error}
                             disabled={disabled}
                             helperText={error ? error.message : null}

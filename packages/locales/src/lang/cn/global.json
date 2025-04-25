@@ -213,5 +213,5 @@
     "valid.input.version": "版本号不符合规范。",
     "valid.input.string_letter_num_special_char": "仅允许大写字母、小写字母、数字和_-.。",
     "valid.resp.at_least_one": "请至少选择一个{1}。",
-    "valid_http_address": "无效地址"
+    "common.invalid_http_address": "不合法的地址"
 }
