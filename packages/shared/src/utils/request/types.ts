@@ -46,7 +46,10 @@ export type RequestFunction<P = Record<string, any> | void, R = any> = (
     options?: RequestFunctionOptions,
 ) => Promise<R>;
 
-export type APIConfig = RequestPath | RequestOptions | RequestFunction;
+export type APIConfig<P = Record<string, any> | void, R = any> =
+    | RequestPath
+    | RequestOptions
+    | RequestFunction<P, R>;
 
 // export type HeaderHandler = (config?: AxiosRequestConfig) => Promise<AxiosRequestHeaders>;
 export type ConfigHandler = (config: AxiosRequestConfig) => Promise<AxiosRequestConfig>;
@@ -61,7 +64,10 @@ export type ResponseHandler<T = AxiosResponse> = (resp: T) => T;
 
 export type AttachAPIOptions<T extends APISchema> = {
     apis: {
-        [K in keyof GetConfigSignature<T>]: APIConfig;
+        [K in keyof GetConfigSignature<T>]: APIConfig<
+            GetConfigSignature<T>[K]['request'],
+            AxiosResponse<ApiResponse<GetConfigSignature<T>[K]['response']>>
+        >;
     };
 
     /** Response callback */
