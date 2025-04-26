@@ -1,8 +1,10 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { Autocomplete, TextField, AutocompleteProps, Chip, Tooltip } from '@mui/material';
+import { useI18n } from '@milesight/shared/src/hooks';
 import { EntityList, EntityPaper, EntityPopper } from './components';
 import { useSelectValue } from './hooks';
 import type { EntitySelectComponentProps, EntitySelectValueType } from './types';
+import './style.less';
 
 /**
  * EntitySelect Component
@@ -40,9 +42,12 @@ const EntitySelect = <
         entityOptionMap,
         getOptionValue,
         size = 'medium',
+        noOptionsText,
+        loadingText,
         ...rest
     } = props;
 
+    const { getIntlText } = useI18n();
     // State to manage the open/close status of the select menu
     const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
     const open = Boolean(anchorEl);
@@ -223,6 +228,20 @@ const EntitySelect = <
             slotProps={slotProps}
             loading={loading}
             filterOptions={filterOptions}
+            noOptionsText={
+                noOptionsText || (
+                    <div className="ms-entity-select__empty">
+                        {getIntlText('common.label.no_options')}
+                    </div>
+                )
+            }
+            loadingText={
+                loadingText || (
+                    <div className="ms-entity-select__loading">
+                        {getIntlText('common.label.loading')}
+                    </div>
+                )
+            }
         />
     );
 };

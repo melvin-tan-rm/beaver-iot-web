@@ -7,6 +7,7 @@ import {
     Person4Icon,
     EntityFilledIcon,
     WorkflowIcon,
+    SettingsIcon,
 } from '@milesight/shared/src/components';
 import { PERMISSIONS } from '@/constants';
 import ErrorBoundaryComponent from './error-boundary';
@@ -213,6 +214,21 @@ const routes: RouteObjectType[] = [
         ErrorBoundary,
     },
     {
+        path: '/credentials',
+        handle: {
+            get title() {
+                return intl.get('common.label.setting');
+            },
+            icon: <SettingsIcon fontSize="small" />,
+            permissions: PERMISSIONS.CREDENTIAL_MODULE,
+        },
+        async lazy() {
+            const { default: Component } = await import('@/pages/credentials');
+            return { Component };
+        },
+        ErrorBoundary,
+    },
+    {
         path: '/403',
         handle: {
             title: '403',
@@ -229,7 +245,11 @@ const routes: RouteObjectType[] = [
         handle: {
             layout: 'blank',
         },
-        element: <Outlet />,
+        // element: <Outlet />,
+        async lazy() {
+            const { default: Component } = await import('@/pages/auth');
+            return { Component };
+        },
         ErrorBoundary,
         children: [
             {

@@ -16,7 +16,7 @@ export const errorIntlKey: Record<ErrorCodeType, string> = {
     [FILE_TOO_LARGE]: 'common.message.upload_error_file_too_large',
     [FILE_TOO_SMALL]: 'common.message.upload_error_file_too_small',
     [TOO_MANY_FILES]: 'common.message.upload_error_too_many_files',
-    [SERVER_ERROR]: 'common.message.upload_error_server',
+    [SERVER_ERROR]: 'common.message.upload_error_server_error',
 };
 
 /**
@@ -72,7 +72,9 @@ export const getTooSmallRejectionErr = (minSize: number): FileError => {
 export const TOO_MANY_FILES_REJECTION: FileError = {
     code: TOO_MANY_FILES,
     // message: 'Too many files',
-    message: intl.get(errorIntlKey[TOO_MANY_FILES]),
+    get message() {
+        return intl.get(errorIntlKey[TOO_MANY_FILES]);
+    },
 };
 
 /**

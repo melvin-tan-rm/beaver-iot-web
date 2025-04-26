@@ -27,7 +27,7 @@ declare type ApiResponse<T = any> = {
 declare type APISchema = Record<
     string,
     {
-        request: Record<string, any> | void;
+        request: Record<string, any> | any;
         response: Record<string, any> | any;
     }
 >;
