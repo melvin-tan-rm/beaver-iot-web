@@ -21,7 +21,6 @@
                     "valueType": "object",
                     "getDataUrl": "",
                     "componentProps": {
-                        "size": "small",
                         "entityType": ["SERVICE", "PROPERTY"],
                         "entityAccessMods": ["W", "RW"],
                         "entityExcludeChildren": true
@@ -40,7 +39,6 @@
                     "key": "label",
                     "defaultValue": "Label",
                     "componentProps": {
-                        "size": "small",
                         "inputProps": {
                             "maxLength": 35
                         }
@@ -57,9 +55,6 @@
                     "key": "icon",
                     "style": "flex: 1;padding-right: 12px;",
                     "defaultValue": "AdsClickIcon",
-                    "componentProps": {
-                        "size": "small"
-                    },
                     "rules": {
                         "required": true
                     }
@@ -68,10 +63,7 @@
                     "type": "iconColorSelect",
                     "key": "bgColor",
                     "style": "flex: 1;",
-                    "defaultValue": "#8E66FF",
-                    "componentProps": {
-                        "size": "small"
-                    }
+                    "defaultValue": "#8E66FF"
                 }
             ]
         }

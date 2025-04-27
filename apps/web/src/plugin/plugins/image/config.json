@@ -19,7 +19,6 @@
                     "style": "width: 100%",
                     "defaultValue": "Title",
                     "componentProps": {
-                        "size": "small",
                         "inputProps": {
                             "maxLength": 35
                         }

@@ -18,7 +18,6 @@
                     "key": "entity",
                     "style": "width: 100%",
                     "componentProps": {
-                        "size": "small",
                         "entityType": ["PROPERTY"],
                         "entityValueTypes": ["STRING", "LONG", "DOUBLE", "BOOLEAN"]
                     },
@@ -38,7 +37,6 @@
                     "style": "width: 100%",
                     "defaultValue": "Text",
                     "componentProps": {
-                        "size": "small",
                         "inputProps": {
                             "maxLength": 35
                         }
@@ -55,9 +53,6 @@
                     "key": "fontSize",
                     "style": "width: 100%",
                     "defaultValue": "14",
-                    "componentProps": {
-                        "size": "small"
-                    },
                     "rules": {
                         "valueAsNumber": true,
                         "min": {

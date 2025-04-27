@@ -66,7 +66,6 @@ const useFormData = (value: any, config: CustomComponentProps) => {
                                 required: true,
                             },
                             componentProps: {
-                                size: 'small',
                                 entityType: ['PROPERTY'],
                                 entityValueTypes: ['STRING', 'LONG', 'DOUBLE', 'BOOLEAN'],
                             },

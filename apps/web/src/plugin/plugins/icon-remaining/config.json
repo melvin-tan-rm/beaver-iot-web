@@ -25,7 +25,6 @@
                     "style": "width: 100%",
                     "getDataUrl": "",
                     "componentProps": {
-                        "size": "small",
                         "entityType": ["PROPERTY"],
                         "entityValueTypes": ["LONG", "DOUBLE"]
                     },
@@ -44,7 +43,6 @@
                     "style": "width: 100%",
                     "defaultValue": "Title",
                     "componentProps": {
-                        "size": "small",
                         "inputProps": {
                             "maxLength": 35
                         }
@@ -60,9 +58,6 @@
                     "title": "Time",
                     "key": "time",
                     "style": "width: 100%;",
-                    "componentProps": {
-                        "size": "small"
-                    },
                     "defaultValue": 86400000
                 }
             ]
@@ -75,9 +70,6 @@
                     "title": "metrics",
                     "key": "metrics",
                     "style": "width: 100%;",
-                    "componentProps": {
-                        "size": "small"
-                    },
                     "defaultValue": "LAST",
                     "filters": ["SUM", "COUNT"]
                 }
@@ -91,18 +83,12 @@
                     "type": "iconSelect",
                     "key": "icon",
                     "style": "flex: 1;padding-right: 12px;",
-                    "componentProps": {
-                        "size": "small"
-                    },
                     "defaultValue": "DeleteIcon"
                 },
                 {
                     "type": "iconColorSelect",
                     "key": "iconColor",
                     "style": "flex: 1;",
-                    "componentProps": {
-                        "size": "small"
-                    },
                     "defaultValue": "#8E66FF"
                 }
             ]

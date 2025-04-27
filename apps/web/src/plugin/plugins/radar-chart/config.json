@@ -20,7 +20,6 @@
                     "getDataUrl": "",
                     "valueType": "array",
                     "componentProps": {
-                        "size": "small",
                         "entityType": ["PROPERTY"],
                         "entityValueTypes": ["LONG", "DOUBLE"]
                     },
@@ -39,7 +38,6 @@
                     "style": "width: 100%",
                     "defaultValue": "Title",
                     "componentProps": {
-                        "size": "small",
                         "inputProps": {
                             "maxLength": 15
                         }
@@ -55,9 +53,6 @@
                     "title": "Time",
                     "key": "time",
                     "style": "width: 100%;",
-                    "componentProps": {
-                        "size": "small"
-                    },
                     "defaultValue": 86400000
                 }
             ]
@@ -70,9 +65,6 @@
                     "title": "metrics",
                     "key": "metrics",
                     "style": "width: 100%;",
-                    "componentProps": {
-                        "size": "small"
-                    },
                     "defaultValue": "LAST",
                     "filters": ["SUM", "COUNT"]
                 }

@@ -17,7 +17,6 @@
                     "key": "title",
                     "defaultValue": "Title",
                     "componentProps": {
-                        "size": "small",
                         "inputProps": {
                             "maxLength": 35
                         }
@@ -53,10 +52,7 @@
                     "title": "Time",
                     "key": "time",
                     "defaultValue": 86400000,
-                    "style": "width: 100%;",
-                    "componentProps": {
-                        "size": "small"
-                    }
+                    "style": "width: 100%;"
                 }
             ]
         }

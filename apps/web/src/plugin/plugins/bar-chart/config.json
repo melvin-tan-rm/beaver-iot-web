@@ -20,7 +20,6 @@
                     "getDataUrl": "",
                     "valueType": "array",
                     "componentProps": {
-                        "size": "small",
                         "entityType": ["PROPERTY", "EVENT"],
                         "entityValueTypes": ["LONG", "DOUBLE"]
                     },
@@ -38,7 +37,6 @@
                     "key": "title",
                     "defaultValue": "Title",
                     "componentProps": {
-                        "size": "small",
                         "inputProps": {
                             "maxLength": 35
                         }
@@ -54,9 +52,6 @@
                     "title": "Time",
                     "key": "time",
                     "style": "width: 100%;",
-                    "componentProps": {
-                        "size": "small"
-                    },
                     "defaultValue": 86400000
                 }
             ]
