@@ -1,4 +1,5 @@
 {
+    "$schema": "../../schema.json",
     "type": "gaugeChart",
     "name": "Gauge",
     "class": "data_chart",

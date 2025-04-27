@@ -22,6 +22,7 @@ export default React.memo(({ data }: IProps) => {
         type,
         status = 'SUCCESS',
         timeCost,
+        labelIntlKey,
     } = useMemo(() => {
         const { type, config, status, name, timeCost } = data || {};
         const { icon, iconBgColor, labelIntlKey } = config || {};
@@ -54,7 +55,10 @@ export default React.memo(({ data }: IProps) => {
                     className="ms-header-type__avatar"
                 />
                 <div className="ms-header-type__name">
-                    <Tooltip autoEllipsis title={name || ''} />
+                    <Tooltip
+                        autoEllipsis
+                        title={(labelIntlKey && getIntlText(labelIntlKey)) || name || ''}
+                    />
                 </div>
             </div>
             {!isNil(timeCost) && (

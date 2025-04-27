@@ -1,4 +1,5 @@
 {
+    "$schema": "../../schema.json",
     "type": "pieChart",
     "name": "Pie",
     "class": "data_chart",

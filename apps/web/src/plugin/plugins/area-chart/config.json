@@ -1,4 +1,5 @@
 {
+    "$schema": "../../schema.json",
     "type": "areaChart",
     "name": "Area",
     "class": "data_chart",

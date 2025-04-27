@@ -54,6 +54,12 @@ const SyncedDevice: React.FC<IProps> = props => {
                 search: keyword,
                 pageSize,
                 pageNumber: page + 1,
+                filterCondition: (item, search: string) => {
+                    return [item?.name, item.eui]
+                        .map(v => v?.toLocaleLowerCase() || '')
+                        .filter(i => !!i)
+                        .some(value => value.includes(search.toLocaleLowerCase()));
+                },
             });
             return objectToCamelCase(pageData);
         },

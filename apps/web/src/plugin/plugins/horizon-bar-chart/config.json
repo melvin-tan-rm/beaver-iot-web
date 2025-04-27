@@ -1,4 +1,5 @@
 {
+    "$schema": "../../schema.json",
     "type": "horizonBarChart",
     "name": "Horizon Bar",
     "class": "data_chart",

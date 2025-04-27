@@ -1,4 +1,5 @@
 {
+    "$schema": "../../schema.json",
     "type": "lineChart",
     "name": "Line",
     "class": "data_chart",
