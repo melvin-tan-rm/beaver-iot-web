@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, useCallback } from 'react';
 import { Panel, useReactFlow } from '@xyflow/react';
 import cls from 'classnames';
 import { isEqual, isEmpty, cloneDeep } from 'lodash-es';
@@ -7,6 +7,7 @@ import { Stack, IconButton, Divider } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { useI18n, useStoreShallow } from '@milesight/shared/src/hooks';
 import { CloseIcon, PlayArrowIcon, HelpIcon } from '@milesight/shared/src/components';
+import { NodeAvatar } from '@/pages/workflow/components';
 import { Tooltip } from '@/components';
 import useFlowStore from '../../store';
 import useWorkflow from '../../hooks/useWorkflow';
@@ -15,6 +16,7 @@ import { DEFAULT_VALUES } from './constants';
 import {
     useCommonFormItems,
     useNodeFormItems,
+    useExtraRender,
     type CommonFormDataProps,
     type NodeFormDataProps,
 } from './hooks';
@@ -134,6 +136,18 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
         { wait: 50 },
     );
 
+    // ---------- Process Extra Render ----------
+    const { renderFormGroupAction, renderFormGroupContent, renderFormGroupFooter } =
+        useExtraRender();
+    const handleFormGroupAction = useCallback(
+        (data: Record<string, any>) => {
+            Object.keys(data).forEach(key => {
+                setValue(key, data[key]);
+            });
+        },
+        [setValue],
+    );
+
     // ---------- Show Test Drawer ----------
     const { checkNodesData } = useValidate();
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -155,12 +169,12 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                             spacing={1}
                             sx={{ flex: 1, width: 0, alignItems: 'center' }}
                         >
-                            <span
-                                className="icon"
-                                style={{ backgroundColor: nodeConfig?.iconBgColor }}
-                            >
-                                {nodeConfig?.icon}
-                            </span>
+                            <NodeAvatar
+                                name={nodeConfig?.label || ''}
+                                type={nodeConfig?.type}
+                                icon={nodeConfig?.icon}
+                                iconBgColor={nodeConfig?.iconBgColor}
+                            />
                             <Controller
                                 key="nodeName"
                                 name="nodeName"
@@ -252,22 +266,30 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                                     // eslint-disable-next-line react/no-array-index-key
                                     key={`${groupName || ''}-${index}`}
                                 >
-                                    {!!groupName && (
-                                        <div className="ms-node-form-group-title">
-                                            {groupName}
-                                            {helperText && (
-                                                <Tooltip
-                                                    enterDelay={300}
-                                                    enterNextDelay={300}
-                                                    title={helperText}
-                                                >
-                                                    <IconButton size="small">
-                                                        <HelpIcon sx={{ fontSize: 16 }} />
-                                                    </IconButton>
-                                                </Tooltip>
-                                            )}
-                                        </div>
-                                    )}
+                                    <div className="ms-node-form-group-header">
+                                        {!!groupName && (
+                                            <div className="ms-node-form-group-title">
+                                                {groupName}
+                                                {helperText && (
+                                                    <Tooltip
+                                                        enterDelay={300}
+                                                        enterNextDelay={300}
+                                                        title={helperText}
+                                                    >
+                                                        <IconButton size="small">
+                                                            <HelpIcon sx={{ fontSize: 16 }} />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                )}
+                                            </div>
+                                        )}
+                                        {renderFormGroupAction({
+                                            node: finalSelectedNode,
+                                            formGroupName: groupName || '',
+                                            formGroupIndex: index,
+                                            onChange: handleFormGroupAction,
+                                        })}
+                                    </div>
                                     <div className="ms-node-form-group-item">
                                         {formItems?.map(props => {
                                             const { shouldRender, ...restProps } = props;
@@ -291,10 +313,18 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                                                 />
                                             );
                                         })}
+                                        {renderFormGroupContent({
+                                            node: finalSelectedNode,
+                                            formGroupName: groupName || '',
+                                            formGroupIndex: index,
+                                            isLastFormGroup: index === nodeFormGroups.length - 1,
+                                            data: latestFormData,
+                                        })}
                                     </div>
                                 </div>
                             ),
                         )}
+                        {renderFormGroupFooter({ node: finalSelectedNode, data: latestFormData })}
                     </div>
                 </div>
                 <TestDrawer

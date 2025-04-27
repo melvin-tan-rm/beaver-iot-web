@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useReactFlow, getIncomers, getOutgoers, type IsValidConnection } from '@xyflow/react';
-import { uniqBy, omit, cloneDeep, pick, isEmpty, isObject } from 'lodash-es';
+import { uniqBy, omit, cloneDeep, pick, get as getObjectValue, isEmpty, isObject } from 'lodash-es';
 import { useI18n, useStoreShallow } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 import { basicNodeConfigs } from '@/pages/workflow/config';
@@ -13,8 +13,9 @@ import {
     NODE_MIN_NUMBER_LIMIT,
     ENTRY_NODE_NUMBER_LIMIT,
     DEFAULT_BOOLEAN_DATA_ENUMS,
+    URL_PARAM_PATTERN,
 } from '../constants';
-import { genRefParamKey, isRefParamKey } from '../helper';
+import { genRefParamKey, isRefParamKey, getUrlParams } from '../helper';
 import { getParallelInfo } from './utils';
 
 export type NodeParamType = {
@@ -246,31 +247,78 @@ const useWorkflow = () => {
 
             const incomeNodes = getUpstreamNodes(currentNode, nodes, edges);
             const result = incomeNodes
-                .map(({ id, type, data }) => {
+                .map(({ id: nodeId, type: nodeType, data }) => {
                     const { nodeName, parameters } = data || {};
-                    const config = nodeConfigs[type!];
-                    const outputKeys = config?.outputKeys;
+                    const config = nodeConfigs[nodeType!];
+                    const outputConfigs = config?.outputs;
+
+                    if (!outputConfigs?.length) return;
                     const paramData: NodeParamType = {
-                        nodeId: id,
+                        nodeId,
                         nodeName,
-                        nodeType: type,
+                        nodeType,
                         nodeLabel: config?.labelIntlKey
                             ? getIntlText(config.labelIntlKey)
                             : config.label || '',
                         outputs: [],
                     };
 
-                    if (isEmpty(parameters) || !outputKeys?.length) return;
-                    const outputArgs = pick(parameters, outputKeys);
+                    outputConfigs.forEach(({ key, path, type, valueType, label }) => {
+                        const outputData = getObjectValue(parameters, path || key);
 
-                    Object.entries(outputArgs).forEach(([param, data]) => {
-                        switch (param) {
-                            // Data Type: { identify?: string; name: string; type: string }[]
-                            case 'entityConfigs':
-                            case 'payload':
-                            case 'message': {
-                                if (!Array.isArray(data)) return;
-                                data.forEach((item: Record<string, any>) => {
+                        switch (type) {
+                            case 'static': {
+                                const typeOption = entityTypeOptions.find(
+                                    it => it.value === valueType,
+                                );
+                                paramData.outputs.push({
+                                    name: label || key,
+                                    type: valueType,
+                                    typeLabel: !typeOption?.label
+                                        ? valueType
+                                        : getIntlText(typeOption.label),
+                                    key: genRefParamKey(nodeId, key),
+                                });
+                                break;
+                            }
+                            case 'url': {
+                                if (!outputData) return;
+
+                                const params = getUrlParams(outputData);
+                                if (!params.length) return;
+
+                                params.forEach(param => {
+                                    const typeOption = entityTypeOptions.find(
+                                        it => it.value === valueType,
+                                    );
+                                    paramData.outputs.push({
+                                        name: `${label || key}.${param}`,
+                                        type: valueType,
+                                        typeLabel: !typeOption?.label
+                                            ? valueType
+                                            : getIntlText(typeOption.label),
+                                        key: genRefParamKey(nodeId, `${key}.${param}`),
+                                    });
+                                });
+                                break;
+                            }
+                            case 'object': {
+                                // Data Format: { [key: string]: any }
+                                if (!outputData || !isObject(outputData)) return;
+
+                                Object.entries(outputData).forEach(([key, value]) => {
+                                    if (!key || !value || isRefParamKey(value)) return;
+                                    paramData.outputs.push({
+                                        name: key,
+                                        key: genRefParamKey(nodeId, key),
+                                    });
+                                });
+                                break;
+                            }
+                            case 'objectArray': {
+                                // Data Format: { identify?: string; name: string; type: string }[]
+                                if (!Array.isArray(outputData)) return;
+                                outputData.forEach((item: Record<string, any>) => {
                                     if (!item?.name || !item?.type) return;
                                     const enums =
                                         (item.type as EntityValueDataType) !== 'BOOLEAN'
@@ -288,19 +336,21 @@ const useWorkflow = () => {
                                         typeLabel: !typeOption?.label
                                             ? item.type
                                             : getIntlText(typeOption.label),
-                                        key:
-                                            param === 'entityConfigs'
-                                                ? genRefParamKey(id, item.identify)
-                                                : genRefParamKey(id, item.name),
+                                        key: genRefParamKey(
+                                            nodeId,
+                                            item.identify && nodeType === 'trigger'
+                                                ? item.identify
+                                                : item.name,
+                                        ),
                                         enums,
                                     });
                                 });
                                 break;
                             }
-                            // Data Type: string[]
                             case 'entities': {
-                                if (!Array.isArray(data)) return;
-                                data.forEach(item => {
+                                // Data Format: string[]
+                                if (!Array.isArray(outputData)) return;
+                                outputData.forEach(item => {
                                     if (!item) return;
                                     const entity = getEntityDetail(item);
                                     const type = entity?.entity_value_type;
@@ -309,13 +359,14 @@ const useWorkflow = () => {
                                         it => it.value === type,
                                     );
 
+                                    if (!entity) return;
                                     paramData.outputs.push({
                                         name: entity?.entity_name || item,
                                         type,
                                         typeLabel: !typeOption?.label
                                             ? type
                                             : getIntlText(typeOption.label),
-                                        key: genRefParamKey(id, item),
+                                        key: genRefParamKey(nodeId, item),
                                         enums: !isEmpty(enums)
                                             ? Object.entries(enums)?.map(([key, value]) => ({
                                                   key,
@@ -331,16 +382,11 @@ const useWorkflow = () => {
                                 });
                                 break;
                             }
-                            // Data Type: Record<string, string>
-                            case 'inputArguments':
-                            case 'exchangePayload':
-                            case 'serviceInvocationSetting': {
-                                if (param === 'serviceInvocationSetting') {
-                                    data = data.serviceParams;
-                                }
-                                if (!isObject(data)) return;
-                                Object.entries(data).forEach(([key, value]) => {
-                                    if (!key || !value || isRefParamKey(value)) return;
+                            case 'objectEntities': {
+                                // Data Format: { [entityKey: string]: string }
+                                if (!outputData || isEmpty(outputData)) return;
+                                Object.entries(outputData).forEach(([key, value]) => {
+                                    if (!key || !value || isRefParamKey(value as string)) return;
                                     const entity = getEntityDetail(key);
 
                                     if (!entity) return;
@@ -356,7 +402,7 @@ const useWorkflow = () => {
                                         typeLabel: !typeOption?.label
                                             ? type
                                             : getIntlText(typeOption.label),
-                                        key: genRefParamKey(id, key),
+                                        key: genRefParamKey(nodeId, key),
                                         enums: !isEmpty(enums)
                                             ? Object.entries(enums)?.map(([key, value]) => ({
                                                   key,
@@ -377,9 +423,11 @@ const useWorkflow = () => {
                             }
                         }
                     });
+
                     return paramData;
                 })
                 .filter(item => !!item);
+
             const flattenResult = result.reduce((acc, item) => {
                 acc.push(
                     ...item.outputs.map(output => ({
@@ -451,6 +499,39 @@ const useWorkflow = () => {
         [getNodes, getEdges, getUpstreamNodes, getIntlText],
     );
 
+    // Check if the Output node complies with the following rules:
+    // 1. The entry node must be Trigger
+    // 2. There is only one Output node
+    const checkOutputNodeLimit = useCallback(
+        (nodes?: WorkflowNode[]) => {
+            nodes = nodes || getNodes();
+            const hasTriggerNode = nodes.some(node => node.type === 'trigger');
+            const outputNodes = nodes.filter(node => node.type === 'output');
+
+            if (!hasTriggerNode) {
+                if (outputNodes.length) {
+                    toast.error({
+                        key: 'output-node-limit',
+                        content: getIntlText('workflow.valid.output_node_limit_has_trigger_tip'),
+                    });
+                    return false;
+                }
+                return true;
+            }
+
+            if (outputNodes.length > 1) {
+                toast.error({
+                    key: 'output-node-limit',
+                    content: getIntlText('workflow.valid.output_node_limit_count_tip'),
+                });
+                return false;
+            }
+
+            return true;
+        },
+        [getNodes, getIntlText],
+    );
+
     // Check if the workflow nodes&edges is valid
     const checkWorkflowValid = useCallback(
         (nodes: WorkflowNode[], edges: WorkflowEdge[]) => {
@@ -458,10 +539,17 @@ const useWorkflow = () => {
             if (checkFreeNodeLimit(nodes, edges)) return false;
             if (!checkNestedParallelLimit(nodes, edges)) return false;
             if (nodes.some(node => !checkParallelLimit(node.id, undefined, edges))) return false;
+            if (!checkOutputNodeLimit(nodes)) return false;
 
             return true;
         },
-        [checkNodeNumberLimit, checkFreeNodeLimit, checkNestedParallelLimit, checkParallelLimit],
+        [
+            checkNodeNumberLimit,
+            checkFreeNodeLimit,
+            checkNestedParallelLimit,
+            checkParallelLimit,
+            checkOutputNodeLimit,
+        ],
     );
 
     // Update node status

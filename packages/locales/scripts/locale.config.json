@@ -18,5 +18,11 @@
         "outputPath": "./.export",
         "errorKeyRule": "error.http.",
         "errorMapOutputPath": "./src/error_keys_map.json"
+    },
+    "phrase": {
+        "baseUrl": "https://api.phrase.com/v2/",
+        "jobTarget": ".export/new_texts.json",
+        "importTarget": "./import/",
+        "defaultLocale": "en"
     }
 }

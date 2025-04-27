@@ -24,6 +24,12 @@ const useNodeTypes = () => {
                             <Handle type="source" position={Position.Right} nodeProps={props} />,
                         ];
                     }
+
+                    if (type === 'output') {
+                        return [
+                            <Handle type="target" position={Position.Left} nodeProps={props} />,
+                        ];
+                    }
                 };
 
                 acc[type] = props => (

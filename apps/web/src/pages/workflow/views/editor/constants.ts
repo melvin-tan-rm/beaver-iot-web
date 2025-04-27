@@ -144,3 +144,8 @@ export const conditionOperatorMap: Partial<
  * The node property keys that cannot be modified in advance mode and final data
  */
 export const FROZEN_NODE_PROPERTY_KEYS: string[] = ['selected', 'dragging'];
+
+/**
+ * Pattern for URL parameters
+ */
+export const URL_PARAM_PATTERN = /\{([^{}]+)\}/g;

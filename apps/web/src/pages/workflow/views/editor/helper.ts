@@ -5,7 +5,7 @@ import {
     checkRangeLength,
     type Validate,
 } from '@milesight/shared/src/utils/validators';
-import { PARAM_REFERENCE_PATTERN } from './constants';
+import { PARAM_REFERENCE_PATTERN, URL_PARAM_PATTERN } from './constants';
 
 /**
  * Node Data Validators Config
@@ -80,4 +80,22 @@ export const normalizeEdges = (edges: WorkflowEdge[]) => {
         edge.data = omitBy(edge.data, (_, key) => checkPrivateProperty(key));
         return edge;
     });
+};
+
+/**
+ * Extract path parameters from the URL
+ * @param url - The URL string to parse (e.g. '/users/{userId}/posts/{postId}')
+ * @returns An array of parameter names found in the URL (e.g. ['userId', 'postId'])
+ */
+export const getUrlParams = (url?: string) => {
+    const result: string[] = [];
+    if (!url) return result;
+
+    let match;
+    // eslint-disable-next-line no-cond-assign
+    while ((match = URL_PARAM_PATTERN.exec(url)) !== null) {
+        result.push(match[1]);
+    }
+
+    return result;
 };
