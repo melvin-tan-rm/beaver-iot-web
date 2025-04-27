@@ -1,12 +1,29 @@
 .@{prefix}-entity-assign-select {
+    padding: @padding-md;
+    background-color: var(--component-background-gray);
+    border-radius: @border-radius-base;
+
     &-item {
         display: flex;
         gap: @margin-xs;
-        align-items: flex-end;
-        margin-bottom: @margin-md;
+        align-items: center;
+        margin-bottom: @margin-sm;
 
-        div.@{mui-prefix}FormControl-root {
-            margin: 0;
+        &:not(&:first-child) {
+            .@{mui-prefix}FormControl-root {
+                .@{mui-prefix}FormLabel-root {
+                    display: none;
+                }
+            }
+        }
+
+        .@{mui-prefix}FormControl-root {
+            margin: 0 !important;
+
+            .@{mui-prefix}InputBase-root {
+                background-color: var(--component-background);
+                border-radius: @border-radius-base;
+            }
         }
 
         > .@{prefix}-param-input-select,
@@ -14,15 +31,18 @@
             flex: 1;
         }
 
-        .@{prefix}-param-input-select,
-        .@{mui-prefix}Autocomplete-root {
-            div.@{mui-prefix}FormControl-root {
-                margin-bottom: 0;
+        .btn-delete {
+            align-self: end;
+            color: var(--icon-color-gray-light);
+
+            &:hover {
+                color: var(--icon-color-gray-secondary);
             }
         }
+    }
 
-        & > .@{mui-prefix}ButtonBase-root {
-            margin-bottom: @margin-xxs;
-        }
+    .btn-add {
+        min-width: auto;
+        padding: @padding-xxs @padding-xs;
     }
 }

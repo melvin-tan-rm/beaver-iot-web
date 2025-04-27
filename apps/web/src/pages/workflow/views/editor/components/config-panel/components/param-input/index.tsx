@@ -8,23 +8,18 @@ import {
     Select,
     Button,
     IconButton,
-    FormControl,
     MenuItem,
     TextField,
-    Switch,
-    InputLabel,
+    Checkbox,
     type SelectProps,
     type TextFieldProps,
+    type CheckboxProps,
 } from '@mui/material';
 import { isEqual, cloneDeep } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { genRandomString } from '@milesight/shared/src/utils/tools';
-import {
-    DeleteOutlineIcon,
-    AddIcon,
-    KeyboardArrowDownIcon,
-} from '@milesight/shared/src/components';
+import { AddIcon, CloseIcon, KeyboardArrowDownIcon } from '@milesight/shared/src/components';
 import './style.less';
 import { entityTypeOptions } from '@/constants';
 
@@ -35,17 +30,53 @@ export type ParamInputValueType = NonNullable<
 };
 
 export interface ParamInputProps {
+    /**
+     * Is required
+     */
     required?: boolean;
+    /**
+     * Is disabled
+     */
     disabled?: boolean;
+    /**
+     * Default value
+     */
     defaultValue?: ParamInputValueType[];
-    showSwitch?: boolean;
-    typeSelectProps?: SelectProps;
-    nameInputProps?: TextFieldProps;
+    /**
+     * Show required option
+     */
+    showRequired?: boolean;
+    /**
+     * Is show `Other` option in type select
+     */
     isOutput?: boolean;
+    /**
+     * The maximum number of items that can be added
+     */
     maxAddNum?: number;
+    /**
+     * The properties of the select component
+     */
+    selectProps?: SelectProps;
+    /**
+     * The properties of the input component
+     */
+    inputProps?: TextFieldProps;
+    /**
+     * The properties of the checkbox component
+     */
+    checkboxProps?: CheckboxProps & { label?: string };
+    /**
+     * The value of the component
+     */
     value?: ParamInputValueType[];
+    /**
+     * Callback function when the value changes
+     */
     onChange?: (value: ParamInputValueType[]) => void;
 }
+
+const MAX_VALUE_LENGTH = 10;
 
 const DEFAULT_EMPTY_VALUE: ParamInputValueType = {
     identify: '',
@@ -55,12 +86,12 @@ const DEFAULT_EMPTY_VALUE: ParamInputValueType = {
 const ParamInput: React.FC<ParamInputProps> = ({
     required,
     disabled,
-    defaultValue,
-    showSwitch,
-    typeSelectProps,
-    nameInputProps,
+    showRequired,
     isOutput = false,
-    maxAddNum,
+    maxAddNum = MAX_VALUE_LENGTH,
+    inputProps,
+    selectProps,
+    checkboxProps,
     ...props
 }) => {
     const { getIntlText } = useI18n();
@@ -88,7 +119,7 @@ const ParamInput: React.FC<ParamInputProps> = ({
 
     const disabledAdd = useMemo(() => {
         return maxAddNum !== undefined && Number.isInteger(maxAddNum) && list.length >= maxAddNum;
-    }, [list]);
+    }, [list, maxAddNum]);
 
     const handleAdd = () => {
         if (disabledAdd) return;
@@ -115,24 +146,31 @@ const ParamInput: React.FC<ParamInputProps> = ({
         <div className="ms-param-input">
             {list.map((item, index) => (
                 <div className="ms-param-input-item" key={getKey(index) || index}>
-                    <FormControl required={required} disabled={disabled}>
+                    <div className="ms-param-input-name">
+                        <div className="label">
+                            {inputProps?.label || getIntlText('common.label.name')}
+                        </div>
                         <TextField
+                            slotProps={{
+                                input: { size: 'small' },
+                            }}
                             required={required}
-                            label={nameInputProps?.label || getIntlText('common.label.name')}
+                            disabled={disabled}
                             value={item.name}
                             onChange={e =>
                                 handleChange(index, item, 'name', e.target.value as string)
                             }
                         />
-                    </FormControl>
-                    <FormControl required={required} disabled={disabled}>
-                        <InputLabel id="param-input-type-label">
-                            {typeSelectProps?.label || getIntlText('common.label.type')}
-                        </InputLabel>
+                    </div>
+                    <div className="ms-param-input-type">
+                        <div className="label">
+                            {selectProps?.label || getIntlText('common.label.type')}
+                        </div>
                         <Select
                             notched
+                            fullWidth
+                            size="small"
                             labelId="param-input-type-label"
-                            label={typeSelectProps?.label || getIntlText('common.label.type')}
                             IconComponent={KeyboardArrowDownIcon}
                             value={item.type}
                             onChange={e =>
@@ -145,38 +183,30 @@ const ParamInput: React.FC<ParamInputProps> = ({
                                 </MenuItem>
                             ))}
                         </Select>
-                    </FormControl>
-                    {showSwitch && (
-                        <FormControl
-                            className="ms-param-output-switch"
-                            required={required}
-                            disabled={disabled}
-                        >
-                            <Switch
-                                checked={!!item?.context}
-                                onChange={e =>
-                                    handleChange(
-                                        index,
-                                        item,
-                                        'context',
-                                        e.target.checked as boolean,
-                                    )
-                                }
+                    </div>
+                    {showRequired && (
+                        <div className="ms-param-input-required">
+                            <div className="label">
+                                {checkboxProps?.label || getIntlText('common.label.required')}
+                            </div>
+                            <Checkbox
+                                size="small"
+                                disabled={disabled}
+                                checked={!!item?.required}
+                                onChange={e => {
+                                    handleChange(index, item, 'required', e.target.checked);
+                                }}
                             />
-                            <span className="ms-param-output-switch-label">
-                                {getIntlText('workflow.node.trigger_switch_label')}
-                            </span>
-                        </FormControl>
+                        </div>
                     )}
-                    <IconButton onClick={() => remove(index)}>
-                        <DeleteOutlineIcon />
+                    <IconButton className="btn-delete" onClick={() => remove(index)}>
+                        <CloseIcon sx={{ fontSize: 18 }} />
                     </IconButton>
                 </div>
             ))}
             <Button
-                fullWidth
-                variant="outlined"
-                className="ms-param-input-add-btn"
+                variant="text"
+                className="btn-add"
                 startIcon={<AddIcon />}
                 disabled={disabledAdd}
                 onClick={handleAdd}

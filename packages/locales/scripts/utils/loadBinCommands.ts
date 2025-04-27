@@ -11,10 +11,13 @@ export function loadBinCommands(program: Command, config: ConfigType) {
     const { importCommand } = require(join(__dirname, '../commands/import.ts'));
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { exportCommand } = require(join(__dirname, '../commands/export.ts'));
-    const commonConfig = get(config, 'common');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { phraseCommand } = require(join(__dirname, '../commands/phrase.ts'));
 
+    const commonConfig = get(config, 'common');
     // eslint-disable-next-line
     importCommand(program, Object.assign({}, commonConfig, config['import']));
     // eslint-disable-next-line
     exportCommand(program, Object.assign({}, commonConfig, config['export']));
+    phraseCommand(program, { ...commonConfig, ...config.phrase });
 }

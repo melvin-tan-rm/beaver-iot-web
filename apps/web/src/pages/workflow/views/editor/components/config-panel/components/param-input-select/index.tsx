@@ -1,4 +1,5 @@
 import { useLayoutEffect, useState, useRef, useCallback, useMemo } from 'react';
+import cls from 'classnames';
 import { isEmpty, isNil } from 'lodash-es';
 import { useControllableValue, useSize } from 'ahooks';
 import {
@@ -9,6 +10,7 @@ import {
     Divider,
     Menu,
     MenuItem,
+    type TextFieldProps,
     type PopoverProps,
 } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -18,7 +20,7 @@ import useWorkflow, {
     type FlattenNodeParamType,
 } from '@/pages/workflow/views/editor/hooks/useWorkflow';
 import { isRefParamKey } from '@/pages/workflow/views/editor/helper';
-import UpstreamNodeList from '../upstream-node-list';
+import UpstreamNodeList, { type UpstreamNodeListProps } from '../upstream-node-list';
 import './style.less';
 
 type ParamInputSelectValueType = string | boolean | undefined;
@@ -29,9 +31,16 @@ export interface ParamInputSelectProps {
     required?: boolean;
 
     /**
+     * The size of the input
+     */
+    size?: TextFieldProps['size'];
+
+    /**
      * Param Select Placeholder
      */
     placeholder?: string;
+
+    filter?: UpstreamNodeListProps['filter'];
 
     value?: ParamInputSelectValueType;
 
@@ -52,7 +61,9 @@ export interface ParamInputSelectProps {
 const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
     label,
     required = true,
+    size = 'medium',
     placeholder,
+    filter,
     valueType,
     enums,
     ...props
@@ -108,7 +119,7 @@ const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
                 <Divider
                     variant="middle"
                     orientation="vertical"
-                    sx={{ height: 16, marginLeft: 0.5 }}
+                    sx={{ height: 16, m: 0, ml: 0.5 }}
                 />,
             );
         }
@@ -184,7 +195,10 @@ const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
     }, [data, options, enums, isEnumValue]);
 
     return (
-        <div className="ms-param-input-select" ref={containerRef}>
+        <div
+            ref={containerRef}
+            className={cls('ms-param-input-select', { 'size-small': size === 'small' })}
+        >
             <TextField
                 fullWidth
                 color="primary"
@@ -199,6 +213,7 @@ const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
                 }
                 slotProps={{
                     input: {
+                        size,
                         readOnly: !!selectValue || isEnumValue,
                         endAdornment,
                     },
@@ -257,6 +272,7 @@ const ParamInputSelect: React.FC<ParamInputSelectProps> = ({
                 {...commonPopoverProps}
             >
                 <UpstreamNodeList
+                    filter={filter}
                     value={selectValue}
                     onChange={node => {
                         setFocused(false);

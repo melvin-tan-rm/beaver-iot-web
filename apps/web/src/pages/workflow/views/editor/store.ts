@@ -98,7 +98,7 @@ export interface FlowStore {
 
 const useFlowStore = create(
     immer<FlowStore>((set, get) => ({
-        nodeConfigs: pickBy(basicNodeConfigs, item => !item.isRemote) as FlowStore['nodeConfigs'],
+        nodeConfigs: basicNodeConfigs,
 
         testLogs: [],
 
@@ -124,7 +124,7 @@ const useFlowStore = create(
 
                     return {
                         type: config.name,
-                        label: config.title,
+                        label: config.title || config.name,
                         ...basicConfig,
                         category: cat,
                         testable: schema?.component?.testable,
@@ -143,6 +143,25 @@ const useFlowStore = create(
                 {} as FlowStore['nodeConfigs'],
             );
 
+            // Mock data
+            // result.mqtt = {
+            //     ...basicNodeConfigs.mqtt,
+            //     schema: {
+            //         properties: {
+            //             // @ts-ignore
+            //             topic: {
+            //                 name: 'topic',
+            //                 type: 'string',
+            //                 required: true,
+            //                 displayName: 'Topic',
+            //                 uiComponentGroup: 'Topic Subscription',
+            //                 uiComponent: 'mqttTopicInput',
+            //             },
+            //         },
+            //     },
+            // };
+
+            // console.log('node configs', { nodeConfigs, basicNodeConfigs, result });
             set({ nodeConfigs: result });
         },
         setLogPanelMode: logPanelMode => set({ logPanelMode }),

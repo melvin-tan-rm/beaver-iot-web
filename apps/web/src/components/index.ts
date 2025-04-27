@@ -34,4 +34,5 @@ export { default as PermissionControlDisabled } from './permission-control-disab
 export { default as PermissionControlResource } from './permission-control-resource';
 export { default as Upload, type FileValueType, type UploadFile } from './upload';
 export { default as ToggleRadio } from './toggle-radio';
+export { default as ActionInput } from './action-input';
 export { default as GradientBgContainer } from './gradient-bg-container';

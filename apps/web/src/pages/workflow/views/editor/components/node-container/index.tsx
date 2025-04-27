@@ -7,6 +7,7 @@ import { Menu, MenuItem } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { CheckCircleIcon, ErrorIcon, LoopIcon } from '@milesight/shared/src/components';
 import { Tooltip } from '@/components';
+import { NodeAvatar } from '@/pages/workflow/components';
 import useFlowStore from '../../store';
 import Handle from '../handle';
 import './style.less';
@@ -287,12 +288,12 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
                     ))}
                 </Menu>
                 <div className="ms-workflow-node-header">
-                    <span
-                        className="ms-workflow-node-icon"
-                        style={{ backgroundColor: iconBgColor }}
-                    >
-                        {icon}
-                    </span>
+                    <NodeAvatar
+                        name={nodeName || title}
+                        type={type}
+                        icon={icon}
+                        iconBgColor={iconBgColor}
+                    />
                     <Tooltip
                         autoEllipsis
                         className="ms-workflow-node-title"

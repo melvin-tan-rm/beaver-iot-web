@@ -4,6 +4,7 @@ import cls from 'classnames';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Tooltip } from '@/components';
 import { basicNodeConfigs, LogStatusMap } from '@/pages/workflow/config';
+import NodeAvatar from '@/pages/workflow/components/node-avatar';
 import type { AccordionLog } from '../../types';
 import './style.less';
 
@@ -18,6 +19,7 @@ export default React.memo(({ data }: IProps) => {
         icon,
         iconBgColor,
         name,
+        type,
         status = 'SUCCESS',
         timeCost,
     } = useMemo(() => {
@@ -28,6 +30,7 @@ export default React.memo(({ data }: IProps) => {
         return {
             status,
             name,
+            type,
             timeCost,
             icon: icon || result?.icon,
             iconBgColor: iconBgColor || result?.iconBgColor,
@@ -43,9 +46,13 @@ export default React.memo(({ data }: IProps) => {
     return (
         <div className="ms-accordion-header">
             <div className="ms-header-type">
-                <div className="ms-header-type__icon" style={{ backgroundColor: iconBgColor }}>
-                    {icon}
-                </div>
+                <NodeAvatar
+                    name={name || ''}
+                    type={type}
+                    icon={icon}
+                    iconBgColor={iconBgColor}
+                    className="ms-header-type__avatar"
+                />
                 <div className="ms-header-type__name">
                     <Tooltip autoEllipsis title={name || ''} />
                 </div>

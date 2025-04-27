@@ -21,13 +21,23 @@
                 opacity: 0.5;
             }
 
-            &.btn-add {
-                color: var(--text-color-main);
-            }
+            // &.btn-add {
+            //     color: var(--text-color-main);
+            // }
 
             &.active {
                 color: var(--text-color-main);
             }
         }
+    }
+}
+
+.@{prefix}-workflow-controls-tooltip-popper {
+    .@{mui-prefix}Tooltip-tooltip b {
+        display: inline-block;
+        padding: 0 @padding-xxs;
+        text-align: center;
+        background-color: var(--gray-color-8);
+        border-radius: 2px;
     }
 }

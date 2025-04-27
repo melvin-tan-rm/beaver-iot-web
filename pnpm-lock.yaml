@@ -243,6 +243,9 @@ importers:
       '@babel/core':
         specifier: ^7.22.10
         version: 7.25.2
+      '@milesight/scripts':
+        specifier: workspace:*
+        version: link:../scripts
       '@milesight/spec':
         specifier: workspace:*
         version: link:../spec
@@ -270,6 +273,9 @@ importers:
       '@types/lodash':
         specifier: ^4.14.187
         version: 4.17.7
+      axios:
+        specifier: ^1.7.7
+        version: 1.7.7
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
@@ -430,6 +436,9 @@ importers:
       material-ui-popup-state:
         specifier: ^5.3.3
         version: 5.3.3(@mui/material@6.1.0(@emotion/react@11.13.3(@types/react@18.3.5)(react@18.3.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@18.3.5)(react@18.3.1))(@types/react@18.3.5)(react@18.3.1))(@types/react@18.3.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.5)(react@18.3.1)
+      minimist:
+        specifier: ^1.2.8
+        version: 1.2.8
       qs:
         specifier: ^6.13.0
         version: 6.13.0
@@ -473,6 +482,9 @@ importers:
       '@types/lodash-es':
         specifier: ^4.17.12
         version: 4.17.12
+      '@types/minimist':
+        specifier: ^1.2.5
+        version: 1.2.5
       '@types/qs':
         specifier: ^6.9.15
         version: 6.9.15
