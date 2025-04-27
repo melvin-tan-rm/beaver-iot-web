@@ -9,7 +9,7 @@
     },
     "scripts": {
         "dev:apps": "pnpm --filter=@app/* -r run dev",
-        "dev:pkgs": "pnpm --filter=@milesight/* -r run watch",
+        "dev:pkgs": "pnpm --filter=@milesight/* -r --parallel run watch",
         "start": "pnpm run /^dev:.*/",
         "build:apps": "pnpm --filter=@app/* -r run build",
         "build:pkgs": "pnpm --filter=@milesight/* -r run build",
