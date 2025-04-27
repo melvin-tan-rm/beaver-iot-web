@@ -97,7 +97,7 @@ export default () => {
             url += `&start_timestamp=${time?.start.valueOf()}`;
         }
         if (time?.end) {
-            url += `&end_timestamp=${(time?.end.valueOf() || 0) + 86399000}`;
+            url += `&end_timestamp=${time?.end.valueOf() || 0}`;
         }
         xhrDownload({
             assets: url,
