@@ -89,6 +89,35 @@
     }
 }
 
+// ---------- Date Picker ----------
+.@{mui-prefix}PickersLayout-root  {
+    .@{mui-prefix}PickersYear-yearButton.@{mui-prefix}-selected,
+    .@{mui-prefix}PickersMonth-monthButton.@{mui-prefix}-selected,
+    .@{mui-prefix}PickersWeek-weekButton.@{mui-prefix}-selected,
+    .@{mui-prefix}DateCalendar-root 
+        .@{mui-prefix}ButtonBase-root.@{mui-prefix}-selected,
+    .@{mui-prefix}MultiSectionDigitalClockSection-root  
+        .@{mui-prefix}MenuItem-root.@{mui-prefix}-selected {
+        background-color: var(--primary-color-7);
+
+        &:hover {
+            background-color: var(--primary-color-8);
+        }
+    }
+
+    .@{mui-prefix}MultiSectionDigitalClockSection-root {
+        .@{mui-prefix}MenuItem-root.@{mui-prefix}-selected {
+            border-radius: @border-radius-xs;
+        }
+    }
+
+    .@{mui-prefix}DialogActions-root {
+        .@{mui-prefix}ButtonBase-root {
+            color: var(--primary-color-7);
+        }
+    }
+}
+
 // ---------- DataGrid ----------
 .@{mui-prefix}DataGrid-columnHeader .@{mui-prefix}Checkbox-root,
 .@{mui-prefix}DataGrid-cellCheckbox .@{mui-prefix}Checkbox-root {
@@ -277,6 +306,12 @@ label.@{mui-prefix}FormControlLabel-root {
 
                 &:hover {
                     color: var(--primary-color-7);
+                }
+                
+                .@{mui-prefix}SvgIcon-root {
+                    &:hover {
+                        fill: var(--primary-color-7);
+                    }
                 }
             }
         }
