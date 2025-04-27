@@ -16,15 +16,15 @@ import './style.less';
 /**
  * Determines whether is valid base64
  */
-const isBase64 = (url: string): boolean => {
-    if (!url) return false;
+// const isBase64 = (url: string): boolean => {
+//     if (!url) return false;
 
-    try {
-        return window.btoa(window.atob(url)) === url;
-    } catch {
-        return false;
-    }
-};
+//     try {
+//         return window.btoa(window.atob(url)) === url;
+//     } catch {
+//         return false;
+//     }
+// };
 
 export interface ViewProps {
     config: ImageConfigType;
@@ -75,7 +75,19 @@ const View = (props: ViewProps) => {
      */
     useEffect(() => {
         switch (dataType) {
-            case 'entity':
+            case 'upload':
+                setImageSrc(genFullUrl(file?.url) || '');
+                break;
+            case 'url':
+                setImageSrc(url || '');
+                break;
+            default:
+                /**
+                 * Compatible with old data
+                 *
+                 * If the dataType is `undefined` / `entity`, check the entity is empty
+                 * and get the status.
+                 */
                 if (entity) {
                     requestEntityStatus();
                 } else {
@@ -84,15 +96,6 @@ const View = (props: ViewProps) => {
                      */
                     setImageSrc('');
                 }
-                break;
-            case 'upload':
-                setImageSrc(genFullUrl(file?.url) || '');
-                break;
-            case 'url':
-                setImageSrc(url || '');
-                break;
-            default:
-                setImageSrc('');
                 break;
         }
     }, [dataType, entity, file, url, requestEntityStatus]);
@@ -123,18 +126,18 @@ const View = (props: ViewProps) => {
     /**
      * Determines whether is valid image src
      */
-    const convertImageSrc = useMemo(() => {
-        setImageFailed(false);
+    // const convertImageSrc = useMemo(() => {
+    //     setImageFailed(false);
 
-        if (
-            isBase64(imageSrc) ||
-            /(.?\/)+.+(\.(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif))$/i.test(imageSrc)
-        ) {
-            return imageSrc;
-        }
+    //     if (
+    //         isBase64(imageSrc) ||
+    //         /(.?\/)+.+(\.(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif))$/i.test(imageSrc)
+    //     ) {
+    //         return imageSrc;
+    //     }
 
-        return '';
-    }, [imageSrc]);
+    //     return '';
+    // }, [imageSrc]);
 
     /**
      * handle image loading error failed
@@ -149,12 +152,12 @@ const View = (props: ViewProps) => {
         <div className={`image-wrapper ${isPreview ? 'image-wrapper__preview' : ''}`}>
             {label && <div className="image-wrapper__header">{label}</div>}
             <div className="image-wrapper__content">
-                {!convertImageSrc || imageFailed ? (
+                {!imageSrc || imageFailed ? (
                     <BrokenImageIcon className="image-wrapper__empty_icon" />
                 ) : (
                     <img
                         className="image-wrapper__img"
-                        src={convertImageSrc}
+                        src={imageSrc}
                         alt=""
                         onError={handleImageFailed}
                     />
