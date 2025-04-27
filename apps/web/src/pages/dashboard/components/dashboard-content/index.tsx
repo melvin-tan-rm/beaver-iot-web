@@ -320,20 +320,21 @@ export default (props: DashboardContentProps) => {
                 </PermissionControlDisabled>
             ) : (
                 <div
-                    className={cls(
-                        'dashboard-content-main bg-custom-scrollbar ms-perfect-scrollbar',
-                        { 'dashboard-content-main__fullscreen': isFullscreen },
-                    )}
+                    className={cls('dashboard-content-wrapper ms-perfect-scrollbar', {
+                        'dashboard-content-wrapper__fullscreen': isFullscreen,
+                    })}
                     ref={mainRef}
                 >
-                    <Widgets
-                        widgets={widgets}
-                        onChangeWidgets={handleChangeWidgets}
-                        isEdit={isEdit}
-                        onEdit={handleSelectPlugin}
-                        mainRef={mainRef}
-                        isTooSmallScreen={isTooSmallScreen}
-                    />
+                    <div className="dashboard-content-main">
+                        <Widgets
+                            widgets={widgets}
+                            onChangeWidgets={handleChangeWidgets}
+                            isEdit={isEdit}
+                            onEdit={handleSelectPlugin}
+                            mainRef={mainRef}
+                            isTooSmallScreen={isTooSmallScreen}
+                        />
+                    </div>
                 </div>
             )}
             {!!showCustom && <AddCustomerWidget onCancel={closeAddCustomWidget} />}
