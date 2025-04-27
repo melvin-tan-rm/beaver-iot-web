@@ -14,8 +14,10 @@ export interface UseBasicChartEntityProps {
 
 /** Types of the data required for the chart */
 export interface ChartShowDataProps {
+    id: ApiKey;
     entityLabel: string;
     entityValues: (string | number | null)[];
+    yAxisID?: string;
 }
 
 const MAX_TICKS_LIMIT = 7;
@@ -216,6 +218,7 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
 
                 if (entityLabel) {
                     newChartShowData.push({
+                        id: (entity || [])[index]?.rawData?.entityId || '',
                         entityLabel,
                         entityValues: chartData,
                     });

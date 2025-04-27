@@ -9,6 +9,7 @@ import {
     Button,
     IconButton,
     type DialogProps,
+    type ButtonProps,
 } from '@mui/material';
 import useI18n from '../../hooks/useI18n';
 import LoadingButton from '../loading-button';
@@ -85,6 +86,16 @@ export interface ModalProps {
      * Disable the scroll lock behavior.
      */
     disableScrollLock?: boolean;
+
+    /**
+     * Confirm button props
+     */
+    okButtonProps?: ButtonProps;
+
+    /**
+     * Cancel button props
+     */
+    cancelButtonProps?: ButtonProps;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -104,6 +115,8 @@ const Modal: React.FC<ModalProps> = ({
     disabledBackdropClose = true,
     showCloseIcon = false,
     disableScrollLock = false,
+    okButtonProps,
+    cancelButtonProps,
 }) => {
     const { getIntlText } = useI18n();
     const [loading, setLoading] = useState<boolean>();
@@ -181,6 +194,7 @@ const Modal: React.FC<ModalProps> = ({
             {footer === undefined ? (
                 <DialogActions className="ms-modal-footer">
                     <Button
+                        {...cancelButtonProps}
                         variant="outlined"
                         disabled={loading}
                         onClick={onCancel}
@@ -189,6 +203,7 @@ const Modal: React.FC<ModalProps> = ({
                         {onCancelText || getIntlText('common.button.cancel')}
                     </Button>
                     <LoadingButton
+                        {...okButtonProps}
                         variant="contained"
                         className="ms-modal-button"
                         loading={loading}

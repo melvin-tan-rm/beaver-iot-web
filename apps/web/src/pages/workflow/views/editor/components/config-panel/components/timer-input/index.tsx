@@ -1,5 +1,6 @@
 import React, { useMemo, useEffect, useLayoutEffect } from 'react';
 import { useDynamicList, useControllableValue } from 'ahooks';
+import cls from 'classnames';
 import { isEqual } from 'lodash-es';
 import {
     Select,
@@ -9,12 +10,11 @@ import {
     Button,
     IconButton,
     TextField,
-    Stack,
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
-import { AddIcon, DeleteOutlineIcon } from '@milesight/shared/src/components';
+import { AddIcon, CloseIcon, KeyboardArrowDownIcon } from '@milesight/shared/src/components';
 import './style.less';
 
 export type TimerInputValueType = Partial<
@@ -84,6 +84,15 @@ const periodConfigs: Record<
     },
     SUNDAY: {
         labelIntlKey: 'workflow.editor.form_param_timer_period_sunday',
+    },
+    WEEKDAY: {
+        labelIntlKey: 'workflow.editor.form_param_timer_period_weekday',
+    },
+    WEEKEND: {
+        labelIntlKey: 'workflow.editor.form_param_timer_period_weekend',
+    },
+    EVERYDAY: {
+        labelIntlKey: 'workflow.editor.form_param_timer_period_everyday',
     },
 };
 
@@ -159,7 +168,7 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
     }, [list, setData]);
 
     return (
-        <Stack className="ms-timer-input" spacing={3}>
+        <div className="ms-timer-input">
             <FormControl fullWidth required={required}>
                 <InputLabel id="time-input-type-label">
                     {getIntlText('workflow.editor.form_param_timer_type')}
@@ -168,6 +177,7 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                     notched
                     labelId="time-input-type-label"
                     label={getIntlText('workflow.editor.form_param_timer_type')}
+                    IconComponent={KeyboardArrowDownIcon}
                     value={data?.type || ''}
                     onChange={e => {
                         const type = e.target.value as TimerInputValueType['type'];
@@ -209,6 +219,9 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                         data.executionEpochSecond ? getTime(data.executionEpochSecond * 1000) : null
                     }
                     sx={{ width: '100%' }}
+                    slotProps={{
+                        textField: { required },
+                    }}
                     onChange={time => {
                         setData({
                             ...data,
@@ -221,76 +234,6 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
             )}
             {data?.type === 'SCHEDULE' && (
                 <>
-                    <div className="ms-timer-input-exec-queue">
-                        <span className="label">
-                            {getIntlText('workflow.editor.form_param_execution_time_queue')}
-                        </span>
-                        {list.map((item, index) => (
-                            <div className="queue-item" key={getKey(index) || index}>
-                                <FormControl fullWidth required={required}>
-                                    <InputLabel id="time-input-period-label">
-                                        {getIntlText('workflow.editor.form_param_timer_type')}
-                                    </InputLabel>
-                                    <Select
-                                        notched
-                                        multiple
-                                        labelId="time-input-period-label"
-                                        label={getIntlText('workflow.editor.form_param_timer_type')}
-                                        value={item.daysOfWeek || []}
-                                        onChange={e => {
-                                            const { value } = e.target;
-                                            const daysOfWeek = Array.isArray(value)
-                                                ? value
-                                                : value.split(',');
-                                            replace(index, {
-                                                ...item,
-                                                daysOfWeek: daysOfWeek as TimePeriodType[],
-                                            });
-                                        }}
-                                    >
-                                        {periodOptions}
-                                    </Select>
-                                </FormControl>
-                                <TimePicker
-                                    ampm={false}
-                                    sx={{ width: '100%' }}
-                                    label={getIntlText('common.label.time')}
-                                    value={getTime(Date.now())
-                                        .hour(item.hour || 0)
-                                        .minute(item.minute || 0)}
-                                    onChange={time => {
-                                        const date = getTime(time, true);
-                                        replace(index, {
-                                            ...item,
-                                            hour: date.hour(),
-                                            minute: date.minute(),
-                                        });
-                                    }}
-                                />
-                                {list.length > 1 && (
-                                    <IconButton onClick={() => remove(index)}>
-                                        <DeleteOutlineIcon />
-                                    </IconButton>
-                                )}
-                            </div>
-                        ))}
-                        <Button
-                            fullWidth
-                            variant="outlined"
-                            className="ms-timer-input-exec-queue-add-btn"
-                            startIcon={<AddIcon />}
-                            disabled={list.length >= MAX_VALUE_LENGTH}
-                            onClick={() => {
-                                if (list.length >= MAX_VALUE_LENGTH) return;
-                                insert(list.length, {
-                                    hour: DEFAULT_SCHEDULE_HOUR,
-                                    minute: DEFAULT_SCHEDULE_MINUTE,
-                                });
-                            }}
-                        >
-                            {getIntlText('common.label.add')}
-                        </Button>
-                    </div>
                     <DateTimePicker
                         ampm={false}
                         label={getIntlText('workflow.editor.form_param_expire_time')}
@@ -300,6 +243,9 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                                 : null
                         }
                         sx={{ width: '100%' }}
+                        slotProps={{
+                            textField: { required },
+                        }}
                         onChange={time => {
                             setData({
                                 ...data,
@@ -308,6 +254,100 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                             });
                         }}
                     />
+                    <div className="ms-timer-input-exec-queue">
+                        <span className="label">
+                            {required && <span className="asterisk">*</span>}
+                            {getIntlText('workflow.editor.form_param_execution_time_queue')}
+                        </span>
+                        <div className="queue-list">
+                            <div className={cls('queue-list-labels', { narrow: list.length > 1 })}>
+                                <span className="queue-list-label">
+                                    {getIntlText('workflow.editor.form_param_timer_type')}
+                                </span>
+                                <span className="queue-list-label">
+                                    {getIntlText('common.label.time')}
+                                </span>
+                            </div>
+                            {list.map((item, index) => (
+                                <div
+                                    className={cls('queue-item', {
+                                        'queue-item-last': list.length === index + 1,
+                                    })}
+                                    key={getKey(index) || index}
+                                >
+                                    <FormControl required={required}>
+                                        <Select
+                                            notched
+                                            multiple
+                                            size="small"
+                                            labelId="time-input-period-label"
+                                            IconComponent={KeyboardArrowDownIcon}
+                                            value={item.daysOfWeek || []}
+                                            onChange={e => {
+                                                const { value } = e.target;
+                                                const daysOfWeek = Array.isArray(value)
+                                                    ? value
+                                                    : value.split(',');
+                                                replace(index, {
+                                                    ...item,
+                                                    daysOfWeek: daysOfWeek as TimePeriodType[],
+                                                });
+                                            }}
+                                        >
+                                            {periodOptions}
+                                        </Select>
+                                    </FormControl>
+                                    <TimePicker
+                                        className="ms-timer-input-queue-time"
+                                        ampm={false}
+                                        sx={{ width: '100%' }}
+                                        slotProps={{
+                                            popper: {
+                                                className: 'ms-timer-input-queue-time-picker',
+                                            },
+                                            openPickerIcon: {
+                                                sx: { fontSize: 16 },
+                                            },
+                                        }}
+                                        value={getTime(Date.now())
+                                            .hour(item.hour || 0)
+                                            .minute(item.minute || 0)}
+                                        onChange={time => {
+                                            const date = getTime(time, true);
+                                            replace(index, {
+                                                ...item,
+                                                hour: date.hour(),
+                                                minute: date.minute(),
+                                            });
+                                        }}
+                                    />
+                                    {list.length > 1 && (
+                                        <IconButton
+                                            className="btn-delete"
+                                            onClick={() => remove(index)}
+                                        >
+                                            <CloseIcon sx={{ fontSize: 18 }} />
+                                        </IconButton>
+                                    )}
+                                </div>
+                            ))}
+                            <Button
+                                variant="text"
+                                className="btn-add"
+                                startIcon={<AddIcon />}
+                                disabled={list.length >= MAX_VALUE_LENGTH}
+                                onClick={() => {
+                                    if (list.length >= MAX_VALUE_LENGTH) return;
+                                    insert(list.length, {
+                                        hour: DEFAULT_SCHEDULE_HOUR,
+                                        minute: DEFAULT_SCHEDULE_MINUTE,
+                                    });
+                                }}
+                            >
+                                {getIntlText('common.label.add')}
+                            </Button>
+                        </div>
+                    </div>
                 </>
             )}
             {data?.type === 'INTERVAL' && (
@@ -326,7 +366,7 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                             });
                         }}
                     />
-                    <FormControl fullWidth required={required}>
+                    <FormControl required={required}>
                         <InputLabel id="time-input-type-label">
                             {getIntlText('common.label.unit')}
                         </InputLabel>
@@ -334,6 +374,7 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                             notched
                             labelId="time-input-interval-type-label"
                             label={getIntlText('common.label.unit')}
+                            IconComponent={KeyboardArrowDownIcon}
                             value={data.intervalTimeUnit || ''}
                             onChange={e => {
                                 setData(data => ({
@@ -348,7 +389,7 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
                     </FormControl>
                 </div>
             )}
-        </Stack>
+        </div>
     );
 };
 

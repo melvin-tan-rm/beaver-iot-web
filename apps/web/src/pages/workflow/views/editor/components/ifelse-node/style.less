@@ -15,11 +15,15 @@
         position: relative;
         display: flex;
         gap: @margin-xxs;
-        padding: @padding-xxs 44px @padding-xxs @padding-xs;
+        padding: @padding-xxs @padding-xs;
         margin-top: @margin-xxs;
         background-color: var(--component-background-gray);
         border-radius: @border-radius-base;
         .text-size(@font-size-sm);
+
+        &.narrow {
+            padding-right: 44px;
+        }
 
         .name {
             max-width: calc(100%* 0.3333);

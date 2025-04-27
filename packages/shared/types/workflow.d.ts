@@ -23,7 +23,7 @@ declare type ReactFlowEdge<
 declare type ReactFlowViewport = import('@xyflow/react').Viewport;
 
 /**
- * Node Type
+ * Built in Node Type
  * @param trigger Trigger Node
  * @param timer Timer Node
  * @param listener Listener Node
@@ -35,6 +35,9 @@ declare type ReactFlowViewport = import('@xyflow/react').Viewport;
  * @param select Select Node
  * @param email Email Node
  * @param webhook Webhook Node
+ * @param output Output Node
+ * @param http Http Node
+ * @param http Http in Node
  */
 declare type WorkflowNodeType =
     | 'trigger'
@@ -47,7 +50,10 @@ declare type WorkflowNodeType =
     | 'assigner'
     | 'select'
     | 'email'
-    | 'webhook';
+    | 'webhook'
+    | 'output'
+    | 'http'
+    | 'httpin';
 
 /**
  * Edge Type
@@ -99,6 +105,7 @@ declare type TriggerNodeDataType = BaseNodeDataType<{
         identify: string;
         name: string;
         type: EntityValueDataType;
+        required?: boolean;
     }[];
 }>;
 
@@ -109,7 +116,10 @@ declare type TimePeriodType =
     | 'THURSDAY'
     | 'FRIDAY'
     | 'SATURDAY'
-    | 'SUNDAY';
+    | 'SUNDAY'
+    | 'WEEKDAY'
+    | 'WEEKEND'
+    | 'EVERYDAY';
 
 declare type TimerIntervalType = 'SECONDS' | 'MINUTES' | 'HOURS' | 'DAYS';
 
@@ -147,6 +157,26 @@ declare type ListenerNodeDataType = BaseNodeDataType<{
     entities: ApiKey[];
 }>;
 
+/**
+ * MQTT Node Parameters
+ */
+declare type MqttNodeDataType = BaseNodeDataType<{
+    topic: string;
+}>;
+
+/**
+ * Http Listening Node Parameters
+ */
+declare type HttpinNodeDataType = BaseNodeDataType<{
+    /** URL */
+    url: string;
+    /** HTTP Method */
+    method: HttpMethodType;
+}>;
+
+/**
+ * IfElse Node Logic Operator
+ */
 declare type WorkflowLogicOperator = 'AND' | 'OR';
 
 /**
@@ -304,30 +334,68 @@ declare type WebhookNodeDataType = BaseNodeDataType<{
     secretKey?: string;
 }>;
 
+declare type HttpBodyContentType =
+    | 'text/plain'
+    | 'application/json'
+    | 'multipart/form-data'
+    | 'application/x-www-form-urlencoded';
+
+/**
+ * Http Node Parameters
+ */
+declare type HttpNodeDataType = BaseNodeDataType<{
+    /** HTTP Method */
+    method: HttpMethodType;
+    /** URL */
+    url: string;
+    /** Headers */
+    header: Record<ApiKey, string>;
+    /** Query Parameters */
+    params: Record<ApiKey, string>;
+    /** Body */
+    body: {
+        /** Content Type */
+        type: '' | HttpBodyContentType;
+        /** Body Content */
+        value: string | Record<ApiKey, string>;
+    };
+}>;
+
+/**
+ * Output Node Parameters
+ */
+declare type OutputNodeDataType = BaseNodeDataType<{
+    /** Outputs */
+    outputs: Record<ApiKey, string>;
+}>;
+
+/**
+ * Workflow Node Data Map
+ */
+type NodeTypeMap = {
+    trigger: TriggerNodeDataType;
+    timer: TimerNodeDataType;
+    listener: ListenerNodeDataType;
+    mqtt: MqttNodeDataType;
+    httpin: HttpinNodeDataType;
+    ifelse: IfElseNodeDataType;
+    code: CodeNodeDataType;
+    service: ServiceNodeDataType;
+    assigner: AssignerNodeDataType;
+    select: SelectNodeDataType;
+    email: EmailNodeDataType;
+    webhook: WebhookNodeDataType;
+    http: HttpNodeDataType;
+    output: OutputNodeDataType;
+};
+
 /**
  * Workflow Node Model
  */
-declare type WorkflowNode<T extends WorkflowNodeType | undefined = undefined> = T extends 'trigger'
-    ? ReactFlowNode<Partial<TriggerNodeDataType>, 'trigger'>
-    : T extends 'timer'
-      ? ReactFlowNode<Partial<TimerNodeDataType>, 'timer'>
-      : T extends 'listener'
-        ? ReactFlowNode<Partial<ListenerNodeDataType>, 'listener'>
-        : T extends 'ifelse'
-          ? ReactFlowNode<Partial<IfElseNodeDataType>, 'ifelse'>
-          : T extends 'code'
-            ? ReactFlowNode<Partial<CodeNodeDataType>, 'code'>
-            : T extends 'service'
-              ? ReactFlowNode<Partial<ServiceNodeDataType>, 'service'>
-              : T extends 'assigner'
-                ? ReactFlowNode<Partial<AssignerNodeDataType>, 'assigner'>
-                : T extends 'select'
-                  ? ReactFlowNode<Partial<SelectNodeDataType>, 'select'>
-                  : T extends 'email'
-                    ? ReactFlowNode<Partial<EmailNodeDataType>, 'email'>
-                    : T extends 'webhook'
-                      ? ReactFlowNode<Partial<WebhookNodeDataType>, 'webhook'>
-                      : ReactFlowNode<Partial<BaseNodeDataType>, WorkflowNodeType>;
+declare type WorkflowNode<T extends WorkflowNodeType | undefined = undefined> =
+    T extends keyof NodeTypeMap
+        ? ReactFlowNode<Partial<NodeTypeMap[T]>, T>
+        : ReactFlowNode<Partial<BaseNodeDataType>, WorkflowNodeType>;
 
 /**
  * Workflow Edge Model

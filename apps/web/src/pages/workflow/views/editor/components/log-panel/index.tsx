@@ -4,12 +4,12 @@ import { Panel, useReactFlow } from '@xyflow/react';
 import cls from 'classnames';
 import { useRequest } from 'ahooks';
 import { merge, isEmpty, cloneDeep } from 'lodash-es';
-import { genRandomString } from '@milesight/shared/src/utils/tools';
 import { useI18n, useStoreShallow } from '@milesight/shared/src/hooks';
 import { CloseIcon, PlayArrowIcon, toast } from '@milesight/shared/src/components';
 import { CodeEditor, Empty } from '@/components';
 import { ActionLog } from '@/pages/workflow/components';
 import { workflowAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
+import useTest from '../../hooks/useTest';
 import useWorkflow from '../../hooks/useWorkflow';
 import useValidate from '../../hooks/useValidate';
 import useFlowStore from '../../store';
@@ -29,6 +29,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
     const { getIntlText } = useI18n();
     const { getNodes, getEdges, toObject } = useReactFlow<WorkflowNode, WorkflowEdge>();
     const {
+        nodeConfigs,
         openLogPanel,
         logPanelMode,
         logDetail,
@@ -40,6 +41,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
         setNodesDataValidResult,
     } = useFlowStore(
         useStoreShallow([
+            'nodeConfigs',
             'openLogPanel',
             'logPanelMode',
             'logDetail',
@@ -51,7 +53,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
             'setNodesDataValidResult',
         ]),
     );
-    const { updateNodesStatus, getEntityDetail } = useWorkflow();
+    const { updateNodesStatus } = useWorkflow();
     const title = useMemo(() => {
         switch (logPanelMode) {
             case 'testRun':
@@ -78,84 +80,22 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
     }, [setLogDetail, setLogDetailLoading, setOpenLogPanel, updateNodesStatus]);
 
     // ---------- Run Test ----------
+    const { genWorkflowTestData } = useTest();
     const { checkNodesId, checkNodesType, checkNodesData, checkEdgesId, checkEdgesType } =
         useValidate();
     const [entryInput, setEntryInput] = useState('');
-    const hasInput = useMemo(() => {
+    const hasTestInput = useMemo(() => {
         if (!openLogPanel || !isTestRunMode) return false;
         const nodes = getNodes();
+        const entryNodeConfigs = Object.values(nodeConfigs).filter(
+            ({ category }) => category === 'entry',
+        );
+        const entryNodeTypes = entryNodeConfigs.map(({ type }) => type);
+        const entryNode = nodes.find(({ type }) => entryNodeTypes.includes(type!));
+        const { outputs } = entryNodeConfigs.find(({ type }) => type === entryNode?.type) || {};
 
-        return !!nodes.find(({ type }) => type === 'trigger' || type === 'listener');
-    }, [openLogPanel, isTestRunMode, getNodes]);
-
-    const genDemoData = useCallback(() => {
-        if (!openLogPanel || !isTestRunMode) return;
-        const nodes = getNodes();
-        const entryNode = nodes.find(({ type }) => type === 'trigger' || type === 'listener');
-        const { parameters } = entryNode?.data || {};
-        const result: Record<string, any> = {};
-
-        switch (entryNode?.type) {
-            case 'trigger': {
-                const configs = parameters?.entityConfigs as NonNullable<
-                    TriggerNodeDataType['parameters']
-                >['entityConfigs'];
-
-                if (!configs?.length) return result;
-                configs.forEach(({ name, type }) => {
-                    if (!name) return;
-                    let value: any = genRandomString(8, { lowerCase: true });
-
-                    switch (type) {
-                        case 'BOOLEAN': {
-                            value = Math.random() > 0.5;
-                            break;
-                        }
-                        case 'LONG':
-                        case 'DOUBLE': {
-                            value = Math.floor(Math.random() * 100);
-                            break;
-                        }
-                        default: {
-                            break;
-                        }
-                    }
-                    result[name] = value;
-                });
-                break;
-            }
-            case 'listener': {
-                const inputArgs = parameters?.entities;
-
-                if (!inputArgs) return result;
-                inputArgs.forEach((key: string) => {
-                    const detail = getEntityDetail(key);
-
-                    switch (detail?.entity_value_type) {
-                        case 'BOOLEAN': {
-                            result[key] = Math.random() > 0.5;
-                            break;
-                        }
-                        case 'LONG':
-                        case 'DOUBLE': {
-                            result[key] = Math.floor(Math.random() * 100);
-                            break;
-                        }
-                        default: {
-                            result[key] = genRandomString(8, { lowerCase: true });
-                            break;
-                        }
-                    }
-                });
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-
-        return result;
-    }, [openLogPanel, isTestRunMode, getNodes, getEntityDetail]);
+        return !!(entryNode && outputs?.length);
+    }, [openLogPanel, isTestRunMode, nodeConfigs, getNodes]);
 
     const parseInputData = useCallback(
         (value?: string) => {
@@ -274,14 +214,14 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
     // Auto run flow test when there is not trigger node in workflow
     useEffect(() => {
         if (!openLogPanel || !isTestRunMode) return;
-        if (hasInput) {
-            setEntryInput(JSON.stringify(genDemoData(), null, 2));
+        if (hasTestInput) {
+            setEntryInput(JSON.stringify(genWorkflowTestData(), null, 2));
             return;
         }
 
         setEntryInput('');
         runFlowTest();
-    }, [openLogPanel, isTestRunMode, hasInput, genDemoData, runFlowTest]);
+    }, [openLogPanel, isTestRunMode, hasTestInput, genWorkflowTestData, runFlowTest]);
 
     // Clear Loading Status when panel mode change
     useEffect(() => {
@@ -312,7 +252,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
                     </Stack>
                 </div>
                 <div className="ms-workflow-panel-log-body">
-                    {hasInput && (
+                    {hasTestInput && (
                         <div className="input-area">
                             <CodeEditor
                                 editorLang="json"
@@ -346,7 +286,7 @@ const LogPanel: React.FC<LogPanelProps> = ({ designMode }) => {
                             />
                         </div>
                     ) : (
-                        !hasInput && (
+                        !hasTestInput && (
                             <div className="empty-area">
                                 <Empty size="small" />
                             </div>

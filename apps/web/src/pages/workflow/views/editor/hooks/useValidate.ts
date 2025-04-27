@@ -76,6 +76,52 @@ const useValidate = () => {
             };
         };
 
+        const checkObjectRequired = (
+            value?: NonNullable<CodeNodeDataType['parameters']>['inputArguments'],
+            fieldName?: string,
+        ) => {
+            const keys = Object.keys(value || {});
+            const values = Object.values(value || {});
+
+            if (value && keys.length && keys.every(val => !!val) && values.every(val => !!val)) {
+                return true;
+            }
+            const message = getIntlText(ErrorIntlKey.required, { 1: fieldName });
+            return message;
+        };
+
+        const genObjectMaxLengthValidator = (
+            keyMaxLength?: number,
+            valueMaxLength?: number,
+        ): NodeDataValidator => {
+            return (
+                value: NonNullable<CodeNodeDataType['parameters']>['inputArguments'],
+                fieldName,
+            ) => {
+                if (!value || !Object.keys(value).length) return true;
+
+                const hasKeyOverLength =
+                    !isNil(keyMaxLength) &&
+                    Object.keys(value).some(key => {
+                        if (key && !isMaxLength(key, keyMaxLength)) return true;
+                        return false;
+                    });
+                const hasValueOverLength =
+                    !isNil(valueMaxLength) &&
+                    Object.values(value).some(val => {
+                        if (val && !isMaxLength(val, valueMaxLength)) return true;
+                        return false;
+                    });
+
+                if (!hasKeyOverLength && !hasValueOverLength) return true;
+                const options = hasKeyOverLength
+                    ? { 1: fieldName, 2: keyMaxLength }
+                    : { 1: fieldName, 2: valueMaxLength };
+
+                return getIntlText(ErrorIntlKey.maxLength, options);
+            };
+        };
+
         const entitiesChecker: Record<string, NodeDataValidator> = {
             checkRequired(
                 value: NonNullable<ListenerNodeDataType['parameters']>['entities'],
@@ -261,6 +307,15 @@ const useValidate = () => {
                     return true;
                 },
             },
+            'mqtt.topic': {
+                checkRequired,
+                checkMaxLength: genMaxLengthValidator(100),
+            },
+            'httpin.method': { checkRequired },
+            'httpin.url': {
+                checkRequired,
+                checkMaxLength: genMaxLengthValidator(500),
+            },
             'ifelse.choice': {
                 checkRequired(
                     value: NonNullable<IfElseNodeDataType['parameters']>['choice'],
@@ -302,7 +357,7 @@ const useValidate = () => {
                 ) {
                     const { when } = value || {};
 
-                    if (when.length) {
+                    if (when?.length) {
                         const maxValueLength = 1000;
                         const maxCodeLength = 64000;
                         const maxDescriptionLength = 30;
@@ -598,6 +653,71 @@ const useValidate = () => {
                 },
             },
             'webhook.inputArguments': inputArgumentsChecker,
+            'http.method': { checkRequired },
+            'http.url': {
+                checkRequired,
+                checkMaxLength: genMaxLengthValidator(1000),
+            },
+            'http.header': {
+                checkRequired: checkObjectRequired,
+                checkMaxLength: genObjectMaxLengthValidator(1000, 1000),
+            },
+            'http.params': {
+                checkRequired: checkObjectRequired,
+                checkMaxLength: genObjectMaxLengthValidator(1000, 1000),
+            },
+            'http.body': {
+                checkRequired(
+                    data: NonNullable<HttpNodeDataType['parameters']>['body'],
+                    fieldName,
+                ) {
+                    if (!data?.type) return true;
+
+                    switch (data.type) {
+                        case 'application/x-www-form-urlencoded': {
+                            if (
+                                data.value &&
+                                Object.keys(data.value).every(val => !!val) &&
+                                Object.values(data.value).every(val => !!val)
+                            ) {
+                                return true;
+                            }
+                            break;
+                        }
+                        default: {
+                            if (data.value) return true;
+                            break;
+                        }
+                    }
+
+                    return getIntlText(ErrorIntlKey.required, { 1: fieldName });
+                },
+                checkMaxLength(
+                    data: NonNullable<HttpNodeDataType['parameters']>['body'],
+                    fieldName,
+                ) {
+                    if (!data?.type || !data.value) return true;
+                    const maxLength = 1000;
+
+                    switch (data.type) {
+                        case 'application/x-www-form-urlencoded': {
+                            const validator = genObjectMaxLengthValidator(maxLength, maxLength);
+                            return validator(data.value, fieldName);
+                        }
+                        default: {
+                            if (typeof data.value === 'string' && data.value.length <= maxLength) {
+                                return true;
+                            }
+                            break;
+                        }
+                    }
+
+                    return getIntlText(ErrorIntlKey.maxLength, {
+                        1: fieldName,
+                        2: maxLength,
+                    });
+                },
+            },
         };
 
         return result;
@@ -622,7 +742,7 @@ const useValidate = () => {
                 const nodeConfig = nodeConfigs[nodeType];
                 const nodeLabel = nodeConfig?.labelIntlKey
                     ? getIntlText(nodeConfig.labelIntlKey)
-                    : nodeConfig.label || '';
+                    : nodeConfig?.label || '';
                 const errMsgs: string[] = [];
 
                 if (nodesMap.has(id)) {

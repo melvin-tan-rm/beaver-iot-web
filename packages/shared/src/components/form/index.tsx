@@ -3,7 +3,7 @@ import { useForm, Controller, FieldValues, type SubmitHandler } from 'react-hook
 import { Grid, Box, Tooltip } from '@mui/material';
 import { isEqual } from 'lodash-es';
 import useFormItems from './useForm';
-import { UseFormItemsProps, FormItemsProps } from './typings';
+import { UseFormItemsProps, FormItemsProps, FormInstance } from './typings';
 import './style.less';
 
 interface formProps<T extends FieldValues> {
@@ -13,9 +13,12 @@ interface formProps<T extends FieldValues> {
     defaultValues?: any;
 }
 
-const Forms = <T extends FieldValues>(props: formProps<T>, ref: any) => {
+const Forms = <T extends FieldValues>(
+    props: formProps<T>,
+    ref: React.ForwardedRef<FormInstance<T>>,
+) => {
     const { formItems, onOk, onChange, defaultValues } = props;
-    const { handleSubmit, control, watch, reset, trigger } = useForm<T>({
+    const { handleSubmit, control, watch, reset, trigger, setValue } = useForm<T>({
         mode: 'onChange',
         defaultValues: {
             ...defaultValues,
@@ -82,6 +85,8 @@ const Forms = <T extends FieldValues>(props: formProps<T>, ref: any) => {
 
     /** How to expose to the father's component */
     useImperativeHandle(ref, () => ({
+        reset,
+        setValue,
         handleSubmit: handleSubmit(onSubmit),
     }));
 

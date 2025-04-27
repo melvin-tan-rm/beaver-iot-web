@@ -41,6 +41,7 @@ const EntitySelect = <
         options,
         entityOptionMap,
         getOptionValue,
+        size = 'medium',
         noOptionsText,
         loadingText,
         ...rest
@@ -122,7 +123,7 @@ const EntitySelect = <
                 {...params}
                 InputProps={{
                     ...params.InputProps,
-                    size: 'small',
+                    size,
                 }}
                 error={error}
                 helperText={helperText}
@@ -131,7 +132,7 @@ const EntitySelect = <
                 placeholder={placeholder}
             />
         ),
-        [error, helperText, label, required, placeholder],
+        [error, helperText, label, required, placeholder, size],
     );
 
     /**
@@ -212,6 +213,7 @@ const EntitySelect = <
     return (
         <Autocomplete<Value, Multiple, DisableClearable, false>
             {...rest}
+            size={size}
             open={open}
             value={value}
             options={options as Value[]}
