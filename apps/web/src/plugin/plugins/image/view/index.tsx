@@ -1,7 +1,13 @@
 import { useMemo, useState, useCallback, useEffect, memo } from 'react';
 import { useMemoizedFn } from 'ahooks';
 import { BrokenImageIcon } from '@milesight/shared/src/components';
-import { entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
+import {
+    entityAPI,
+    awaitWrap,
+    isRequestSuccess,
+    getResponseData,
+    API_PREFIX,
+} from '@/services/http';
 import ws, { getExChangeTopic } from '@/services/ws';
 import { ImageConfigType } from '../typings';
 
@@ -26,6 +32,15 @@ export interface ViewProps {
         isPreview?: boolean;
     };
 }
+
+// Generate full url for uploading file
+const genFullUrl = (path?: string) => {
+    if (!path) return '';
+    // const origin = apiOrigin.endsWith('/') ? apiOrigin.slice(0, -1) : apiOrigin;
+    return path.startsWith('http')
+        ? path
+        : `${API_PREFIX}${path.startsWith('/') ? '' : '/'}${path}`;
+};
 
 const View = (props: ViewProps) => {
     const { config, configJson } = props;
@@ -71,7 +86,7 @@ const View = (props: ViewProps) => {
                 }
                 break;
             case 'upload':
-                setImageSrc(file?.url || '');
+                setImageSrc(genFullUrl(file?.url) || '');
                 break;
             case 'url':
                 setImageSrc(url || '');

@@ -5,14 +5,7 @@ import { FieldError } from 'react-hook-form';
 import { Button, IconButton, CircularProgress } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { UploadFileIcon, ImageIcon, DeleteIcon } from '@milesight/shared/src/components';
-import {
-    globalAPI,
-    awaitWrap,
-    pLimit,
-    getResponseData,
-    isRequestSuccess,
-    API_PREFIX,
-} from '@/services/http';
+import { globalAPI, awaitWrap, pLimit, getResponseData, isRequestSuccess } from '@/services/http';
 import Tooltip from '../tooltip';
 import useDropzone from './useDropzone';
 import { DEFAULT_MIN_SIZE, DEFAULT_MAX_SIZE, DEFAULT_PARALLEL_UPLOADING_FILES } from './constants';
@@ -51,12 +44,17 @@ export type UploadFile = FileWithPath & {
     preview?: string;
 
     /**
+     * Uploaded file key
+     */
+    key?: string;
+
+    /**
      * Uploaded file url
      */
     url?: string;
 };
 
-export type FileValueType = Pick<UploadFile, 'name' | 'size' | 'path' | 'url' | 'preview'>;
+export type FileValueType = Pick<UploadFile, 'name' | 'size' | 'path' | 'key' | 'url' | 'preview'>;
 
 type Props = UseDropzoneProps & {
     // type?: string;
@@ -113,14 +111,6 @@ type Props = UseDropzoneProps & {
     onChange?: (data: Props['value'], files?: null | UploadFile | UploadFile[]) => void;
 };
 
-// Generate full url for uploading file
-const genFullUrl = (path: string) => {
-    // const origin = apiOrigin.endsWith('/') ? apiOrigin.slice(0, -1) : apiOrigin;
-    return path.startsWith('http')
-        ? path
-        : `${API_PREFIX}${path.startsWith('/') ? '' : '/'}${path}`;
-};
-
 const Upload: React.FC<Props> = ({
     // type,
     value,
@@ -163,7 +153,7 @@ const Upload: React.FC<Props> = ({
     const [fileError, setFileError] = useState<FileError | null>();
     const { run: uploadFiles } = useRequest(
         async (files: UploadFile[]) => {
-            const limit = pLimit<{ resource: string } | undefined>(parallel);
+            const limit = pLimit<{ key: string; resource: string } | undefined>(parallel);
             const uploadTasks = files.map(file =>
                 limit(async () => {
                     const [err, resp] = await awaitWrap(
@@ -172,7 +162,6 @@ const Upload: React.FC<Props> = ({
                     const uploadConfig = getResponseData(resp);
 
                     if (err || !uploadConfig || !isRequestSuccess(resp)) return;
-                    const resourceUrl = genFullUrl(uploadConfig.resource_url);
                     const [uploadErr] = await awaitWrap(
                         globalAPI.fileUpload(
                             {
@@ -188,7 +177,7 @@ const Upload: React.FC<Props> = ({
                     );
 
                     if (uploadErr) return;
-                    return { resource: resourceUrl };
+                    return { key: uploadConfig.key, resource: uploadConfig.resource_url };
                 }),
             );
 
@@ -199,6 +188,7 @@ const Upload: React.FC<Props> = ({
                     const item = result[index];
                     const isCanceled = file.status === UploadStatus.Canceled;
                     return Object.assign(file, {
+                        key: item?.key,
                         url: item?.resource,
                         progress: !isCanceled && item?.resource ? 1 : undefined,
                         status: isCanceled
@@ -335,15 +325,13 @@ const Upload: React.FC<Props> = ({
 
         if (files?.length) {
             resultValues = files?.map(file => {
-                const { name, size, path, url, preview } = file;
-                return {
-                    name,
-                    size,
-                    path,
-                    // lastModified,
-                    url,
-                    preview,
-                };
+                const { name, size, path, key, url, preview } = file;
+                const result: FileValueType = { name, size, path, key, url };
+
+                if (!url) {
+                    result.preview = preview;
+                }
+                return result;
             });
 
             if (!multiple) {
