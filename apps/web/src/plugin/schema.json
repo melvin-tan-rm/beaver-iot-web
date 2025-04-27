@@ -131,7 +131,8 @@
                                         "chartMetricsSelect",
                                         "entitySelect",
                                         "iconColorSelect",
-                                        "multiEntitySelect"
+                                        "multiEntitySelect",
+                                        "chartEntityPosition"
                                     ]
                                 },
                                 "key": {
@@ -237,7 +238,11 @@
                                     "if": {
                                         "properties": {
                                             "type": {
-                                                "enum": ["multiEntitySelect", "entitySelect"]
+                                                "enum": [
+                                                    "multiEntitySelect",
+                                                    "entitySelect",
+                                                    "chartEntityPosition"
+                                                ]
                                             }
                                         }
                                     },
@@ -370,7 +375,11 @@
                                         "properties": {
                                             "type": {
                                                 "not": {
-                                                    "enum": ["multiEntitySelect", "entitySelect"]
+                                                    "enum": [
+                                                        "multiEntitySelect",
+                                                        "entitySelect",
+                                                        "chartEntityPosition"
+                                                    ]
                                                 }
                                             }
                                         }
