@@ -74,6 +74,7 @@ const View = (props: ViewProps) => {
      * Set image src based on dataType
      */
     useEffect(() => {
+        setImageFailed(false);
         switch (dataType) {
             case 'upload':
                 setImageSrc(genFullUrl(file?.url) || '');
