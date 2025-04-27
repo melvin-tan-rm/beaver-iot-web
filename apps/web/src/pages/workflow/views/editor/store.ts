@@ -1,7 +1,11 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { cloneDeep, pickBy } from 'lodash-es';
-import { type WorkflowAPISchema, type FlowNodeTraceInfo } from '@/services/http';
+import {
+    type WorkflowAPISchema,
+    type FlowNodeTraceInfo,
+    type CredentialAPISchema,
+} from '@/services/http';
 import { basicNodeConfigs } from '../../config';
 import type { NodesDataValidResult } from './hooks';
 import type { NodeConfigItem, NodeDataValidator } from './typings';
@@ -12,6 +16,9 @@ type DynamicValidatorItem = {
     fieldName: string;
     validators: NodeDataValidator[] | null;
 };
+
+type CredentialType = CredentialAPISchema['getDefaultCredential']['request']['credentialsType'];
+type CredentialData = CredentialAPISchema['getDefaultCredential']['response'];
 
 export interface FlowStore {
     selectedNode?: WorkflowNode;
@@ -64,6 +71,22 @@ export interface FlowStore {
      */
     dynamicValidators?: Record<`${string}.${WorkflowNodeType}.${string}`, DynamicValidatorItem>;
 
+    /**
+     * Credentials
+     */
+    credentials?: Partial<Record<CredentialType, CredentialData>>;
+
+    mqttCredentials?:
+        | null
+        | (CredentialAPISchema['getMqttCredential']['response'] &
+              CredentialAPISchema['getMqttBrokerInfo']['response']);
+
+    httpCredentials?: null | CredentialAPISchema['getDefaultCredential']['response'];
+
+    /**
+     * Nodes Data Valid Result
+     */
+
     isLogMode: () => boolean;
 
     setSelectedNode: (node?: FlowStore['selectedNode']) => void;
@@ -94,6 +117,9 @@ export interface FlowStore {
         nodeId: string,
         nodeType: WorkflowNodeType,
     ) => Record<`${WorkflowNodeType}.${string}`, Record<string, NodeDataValidator>>;
+
+    setMqttCredentials: (credentials?: FlowStore['mqttCredentials']) => void;
+    setHttpCredentials: (credentials?: FlowStore['httpCredentials']) => void;
 }
 
 const useFlowStore = create(
@@ -238,6 +264,18 @@ const useFlowStore = create(
             );
 
             return result;
+        },
+
+        setMqttCredentials(credentials) {
+            set(state => {
+                state.mqttCredentials = credentials;
+            });
+        },
+
+        setHttpCredentials(credentials) {
+            set(state => {
+                state.httpCredentials = credentials;
+            });
         },
     })),
 );

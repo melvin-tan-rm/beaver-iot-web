@@ -7,3 +7,4 @@ export {
     EDGE_VALIDATE_TOAST_KEY,
     type NodesDataValidResult,
 } from './useValidate';
+export { default as useCredential } from './useCredential';

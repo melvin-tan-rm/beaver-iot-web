@@ -11,7 +11,7 @@ import './style.less';
 
 type OptionItem = {
     label: string;
-    value: string;
+    value: string | number;
     type?: 'text' | 'password';
     copyable?: boolean;
 };
@@ -43,7 +43,7 @@ const ParamsList: React.FC<Props> = ({ title, options }) => {
                                         title={
                                             visible[option.label] || option.type !== 'password'
                                                 ? option.value
-                                                : option.value.replace(/./g, '*')
+                                                : `${option.value}`.replace(/./g, '*')
                                         }
                                     />
                                 </div>
@@ -68,7 +68,7 @@ const ParamsList: React.FC<Props> = ({ title, options }) => {
                                         <IconButton
                                             onClick={e => {
                                                 handleCopy(
-                                                    option.value,
+                                                    `${option.value}`,
                                                     (e.target as HTMLElement)?.parentElement,
                                                 );
                                             }}

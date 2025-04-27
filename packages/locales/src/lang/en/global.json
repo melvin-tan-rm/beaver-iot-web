@@ -223,5 +223,8 @@
     "common.label.local_upload": "Local Upload",
     "common.label.required": "Required",
     "common.label.data_encoding_format": "Data Encoding Format",
-    "common.label.data_source": "Data Source"
+    "common.label.data_source": "Data Source",
+    "common.label.broker_address": "Broker Address",
+    "common.label.broker_port": "Broker Port",
+    "common.label.client_id": "Client ID"
 }

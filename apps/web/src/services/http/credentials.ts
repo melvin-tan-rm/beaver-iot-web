@@ -35,6 +35,29 @@ export interface CredentialAPISchema extends APISchema {
         response: CredentialType;
     };
 
+    /** Get MQTT credential */
+    getMqttCredential: {
+        request: void;
+        response: {
+            client_id: string;
+            username: string;
+            password: string;
+        };
+    };
+
+    /** Get MQTT broker info */
+    getMqttBrokerInfo: {
+        request: void;
+        response: {
+            host?: string;
+            mqtt_port?: number;
+            mqtts_port?: number;
+            ws_path?: string;
+            ws_port?: number;
+            wss_port?: number;
+        };
+    };
+
     /** update smtp credential */
     editCredential: {
         request: {
@@ -54,6 +77,8 @@ export interface CredentialAPISchema extends APISchema {
 export default attachAPI<CredentialAPISchema>(client, {
     apis: {
         getDefaultCredential: `GET ${API_PREFIX}/credentials/default/:credentialsType`,
+        getMqttCredential: `GET ${API_PREFIX}/mqtt/web/credentials`,
+        getMqttBrokerInfo: `GET ${API_PREFIX}/mqtt/broker-info`,
         editCredential: `PUT ${API_PREFIX}/credentials/:id`,
     },
 });

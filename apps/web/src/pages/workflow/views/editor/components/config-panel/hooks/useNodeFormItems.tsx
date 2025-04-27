@@ -16,6 +16,7 @@ import { KeyboardArrowDownIcon, ContentCopyIcon } from '@milesight/shared/src/co
 import { ActionInput } from '@/components';
 import { NodeFormItemValueType } from '../../../typings';
 import useFlowStore from '../../../store';
+import useCredential from '../../../hooks/useCredential';
 import {
     CodeEditor,
     ConditionsInput,
@@ -70,6 +71,7 @@ const assignerNodeEntityFilterModel: EntityAssignSelectProps['filterModel'] = {
 
 const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
     const nodeConfigs = useFlowStore(state => state.nodeConfigs);
+    const { mqttCredentials } = useCredential();
     const { handleCopy } = useCopy();
 
     const formConfigs = useMemo(() => {
@@ -301,9 +303,10 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                 break;
                             }
                             case 'mqttTopicInput': {
+                                const { username = '' } = mqttCredentials || {};
                                 formItem.render = ({ field: { onChange, value } }) => {
                                     // TODO: Replace with a real topic prefix
-                                    const topicPrefix = 'beaver-iot/$username/';
+                                    const topicPrefix = `beaver-iot/${username}/`;
                                     return (
                                         <ActionInput
                                             // size="small"
@@ -319,7 +322,7 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                                     disabled={!value}
                                                     onClick={e => {
                                                         handleCopy(
-                                                            value || '',
+                                                            `${topicPrefix}${value || ''}`,
                                                             (e.target as HTMLElement)
                                                                 ?.parentElement,
                                                         );
@@ -420,7 +423,7 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
         });
 
         return result;
-    }, [nodeConfigs, nodeId, readonly, handleCopy]);
+    }, [nodeConfigs, nodeId, readonly, mqttCredentials, handleCopy]);
 
     return !nodeType ? [] : formConfigs[nodeType] || [];
 };

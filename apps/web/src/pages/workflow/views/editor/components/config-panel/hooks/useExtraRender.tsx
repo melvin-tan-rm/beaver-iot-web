@@ -10,6 +10,7 @@ import {
     type HttpOutputInfoProps,
     type ParamsListProps,
 } from '../components';
+import useCredential from '../../../hooks/useCredential';
 import useFlowStore from '../../../store';
 
 interface RenderFunctionProps {
@@ -53,6 +54,7 @@ type RenderGroupFooterProps = Pick<RenderFunctionProps, 'node' | 'data'>;
 const useExtraRender = () => {
     const { getIntlText } = useI18n();
     const nodeConfigs = useFlowStore(state => state.nodeConfigs);
+    const { mqttCredentials, httpCredentials } = useCredential();
 
     /**
      * Render Form group action in the form group header
@@ -144,7 +146,15 @@ const useExtraRender = () => {
             switch (node?.type) {
                 case 'httpin': {
                     if (isLastFormGroup) {
-                        return <HttpCurlInfo data={data as HttpinNodeDataType['parameters']} />;
+                        return (
+                            <HttpCurlInfo
+                                data={data as HttpinNodeDataType['parameters']}
+                                credential={{
+                                    username: httpCredentials?.access_key,
+                                    password: httpCredentials?.access_secret,
+                                }}
+                            />
+                        );
                     }
                     break;
                 }
@@ -155,7 +165,7 @@ const useExtraRender = () => {
 
             return null;
         },
-        [],
+        [httpCredentials],
     );
 
     /**
@@ -180,27 +190,38 @@ const useExtraRender = () => {
                 }
                 case 'mqtt': {
                     const nodeConfig = nodeConfigs[node.type];
-                    // TODO: Get the connection parameters from server
+                    const {
+                        host = window.location.hostname,
+                        mqtt_port: mqttPort,
+                        mqtts_port: mqttsPort,
+                        client_id: clientId,
+                        username,
+                        password,
+                    } = mqttCredentials || {};
+                    const port = mqttsPort || mqttPort;
+                    const protocol = mqttsPort ? 'mqtts:' : 'mqtt:';
+                    const address = `${protocol}//${host}:${port}`;
+
                     const paramsOptions: ParamsListProps['options'] = [
                         {
-                            label: 'Broker Address',
-                            value: 'https://exampleaddress,https://exampleaddress,https://exampleaddress',
+                            label: getIntlText('common.label.broker_address'),
+                            value: address,
                         },
                         {
-                            label: 'Broker Port',
-                            value: '8080',
+                            label: getIntlText('common.label.broker_port'),
+                            value: port || '',
                         },
                         {
-                            label: 'Client ID',
-                            value: 'dj1wioj231ahu43jhoi',
+                            label: getIntlText('common.label.client_id'),
+                            value: clientId || '',
                         },
                         {
-                            label: 'Username',
-                            value: 'example@tenatid',
+                            label: getIntlText('common.label.username'),
+                            value: username || '',
                         },
                         {
-                            label: 'Password',
-                            value: 'S86yd5dY612312',
+                            label: getIntlText('common.label.password'),
+                            value: password || '',
                             type: 'password',
                         },
                     ];
@@ -227,7 +248,7 @@ const useExtraRender = () => {
 
             return null;
         },
-        [nodeConfigs, getIntlText],
+        [nodeConfigs, mqttCredentials, getIntlText],
     );
 
     return {

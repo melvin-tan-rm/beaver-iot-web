@@ -27,4 +27,5 @@ export {
     type CredentialsAdditionalData,
     type CredentialEncryption,
     type CredentialType,
+    type CredentialAPISchema,
 } from './credentials';
