@@ -49,9 +49,13 @@ interface RenderGroupContentProps extends RenderFunctionProps {
     isLastFormGroup?: boolean;
 }
 
+interface Props {
+    isLogMode?: boolean;
+}
+
 type RenderGroupFooterProps = Pick<RenderFunctionProps, 'node' | 'data'>;
 
-const useExtraRender = () => {
+const useExtraRender = ({ isLogMode }: Props = {}) => {
     const { getIntlText } = useI18n();
     const nodeConfigs = useFlowStore(state => state.nodeConfigs);
     const { mqttCredentials, httpCredentials } = useCredential();
@@ -186,7 +190,12 @@ const useExtraRender = () => {
                             };
                         },
                     );
-                    return <HttpOutputInfo title="Output Variables" options={options} />;
+                    return (
+                        <HttpOutputInfo
+                            title={getIntlText('workflow.label.output_variables')}
+                            options={options}
+                        />
+                    );
                 }
                 case 'mqtt': {
                     const nodeConfig = nodeConfigs[node.type];
@@ -205,23 +214,23 @@ const useExtraRender = () => {
                     const paramsOptions: ParamsListProps['options'] = [
                         {
                             label: getIntlText('common.label.broker_address'),
-                            value: address,
+                            value: !isLogMode ? address : undefined,
                         },
                         {
                             label: getIntlText('common.label.broker_port'),
-                            value: port || '',
+                            value: !isLogMode ? port : undefined,
                         },
                         {
                             label: getIntlText('common.label.client_id'),
-                            value: clientId || '',
+                            value: !isLogMode ? clientId : undefined,
                         },
                         {
                             label: getIntlText('common.label.username'),
-                            value: username || '',
+                            value: !isLogMode ? username : undefined,
                         },
                         {
                             label: getIntlText('common.label.password'),
-                            value: password || '',
+                            value: !isLogMode ? password : undefined,
                             type: 'password',
                         },
                     ];
@@ -236,8 +245,14 @@ const useExtraRender = () => {
                     );
                     return (
                         <>
-                            <ParamsList title="Connection parameters" options={paramsOptions} />
-                            <HttpOutputInfo title="Output Variables" options={outputOptions} />
+                            <ParamsList
+                                title={getIntlText('workflow.label.connection_parameters')}
+                                options={paramsOptions}
+                            />
+                            <HttpOutputInfo
+                                title={getIntlText('workflow.label.output_variables')}
+                                options={outputOptions}
+                            />
                         </>
                     );
                 }

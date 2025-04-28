@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { isNil } from 'lodash-es';
 import { IconButton } from '@mui/material';
-import { useCopy } from '@milesight/shared/src/hooks';
+import { useCopy, useI18n } from '@milesight/shared/src/hooks';
 import {
     ContentCopyIcon,
     VisibilityIcon,
@@ -11,7 +12,7 @@ import './style.less';
 
 type OptionItem = {
     label: string;
-    value: string | number;
+    value?: string | number | null;
     type?: 'text' | 'password';
     copyable?: boolean;
 };
@@ -20,9 +21,12 @@ export interface Props {
     title?: string;
 
     options?: OptionItem[];
+
+    emptyPlaceholder?: string;
 }
 
-const ParamsList: React.FC<Props> = ({ title, options }) => {
+const ParamsList: React.FC<Props> = ({ title, options, emptyPlaceholder = '-' }) => {
+    const { getIntlText } = useI18n();
     const { handleCopy } = useCopy();
     const [visible, setVisible] = useState<Record<string, boolean>>({});
 
@@ -38,45 +42,70 @@ const ParamsList: React.FC<Props> = ({ title, options }) => {
                             <div className="ms-params-list-item-label">{option.label}</div>
                             <div className="ms-params-list-item-value">
                                 <div className="content">
-                                    <Tooltip
+                                    {/* <Tooltip
                                         autoEllipsis
                                         title={
                                             visible[option.label] || option.type !== 'password'
                                                 ? option.value
                                                 : `${option.value}`.replace(/./g, '*')
                                         }
-                                    />
-                                </div>
-                                <div className="actions">
-                                    {option.type === 'password' && (
-                                        <IconButton
-                                            onClick={() => {
-                                                setVisible(prev => ({
-                                                    ...prev,
-                                                    [option.label]: !prev[option.label],
-                                                }));
-                                            }}
-                                        >
-                                            {!visible[option.label] ? (
-                                                <VisibilityIcon />
-                                            ) : (
-                                                <VisibilityOffIcon />
-                                            )}
-                                        </IconButton>
-                                    )}
-                                    {option.copyable !== false && (
-                                        <IconButton
-                                            onClick={e => {
-                                                handleCopy(
-                                                    `${option.value}`,
-                                                    (e.target as HTMLElement)?.parentElement,
-                                                );
-                                            }}
-                                        >
-                                            <ContentCopyIcon />
-                                        </IconButton>
+                                    /> */}
+                                    {isNil(option.value) ? (
+                                        emptyPlaceholder
+                                    ) : (
+                                        <Tooltip
+                                            autoEllipsis
+                                            title={
+                                                visible[option.label] || option.type !== 'password'
+                                                    ? option.value
+                                                    : `${option.value}`.replace(/./g, '*')
+                                            }
+                                        />
                                     )}
                                 </div>
+                                {!isNil(option.value) && (
+                                    <div className="actions">
+                                        {option.type === 'password' && (
+                                            <Tooltip
+                                                title={getIntlText(
+                                                    !visible[option.label]
+                                                        ? 'common.label.visible'
+                                                        : 'common.label.invisible',
+                                                )}
+                                            >
+                                                <IconButton
+                                                    onClick={() => {
+                                                        setVisible(prev => ({
+                                                            ...prev,
+                                                            [option.label]: !prev[option.label],
+                                                        }));
+                                                    }}
+                                                >
+                                                    {!visible[option.label] ? (
+                                                        <VisibilityIcon />
+                                                    ) : (
+                                                        <VisibilityOffIcon />
+                                                    )}
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
+                                        {option.copyable !== false && (
+                                            <Tooltip title={getIntlText('common.label.copy')}>
+                                                <IconButton
+                                                    onClick={e => {
+                                                        handleCopy(
+                                                            `${option.value}`,
+                                                            (e.target as HTMLElement)
+                                                                ?.parentElement,
+                                                        );
+                                                    }}
+                                                >
+                                                    <ContentCopyIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))}

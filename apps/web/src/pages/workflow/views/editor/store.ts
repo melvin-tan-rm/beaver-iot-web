@@ -57,6 +57,9 @@ export interface FlowStore {
      */
     runLogs?: WorkflowAPISchema['getLogList']['response']['content'];
 
+    /**
+     * Nodes Data Valid Result
+     */
     logDetail?: {
         flowData?: Pick<WorkflowSchema, 'nodes' | 'edges'>;
         traceInfos: PartialOptional<FlowNodeTraceInfo, 'start_time' | 'time_cost'>[];
@@ -82,10 +85,6 @@ export interface FlowStore {
               CredentialAPISchema['getMqttBrokerInfo']['response']);
 
     httpCredentials?: null | CredentialAPISchema['getDefaultCredential']['response'];
-
-    /**
-     * Nodes Data Valid Result
-     */
 
     isLogMode: () => boolean;
 
@@ -187,7 +186,6 @@ const useFlowStore = create(
             //     },
             // };
 
-            // console.log('node configs', { nodeConfigs, basicNodeConfigs, result });
             set({ nodeConfigs: result });
         },
         setLogPanelMode: logPanelMode => set({ logPanelMode }),

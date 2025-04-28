@@ -226,5 +226,7 @@
     "common.label.data_source": "Data Source",
     "common.label.broker_address": "Broker Address",
     "common.label.broker_port": "Broker Port",
-    "common.label.client_id": "Client ID"
+    "common.label.client_id": "Client ID",
+    "common.label.visible": "Visible",
+    "common.label.invisible": "Invisible"
 }

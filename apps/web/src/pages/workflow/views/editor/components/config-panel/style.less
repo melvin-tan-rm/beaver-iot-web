@@ -10,13 +10,11 @@
     }
 
     &.readonly {
-        .@{prefix}-workflow-panel-config-body {
-            pointer-events: none;
-        }
-
-        .@{prefix}-node-form-group-title,
-        .@{prefix}-code-editor-header__operations {
-            pointer-events: all;
+        .@{prefix}-node-form-group {
+            .@{prefix}-node-form-group-actions,
+            .@{prefix}-node-form-group-item {
+                pointer-events: none;
+            }
         }
     }
 }

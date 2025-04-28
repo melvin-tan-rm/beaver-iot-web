@@ -137,8 +137,9 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
     );
 
     // ---------- Process Extra Render ----------
-    const { renderFormGroupAction, renderFormGroupContent, renderFormGroupFooter } =
-        useExtraRender();
+    const { renderFormGroupAction, renderFormGroupContent, renderFormGroupFooter } = useExtraRender(
+        { isLogMode: !!readonly },
+    );
     const handleFormGroupAction = useCallback(
         (data: Record<string, any>) => {
             Object.keys(data).forEach(key => {
@@ -283,12 +284,14 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                                                 )}
                                             </div>
                                         )}
-                                        {renderFormGroupAction({
-                                            node: finalSelectedNode,
-                                            formGroupName: groupName || '',
-                                            formGroupIndex: index,
-                                            onChange: handleFormGroupAction,
-                                        })}
+                                        <div className="ms-node-form-group-actions">
+                                            {renderFormGroupAction({
+                                                node: finalSelectedNode,
+                                                formGroupName: groupName || '',
+                                                formGroupIndex: index,
+                                                onChange: handleFormGroupAction,
+                                            })}
+                                        </div>
                                     </div>
                                     <div className="ms-node-form-group-item">
                                         {formItems?.map(props => {

@@ -15,7 +15,8 @@ import {
     ConnectWithoutContactIcon,
     OutputIcon,
     HttpIcon,
-    AutoAwesomeIcon,
+    MqttIcon,
+    // AutoAwesomeIcon,
     // FlagIcon,
 } from '@milesight/shared/src/components';
 
@@ -218,7 +219,7 @@ export const basicNodeConfigs: Record<WorkflowNodeType, NodeConfigItemType> = {
         componentName: 'simpleMqtt',
         labelIntlKey: 'workflow.label.mqtt_node_name',
         descIntlKey: 'workflow.label.mqtt_node_desc',
-        icon: <ConnectWithoutContactIcon />,
+        icon: <MqttIcon />,
         iconBgColor: '#3491FA',
         category: 'entry',
         // isRemote: true,
