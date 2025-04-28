@@ -81,12 +81,19 @@ export enum ENTITY_TYPE {
 
 // Entity Value Type
 export enum ENTITY_VALUE_TYPE {
+    LONG = 'LONG',
     STRING = 'STRING',
-    long = 'LONG',
+    DOUBLE = 'DOUBLE',
     BOOLEAN = 'BOOLEAN',
-    BINARY = 'BINARY',
+}
+
+// Entity Data Value Type
+export enum ENTITY_DATA_VALUE_TYPE {
+    LONG = 'LONG',
+    STRING = 'STRING',
+    BOOLEAN = 'BOOLEAN',
+    DOUBLE = 'DOUBLE',
     OBJECT = 'OBJECT',
-    ENUM = 'ENUM',
 }
 
 export const entityTypeOptions = [

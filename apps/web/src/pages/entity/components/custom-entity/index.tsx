@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { Button, Stack, Menu, MenuItem } from '@mui/material';
-import { useRequest } from 'ahooks';
+import { useMemoizedFn, useRequest } from 'ahooks';
+import { pickBy } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
 import {
@@ -10,7 +11,14 @@ import {
     toast,
     ErrorIcon,
 } from '@milesight/shared/src/components';
-import { TablePro, useConfirm, PermissionControlHidden } from '@/components';
+import {
+    TablePro,
+    useConfirm,
+    PermissionControlHidden,
+    TableProProps,
+    FilterValue,
+    FiltersRecordType,
+} from '@/components';
 import { entityAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import { ENTITY_TYPE, PERMISSIONS } from '@/constants';
 import { useUserPermissions } from '@/hooks';
@@ -29,6 +37,8 @@ export default () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [workflowModalOpen, setWorkflowModalOpen] = useState(false);
     const [detail, setDetail] = useState<TableRowDataType | null>(null);
+    const [isCopyAddEntity, setIsCopyAddEntity] = useState<boolean>(false);
+    const [filteredInfo, setFilteredInfo] = useState<FiltersRecordType>({});
 
     const {
         data: entityData,
@@ -37,6 +47,10 @@ export default () => {
     } = useRequest(
         async () => {
             const { page, pageSize } = paginationModel;
+            const searchParams = pickBy({
+                entity_access_mod: filteredInfo?.entityAccessMod,
+                entity_value_type: filteredInfo?.entityValueType,
+            });
             const [error, resp] = await awaitWrap(
                 entityAPI.getList({
                     keyword,
@@ -44,6 +58,7 @@ export default () => {
                     page_number: page + 1,
                     customized: true,
                     entity_type: [ENTITY_TYPE.PROPERTY],
+                    ...searchParams,
                 }),
             );
             const data = getResponseData(resp);
@@ -61,7 +76,7 @@ export default () => {
         },
         {
             debounceWait: 300,
-            refreshDeps: [keyword, paginationModel],
+            refreshDeps: [keyword, paginationModel, filteredInfo],
         },
     );
 
@@ -92,10 +107,18 @@ export default () => {
     );
 
     const handleShowAddOnly = useCallback(() => {
+        setIsCopyAddEntity(false);
         setModalOpen(true);
+        setIsCopyAddEntity(false);
         setDetail(null);
         setAnchorEl(null);
     }, []);
+
+    const handleFilterChange: TableProProps<TableRowDataType>['onFilterInfoChange'] = (
+        filters: Record<string, FilterValue | null>,
+    ) => {
+        setFilteredInfo(filters);
+    };
 
     const toolbarRender = useMemo(() => {
         return (
@@ -133,6 +156,13 @@ export default () => {
             switch (type) {
                 case 'edit': {
                     setDetail(record);
+                    setIsCopyAddEntity(false);
+                    setModalOpen(true);
+                    break;
+                }
+                case 'copy': {
+                    setDetail(record);
+                    setIsCopyAddEntity(true);
                     setModalOpen(true);
                     break;
                 }
@@ -147,7 +177,10 @@ export default () => {
         },
         [handleDeleteConfirm],
     );
-    const columns = useColumns<TableRowDataType>({ onButtonClick: handleTableBtnClick });
+    const columns = useColumns<TableRowDataType>({
+        onButtonClick: handleTableBtnClick,
+        filteredInfo,
+    });
 
     // const handleAddFromWorkflow = () => {
     //     setWorkflowModalOpen(true);
@@ -176,16 +209,20 @@ export default () => {
                 onRowSelectionModelChange={setSelectedIds}
                 onSearch={handleSearch}
                 onRefreshButtonClick={getList}
+                onFilterInfoChange={handleFilterChange}
             />
-            <AddModal
-                visible={modalOpen}
-                data={detail}
-                onCancel={() => setModalOpen(false)}
-                onSuccess={() => {
-                    getList();
-                    setModalOpen(false);
-                }}
-            />
+            {modalOpen && (
+                <AddModal
+                    visible={modalOpen}
+                    data={detail}
+                    isCopyAddEntity={isCopyAddEntity}
+                    onCancel={() => setModalOpen(false)}
+                    onSuccess={() => {
+                        getList();
+                        setModalOpen(false);
+                    }}
+                />
+            )}
             {workflowModalOpen && (
                 <AddFromWorkflow
                     onCancel={() => setWorkflowModalOpen(false)}

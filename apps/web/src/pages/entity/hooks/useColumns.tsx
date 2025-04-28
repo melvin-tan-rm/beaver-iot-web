@@ -1,12 +1,13 @@
 import { useMemo } from 'react';
+import { useMemoizedFn } from 'ahooks';
 import { Stack, IconButton, Chip, type ChipProps } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
-import { EditIcon, DeleteOutlineIcon } from '@milesight/shared/src/components';
+import { ContentCopyIcon, DeleteOutlineIcon, EditIcon } from '@milesight/shared/src/components';
 import { Tooltip, type ColumnType, PermissionControlDisabled } from '@/components';
 import { type EntityAPISchema } from '@/services/http';
-import { PERMISSIONS } from '@/constants';
+import { ENTITY_ACCESS_MODE, ENTITY_VALUE_TYPE, PERMISSIONS } from '@/constants';
 
-type OperationType = 'edit' | 'delete';
+type OperationType = 'edit' | 'delete' | 'copy';
 
 export type TableRowDataType = ObjectToCamelCase<
     EntityAPISchema['getList']['response']['content'][0]
@@ -24,11 +25,29 @@ export interface UseColumnsProps<T> {
      * Operation Button click callback
      */
     onButtonClick: (type: OperationType, record: T) => void;
+    /**
+     * filtered info
+     */
+    filteredInfo: Record<string, any>;
 }
 
-const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsProps<T>) => {
+const useColumns = <T extends TableRowDataType>({
+    onButtonClick,
+    filteredInfo,
+}: UseColumnsProps<T>) => {
     const { getIntlText } = useI18n();
     const { getTimeFormat } = useTime();
+
+    // get ENTITY_ACCESS_MODE intl text
+    const getAccessModeText = useMemoizedFn(value => {
+        if (value === ENTITY_ACCESS_MODE.W) {
+            return getIntlText('entity.label.entity_type_of_access_write');
+        }
+        if (value === ENTITY_ACCESS_MODE.R) {
+            return getIntlText('entity.label.entity_type_of_access_readonly');
+        }
+        return getIntlText('entity.label.entity_type_of_access_read_and_write');
+    });
 
     const columns: ColumnType<T>[] = useMemo(() => {
         return [
@@ -50,7 +69,7 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 field: 'entityType',
                 headerName: getIntlText('common.label.type'),
                 flex: 1,
-                minWidth: 200,
+                minWidth: 150,
                 renderCell({ value }) {
                     return (
                         <Chip
@@ -63,13 +82,40 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 },
             },
             {
+                field: 'entityAccessMod',
+                headerName: getIntlText('entity.label.entity_type_of_access'),
+                flex: 1,
+                minWidth: 150,
+                ellipsis: true,
+                renderCell({ value }) {
+                    return getAccessModeText(value);
+                },
+                filteredValue: filteredInfo?.entityAccessMod,
+                filters: Object.entries(ENTITY_ACCESS_MODE).map(([key, value]) => ({
+                    text: getAccessModeText(value),
+                    value: value as keyof typeof ENTITY_ACCESS_MODE,
+                })),
+            },
+            {
                 field: 'entityValueType',
                 headerName: getIntlText('common.label.data_type'),
                 align: 'left',
                 headerAlign: 'left',
                 flex: 1,
-                minWidth: 200,
+                minWidth: 150,
                 ellipsis: true,
+            },
+            {
+                field: 'unit',
+                headerName: getIntlText('common.label.unit'),
+                align: 'left',
+                headerAlign: 'left',
+                flex: 1,
+                minWidth: 100,
+                ellipsis: true,
+                renderCell({ row }) {
+                    return row?.entityValueAttribute?.unit;
+                },
             },
             {
                 field: 'entityCreatedAt',
@@ -108,6 +154,22 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                                     </IconButton>
                                 </Tooltip>
                             </PermissionControlDisabled>
+                            <PermissionControlDisabled permissions={PERMISSIONS.ENTITY_CUSTOM_EDIT}>
+                                <Tooltip title={getIntlText('common.label.copy')}>
+                                    <IconButton
+                                        sx={{ width: 30, height: 30 }}
+                                        onClick={() => onButtonClick('copy', row)}
+                                        disabled={
+                                            !!row.entityValueAttribute.enum &&
+                                            (row.entityValueType === ENTITY_VALUE_TYPE.LONG ||
+                                                (row.entityValueType === ENTITY_VALUE_TYPE.STRING &&
+                                                    !row.entityValueAttribute.isEnum))
+                                        }
+                                    >
+                                        <ContentCopyIcon sx={{ width: 18, height: 18 }} />
+                                    </IconButton>
+                                </Tooltip>
+                            </PermissionControlDisabled>
                             <PermissionControlDisabled
                                 permissions={PERMISSIONS.ENTITY_CUSTOM_DELETE}
                             >
@@ -132,7 +194,7 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 },
             },
         ];
-    }, [getIntlText, getTimeFormat, onButtonClick]);
+    }, [getIntlText, getTimeFormat, onButtonClick, filteredInfo]);
 
     return columns;
 };
