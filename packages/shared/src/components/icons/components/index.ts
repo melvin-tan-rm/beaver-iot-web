@@ -5,3 +5,4 @@ export { default as CodeIcon } from './code';
 export { default as DevicesFilledIcon } from './devices-filled';
 export { default as BrokenImageIcon } from './broken-image';
 export { default as PointerIcon } from './pointer';
+export { default as MqttIcon } from './mqtt';

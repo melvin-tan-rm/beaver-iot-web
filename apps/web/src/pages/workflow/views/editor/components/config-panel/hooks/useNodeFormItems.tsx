@@ -13,7 +13,7 @@ import {
 import { cloneDeep } from 'lodash-es';
 import { useCopy } from '@milesight/shared/src/hooks';
 import { KeyboardArrowDownIcon, ContentCopyIcon } from '@milesight/shared/src/components';
-import { ActionInput } from '@/components';
+import { ActionInput, Tooltip } from '@/components';
 import { NodeFormItemValueType } from '../../../typings';
 import useFlowStore from '../../../store';
 import useCredential from '../../../hooks/useCredential';
@@ -305,8 +305,7 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                             case 'mqttTopicInput': {
                                 const { username = '' } = mqttCredentials || {};
                                 formItem.render = ({ field: { onChange, value } }) => {
-                                    // TODO: Replace with a real topic prefix
-                                    const topicPrefix = `beaver-iot/${username}/`;
+                                    const topicPrefix = `beaver-iot/${readonly ? '-' : username}/`;
                                     return (
                                         <ActionInput
                                             // size="small"
@@ -315,7 +314,13 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                             required={required}
                                             value={value}
                                             onChange={onChange}
-                                            startAdornment={topicPrefix}
+                                            startAdornment={
+                                                <Tooltip
+                                                    autoEllipsis
+                                                    title={topicPrefix}
+                                                    style={{ maxWidth: '120px', fontSize: 14 }}
+                                                />
+                                            }
                                             endAdornment={
                                                 <IconButton
                                                     aria-label="copy text"

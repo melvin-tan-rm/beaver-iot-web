@@ -144,5 +144,7 @@
     "workflow.editor.output_desc_response_body": "Response Content",
     "workflow.editor.output_desc_response_code": "Response Code",
     "workflow.label.httpin_node_desc": "Listen for incoming HTTP requests to trigger a running workflow. ",
-    "workflow.label.mqtt_node_desc": "Listen for incoming MQTT messages to trigger a running workflow."
+    "workflow.label.mqtt_node_desc": "Listen for incoming MQTT messages to trigger a running workflow.",
+    "workflow.label.connection_parameters": "Connection Parameters",
+    "workflow.label.output_variables": "Output Variables"
 }
