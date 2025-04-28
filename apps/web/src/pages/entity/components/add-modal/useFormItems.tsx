@@ -179,16 +179,6 @@ const useFormItems = () => {
                                 sx: { my: 1.5 },
                             }}
                             value={(value as FormDataProps['valueType']) || ''}
-                            renderValue={() => {
-                                const label = entityValueTypeOptions.find(
-                                    v => v.value === value,
-                                )?.label;
-                                return (
-                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        {label ? getIntlText(label) : value}
-                                    </Box>
-                                );
-                            }}
                             onChange={onChange}
                         />
                     );

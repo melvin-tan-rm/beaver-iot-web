@@ -95,7 +95,13 @@ const Select = <T extends ApiKey = ApiKey>(props: SelectProps<T>) => {
             }
 
             if (renderValue) return renderValue(selected);
-            return selectedValue.filter(v => !isNil(v)).join(', ');
+            // Render the corresponding label content
+            return selectedValue
+                .filter(v => !isNil(v))
+                .map(v => {
+                    return options.find(k => k.value === v)?.label;
+                })
+                .join(', ');
         },
         [placeholder, renderValue],
     );

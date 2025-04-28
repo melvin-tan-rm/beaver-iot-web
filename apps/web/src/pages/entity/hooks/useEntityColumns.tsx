@@ -86,11 +86,11 @@ const useEntityColumns = <T extends TableRowDataType>({
                 flex: 1,
                 minWidth: 150,
                 ellipsis: true,
-                filteredValue: filteredInfo?.entityValueType,
-                filters: Object.entries(ENTITY_DATA_VALUE_TYPE).map(([key, value]) => ({
-                    text: key,
-                    value,
-                })),
+                // filteredValue: filteredInfo?.entityValueType,
+                // filters: Object.entries(ENTITY_DATA_VALUE_TYPE).map(([key, value]) => ({
+                //     text: key,
+                //     value,
+                // })),
             },
             {
                 field: 'integrationName',
