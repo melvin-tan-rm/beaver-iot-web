@@ -206,7 +206,7 @@ importers:
         version: 1.3.5
       '@vitejs/plugin-react':
         specifier: ^4.3.1
-        version: 4.3.1(vite@5.4.9(@types/node@20.16.5)(less@4.2.0))
+        version: 4.3.1(vite@5.4.18(@types/node@20.16.5)(less@4.2.0))
       eslint:
         specifier: ^8.56.0
         version: 8.57.0
@@ -220,23 +220,23 @@ importers:
         specifier: ^5.6.2
         version: 5.6.2
       vite:
-        specifier: ^5.4.3
-        version: 5.4.9(@types/node@20.16.5)(less@4.2.0)
+        specifier: ^5.4.18
+        version: 5.4.18(@types/node@20.16.5)(less@4.2.0)
       vite-plugin-html-config:
         specifier: ^2.0.2
-        version: 2.0.2(vite@5.4.9(@types/node@20.16.5)(less@4.2.0))
+        version: 2.0.2(vite@5.4.18(@types/node@20.16.5)(less@4.2.0))
       vite-plugin-imp:
         specifier: ^2.4.0
-        version: 2.4.0(vite@5.4.9(@types/node@20.16.5)(less@4.2.0))
+        version: 2.4.0(vite@5.4.18(@types/node@20.16.5)(less@4.2.0))
       vite-plugin-node-polyfills:
         specifier: ^0.22.0
-        version: 0.22.0(rollup@4.24.0)(vite@5.4.9(@types/node@20.16.5)(less@4.2.0))
+        version: 0.22.0(rollup@4.24.0)(vite@5.4.18(@types/node@20.16.5)(less@4.2.0))
       vite-plugin-progress:
         specifier: ^0.0.7
-        version: 0.0.7(vite@5.4.9(@types/node@20.16.5)(less@4.2.0))
+        version: 0.0.7(vite@5.4.18(@types/node@20.16.5)(less@4.2.0))
       vite-plugin-stylelint:
         specifier: ^5.3.1
-        version: 5.3.1(postcss@8.4.47)(rollup@4.24.0)(stylelint@15.11.0(typescript@5.6.2))(vite@5.4.9(@types/node@20.16.5)(less@4.2.0))
+        version: 5.3.1(postcss@8.4.47)(rollup@4.24.0)(stylelint@15.11.0(typescript@5.6.2))(vite@5.4.18(@types/node@20.16.5)(less@4.2.0))
 
   packages/locales:
     devDependencies:
@@ -334,8 +334,8 @@ importers:
         specifier: ^4.24.0
         version: 4.24.0
       vite:
-        specifier: ^5.4.3
-        version: 5.4.9(@types/node@20.16.5)(less@4.2.0)
+        specifier: ^5.4.18
+        version: 5.4.18(@types/node@20.16.5)(less@4.2.0)
     devDependencies:
       '@babel/core':
         specifier: ^7.22.10
@@ -4967,8 +4967,8 @@ packages:
       rollup:
         optional: true
 
-  vite@5.4.9:
-    resolution: {integrity: sha512-20OVpJHh0PAM0oSOELa5GaZNWeDjcAvQjGXy2Uyr+Tp+/D2/Hdz6NLgpJLsarPTA2QJ6v8mX2P1ZfbsSKvdMkg==}
+  vite@5.4.18:
+    resolution: {integrity: sha512-1oDcnEp3lVyHCuQ2YFelM4Alm2o91xNoMncRm1U7S+JdYfYOvbiGZ3/CxGttrOu2M/KcGz7cRC2DoNUA6urmMA==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
     peerDependencies:
@@ -6836,14 +6836,14 @@ snapshots:
 
   '@ungap/structured-clone@1.2.0': {}
 
-  '@vitejs/plugin-react@4.3.1(vite@5.4.9(@types/node@20.16.5)(less@4.2.0))':
+  '@vitejs/plugin-react@4.3.1(vite@5.4.18(@types/node@20.16.5)(less@4.2.0))':
     dependencies:
       '@babel/core': 7.25.2
       '@babel/plugin-transform-react-jsx-self': 7.24.7(@babel/core@7.25.2)
       '@babel/plugin-transform-react-jsx-source': 7.24.7(@babel/core@7.25.2)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.2
-      vite: 5.4.9(@types/node@20.16.5)(less@4.2.0)
+      vite: 5.4.18(@types/node@20.16.5)(less@4.2.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -10143,11 +10143,11 @@ snapshots:
 
   validator@13.12.0: {}
 
-  vite-plugin-html-config@2.0.2(vite@5.4.9(@types/node@20.16.5)(less@4.2.0)):
+  vite-plugin-html-config@2.0.2(vite@5.4.18(@types/node@20.16.5)(less@4.2.0)):
     dependencies:
-      vite: 5.4.9(@types/node@20.16.5)(less@4.2.0)
+      vite: 5.4.18(@types/node@20.16.5)(less@4.2.0)
 
-  vite-plugin-imp@2.4.0(vite@5.4.9(@types/node@20.16.5)(less@4.2.0)):
+  vite-plugin-imp@2.4.0(vite@5.4.18(@types/node@20.16.5)(less@4.2.0)):
     dependencies:
       '@babel/core': 7.25.2
       '@babel/generator': 7.25.6
@@ -10156,39 +10156,39 @@ snapshots:
       chalk: 4.1.2
       param-case: 3.0.4
       pascal-case: 3.1.2
-      vite: 5.4.9(@types/node@20.16.5)(less@4.2.0)
+      vite: 5.4.18(@types/node@20.16.5)(less@4.2.0)
     transitivePeerDependencies:
       - supports-color
 
-  vite-plugin-node-polyfills@0.22.0(rollup@4.24.0)(vite@5.4.9(@types/node@20.16.5)(less@4.2.0)):
+  vite-plugin-node-polyfills@0.22.0(rollup@4.24.0)(vite@5.4.18(@types/node@20.16.5)(less@4.2.0)):
     dependencies:
       '@rollup/plugin-inject': 5.0.5(rollup@4.24.0)
       node-stdlib-browser: 1.2.0
-      vite: 5.4.9(@types/node@20.16.5)(less@4.2.0)
+      vite: 5.4.18(@types/node@20.16.5)(less@4.2.0)
     transitivePeerDependencies:
       - rollup
 
-  vite-plugin-progress@0.0.7(vite@5.4.9(@types/node@20.16.5)(less@4.2.0)):
+  vite-plugin-progress@0.0.7(vite@5.4.18(@types/node@20.16.5)(less@4.2.0)):
     dependencies:
       picocolors: 1.1.0
       progress: 2.0.3
       rd: 2.0.1
-      vite: 5.4.9(@types/node@20.16.5)(less@4.2.0)
+      vite: 5.4.18(@types/node@20.16.5)(less@4.2.0)
 
-  vite-plugin-stylelint@5.3.1(postcss@8.4.47)(rollup@4.24.0)(stylelint@15.11.0(typescript@5.6.2))(vite@5.4.9(@types/node@20.16.5)(less@4.2.0)):
+  vite-plugin-stylelint@5.3.1(postcss@8.4.47)(rollup@4.24.0)(stylelint@15.11.0(typescript@5.6.2))(vite@5.4.18(@types/node@20.16.5)(less@4.2.0)):
     dependencies:
       '@rollup/pluginutils': 5.1.2(rollup@4.24.0)
       chokidar: 3.6.0
       debug: 4.3.7
       stylelint: 15.11.0(typescript@5.6.2)
-      vite: 5.4.9(@types/node@20.16.5)(less@4.2.0)
+      vite: 5.4.18(@types/node@20.16.5)(less@4.2.0)
     optionalDependencies:
       postcss: 8.4.47
       rollup: 4.24.0
     transitivePeerDependencies:
       - supports-color
 
-  vite@5.4.9(@types/node@20.16.5)(less@4.2.0):
+  vite@5.4.18(@types/node@20.16.5)(less@4.2.0):
     dependencies:
       esbuild: 0.23.1
       postcss: 8.4.47
