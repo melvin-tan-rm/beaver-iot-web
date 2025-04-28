@@ -366,6 +366,9 @@ export const getMuiComponents = (mode: ThemeType = 'light') => {
             styleOverrides: {
                 root: {
                     fontSize: '0.875rem', // 14px
+                    '.MuiInputBase-inputSizeSmall': {
+                        padding: '3px 12px',
+                    },
                 },
             },
         },
@@ -445,8 +448,18 @@ export const getMuiComponents = (mode: ThemeType = 'light') => {
             },
         },
         MuiCheckbox: {
-            defaultProps: {
-                size: 'small',
+            styleOverrides: {
+                sizeSmall: {
+                    padding: '4px',
+                    '.MuiSvgIcon-root': {
+                        fontSize: '1.25rem',
+                    },
+                },
+                sizeMedium: {
+                    '.MuiSvgIcon-root': {
+                        fontSize: '1.25rem',
+                    },
+                },
             },
         },
         MuiSelect: {
@@ -454,16 +467,35 @@ export const getMuiComponents = (mode: ThemeType = 'light') => {
                 select: {
                     height: '1.375rem',
                     lineHeight: '1.375rem',
-                    padding: '7px 12px',
+                    // padding: '7px 12px',
+                    '&.MuiInputBase-inputSizeSmall': {
+                        padding: '3px 12px',
+                    },
                 },
             },
         },
         MuiAutocomplete: {
             styleOverrides: {
-                inputRoot: {
-                    '&.MuiInputBase-sizeSmall.MuiAutocomplete-inputRoot .MuiAutocomplete-input': {
-                        paddingTop: '1px',
-                        paddingBottom: '1px',
+                root: {
+                    '.MuiInputBase-root': {
+                        paddingTop: '6px',
+                        paddingBottom: '6px',
+                        '&.MuiInputBase-sizeSmall': {
+                            paddingTop: '2px',
+                            paddingBottom: '2px',
+
+                            '.MuiIconButton-sizeSmall .MuiSvgIcon-root': {
+                                fontSize: '1.125rem',
+                            },
+                        },
+                        '.MuiInputBase-input.MuiAutocomplete-input': {
+                            paddingTop: '1px',
+                            paddingBottom: '1px',
+                            paddingLeft: '3px',
+                        },
+                        '.MuiIconButton-root': {
+                            padding: '2px',
+                        },
                     },
                 },
             },

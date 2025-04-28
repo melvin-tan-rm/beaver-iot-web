@@ -56,6 +56,12 @@ const Config: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
                 search: keyword,
                 pageSize,
                 pageNumber: page + 1,
+                filterCondition: (item, search: string) => {
+                    return [item?.name]
+                        .map(v => v?.toLocaleLowerCase() || '')
+                        .filter(i => !!i)
+                        .some(value => value.includes(search.toLocaleLowerCase()));
+                },
             });
             return objectToCamelCase(pageData);
         },

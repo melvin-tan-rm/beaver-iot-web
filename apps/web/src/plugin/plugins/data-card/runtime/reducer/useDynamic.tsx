@@ -15,18 +15,12 @@ export const useDynamic = () => {
                     key: `Icon_${index}`,
                     style: 'flex: 1;padding-right: 12px;',
                     defaultValue: value[`Icon_${index}`] || undefined,
-                    componentProps: {
-                        size: 'small',
-                    },
                 },
                 {
                     type: 'iconColorSelect',
                     key: `IconColor_${index}`,
                     style: 'flex: 1;',
                     defaultValue: value[`IconColor_${index}`] || undefined,
-                    componentProps: {
-                        size: 'small',
-                    },
                 },
             ],
         };

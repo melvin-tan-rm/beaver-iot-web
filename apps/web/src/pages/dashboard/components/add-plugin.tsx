@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { omit } from 'lodash-es';
 import { TextField, Button } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import ConfigPlugin from '@/plugin/config-plugin';
@@ -14,7 +15,7 @@ export default () => {
     const handleClick = async (comName: string) => {
         const jsonPath = `${PLUGINDIR}/plugins/${comName}/config.json`;
         const jsonData = await import(jsonPath);
-        setConfig(jsonData.default);
+        setConfig(omit(jsonData?.default || {}, '$schema') as typeof jsonData.default);
     };
 
     const handleClose = () => {

@@ -16,12 +16,14 @@ const DEFAULT_RANGE = 10;
 const TICK_FONTSIZE: Record<string, number> = {
     min: 10,
     max: 16,
+    default: 20,
     percent: 0.03,
 };
 /** value fontsize */
 const VALUE_FONTSIZE: Record<string, number> = {
     min: 14,
-    max: 80,
+    max: 60,
+    default: 13,
     percent: 0.07,
 };
 
@@ -30,10 +32,12 @@ const View = (props: Props) => {
     const { entity, title, time, metrics } = config || {};
     const chartRef = useRef<HTMLCanvasElement>(null);
     const observerRef = useRef<any>(null);
+    const gaugeChartRef = useRef<HTMLDivElement>(null);
+    const lastContentRect = useRef<any>(null);
     const { purple, grey } = useTheme();
     const { aggregateHistoryData } = useSource({ entity, metrics, time });
-    const [valueFontSize, setValueFontSize] = useState<number>(28);
-    const [tickFontSize, setTickFontSize] = useState<number>(13);
+    const [valueFontSize, setValueFontSize] = useState<number>(VALUE_FONTSIZE.default);
+    const [tickFontSize, setTickFontSize] = useState<number>(TICK_FONTSIZE.default);
 
     // Calculate the most suitable maximum scale value
     const calculateMaxTickValue = (maxValue: number) => {
@@ -174,6 +178,11 @@ const View = (props: Props) => {
                         tickFontSize,
                         tickColor: grey[700],
                     },
+                    layout: {
+                        padding: {
+                            bottom: 5,
+                        },
+                    },
                 },
             });
             return () => chart?.destroy();
@@ -204,32 +213,44 @@ const View = (props: Props) => {
         debounce(entries => {
             for (const entry of entries) {
                 const cr = entry.contentRect;
-                setValueFontSize(
-                    Math.min(
-                        Math.max(cr.width * VALUE_FONTSIZE.percent, VALUE_FONTSIZE.min),
-                        VALUE_FONTSIZE.max,
-                    ),
-                );
+                if (lastContentRect.current?.height === cr.height) {
+                    return;
+                }
+                lastContentRect.current = cr;
+                if (chartRef.current) {
+                    setValueFontSize(
+                        Math.min(
+                            Math.max(
+                                chartRef.current.width * VALUE_FONTSIZE.percent,
+                                VALUE_FONTSIZE.min,
+                            ),
+                            VALUE_FONTSIZE.max,
+                        ),
+                    );
 
-                setTickFontSize(
-                    Math.min(
-                        Math.max(cr.width * TICK_FONTSIZE.percent, TICK_FONTSIZE.min),
-                        TICK_FONTSIZE.max,
-                    ),
-                );
+                    setTickFontSize(
+                        Math.min(
+                            Math.max(
+                                chartRef.current.width * TICK_FONTSIZE.percent,
+                                TICK_FONTSIZE.min,
+                            ),
+                            TICK_FONTSIZE.max,
+                        ),
+                    );
+                }
             }
-        }, 200),
+        }, 400),
     );
 
     useEffect(() => {
         // observer chart resize
-        if (chartRef.current) {
+        if (gaugeChartRef.current) {
             observerRef.current = new ResizeObserver(handleResize);
-            observerRef.current.observe(chartRef.current);
+            observerRef.current.observe(gaugeChartRef.current);
         }
         return () => {
-            if (chartRef.current) {
-                observerRef?.current?.unobserve(chartRef.current);
+            if (gaugeChartRef.current) {
+                observerRef?.current?.unobserve(gaugeChartRef.current);
             }
         };
     }, [chartRef.current]);
@@ -237,7 +258,7 @@ const View = (props: Props) => {
     return (
         <div className="ms-gauge-chart">
             <Tooltip className="ms-gauge-chart__header" autoEllipsis title={title} />
-            <div className="ms-gauge-chart__content">
+            <div ref={gaugeChartRef} className="ms-gauge-chart__content">
                 <canvas id="gaugeChart" ref={chartRef} />
             </div>
         </div>

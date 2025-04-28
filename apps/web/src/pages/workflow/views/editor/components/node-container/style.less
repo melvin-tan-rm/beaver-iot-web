@@ -55,25 +55,15 @@
             padding-right: @padding-lg + @padding-xxs;
         }
 
-        .@{prefix}-workflow-node-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            margin-right: @margin-sm;
-            color: var(--white);
-            border-radius: @border-radius-sm;
-
-            .@{mui-prefix}SvgIcon-root {
-                font-size: @font-size-lg;
-            }
+        .@{prefix}-workflow-node-avatar {
+            margin-right: @margin-xs;
         }
 
         .@{prefix}-workflow-node-title {
             flex: 1;
             width: 0;
             font-weight: @font-weight-medium;
+            text-align: left;
 
             .text-size(@font-size-base);
         }

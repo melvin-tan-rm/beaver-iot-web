@@ -1,4 +1,5 @@
 {
+    "$schema": "../../schema.json",
     "type": "switch",
     "name": "Switch",
     "class": "operate",
@@ -19,7 +20,6 @@
                     "style": "width: 100%",
                     "getDataUrl": "",
                     "componentProps": {
-                        "size": "small",
                         "entityType": ["SERVICE", "PROPERTY"],
                         "entityValueTypes": ["BOOLEAN"],
                         "entityAccessMods": ["W", "RW"],
@@ -39,7 +39,6 @@
                     "key": "title",
                     "defaultValue": "Label",
                     "componentProps": {
-                        "size": "small",
                         "inputProps": {
                             "maxLength": 35
                         }
@@ -55,19 +54,13 @@
                     "type": "iconSelect",
                     "key": "offIcon",
                     "style": "flex: 1;padding-right: 12px;",
-                    "defaultValue": "WifiOffIcon",
-                    "componentProps": {
-                        "size": "small"
-                    }
+                    "defaultValue": "WifiOffIcon"
                 },
                 {
                     "type": "iconColorSelect",
                     "key": "offIconColor",
                     "style": "flex: 1;",
-                    "defaultValue": "#9B9B9B",
-                    "componentProps": {
-                        "size": "small"
-                    }
+                    "defaultValue": "#9B9B9B"
                 }
             ]
         },
@@ -79,19 +72,13 @@
                     "type": "iconSelect",
                     "key": "onIcon",
                     "style": "flex: 1;padding-right: 12px;",
-                    "defaultValue": "WifiIcon",
-                    "componentProps": {
-                        "size": "small"
-                    }
+                    "defaultValue": "WifiIcon"
                 },
                 {
                     "type": "iconColorSelect",
                     "key": "onIconColor",
                     "style": "flex: 1;",
-                    "defaultValue": "#8E66FF",
-                    "componentProps": {
-                        "size": "small"
-                    }
+                    "defaultValue": "#8E66FF"
                 }
             ]
         }

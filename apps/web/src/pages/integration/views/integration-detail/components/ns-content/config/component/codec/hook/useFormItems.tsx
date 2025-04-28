@@ -23,7 +23,7 @@ const useFormItems = () => {
 
     // Check http or https address
     const checkValidHttpAddr: TValidator = rule => {
-        const message = rule?.message || getErrorMessage('valid_http_address');
+        const message = rule?.message || getErrorMessage('common.invalid_http_address');
         return value => {
             try {
                 if (value && !new URL(value)) {

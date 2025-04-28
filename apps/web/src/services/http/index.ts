@@ -1,4 +1,4 @@
-export { isRequestSuccess, getResponseData, awaitWrap, API_PREFIX } from './client';
+export { isRequestSuccess, getResponseData, awaitWrap, pLimit, API_PREFIX } from './client';
 
 export { default as deviceAPI, type DeviceDetail, type DeviceAPISchema } from './device';
 
@@ -22,3 +22,10 @@ export {
 } from './user';
 
 export { default as embeddedNSApi, type GatewayDetailType } from './embedded-ns';
+export {
+    default as credentialsApi,
+    type CredentialsAdditionalData,
+    type CredentialEncryption,
+    type CredentialType,
+    type CredentialAPISchema,
+} from './credentials';

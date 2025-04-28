@@ -10,13 +10,11 @@
     }
 
     &.readonly {
-        .@{prefix}-workflow-panel-config-body {
-            pointer-events: none;
-        }
-
-        .@{prefix}-node-form-group-title,
-        .@{prefix}-code-editor-header__operations {
-            pointer-events: all;
+        .@{prefix}-node-form-group {
+            .@{prefix}-node-form-group-actions,
+            .@{prefix}-node-form-group-item {
+                pointer-events: none;
+            }
         }
     }
 }
@@ -39,20 +37,6 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-        }
-
-        .icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            color: var(--white);
-            border-radius: @border-radius-sm;
-
-            .@{mui-prefix}SvgIcon-root {
-                font-size: inherit;
-            }
         }
 
         .title {
@@ -123,18 +107,23 @@
             }
 
             .@{prefix}-node-form-group-item:last-child {
-                > .@{mui-prefix}FormControl-root:only-child {
+                > .@{mui-prefix}FormControl-root:last-child {
                     margin-bottom: 0;
                 }
+            }
+
+            &-header {
+                display: flex;
+                justify-content: space-between;
             }
 
             &-title {
                 display: flex;
                 gap: @margin-xxs;
                 align-items: center;
-                margin-bottom: @margin-md;
+                margin-bottom: @margin-sm;
                 font-weight: @font-weight-medium;
-                .text-size(@font-size-lg);
+                .text-size(@font-size-base);
 
                 .@{prefix}-tooltip {
                     display: flex;

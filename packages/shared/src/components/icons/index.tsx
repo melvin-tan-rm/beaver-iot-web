@@ -130,6 +130,12 @@ export {
     BackHandOutlined as BackHandOutlinedIcon,
     CloudSyncOutlined as CloudSyncOutlinedIcon,
     TuneOutlined as TuneOutlinedIcon,
+    Image as ImageIcon,
+    Output as OutputIcon,
+    Http as HttpIcon,
+    ExitToApp as ExitToAppIcon,
+    AutoAwesome as AutoAwesomeIcon,
+    // ImageOutlined as ImageOutlinedIcon,
     StarOutline as StarOutlinedIcon,
     Star as StarIcon,
 } from '@mui/icons-material';

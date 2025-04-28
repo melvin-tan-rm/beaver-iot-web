@@ -83,6 +83,10 @@ const EntityForm = forwardRef((props: EntityFormProps, ref: any) => {
                     rules.max = { value: attr.max, message: `最大值为${attr.max}` };
                 }
                 break;
+            case entityType.boolean:
+                // if switch has required will validate fail then click not response
+                rules.required = false;
+                break;
             default:
         }
         return rules;

@@ -1,40 +1,50 @@
 import { useMemo, useState, useCallback, useEffect, memo } from 'react';
 import { useMemoizedFn } from 'ahooks';
-
 import { BrokenImageIcon } from '@milesight/shared/src/components';
-import { isURL } from '@milesight/shared/src/utils/validators/asserts';
-
-import { entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
+import {
+    entityAPI,
+    awaitWrap,
+    isRequestSuccess,
+    getResponseData,
+    API_PREFIX,
+} from '@/services/http';
 import ws, { getExChangeTopic } from '@/services/ws';
+import { ImageConfigType } from '../typings';
 
 import './style.less';
 
 /**
  * Determines whether is valid base64
  */
-const isBase64 = (url: string): boolean => {
-    if (!url) return false;
+// const isBase64 = (url: string): boolean => {
+//     if (!url) return false;
 
-    try {
-        return window.btoa(window.atob(url)) === url;
-    } catch {
-        return false;
-    }
-};
+//     try {
+//         return window.btoa(window.atob(url)) === url;
+//     } catch {
+//         return false;
+//     }
+// };
 
 export interface ViewProps {
-    config: {
-        entity?: EntityOptionType;
-        label?: string;
-    };
+    config: ImageConfigType;
     configJson: {
         isPreview?: boolean;
     };
 }
 
+// Generate full url for uploading file
+const genFullUrl = (path?: string) => {
+    if (!path) return '';
+    // const origin = apiOrigin.endsWith('/') ? apiOrigin.slice(0, -1) : apiOrigin;
+    return path.startsWith('http')
+        ? path
+        : `${API_PREFIX}${path.startsWith('/') ? '' : '/'}${path}`;
+};
+
 const View = (props: ViewProps) => {
     const { config, configJson } = props;
-    const { entity, label } = config || {};
+    const { label, dataType, entity, file, url } = config || {};
     const { isPreview } = configJson || {};
 
     const [imageSrc, setImageSrc] = useState('');
@@ -57,24 +67,39 @@ const View = (props: ViewProps) => {
         }
 
         const entityStatus = getResponseData(res);
-        setImageSrc(entityStatus?.value || '');
+        setImageSrc(!entityStatus?.value ? '' : `${entityStatus.value}`);
     }, [entity]);
 
     /**
-     * Get the state of the selected entity
+     * Set image src based on dataType
      */
     useEffect(() => {
-        (async () => {
-            if (entity) {
-                requestEntityStatus();
-            } else {
+        setImageFailed(false);
+        switch (dataType) {
+            case 'upload':
+                setImageSrc(genFullUrl(file?.url) || '');
+                break;
+            case 'url':
+                setImageSrc(url || '');
+                break;
+            default:
                 /**
-                 * No entity, initialization data
+                 * Compatible with old data
+                 *
+                 * If the dataType is `undefined` / `entity`, check the entity is empty
+                 * and get the status.
                  */
-                setImageSrc('');
-            }
-        })();
-    }, [entity, requestEntityStatus]);
+                if (entity) {
+                    requestEntityStatus();
+                } else {
+                    /**
+                     * No entity, initialization data
+                     */
+                    setImageSrc('');
+                }
+                break;
+        }
+    }, [dataType, entity, file, url, requestEntityStatus]);
 
     /**
      * webSocket subscription theme
@@ -102,21 +127,18 @@ const View = (props: ViewProps) => {
     /**
      * Determines whether is valid image src
      */
-    const convertImageSrc = useMemo(() => {
-        setImageFailed(false);
+    // const convertImageSrc = useMemo(() => {
+    //     setImageFailed(false);
 
-        if (
-            isURL(imageSrc, {
-                protocols: ['http', 'https'],
-                require_protocol: true,
-            }) ||
-            isBase64(imageSrc)
-        ) {
-            return imageSrc;
-        }
+    //     if (
+    //         isBase64(imageSrc) ||
+    //         /(.?\/)+.+(\.(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif))$/i.test(imageSrc)
+    //     ) {
+    //         return imageSrc;
+    //     }
 
-        return '';
-    }, [imageSrc]);
+    //     return '';
+    // }, [imageSrc]);
 
     /**
      * handle image loading error failed
@@ -131,12 +153,12 @@ const View = (props: ViewProps) => {
         <div className={`image-wrapper ${isPreview ? 'image-wrapper__preview' : ''}`}>
             {label && <div className="image-wrapper__header">{label}</div>}
             <div className="image-wrapper__content">
-                {!convertImageSrc || imageFailed ? (
+                {!imageSrc || imageFailed ? (
                     <BrokenImageIcon className="image-wrapper__empty_icon" />
                 ) : (
                     <img
                         className="image-wrapper__img"
-                        src={convertImageSrc}
+                        src={imageSrc}
                         alt=""
                         onError={handleImageFailed}
                     />

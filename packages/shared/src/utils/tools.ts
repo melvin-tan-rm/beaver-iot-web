@@ -730,6 +730,22 @@ export const checkPrivateProperty = (key?: string) => {
 };
 
 /**
+ * Safely parses a JSON string and returns the parsed value or a default
+ * @param str JSON string to parse
+ * @param defaultValue Fallback value when parsing fails (optional)
+ * @returns Parsed object or defaultValue/undefined when failed
+ */
+export const safeJsonParse = <T>(str?: string, defaultValue?: T): T | undefined => {
+    if (!str) return defaultValue;
+
+    try {
+        return JSON.parse(str);
+    } catch {
+        return defaultValue;
+    }
+};
+
+/**
  * Converts hexadecimal colors to rgba colors with transparency
  */
 export const hexToRgba = (hex: string, alpha: number) => {

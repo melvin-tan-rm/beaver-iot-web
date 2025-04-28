@@ -1,7 +1,11 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { cloneDeep, pickBy } from 'lodash-es';
-import { type WorkflowAPISchema, type FlowNodeTraceInfo } from '@/services/http';
+import {
+    type WorkflowAPISchema,
+    type FlowNodeTraceInfo,
+    type CredentialAPISchema,
+} from '@/services/http';
 import { basicNodeConfigs } from '../../config';
 import type { NodesDataValidResult } from './hooks';
 import type { NodeConfigItem, NodeDataValidator } from './typings';
@@ -12,6 +16,9 @@ type DynamicValidatorItem = {
     fieldName: string;
     validators: NodeDataValidator[] | null;
 };
+
+type CredentialType = CredentialAPISchema['getDefaultCredential']['request']['credentialsType'];
+type CredentialData = CredentialAPISchema['getDefaultCredential']['response'];
 
 export interface FlowStore {
     selectedNode?: WorkflowNode;
@@ -50,6 +57,9 @@ export interface FlowStore {
      */
     runLogs?: WorkflowAPISchema['getLogList']['response']['content'];
 
+    /**
+     * Nodes Data Valid Result
+     */
     logDetail?: {
         flowData?: Pick<WorkflowSchema, 'nodes' | 'edges'>;
         traceInfos: PartialOptional<FlowNodeTraceInfo, 'start_time' | 'time_cost'>[];
@@ -63,6 +73,18 @@ export interface FlowStore {
      * key: `${nodeId}.${nodeType}.${fieldName}`
      */
     dynamicValidators?: Record<`${string}.${WorkflowNodeType}.${string}`, DynamicValidatorItem>;
+
+    /**
+     * Credentials
+     */
+    credentials?: Partial<Record<CredentialType, CredentialData>>;
+
+    mqttCredentials?:
+        | null
+        | (CredentialAPISchema['getMqttCredential']['response'] &
+              CredentialAPISchema['getMqttBrokerInfo']['response']);
+
+    httpCredentials?: null | CredentialAPISchema['getDefaultCredential']['response'];
 
     isLogMode: () => boolean;
 
@@ -94,11 +116,14 @@ export interface FlowStore {
         nodeId: string,
         nodeType: WorkflowNodeType,
     ) => Record<`${WorkflowNodeType}.${string}`, Record<string, NodeDataValidator>>;
+
+    setMqttCredentials: (credentials?: FlowStore['mqttCredentials']) => void;
+    setHttpCredentials: (credentials?: FlowStore['httpCredentials']) => void;
 }
 
 const useFlowStore = create(
     immer<FlowStore>((set, get) => ({
-        nodeConfigs: pickBy(basicNodeConfigs, item => !item.isRemote) as FlowStore['nodeConfigs'],
+        nodeConfigs: basicNodeConfigs,
 
         testLogs: [],
 
@@ -124,7 +149,7 @@ const useFlowStore = create(
 
                     return {
                         type: config.name,
-                        label: config.title,
+                        label: config.title || config.name,
                         ...basicConfig,
                         category: cat,
                         testable: schema?.component?.testable,
@@ -142,6 +167,24 @@ const useFlowStore = create(
                 },
                 {} as FlowStore['nodeConfigs'],
             );
+
+            // Mock data
+            // result.mqtt = {
+            //     ...basicNodeConfigs.mqtt,
+            //     schema: {
+            //         properties: {
+            //             // @ts-ignore
+            //             topic: {
+            //                 name: 'topic',
+            //                 type: 'string',
+            //                 required: true,
+            //                 displayName: 'Topic',
+            //                 uiComponentGroup: 'Topic Subscription',
+            //                 uiComponent: 'mqttTopicInput',
+            //             },
+            //         },
+            //     },
+            // };
 
             set({ nodeConfigs: result });
         },
@@ -219,6 +262,18 @@ const useFlowStore = create(
             );
 
             return result;
+        },
+
+        setMqttCredentials(credentials) {
+            set(state => {
+                state.mqttCredentials = credentials;
+            });
+        },
+
+        setHttpCredentials(credentials) {
+            set(state => {
+                state.httpCredentials = credentials;
+            });
         },
     })),
 );

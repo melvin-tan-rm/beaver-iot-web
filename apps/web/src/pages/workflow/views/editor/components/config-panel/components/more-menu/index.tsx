@@ -40,16 +40,18 @@ const MoreMenu = () => {
                         </div>
                         <div className="node-info-item-content">
                             <Tooltip autoEllipsis title={selectedNode?.id} />
-                            <IconButton
-                                onClick={e => {
-                                    handleCopy(
-                                        selectedNode?.id || '',
-                                        (e.target as HTMLElement).parentElement || undefined,
-                                    );
-                                }}
-                            >
-                                <ContentCopyIcon sx={{ fontSize: 16 }} />
-                            </IconButton>
+                            <Tooltip title={getIntlText('common.label.copy')}>
+                                <IconButton
+                                    onClick={e => {
+                                        handleCopy(
+                                            selectedNode?.id || '',
+                                            (e.target as HTMLElement).parentElement || undefined,
+                                        );
+                                    }}
+                                >
+                                    <ContentCopyIcon sx={{ fontSize: 16 }} />
+                                </IconButton>
+                            </Tooltip>
                         </div>
                     </div>
                 </div>

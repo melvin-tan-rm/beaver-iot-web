@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useControllableValue } from 'ahooks';
-import { isEmpty } from 'lodash-es';
+import { cloneDeep } from 'lodash-es';
 
 import { useI18n } from '@milesight/shared/src/hooks';
 import { MenuList, MenuItem, ListSubheader } from '@mui/material';
@@ -12,6 +12,10 @@ import useWorkflow, {
 import './style.less';
 
 export interface UpstreamNodeListProps {
+    /**
+     * Filter function to filter every upstream nodes
+     */
+    filter?: (data: FlattenNodeParamType) => boolean;
     value?: FlattenNodeParamType;
     onChange: (value: FlattenNodeParamType) => void;
 }
@@ -19,7 +23,7 @@ export interface UpstreamNodeListProps {
 /**
  * Upstream node list
  */
-const UpstreamNodeList: React.FC<UpstreamNodeListProps> = props => {
+const UpstreamNodeList: React.FC<UpstreamNodeListProps> = ({ filter, ...props }) => {
     const { getUpstreamNodeParams } = useWorkflow();
     const [upstreamNodes, flattenUpstreamNodes] = getUpstreamNodeParams();
     const { getIntlText } = useI18n();
@@ -27,7 +31,28 @@ const UpstreamNodeList: React.FC<UpstreamNodeListProps> = props => {
     const [state, setState] = useControllableValue<FlattenNodeParamType>(props);
 
     const renderedUpstreamNodes = useMemo(() => {
-        return upstreamNodes?.reduce((acc, node) => {
+        const nodes = cloneDeep(upstreamNodes);
+
+        if (filter) {
+            nodes?.forEach((node, index) => {
+                node.outputs.forEach((output, idx) => {
+                    const data = {
+                        ...node,
+                        valueKey: output.key,
+                        valueName: output.name,
+                        valueType: output.type,
+                        valueTypeLabel: output.typeLabel,
+                        enums: output.enums,
+                    };
+
+                    if (!filter(data)) {
+                        nodes[index].outputs.splice(idx, 1);
+                    }
+                });
+            });
+        }
+
+        return nodes?.reduce((acc, node) => {
             if (!node.outputs?.length) return acc;
 
             acc.push(
@@ -59,24 +84,18 @@ const UpstreamNodeList: React.FC<UpstreamNodeListProps> = props => {
             });
             return acc;
         }, [] as React.ReactNode[]);
-    }, [state, upstreamNodes, flattenUpstreamNodes, setState]);
+    }, [state, upstreamNodes, flattenUpstreamNodes, filter, setState]);
 
-    const renderList = () => {
-        if (isEmpty(upstreamNodes) || isEmpty(flattenUpstreamNodes)) {
-            return (
-                <Empty
-                    className="ms-upstream-node-list__empty"
-                    size="small"
-                    type="nodata"
-                    text={getIntlText('common.label.empty')}
-                />
-            );
-        }
-
-        return <MenuList>{renderedUpstreamNodes}</MenuList>;
-    };
-
-    return renderList();
+    return renderedUpstreamNodes?.length ? (
+        <MenuList>{renderedUpstreamNodes}</MenuList>
+    ) : (
+        <Empty
+            className="ms-upstream-node-list__empty"
+            size="small"
+            type="nodata"
+            text={getIntlText('common.label.empty')}
+        />
+    );
 };
 
 export default UpstreamNodeList;

@@ -13,12 +13,15 @@
         "import": "node --import tsx ./scripts/index.ts import",
         "export": "node --import tsx ./scripts/index.ts export",
         "exportall": "node ./scripts/index.js export --all",
+        "phrase:job": "node --import tsx ./scripts/index.ts phrase --job",
+        "phrase:import": "node --import tsx ./scripts/index.ts phrase --import",
         "lint": "eslint ./src --cache --cache-location=./node_modules/.cache/.eslintcache",
         "lint:fix": "eslint ./src --fix --quiet --cache --cache-location=./node_modules/.cache/.eslintcache",
         "ts-check": "tsc --noEmit"
     },
     "devDependencies": {
         "@babel/core": "^7.22.10",
+        "@milesight/scripts": "workspace:*",
         "@milesight/spec": "workspace:*",
         "@rollup/plugin-babel": "^6.0.3",
         "@rollup/plugin-dynamic-import-vars": "^2.0.5",
@@ -28,6 +31,7 @@
         "@types/fs-extra": "^9.0.13",
         "@types/lodash": "^4.14.187",
         "@types/inquirer": "^8.1.3",
+        "axios": "^1.7.7",
         "chalk": "^4.1.2",
         "commander": "^8.3.0",
         "eslint": "^8.56.0",

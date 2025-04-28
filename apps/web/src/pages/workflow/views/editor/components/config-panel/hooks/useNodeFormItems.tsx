@@ -8,10 +8,15 @@ import {
     Select,
     Switch,
     MenuItem,
+    IconButton,
 } from '@mui/material';
 import { cloneDeep } from 'lodash-es';
+import { useCopy } from '@milesight/shared/src/hooks';
+import { KeyboardArrowDownIcon, ContentCopyIcon } from '@milesight/shared/src/components';
+import { ActionInput, Tooltip } from '@/components';
 import { NodeFormItemValueType } from '../../../typings';
 import useFlowStore from '../../../store';
+import useCredential from '../../../hooks/useCredential';
 import {
     CodeEditor,
     ConditionsInput,
@@ -25,6 +30,7 @@ import {
     ServiceParamAssignInput,
     EmailSendSource,
     EmailRecipients,
+    HttpBodyInput,
     type EntityAssignSelectProps,
     type EntityMultipleSelectProps,
 } from '../components';
@@ -65,6 +71,8 @@ const assignerNodeEntityFilterModel: EntityAssignSelectProps['filterModel'] = {
 
 const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
     const nodeConfigs = useFlowStore(state => state.nodeConfigs);
+    const { mqttCredentials } = useCredential();
+    const { handleCopy } = useCopy();
 
     const formConfigs = useMemo(() => {
         if (!Object.keys(nodeConfigs).length) return {};
@@ -147,7 +155,8 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                 formItem.render = ({ field: { onChange, value } }) => {
                                     return (
                                         <ParamInput
-                                            // required={required}
+                                            required={required}
+                                            showRequired={nodeType === 'trigger'}
                                             isOutput={nodeType === 'code' || nodeType === 'service'}
                                             value={value}
                                             onChange={onChange}
@@ -160,7 +169,9 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                 formItem.render = ({ field: { onChange, value } }) => {
                                     return (
                                         <ParamAssignInput
-                                            required={required}
+                                            required={!!required}
+                                            minCount={1}
+                                            disableInput={nodeType === 'output'}
                                             value={value}
                                             onChange={onChange}
                                         />
@@ -279,11 +290,71 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                 };
                                 break;
                             }
+                            case 'httpBodyInput': {
+                                formItem.render = ({ field: { onChange, value } }) => {
+                                    return (
+                                        <HttpBodyInput
+                                            required={required}
+                                            value={value}
+                                            onChange={onChange}
+                                        />
+                                    );
+                                };
+                                break;
+                            }
+                            case 'mqttTopicInput': {
+                                const { username = '' } = mqttCredentials || {};
+                                formItem.render = ({ field: { onChange, value } }) => {
+                                    const topicPrefix = `beaver-iot/${readonly ? '-' : username}/`;
+                                    return (
+                                        <ActionInput
+                                            // size="small"
+                                            autoComplete="off"
+                                            label={displayName}
+                                            required={required}
+                                            value={value}
+                                            onChange={onChange}
+                                            startAdornment={
+                                                <Tooltip
+                                                    autoEllipsis
+                                                    title={topicPrefix}
+                                                    style={{ maxWidth: '120px', fontSize: 14 }}
+                                                />
+                                            }
+                                            endAdornment={
+                                                <IconButton
+                                                    aria-label="copy text"
+                                                    disabled={!value}
+                                                    onClick={e => {
+                                                        handleCopy(
+                                                            `${topicPrefix}${value || ''}`,
+                                                            (e.target as HTMLElement)
+                                                                ?.parentElement,
+                                                        );
+                                                    }}
+                                                >
+                                                    <ContentCopyIcon />
+                                                </IconButton>
+                                            }
+                                        />
+                                    );
+                                };
+                                break;
+                            }
                             default: {
                                 break;
                             }
                         }
-                    } else if (enums?.length) {
+                    } else if (enums && (enums.length || Object.keys(enums).length)) {
+                        const options = !Array.isArray(enums)
+                            ? enums
+                            : enums.reduce(
+                                  (acc, item) => {
+                                      acc[item] = item;
+                                      return acc;
+                                  },
+                                  {} as Record<string, string>,
+                              );
                         formItem.render = ({ field: { onChange, value } }) => {
                             return (
                                 <FormControl fullWidth size="small" sx={{ my: 1.5 }}>
@@ -294,13 +365,14 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                         notched
                                         label={displayName}
                                         labelId={`select-label-${name}`}
+                                        IconComponent={KeyboardArrowDownIcon}
                                         required={required}
-                                        value={value}
+                                        value={value || ''}
                                         onChange={onChange}
                                     >
-                                        {Object.entries(enums || {}).map(([key, value]) => (
-                                            <MenuItem key={value} value={key}>
-                                                {value}
+                                        {Object.entries(options).map(([key, label]) => (
+                                            <MenuItem key={key} value={key}>
+                                                {label}
                                             </MenuItem>
                                         ))}
                                     </Select>
@@ -356,7 +428,7 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
         });
 
         return result;
-    }, [nodeConfigs, nodeId, readonly]);
+    }, [nodeConfigs, nodeId, readonly, mqttCredentials, handleCopy]);
 
     return !nodeType ? [] : formConfigs[nodeType] || [];
 };

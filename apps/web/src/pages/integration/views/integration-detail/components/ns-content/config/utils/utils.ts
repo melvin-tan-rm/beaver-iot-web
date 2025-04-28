@@ -7,6 +7,8 @@ interface RequestOptions<T> {
     pageSize: number;
     /** page number */
     pageNumber: number;
+    /** search condition result */
+    filterCondition: (item: T, search: string) => boolean;
 }
 
 /** font page pagination */
@@ -15,14 +17,13 @@ export const paginationList = <T>({
     search,
     pageSize,
     pageNumber,
+    filterCondition,
 }: RequestOptions<T>): SearchResponseType<T[]> => {
     let list: T[] = dataList;
     // filter search
     if (search) {
-        list = list.filter((item: any) => {
-            return ((item?.name || '') as string)
-                .toLocaleLowerCase()
-                .includes(search.toLocaleLowerCase());
+        list = list.filter((item: T) => {
+            return filterCondition(item, search);
         });
     }
     const content = list?.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);

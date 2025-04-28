@@ -33,4 +33,15 @@ declare type ConfigType = {
         /** Ignore the new key that matching rules (Not affect the error key mapping)  */
         ignoreRules?: string[];
     };
+    phrase?: {
+        fileFormat?: string;
+        baseUrl: string;
+        jobTarget: string;
+        importTarget: string;
+        defaultLocale: string;
+    };
 };
+
+declare type ApiResponse = Record<string, any>;
+
+declare type PhraseJobState = 'draft' | 'in_progress' | 'completed';

@@ -3,11 +3,8 @@ import { useReactFlow, useViewport } from '@xyflow/react';
 import { Menu, MenuItem, type MenuProps } from '@mui/material';
 import { useDebounceFn } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
-import {
-    nodeCategoryConfigs,
-    basicNodeConfigs,
-    type NodeConfigItemType,
-} from '@/pages/workflow/config';
+import { nodeCategoryConfigs, type NodeConfigItemType } from '@/pages/workflow/config';
+import { NodeAvatar } from '@/pages/workflow/components';
 import useFlowStore from '../../store';
 import useInteractions, { type AddNodeClosestPayloadParam } from '../../hooks/useInteractions';
 import './style.less';
@@ -33,7 +30,19 @@ const NodeMenu = ({
     ...menuProps
 }: Props) => {
     const { getIntlText } = useI18n();
+    const { getNodes, screenToFlowPosition } = useReactFlow<WorkflowNode, WorkflowEdge>();
+
+    // ---------- Generate Menu options ----------
     const nodeConfigs = useFlowStore(state => state.nodeConfigs);
+    const showOutputNode = useMemo(() => {
+        const nodes = getNodes();
+        const hasTriggerNode = nodes.some(node => node.type === 'trigger');
+        const hasOutputNode = nodes.some(node => node.type === 'output');
+
+        return hasTriggerNode && !hasOutputNode;
+        // Recalculate when open state change
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, getNodes]);
     const menuOptions = useMemo(() => {
         const result: Partial<
             Record<
@@ -50,6 +59,8 @@ const NodeMenu = ({
             const cateConfig = nodeCategoryConfigs[category];
 
             if (!category || category === 'entry') return;
+            if (item.type === 'output' && !showOutputNode) return;
+
             result[category] = result[category] || [];
             result[category].push({
                 ...item,
@@ -61,7 +72,7 @@ const NodeMenu = ({
         });
 
         return result;
-    }, [nodeConfigs, getIntlText]);
+    }, [nodeConfigs, showOutputNode, getIntlText]);
 
     // ---------- Menu Open ----------
     const { zoom } = useViewport();
@@ -77,7 +88,6 @@ const NodeMenu = ({
     useLayoutEffect(() => setInnerOpen(!!open), [open]);
 
     // ---------- Menu Item Click ----------
-    const { screenToFlowPosition } = useReactFlow<WorkflowNode, WorkflowEdge>();
     const { addNode } = useInteractions();
     const { run: handleClick } = useDebounceFn(
         (e: React.MouseEvent<HTMLLIElement, MouseEvent>, type: WorkflowNodeType) => {
@@ -133,9 +143,12 @@ const NodeMenu = ({
                                 handleClick(e, menu.type);
                             }}
                         >
-                            <span className="icon" style={{ backgroundColor: menu.iconBgColor }}>
-                                {menu.icon}
-                            </span>
+                            <NodeAvatar
+                                name={menu.nodeName}
+                                type={menu.type}
+                                icon={menu.icon}
+                                iconBgColor={menu.iconBgColor}
+                            />
                             <span className="title">{menu.nodeName}</span>
                         </MenuItem>
                     )),

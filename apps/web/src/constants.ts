@@ -56,6 +56,13 @@ export enum PERMISSIONS {
      */
     INTEGRATION_MODULE = 'integration',
     INTEGRATION_VIEW = 'integration.view',
+
+    /**
+     * credentials module
+     */
+    CREDENTIAL_MODULE = 'credentials',
+    CREDENTIAL_MODULE_VIEW = 'credentials.view',
+    CREDENTIAL_MODULE_EDIT = 'credentials.edit',
 }
 
 // Entity Pattern
@@ -74,12 +81,19 @@ export enum ENTITY_TYPE {
 
 // Entity Value Type
 export enum ENTITY_VALUE_TYPE {
+    LONG = 'LONG',
     STRING = 'STRING',
-    long = 'LONG',
+    DOUBLE = 'DOUBLE',
     BOOLEAN = 'BOOLEAN',
-    BINARY = 'BINARY',
+}
+
+// Entity Data Value Type
+export enum ENTITY_DATA_VALUE_TYPE {
+    LONG = 'LONG',
+    STRING = 'STRING',
+    BOOLEAN = 'BOOLEAN',
+    DOUBLE = 'DOUBLE',
     OBJECT = 'OBJECT',
-    ENUM = 'ENUM',
 }
 
 export const entityTypeOptions = [

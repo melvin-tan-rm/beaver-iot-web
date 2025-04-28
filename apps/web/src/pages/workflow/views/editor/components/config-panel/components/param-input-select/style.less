@@ -2,20 +2,27 @@
     position: relative;
 
     .@{mui-prefix}FormControl-root {
-        margin: 0;
+        margin: 0 !important;
     }
 
     .@{mui-prefix}InputBase-root {
         padding-right: @padding-xxs;
+
+        .@{mui-prefix}IconButton-sizeSmall {
+            padding: @padding-xxs;
+
+            .@{mui-prefix}SvgIcon-root {
+                font-size: @font-size-lg;
+            }
+        }
     }
 
     & &-chip {
         position: absolute;
-        top: 24px;
+        bottom: @margin-xs;
         left: @margin-sm;
         max-width: calc(100% - 72px);
         border-radius: @border-radius-base;
-        transform: translateY(50%);
 
         .@{mui-prefix}Chip-label {
             .name {
@@ -61,6 +68,12 @@
                 background-color: var(--component-background-gray);
                 border-radius: @border-radius-base;
             }
+        }
+    }
+
+    &.size-small {
+        .@{prefix}-param-input-select-chip {
+            bottom: @margin-xxs;
         }
     }
 }
