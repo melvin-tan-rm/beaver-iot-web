@@ -101,7 +101,7 @@ export default () => {
         }
         xhrDownload({
             assets: url,
-            fileName: 'entity.csv',
+            fileName: `EntityData_${Date.now()}.csv`,
             header: {
                 'Accept-Language': getCurrentComponentLang(),
                 Authorization: getAuthorizationToken(),
