@@ -3,8 +3,8 @@ import * as path from 'path';
 import inquirer from 'inquirer';
 import { Command } from 'commander';
 import { isFileExists } from '@milesight/scripts/src/utils';
-import { pkgRoot } from '../config';
-import { logger } from '../utils/index';
+import { pkgRoot, msgTemplate } from '../config';
+import { logger, parseTemplate } from '../utils/index';
 import {
     phraseClient,
     getProjectLocales,
@@ -14,6 +14,7 @@ import {
     getJobList,
     downloadLocales,
 } from '../services/phrase';
+import { sendMessage } from '../services/wx-work';
 
 const execJobCommand = async (name?: string, options?: ConfigType['phrase']) => {
     if (!phraseClient) return;
@@ -120,6 +121,15 @@ const execJobCommand = async (name?: string, options?: ConfigType['phrase']) => 
         return;
     }
 
+    sendMessage({
+        content: parseTemplate(msgTemplate, {
+            projectName: jobDetail.project.name,
+            deadline: new Date(jobDetail.due_date).toLocaleString(),
+            jobName: jobDetail.name,
+            jobLink:
+                'https://app.phrase.com/accounts/milesight-25154ec8-a55f-438c-a39a-4e7155a5efd5/projects/beaver/jobs',
+        }),
+    });
     logger.success(
         `\n🎉 Successfully created a new Phrase job: <${jobDetail.name}>(ID: ${jobDetail.id})`,
     );
@@ -127,7 +137,6 @@ const execJobCommand = async (name?: string, options?: ConfigType['phrase']) => 
 
 const execImportCommand = async (target?: string, options?: ConfigType['phrase']) => {
     if (!phraseClient) return;
-    console.log('execute import command');
 
     const answers = await inquirer.prompt([
         {

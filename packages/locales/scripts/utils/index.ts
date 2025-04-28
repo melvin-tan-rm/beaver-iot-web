@@ -3,7 +3,7 @@ import fse from 'fs-extra';
 import chalk from 'chalk';
 import { AxiosResponse } from 'axios';
 
-const logger = {
+export const logger = {
     verbose: true,
     log: (...arg: any) => {
         if (logger.verbose) {
@@ -33,7 +33,7 @@ const logger = {
  * @param fileName filename
  * @param data Text content
  */
-const createFile = (fileName: string, data: string | NodeJS.ArrayBufferView) => {
+export const createFile = (fileName: string, data: string | NodeJS.ArrayBufferView) => {
     try {
         fse.ensureFileSync(fileName);
         fse.writeFileSync(fileName, data);
@@ -45,7 +45,7 @@ const createFile = (fileName: string, data: string | NodeJS.ArrayBufferView) => 
 /**
  * Returns the complement of A about B
  */
-function getIncrementBetweenTwo(part: ObjType, whole: ObjType) {
+export function getIncrementBetweenTwo(part: ObjType, whole: ObjType) {
     const res: ObjType = {};
     // eslint-disable-next-line no-restricted-syntax
     for (const key in whole) {
@@ -85,7 +85,16 @@ export const getResponseData = <T extends AxiosResponse<ApiResponse>>(
     return resp?.data;
 };
 
-export { logger, createFile, getIncrementBetweenTwo };
+/**
+ * Parse template strings
+ */
+export const parseTemplate = (
+    template: string,
+    data: Record<string, string>,
+    regx: RegExp = /{{(\w+)}}/g,
+) => {
+    return template.replace(regx, (_, key) => data[key] || '');
+};
 
 export * from './loadBinCommands';
 export * from './sort';
