@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect } from 'react';
 import { Button, IconButton, TextField } from '@mui/material';
-import { isEqual, isNil } from 'lodash-es';
+import { isEqual, isNil, isEmpty } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { AddIcon, CloseIcon } from '@milesight/shared/src/components';
@@ -65,7 +65,7 @@ const ParamAssignInput: React.FC<ParamAssignInputProps> = ({
 
     useLayoutEffect(() => {
         if (isEqual(data, arrayToObject(list))) return;
-        resetList(Object.entries(data || DEFAULT_EMPTY_DATA));
+        resetList(Object.entries(!isEmpty(data) ? data : DEFAULT_EMPTY_DATA));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, resetList]);
 

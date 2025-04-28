@@ -176,7 +176,7 @@ const useExtraRender = ({ isLogMode }: Props = {}) => {
      * Render extra form group in the end of group list
      */
     const renderFormGroupFooter = useCallback(
-        ({ node, data }: RenderGroupFooterProps) => {
+        ({ node }: RenderGroupFooterProps) => {
             switch (node?.type) {
                 case 'http':
                 case 'httpin': {
@@ -263,7 +263,7 @@ const useExtraRender = ({ isLogMode }: Props = {}) => {
 
             return null;
         },
-        [nodeConfigs, mqttCredentials, getIntlText],
+        [nodeConfigs, mqttCredentials, isLogMode, getIntlText],
     );
 
     return {
