@@ -2,7 +2,7 @@ import React from 'react';
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useControllableValue } from 'ahooks';
 
-type ValueType = 'string' | 'number';
+type ValueType = string | number;
 
 export interface Props {
     value?: ValueType;

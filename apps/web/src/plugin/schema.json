@@ -283,7 +283,7 @@
                                                         "type": "array",
                                                         "items": {
                                                             "type": "string",
-                                                            "description": "Entity Type",
+                                                            "description": "Entity Value Data Type",
                                                             "enum": [
                                                                 "STRING",
                                                                 "LONG",
