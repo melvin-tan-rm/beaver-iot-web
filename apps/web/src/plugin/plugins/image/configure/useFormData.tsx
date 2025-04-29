@@ -60,7 +60,7 @@ const useFormData = (value: any, config: CustomComponentProps) => {
                         {
                             type: 'entitySelect',
                             key: 'entity',
-                            title: 'Entity',
+                            title: getIntlText('common.label.entity'),
                             style: 'width: 100%',
                             rules: {
                                 required: true,
@@ -86,7 +86,7 @@ const useFormData = (value: any, config: CustomComponentProps) => {
                             },
                             style: 'margin-bottom: 12px;',
                             componentProps: {
-                                label: 'Upload Image',
+                                label: getIntlText('common.label.upload_image'),
                                 multiple: false,
                                 required: true,
                             },
@@ -103,7 +103,7 @@ const useFormData = (value: any, config: CustomComponentProps) => {
                         {
                             type: 'input',
                             key: 'url',
-                            title: 'URL',
+                            title: getIntlText('common.label.url'),
                             style: 'width: 100%',
                             rules: {
                                 required: true,

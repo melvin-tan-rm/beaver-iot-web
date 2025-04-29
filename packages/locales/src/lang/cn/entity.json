@@ -17,8 +17,12 @@
     "entity.label.entity_type_of_double": "DOUBLE",
     "entity.label.entity_type_of_long": "LONG",
     "entity.label.entity_type_of_string": "STRING",
+    "entity.label.entity_type_of_enum": "ENUM",
     "entity.label.historical_data": "历史数据",
     "entity.label.set_enumeration_items": "设置枚举项",
+    "entity.label.enumeration_items": "枚举项",
     "entity.label.set_value": "设置值",
-    "entity.label.value_source": "值来源"
+    "entity.label.value_source": "值来源",
+    "entity.label.bool_enum_true": "布尔值为true",
+    "entity.label.bool_enum_false": "布尔值为false"
 }

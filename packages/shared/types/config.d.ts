@@ -53,6 +53,8 @@ declare const __APP_VERSION__: string;
 declare const __APP_API_ORIGIN__: string;
 /** Websocket Host */
 declare const __APP_WS_HOST__: string;
+/** App Web Api Proxy */
+declare const __APP_WEB_API_PROXY__: string;
 /** OAuth Client ID */
 declare const __APP_OAUTH_CLIENT_ID__: string;
 /** OAuth Client Secret */

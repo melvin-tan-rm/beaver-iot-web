@@ -17,22 +17,19 @@ export const useMqtt = () => {
     const getDefaultMqttData = useMemoizedFn(
         async (params: AddGateWayType): Promise<MqttCredentialBrokerType | null> => {
             // get credential info
-            const [credentialError, credentialResp] = await awaitWrap(
-                embeddedNSApi.getCredential(params),
-            );
-            const [brokerError, brokerResp] = await awaitWrap(embeddedNSApi.getMqttBrokerInfo());
-
+            const [, credentialResp] = await awaitWrap(embeddedNSApi.getCredential(params));
+            const [, brokerResp] = await awaitWrap(embeddedNSApi.getMqttBrokerInfo());
             let brokerInfo = getResponseData(brokerResp);
-            if (!brokerInfo?.host) {
+            if (!brokerInfo?.host && __APP_WEB_API_PROXY__) {
                 try {
-                    // use request hostname
-                    const urls = new URL(brokerResp?.request?.responseURL);
+                    // use proxy host
+                    const urls = new URL(__APP_WEB_API_PROXY__);
                     brokerInfo = {
                         ...brokerInfo,
                         host: urls.hostname,
                     };
                 } catch (error) {
-                    console.log(error, 'parse url fail');
+                    console.error(error, 'parse url fail');
                 }
             }
             return {

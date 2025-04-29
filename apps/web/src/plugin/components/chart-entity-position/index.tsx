@@ -127,9 +127,11 @@ const ChartEntityPosition: React.FC<ChartEntityPositionProps> = ({
                                 });
                             }}
                         />
-                        <IconButton onClick={() => remove(index)}>
-                            <DeleteOutlineIcon />
-                        </IconButton>
+                        <div className="delete-icon-wrapper">
+                            <IconButton onClick={() => remove(index)}>
+                                <DeleteOutlineIcon />
+                            </IconButton>
+                        </div>
                     </div>
                 ))}
                 {multiple && (

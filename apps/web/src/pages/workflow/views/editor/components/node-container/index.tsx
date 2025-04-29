@@ -8,6 +8,7 @@ import { useI18n } from '@milesight/shared/src/hooks';
 import { CheckCircleIcon, ErrorIcon, LoopIcon } from '@milesight/shared/src/components';
 import { Tooltip } from '@/components';
 import { NodeAvatar } from '@/pages/workflow/components';
+import { getNodeDefaultParams } from '../../helper';
 import useFlowStore from '../../store';
 import Handle from '../handle';
 import './style.less';
@@ -174,14 +175,18 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
                 case 'change': {
                     if (!targetNodeType) return;
                     const nodeConfig = nodeConfigs[targetNodeType];
+                    const data: BaseNodeDataType = {
+                        nodeName: nodeConfig.labelIntlKey
+                            ? getIntlText(nodeConfig.labelIntlKey)
+                            : nodeConfig.label || '',
+                    };
+                    const params = getNodeDefaultParams(nodeConfig);
+                    if (params) data.parameters = params;
+
                     updateNode(nodeId, {
                         type: targetNodeType,
                         componentName: nodeConfig.componentName,
-                        data: {
-                            nodeName: nodeConfig.labelIntlKey
-                                ? getIntlText(nodeConfig.labelIntlKey)
-                                : nodeConfig.label || '',
-                        },
+                        data,
                     });
                     break;
                 }

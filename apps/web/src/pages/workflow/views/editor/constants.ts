@@ -149,3 +149,8 @@ export const FROZEN_NODE_PROPERTY_KEYS: string[] = ['selected', 'dragging'];
  * Pattern for URL parameters
  */
 export const URL_PARAM_PATTERN = /\{([^{}]+)\}/g;
+
+/**
+ * Pattern for URL path
+ */
+export const HTTP_URL_PATH_PATTERN = /^\/[a-zA-Z0-9_/{}]+/;

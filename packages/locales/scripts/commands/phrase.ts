@@ -3,17 +3,20 @@ import * as path from 'path';
 import inquirer from 'inquirer';
 import { Command } from 'commander';
 import { isFileExists } from '@milesight/scripts/src/utils';
-import { pkgRoot } from '../config';
-import { logger } from '../utils/index';
+import { pkgRoot, msgTemplate } from '../config';
+import { logger, parseTemplate, awaitWrap } from '../utils/index';
 import {
     phraseClient,
     getProjectLocales,
+    getProjectDetail,
     uploadLocale,
     createJob,
     addLocalesToJob,
     getJobList,
     downloadLocales,
+    getUploadSuccessStatus,
 } from '../services/phrase';
+import { sendMessage } from '../services/wx-work';
 
 const execJobCommand = async (name?: string, options?: ConfigType['phrase']) => {
     if (!phraseClient) return;
@@ -56,9 +59,18 @@ const execJobCommand = async (name?: string, options?: ConfigType['phrase']) => 
     }
 
     logger.info('\n✳️ Starting to create a new Phrase job...');
+    const startTime = Date.now();
 
     // ---------- Get Project Locales ----------
-    const locales = await getProjectLocales();
+    const [projectErrors, [project, locales] = []] = await awaitWrap(
+        Promise.all([getProjectDetail(), getProjectLocales()]),
+    );
+
+    if (projectErrors) {
+        logger.error(`\n💥 Failed to get project locales, please check and try again.`);
+        return;
+    }
+
     const defaultLocale = locales.find(
         locale => locale.default || locale.code === options.defaultLocale,
     );
@@ -73,61 +85,72 @@ const execJobCommand = async (name?: string, options?: ConfigType['phrase']) => 
     // ---------- Upload New Locale Texts ----------
     const contents = await fse.readFile(targetPath, 'utf-8');
     // const newTexts = JSON.parse(contents);
-    const uploadResult = await uploadLocale({
-        localeId: defaultLocale.id,
-        contents,
-        version: answers.version,
-        fileName: `new-locales-${answers.version}.json`,
-    });
-    // console.log({ uploadResult });
-    if (!uploadResult?.id) {
+    const [uploadError, uploadTask] = await awaitWrap(
+        uploadLocale({
+            localeId: defaultLocale.id,
+            contents,
+            version: answers.version,
+            fileName: `new-locales-${answers.version}.json`,
+        }),
+    );
+    const [uploadResultError, uploadResult] = await awaitWrap(
+        getUploadSuccessStatus(uploadTask.id),
+    );
+
+    if (uploadError || uploadResultError || !uploadTask?.id || uploadResult?.state !== 'success') {
         logger.error(`\n💥 Failed to upload new i18n texts, please check and try again.`);
         return;
     }
+    logger.log(`=> Successfully uploaded new i18n texts to Phrase.`);
 
-    // ---------- Get Uploaded New Locale Keys ----------
-    // const addedNewKeys = await getLocaleKeys({
-    //     localeId: defaultLocale.id,
-    //     tags: [answers.version],
-    //     total: Object.keys(newTexts).length,
-    // });
-
-    // console.log(addedNewKeys);
     // ---------- Create New Phrase Job ----------
-    const jobDetail = await createJob({
-        name: answers.name,
-        localeId: defaultLocale.id,
-        branch: answers.branch,
-        tags: [answers.version],
-    });
+    const [jobError, jobDetail] = await awaitWrap(
+        createJob({
+            name: answers.name,
+            localeId: defaultLocale.id,
+            branch: answers.branch,
+            tags: [answers.version],
+        }),
+    );
 
-    // console.log({ jobDetail });
-    if (!jobDetail.id) {
+    if (jobError || !jobDetail.id) {
         logger.error(`\n💥 Failed to create a new Phrase job, please check and try again.`);
         return;
     }
+    logger.log(`=> Successfully created a new Phrase job: ${jobDetail.name}`);
 
-    try {
-        await addLocalesToJob({
+    const [attachJobError] = await awaitWrap(
+        addLocalesToJob({
             jobId: jobDetail.id,
             localeIds: locales
                 .filter(locale => locale.id !== defaultLocale.id)
                 .map(locale => locale.id),
             branch: answers.branch,
-        });
-    } catch {
+        }),
+    );
+
+    if (attachJobError) {
         logger.error(`\n💥 Failed to add locales to the Phrase job, please check and try again.`);
         return;
     }
 
+    sendMessage({
+        content: parseTemplate(msgTemplate, {
+            projectName: jobDetail.project.name,
+            deadline: new Date(jobDetail.due_date).toLocaleString(),
+            jobName: jobDetail.name,
+            jobLink: `https://app.phrase.com/accounts/${project.account.slug}/projects/${project.slug}/jobs/${jobDetail.id}`,
+        }),
+    });
+
+    logger.log(`⏱️ Execution time: ${((Date.now() - startTime) / 1000).toFixed(2)}s`);
     logger.success(
-        `\n🎉 Successfully created a new Phrase job: <${jobDetail.name}>(ID: ${jobDetail.id})`,
+        `\n🎉 Successfully created a new Phrase job: [${jobDetail.name}](ID: ${jobDetail.id})`,
     );
 };
 
 const execImportCommand = async (target?: string, options?: ConfigType['phrase']) => {
     if (!phraseClient) return;
-    console.log('execute import command');
 
     const answers = await inquirer.prompt([
         {

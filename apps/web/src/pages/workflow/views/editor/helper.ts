@@ -1,11 +1,16 @@
-import { omitBy } from 'lodash-es';
-import { genRandomString, checkPrivateProperty } from '@milesight/shared/src/utils/tools';
+import { omitBy, cloneDeep } from 'lodash-es';
+import {
+    safeJsonParse,
+    genRandomString,
+    checkPrivateProperty,
+} from '@milesight/shared/src/utils/tools';
 import {
     checkRequired,
     checkRangeLength,
     type Validate,
 } from '@milesight/shared/src/utils/validators';
 import { PARAM_REFERENCE_PATTERN, URL_PARAM_PATTERN } from './constants';
+import type { NodeConfigItem } from './typings';
 
 /**
  * Node Data Validators Config
@@ -96,6 +101,36 @@ export const getUrlParams = (url?: string) => {
     while ((match = URL_PARAM_PATTERN.exec(url)) !== null) {
         result.push(match[1]);
     }
+
+    return result;
+};
+
+/**
+ * Get node default params
+ */
+export const getNodeDefaultParams = (config: NodeConfigItem) => {
+    const { properties = {}, outputProperties = {} } = config.schema || {};
+    const paramConfigs = cloneDeep(Object.entries(properties))
+        .filter(([_, item]) => item.defaultValue)
+        .map(([name, item]) => {
+            item.name = item.name || name;
+            return item;
+        })
+        .concat(
+            cloneDeep(Object.entries(outputProperties))
+                .filter(([_, item]) => item.editable)
+                .map(([name, item]) => {
+                    item.name = item.name || name;
+                    return item;
+                }),
+        );
+    if (!paramConfigs.length) return;
+    const result: Record<string, any> = {};
+
+    paramConfigs.forEach(item => {
+        const value = safeJsonParse(item.defaultValue) || item.defaultValue;
+        result[item.name] = value;
+    });
 
     return result;
 };

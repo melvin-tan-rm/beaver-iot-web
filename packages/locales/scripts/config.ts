@@ -27,3 +27,17 @@ export const {
     path.join(__dirname, '../../.env'),
     path.join(__dirname, '../../.env.local'),
 ]);
+
+/**
+ * The WxWork message template
+ */
+export const msgTemplate = [
+    '📣 Transition Notice',
+    'There are new translation tasks, please handle them promptly',
+    '--------------------',
+    '✦ Project: {{projectName}}',
+    '✦ Deadline: {{deadline}}',
+    '✦ Job Name: {{jobName}}',
+    '✦ Job Link: {{jobLink}}',
+    '--------------------',
+].join('\n');

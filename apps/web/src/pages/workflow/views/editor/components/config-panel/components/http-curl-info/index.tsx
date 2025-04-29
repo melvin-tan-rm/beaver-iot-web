@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { apiOrigin } from '@milesight/shared/src/config';
+import { API_PREFIX } from '@/services/http';
 import DataEditor from '../data-editor';
-import { getUrlParams } from '../../../../helper';
+import { HTTP_URL_PATH_PATTERN } from '../../../../constants';
 
 interface Props {
     title?: string;
@@ -9,6 +11,7 @@ interface Props {
         username?: string;
         password?: string;
     };
+    urlGenerator?: (data: Props['data'], credential: Props['credential']) => string;
 }
 
 const CURL_COMMAND_LINE_BREAK = ' \\\n';
@@ -16,17 +19,27 @@ const CURL_COMMAND_LINE_BREAK = ' \\\n';
 /**
  * Generate cURL command for HTTP request and display it in a DataEditor component.
  */
-const HttpCurlInfo: React.FC<Props> = ({ title, data, credential }) => {
+const HttpCurlInfo: React.FC<Props> = ({ title, data, credential, urlGenerator }) => {
     const [command, setCommand] = useState('');
 
     useEffect(() => {
         const { method, url } = data || {};
+        let finalUrl = '';
 
-        if (!method || !url) {
+        if (urlGenerator) {
+            finalUrl = urlGenerator(data, credential);
+        } else {
+            finalUrl = [API_PREFIX, 'workflow-http-in', credential?.username || '', url]
+                .join('/')
+                .replace(/\/+/g, '/');
+            finalUrl = `${apiOrigin}${finalUrl}`;
+        }
+
+        if (!method || !HTTP_URL_PATH_PATTERN.test(url || '')) {
             setCommand('');
             return;
         }
-        const command = [`curl -X ${method} '${url}'`];
+        const command = [`curl -X ${method} '${finalUrl}'`];
         const { username, password } = credential || {};
 
         // TODO: Get credential info and generate curl command
@@ -37,7 +50,7 @@ const HttpCurlInfo: React.FC<Props> = ({ title, data, credential }) => {
         }
 
         setCommand(command.join(CURL_COMMAND_LINE_BREAK));
-    }, [data, credential]);
+    }, [data, credential, urlGenerator]);
 
     return (
         <div className="ms-http-curl-info">

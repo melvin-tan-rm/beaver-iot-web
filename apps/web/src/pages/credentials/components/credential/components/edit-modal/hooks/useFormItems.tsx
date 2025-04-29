@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { type ControllerProps, type FieldValues } from 'react-hook-form';
-import { TextField, InputAdornment, IconButton } from '@mui/material';
+import { TextField, InputAdornment } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import {
     checkRequired,
@@ -8,8 +8,7 @@ import {
     checkLength,
     checkRangeLength,
 } from '@milesight/shared/src/utils/validators';
-import { VisibilityIcon, VisibilityOffIcon } from '@milesight/shared/src/components';
-
+import { PasswordInput } from '@/components';
 // username regex
 const userNameReg = /^[a-zA-Z0-9_\-.]+$/;
 
@@ -33,11 +32,6 @@ export type FormDataProps = {
 /** edit mqtt | http fromItems */
 const useFormItems = ({ type, tenantId }: IPros) => {
     const { getIntlText } = useI18n();
-    const [showPassword, setShowPassword] = useState<boolean>(false);
-
-    const handleClickShowPassword = () => {
-        setShowPassword(!showPassword);
-    };
 
     const formItems = useMemo(() => {
         const result: ExtendControllerProps<FormDataProps>[] = [];
@@ -103,10 +97,9 @@ const useFormItems = ({ type, tenantId }: IPros) => {
                 },
                 render({ field: { onChange, value, disabled }, fieldState: { error } }) {
                     return (
-                        <TextField
+                        <PasswordInput
                             required
                             fullWidth
-                            type={showPassword ? 'text' : 'password'}
                             autoComplete="off"
                             placeholder={getIntlText('common.label.please_enter')}
                             disabled={disabled}
@@ -115,23 +108,6 @@ const useFormItems = ({ type, tenantId }: IPros) => {
                             helperText={error ? error.message : null}
                             value={value}
                             onChange={onChange}
-                            slotProps={{
-                                input: {
-                                    endAdornment: (
-                                        <IconButton
-                                            aria-label="toggle password visibility"
-                                            onClick={handleClickShowPassword}
-                                            edge="end"
-                                        >
-                                            {showPassword ? (
-                                                <VisibilityIcon />
-                                            ) : (
-                                                <VisibilityOffIcon />
-                                            )}
-                                        </IconButton>
-                                    ),
-                                },
-                            }}
                         />
                     );
                 },
@@ -139,7 +115,7 @@ const useFormItems = ({ type, tenantId }: IPros) => {
         );
 
         return result;
-    }, [getIntlText, showPassword]);
+    }, [getIntlText]);
 
     return formItems;
 };

@@ -11,7 +11,7 @@ import {
     isEmail,
     isRangeLength,
 } from '@milesight/shared/src/utils/validators';
-import { EDGE_TYPE_ADDABLE } from '../constants';
+import { EDGE_TYPE_ADDABLE, HTTP_URL_PATH_PATTERN } from '../constants';
 import useFlowStore from '../store';
 import { isRefParamKey } from '../helper';
 import type { NodeDataValidator } from '../typings';
@@ -41,6 +41,7 @@ enum ErrorIntlKey {
     maxLength = 'workflow.valid.max_length',
     url = 'workflow.valid.invalid_url',
     email = 'workflow.valid.invalid_email',
+    urlPath = 'workflow.valid.invalid_url_path',
 }
 
 export const NODE_VALIDATE_TOAST_KEY = 'node-validate';
@@ -314,7 +315,17 @@ const useValidate = () => {
             'httpin.method': { checkRequired },
             'httpin.url': {
                 checkRequired,
-                checkMaxLength: genMaxLengthValidator(500),
+                checkMaxLength: genMaxLengthValidator(1000),
+                checkPath(value: NonNullable<HttpinNodeDataType['parameters']>['url'], fieldName) {
+                    if (value && !HTTP_URL_PATH_PATTERN.test(value)) {
+                        const message = getIntlText(ErrorIntlKey.urlPath, {
+                            1: fieldName,
+                            2: '{param}',
+                        });
+                        return message;
+                    }
+                    return true;
+                },
             },
             'ifelse.choice': {
                 checkRequired(

@@ -73,7 +73,7 @@ const useColumns = <T extends TableRowDataType>({
                                     placeholder={getIntlText('common.label.please_select')}
                                     InputProps={{
                                         ...params.InputProps,
-                                        size: 'small',
+                                        size: 'medium',
                                     }}
                                 />
                             )}

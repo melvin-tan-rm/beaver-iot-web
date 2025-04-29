@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { type ControllerProps, type FieldValues } from 'react-hook-form';
-import { TextField, IconButton } from '@mui/material';
+import { TextField } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { Select, VisibilityIcon, VisibilityOffIcon } from '@milesight/shared/src/components';
+import { Select } from '@milesight/shared/src/components';
 import {
     checkRequired,
     checkMaxLength,
@@ -11,6 +11,7 @@ import {
     checkLettersAndNum,
     checkRangeLength,
 } from '@milesight/shared/src/utils/validators';
+import { PasswordInput } from '@/components';
 import { CredentialEncryption } from '@/services/http';
 
 type ExtendControllerProps<T extends FieldValues> = ControllerProps<T> & {
@@ -45,11 +46,24 @@ const CredentialEncryptionOptions: {
 
 const useFormItems = () => {
     const { getIntlText } = useI18n();
-    const [showPassword, setShowPassword] = useState<boolean>(false);
 
-    const handleClickShowPassword = () => {
-        setShowPassword(!showPassword);
-    };
+    const smtpEncryptionOptions = useMemo(
+        () => [
+            {
+                value: 'NONE',
+                label: getIntlText('workflow.email.label_smtp_config_encryption_none'),
+            },
+            {
+                value: 'STARTTLS',
+                label: getIntlText('workflow.email.label_smtp_config_encryption_start_tls'),
+            },
+            {
+                value: 'TLS',
+                label: getIntlText('workflow.email.label_smtp_config_encryption_tls'),
+            },
+        ],
+        [getIntlText],
+    );
 
     const formItems = useMemo(() => {
         const result: ExtendControllerProps<FormDataProps>[] = [];
@@ -122,7 +136,7 @@ const useFormItems = () => {
                             disabled={disabled}
                             placeholder={getIntlText('common.label.please_enter')}
                             label={getIntlText('setting.credentials.label.smtp_encryption')}
-                            options={CredentialEncryptionOptions}
+                            options={smtpEncryptionOptions}
                             formControlProps={{
                                 sx: { my: 1.5 },
                             }}
@@ -169,10 +183,9 @@ const useFormItems = () => {
                 },
                 render({ field: { onChange, value, disabled }, fieldState: { error } }) {
                     return (
-                        <TextField
+                        <PasswordInput
                             required
                             fullWidth
-                            type={showPassword ? 'text' : 'password'}
                             autoComplete="off"
                             disabled={disabled}
                             placeholder={getIntlText('common.label.please_enter')}
@@ -181,24 +194,6 @@ const useFormItems = () => {
                             helperText={error ? error.message : null}
                             value={value}
                             onChange={onChange}
-                            slotProps={{
-                                input: {
-                                    endAdornment: (
-                                        <IconButton
-                                            aria-label="toggle password visibility"
-                                            onClick={handleClickShowPassword}
-                                            edge="end"
-                                            sx={{ mr: 0.1 }}
-                                        >
-                                            {showPassword ? (
-                                                <VisibilityIcon />
-                                            ) : (
-                                                <VisibilityOffIcon />
-                                            )}
-                                        </IconButton>
-                                    ),
-                                },
-                            }}
                         />
                     );
                 },
@@ -206,7 +201,7 @@ const useFormItems = () => {
         );
 
         return result;
-    }, [getIntlText, showPassword]);
+    }, [getIntlText]);
 
     return formItems;
 };
