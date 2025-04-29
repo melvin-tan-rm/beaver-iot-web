@@ -67,6 +67,9 @@ const SingleEnumsInput: React.FC<IProps> = ({ label, error, required, disabled, 
                                     const { value } = e.target;
                                     replace(index, [value, value]);
                                 }}
+                                InputProps={{
+                                    size: 'small',
+                                }}
                             />
                         </div>
                         {list.length > 1 && (

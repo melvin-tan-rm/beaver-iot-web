@@ -219,7 +219,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                                 required={!attr.optional}
                                                 InputProps={{
                                                     ...params.InputProps,
-                                                    size: 'small',
+                                                    size: 'medium',
                                                 }}
                                             />
                                         )}

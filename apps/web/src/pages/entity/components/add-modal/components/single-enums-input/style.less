@@ -42,16 +42,6 @@
 
         .field-key {
             flex: 1;
-
-            input {
-                height: 28px;
-                padding-top: 0;
-                padding-bottom: 0;
-            }
-        }
-        
-        .@{mui-prefix}FormLabel-root {
-            display: none;
         }
 
         .@{mui-prefix}InputBase-root {
@@ -66,6 +56,12 @@
         .@{mui-prefix}FormLabel-root {
             display: block;
         }
+    }
+
+    &-field:not(:first-of-type) {  
+        .@{mui-prefix}FormLabel-root {
+            display: none;
+        } 
     }
 
     &-field:last-of-type { 
