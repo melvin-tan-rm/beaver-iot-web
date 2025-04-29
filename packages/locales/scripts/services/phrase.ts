@@ -5,7 +5,7 @@ import {
     PHRASE_JOB_REVIEWERS,
     PHRASE_JOB_TRANSLATORS,
 } from '../config';
-import { logger, getResponseData } from '../utils/index';
+import { logger, getResponseData, delay } from '../utils/index';
 import config from '../locale.config.json';
 
 export const phraseClient = (() => {
@@ -87,7 +87,16 @@ export const getAccountMembers = async (
 export const getProjectDetail = async (): Promise<{
     id: string;
     name: string;
+    slug: string;
     main_format: string;
+    account: {
+        id: string;
+        name: string;
+        slug: string;
+        company: string;
+        created_at: Date;
+        updated_at: Date;
+    };
     create_at: string;
     updated_at: string;
     [key: string]: any;
@@ -429,6 +438,7 @@ export const uploadLocale = async (options: {
     localeId: string;
     fileName: string;
     version: string;
+    branch?: string;
     contents: string;
 }): Promise<{
     id: string;
@@ -462,4 +472,46 @@ export const uploadLocale = async (options: {
     });
 
     return getResponseData(resp);
+};
+
+/**
+ * Get upload success status
+ */
+export const getUploadSuccessStatus = async (
+    uploadId?: string,
+): Promise<{
+    id: string;
+    filename: string;
+    format: string;
+    state: 'processing' | 'success' | 'error';
+    summary: Record<string, any>;
+    created_at: Date;
+    updated_at: Date;
+}> => {
+    if (!uploadId) return;
+    let tryCount = 60;
+    const getUploadStatus = async (
+        resolve: (...args: any[]) => void,
+        reject: (...args: any[]) => void,
+    ) => {
+        const resp = await phraseClient?.get(`/projects/${PHRASE_PROJECT_ID}/uploads/${uploadId}`);
+        const data = getResponseData(resp);
+
+        if (data.state !== 'success') {
+            tryCount -= 1;
+            if (tryCount <= 0) {
+                reject(new Error('Upload failed'));
+                return;
+            }
+            await delay(1000);
+            await getUploadStatus(resolve, reject);
+            return;
+        }
+
+        resolve(data);
+    };
+
+    return new Promise((resolve, reject) => {
+        getUploadStatus(resolve, reject);
+    });
 };

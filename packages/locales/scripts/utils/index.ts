@@ -1,32 +1,7 @@
 /* eslint-disable no-console */
 import fse from 'fs-extra';
-import chalk from 'chalk';
-import { AxiosResponse } from 'axios';
-
-export const logger = {
-    verbose: true,
-    log: (...arg: any) => {
-        if (logger.verbose) {
-            console.log(...arg);
-        }
-    },
-    success: (...arg: any) => {
-        if (logger.verbose) {
-            console.log(chalk.green(...arg));
-        }
-    },
-    info: (...arg: any) => {
-        if (logger.verbose) {
-            console.log(chalk.cyan(...arg));
-        }
-    },
-    error: (...arg: any) => {
-        console.log(chalk.red(...arg));
-    },
-    warning: (...arg: any) => {
-        console.log(chalk.yellow(...arg));
-    },
-};
+import { AxiosResponse, AxiosError } from 'axios';
+import { logger } from './logger';
 
 /**
  * @description Generate file
@@ -86,6 +61,62 @@ export const getResponseData = <T extends AxiosResponse<ApiResponse>>(
 };
 
 /**
+ * The async wrapper for request (Inspired by await-to-js: https://github.com/scopsy/await-to-js)
+ * @param {Promise} promise Promise
+ * @param errorExt Additional Information you can pass to the err object
+ * @returns {Promise} promise
+ */
+export const awaitWrap = <T, U = AxiosError>(
+    promise: Promise<T>,
+    errorExt?: object,
+): Promise<[U, undefined] | [null, T]> => {
+    return promise
+        .then<[null, T]>((data: T) => [null, data])
+        .catch<[U, undefined]>((err: U) => {
+            if (errorExt) {
+                const parsedError = { ...err, ...errorExt };
+                return [parsedError, undefined];
+            }
+
+            return [err, undefined];
+        });
+};
+
+/**
+ * Returns an object that contains `promise` and` Resolve`, and `Reject`, which is
+ * suitable for reducing nested coding levels
+ * @docs https://github.com/tc39/proposal-promise-with-resolvers
+ */
+export const withPromiseResolvers = <T>() => {
+    let resolve: (value: T | PromiseLike<T>) => void;
+    let reject: (reason?: any) => void;
+
+    const promise = new Promise<T>((res, rej) => {
+        resolve = res;
+        reject = rej;
+    });
+
+    return { promise, resolve: resolve!, reject: reject! };
+};
+
+/**
+ * Delay execution
+ * @param ms - Delay time (millisecond)
+ * @returns return PromiseLike
+ */
+export const delay = (ms: number): PromiseLike<void> & { cancel: () => void } => {
+    const { resolve, promise } = withPromiseResolvers<void>();
+    const timer = setTimeout(resolve, ms);
+
+    return {
+        then: promise.then.bind(promise),
+        cancel: () => {
+            timer && clearTimeout(timer);
+        },
+    };
+};
+
+/**
  * Parse template strings
  */
 export const parseTemplate = (
@@ -96,5 +127,6 @@ export const parseTemplate = (
     return template.replace(regx, (_, key) => data[key] || '');
 };
 
+export { logger };
 export * from './loadBinCommands';
 export * from './sort';
