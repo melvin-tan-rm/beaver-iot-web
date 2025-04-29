@@ -10,7 +10,7 @@ import { useSize } from 'ahooks';
 import { cloneDeep, maxBy, isNil } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { useConfirm } from '@/components';
-import { genUuid } from '../helper';
+import { genUuid, getNodeDefaultParams } from '../helper';
 import {
     NODE_SPACING_X,
     NODE_SPACING_Y,
@@ -150,6 +150,12 @@ const useInteractions = () => {
             const nodeConfig = nodeConfigs[nodeType] || {};
             const sameTypeNodes = nodes.filter(item => item.type === nodeType);
             const defaultNodeName = `${nodeConfig.labelIntlKey ? getIntlText(nodeConfig.labelIntlKey) : nodeConfig.label || ''}${!sameTypeNodes.length ? '' : ` ${sameTypeNodes.length + 1}`}`;
+            const nodeData: BaseNodeDataType = {
+                nodeName: defaultNodeName,
+            };
+            const params = getNodeDefaultParams(nodeConfig);
+            if (params) nodeData.parameters = params;
+
             const newNode: WorkflowNode = {
                 id: genUuid('node'),
                 type: nodeType,
@@ -159,9 +165,7 @@ const useInteractions = () => {
                     y: 0,
                 },
                 selected: true,
-                data: {
-                    nodeName: defaultNodeName,
-                },
+                data: nodeData,
             };
 
             nodes.forEach(item => {
