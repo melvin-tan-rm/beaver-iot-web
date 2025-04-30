@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { type ControllerProps, type FieldValues } from 'react-hook-form';
 import { TextField, TextFieldProps } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { getErrorMessage, TValidator } from '@milesight/shared/src/utils/validators';
+import { checkStartWithHttpOrHttps } from '@milesight/shared/src/utils/validators';
 
 export interface FormDataProps {
     codecRepo: string;
@@ -21,21 +21,6 @@ type ExtendControllerProps<T extends FieldValues> = ControllerProps<T> & {
 const useFormItems = () => {
     const { getIntlText } = useI18n();
 
-    // Check http or https address
-    const checkValidHttpAddr: TValidator = rule => {
-        const message = rule?.message || getErrorMessage('common.invalid_http_address');
-        return value => {
-            try {
-                if (value && !new URL(value)) {
-                    return message;
-                }
-            } catch (e) {
-                return message;
-            }
-            return Promise.resolve(true);
-        };
-    };
-
     const formItems = useMemo(() => {
         const props: Partial<TextFieldProps> = {
             fullWidth: true,
@@ -50,7 +35,7 @@ const useFormItems = () => {
             name: 'codecRepo',
             rules: {
                 validate: {
-                    checkValidHttpAddr: checkValidHttpAddr(),
+                    checkStartWithHttpOrHttps: checkStartWithHttpOrHttps(),
                 },
             },
             render({ field: { onChange, value }, fieldState: { error } }) {

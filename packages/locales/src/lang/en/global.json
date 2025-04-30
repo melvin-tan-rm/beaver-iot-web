@@ -213,7 +213,6 @@
     "valid.input.version": "The version number does not comply with the specification.",
     "valid.input.string_letter_num_special_char": "Only uppercase letters, lowercase letters, numbers and _-. are allowed.",
     "valid.resp.at_least_one": "Please select at least one {1}.",
-    "common.invalid_http_address": "Invalid address",
     "common.label.uploading": "Uploading",
     "common.message.click_to_upload_file": "Click here or drag file to this area to upload",
     "common.message.upload_error_file_invalid_type": "File type must be {1}",

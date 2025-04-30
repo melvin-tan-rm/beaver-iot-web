@@ -11,7 +11,8 @@ import {
     CredentialType,
     isRequestSuccess,
 } from '@/services/http';
-import ConfigCell from '../config-cell';
+import { PERMISSIONS } from '@/constants';
+import ConfigTable from '../config-table';
 import PasswordLabel from '../password-label';
 import { EditCredential } from './components';
 
@@ -128,14 +129,16 @@ const Credential = () => {
 
     return (
         <div className="ms-credentials-credential">
-            <ConfigCell
+            <ConfigTable
                 title={getIntlText('setting.credentials.label.mqtt')}
                 configData={mqttConfig}
+                permissions={PERMISSIONS.CREDENTIAL_MODULE_EDIT}
                 onEdit={() => setMqttOpen(true)}
             />
-            <ConfigCell
+            <ConfigTable
                 title={getIntlText('setting.credentials.label.http')}
                 configData={httpConfig}
+                permissions={PERMISSIONS.CREDENTIAL_MODULE_EDIT}
                 onEdit={() => setHttpOpen(true)}
             />
             {mqttOpen && (

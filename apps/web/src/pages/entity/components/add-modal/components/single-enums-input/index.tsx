@@ -61,6 +61,7 @@ const SingleEnumsInput: React.FC<IProps> = ({ label, error, required, disabled, 
                                 sx={{ m: 0 }}
                                 required={required}
                                 label={getIntlText('entity.label.enumeration_items')}
+                                placeholder={getIntlText('common.label.please_enter')}
                                 disabled={disabled}
                                 value={item?.[0] || ''}
                                 onChange={e => {

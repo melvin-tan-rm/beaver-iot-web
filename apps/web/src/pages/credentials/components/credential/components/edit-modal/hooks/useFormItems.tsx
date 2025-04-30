@@ -85,15 +85,11 @@ const useFormItems = ({ type, tenantId }: IPros) => {
             {
                 name: 'accessSecret',
                 rules: {
-                    validate: (() => {
-                        return {
-                            ...{
-                                checkRequired: checkRequired(),
-                                checkRangeLength: checkRangeLength({ min: 8, max: 32 }),
-                                checkLettersAndNum: checkLettersAndNum(),
-                            },
-                        };
-                    })(),
+                    validate: {
+                        checkRequired: checkRequired(),
+                        checkRangeLength: checkRangeLength({ min: 8, max: 32 }),
+                        checkLettersAndNum: checkLettersAndNum(),
+                    },
                 },
                 render({ field: { onChange, value, disabled }, fieldState: { error } }) {
                     return (

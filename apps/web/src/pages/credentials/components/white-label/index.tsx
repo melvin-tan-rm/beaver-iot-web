@@ -10,8 +10,9 @@ import {
     credentialsApi,
     CredentialType,
 } from '@/services/http';
+import { PERMISSIONS } from '@/constants';
 import EditSmtp from './components/edit-modal';
-import ConfigCell from '../config-cell';
+import ConfigTable from '../config-table';
 import { FormDataProps } from './components/edit-modal/hooks/useFormItems';
 import PasswordLabel from '../password-label';
 
@@ -97,9 +98,10 @@ const WhiteLabel = () => {
 
     return (
         <div className="ms-credentials-white-label">
-            <ConfigCell
+            <ConfigTable
                 title={getIntlText('setting.credentials.label.smtp_title')}
                 configData={smtpConfig}
+                permissions={PERMISSIONS.CREDENTIAL_MODULE_EDIT}
                 onEdit={handleEditSmtp}
             />
             {editSmtp && (
