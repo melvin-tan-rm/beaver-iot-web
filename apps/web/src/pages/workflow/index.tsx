@@ -125,8 +125,9 @@ const Workflow = () => {
                         : item,
                 ),
             });
+            setSelectedIds([]);
         },
-        [workflowList],
+        [workflowList, updateWorkflowList],
     );
 
     const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useCallback(
