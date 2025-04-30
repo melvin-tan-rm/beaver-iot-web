@@ -308,8 +308,9 @@ declare type SelectNodeDataType = BaseNodeDataType<{
  */
 declare type EmailNodeDataType = BaseNodeDataType<{
     emailConfig: {
-        provider: 'SMTP' | 'google';
-        smtpConfig: {
+        useSystemSettings?: boolean;
+        provider?: 'SMTP' | 'google';
+        smtpConfig?: {
             host: string;
             port: number;
             encryption: 'STARTTLS' | 'NONE';
