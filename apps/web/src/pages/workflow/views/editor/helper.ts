@@ -111,7 +111,7 @@ export const getUrlParams = (url?: string) => {
 export const getNodeDefaultParams = (config: NodeConfigItem) => {
     const { properties = {}, outputProperties = {} } = config.schema || {};
     const paramConfigs = cloneDeep(Object.entries(properties))
-        .filter(([_, item]) => item.defaultValue)
+        .filter(([_, item]) => item.initialValue)
         .map(([name, item]) => {
             item.name = item.name || name;
             return item;
@@ -128,7 +128,7 @@ export const getNodeDefaultParams = (config: NodeConfigItem) => {
     const result: Record<string, any> = {};
 
     paramConfigs.forEach(item => {
-        const value = safeJsonParse(item.defaultValue) || item.defaultValue;
+        const value = safeJsonParse(item.initialValue) || item.initialValue;
         result[item.name] = value;
     });
 
