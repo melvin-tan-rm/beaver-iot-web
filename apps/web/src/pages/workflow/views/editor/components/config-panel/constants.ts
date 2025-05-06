@@ -76,4 +76,9 @@ export const DEFAULT_VALUES: Partial<Record<WorkflowNodeType, Record<string, any
             },
         ],
     },
+    email: {
+        emailConfig: {
+            useSystemSettings: true,
+        },
+    },
 };

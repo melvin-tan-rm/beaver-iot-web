@@ -50,11 +50,7 @@ const EmailSendSource: React.FC<EmailSendSourceProps> = props => {
     const { getIntlText } = useI18n();
 
     const [state, setState] = useControllableValue<EmailConfigProps>({
-        value: value || {
-            useSystemSettings: true,
-            // provider: EMAIL_TYPE.SMTP,
-            // smtpConfig: defaultSmtpValue,
-        },
+        value: value || {},
         onChange,
     });
 
@@ -104,7 +100,7 @@ const EmailSendSource: React.FC<EmailSendSourceProps> = props => {
                 label={getIntlText('workflow.label.use_system_smtp_settings')}
                 control={
                     <Checkbox
-                        checked={!!state.useSystemSettings}
+                        checked={!!state?.useSystemSettings}
                         onChange={() => {
                             setState(data => {
                                 const checked = !data.useSystemSettings;
@@ -124,7 +120,7 @@ const EmailSendSource: React.FC<EmailSendSourceProps> = props => {
                     />
                 }
             />
-            {!state.useSystemSettings && (
+            {!state?.useSystemSettings && (
                 <>
                     <div className="ms-workflow-email-config__type">
                         <MuiSelect
@@ -137,7 +133,7 @@ const EmailSendSource: React.FC<EmailSendSourceProps> = props => {
                             label={getIntlText('workflow.label.node_email_type')}
                             options={EmailTypeOptions}
                             IconComponent={KeyboardArrowDownIcon}
-                            value={state.provider || ''}
+                            value={state?.provider || ''}
                             onChange={e => {
                                 const provider = e.target.value as EMAIL_TYPE;
                                 setState({
