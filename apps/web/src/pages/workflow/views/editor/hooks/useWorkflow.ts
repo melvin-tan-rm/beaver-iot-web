@@ -290,7 +290,10 @@ const useWorkflow = () => {
                                         entityTypeOptions.find(it => it.value === 'STRING')
                                             ?.label || '',
                                     ),
-                                    key: genRefParamKey(nodeId, key),
+                                    key: genRefParamKey(
+                                        nodeId,
+                                        Array.isArray(path) ? path.join('.') : path || '',
+                                    ),
                                 });
 
                                 const params = getUrlParams(outputData);
