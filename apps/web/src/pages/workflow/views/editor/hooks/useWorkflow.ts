@@ -283,6 +283,15 @@ const useWorkflow = () => {
                             }
                             case 'url': {
                                 if (!outputData) return;
+                                paramData.outputs.push({
+                                    name: label || key,
+                                    type: 'STRING',
+                                    typeLabel: getIntlText(
+                                        entityTypeOptions.find(it => it.value === 'STRING')
+                                            ?.label || '',
+                                    ),
+                                    key: genRefParamKey(nodeId, key),
+                                });
 
                                 const params = getUrlParams(outputData);
                                 if (!params.length) return;

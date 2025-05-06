@@ -148,5 +148,6 @@
     "workflow.label.connection_parameters": "Connection Parameters",
     "workflow.label.output_variables": "Output Variables",
     "workflow.valid.invalid_url_path": "The {1} field must start with /, support alphanumeric and {2} formats.",
-    "workflow.label.use_system_smtp_settings": "Use system SMTP settings"
+    "workflow.label.use_system_smtp_settings": "Use system SMTP settings",
+    "workflow.editor.output_desc_request_params": "Query params carried in the request"
 }
