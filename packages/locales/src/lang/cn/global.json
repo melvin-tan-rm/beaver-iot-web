@@ -147,7 +147,6 @@
     "common.unit.second": "秒",
     "common.label.start_date":  "开始时间",
     "common.label.end_date":  "结束时间",
-    "common.label.please_enter": "请输入",
     "valid.date.selected_time_greater_than_now_time": "不支持早于当前时间的时间。",
     "valid.date.start_time_greater_than_end_time": "开始时间不能晚于结束时间。",
     "valid.date.start_time_less_than_pre_end_time": "开始时间不能早于上次结束时间。",

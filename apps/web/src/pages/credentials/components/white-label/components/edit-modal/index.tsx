@@ -63,7 +63,7 @@ const EditSmtp: React.FC<Props> = ({ visible, data, onCancel, onUpdateSuccess, .
         <Modal
             size="lg"
             visible={visible}
-            title={getIntlText('setting.credentials.label.edit_smtp')}
+            title={getIntlText('setting.credentials.edit_smtp')}
             className={cls('ms-credentials-white', { loading: formState.isSubmitting })}
             onOkText={getIntlText('common.button.confirm')}
             onOk={handleSubmit(onSubmit)}

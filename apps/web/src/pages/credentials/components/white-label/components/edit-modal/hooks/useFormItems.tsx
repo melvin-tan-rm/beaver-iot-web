@@ -82,10 +82,10 @@ const useFormItems = () => {
                         <TextField
                             required
                             fullWidth
-                            placeholder={getIntlText('common.label.please_enter')}
+                            placeholder={getIntlText('common.placeholder.input')}
                             type="text"
                             autoComplete="off"
-                            label={getIntlText('setting.credentials.label.smtp_addr')}
+                            label={getIntlText('workflow.email.label_smtp_config_service_host')}
                             error={!!error}
                             helperText={error ? error.message : null}
                             value={value}
@@ -110,8 +110,8 @@ const useFormItems = () => {
                             type="text"
                             autoComplete="off"
                             disabled={disabled}
-                            placeholder={getIntlText('common.label.please_enter')}
-                            label={getIntlText('setting.credentials.label.smtp_port')}
+                            placeholder={getIntlText('common.placeholder.input')}
+                            label={getIntlText('workflow.email.label_smtp_config_service_port')}
                             error={!!error}
                             helperText={error ? error.message : null}
                             value={value}
@@ -134,8 +134,10 @@ const useFormItems = () => {
                             fullWidth
                             error={error}
                             disabled={disabled}
-                            placeholder={getIntlText('common.label.please_enter')}
-                            label={getIntlText('setting.credentials.label.smtp_encryption')}
+                            placeholder={getIntlText('common.placeholder.input')}
+                            label={getIntlText(
+                                'workflow.email.label_smtp_config_encryption_method',
+                            )}
                             options={smtpEncryptionOptions}
                             formControlProps={{
                                 sx: { my: 1.5 },
@@ -162,7 +164,7 @@ const useFormItems = () => {
                             type="text"
                             autoComplete="off"
                             disabled={disabled}
-                            placeholder={getIntlText('common.label.please_enter')}
+                            placeholder={getIntlText('common.placeholder.input')}
                             label={getIntlText('user.label.user_name_table_title')}
                             error={!!error}
                             helperText={error ? error.message : null}
@@ -188,7 +190,7 @@ const useFormItems = () => {
                             fullWidth
                             autoComplete="off"
                             disabled={disabled}
-                            placeholder={getIntlText('common.label.please_enter')}
+                            placeholder={getIntlText('common.placeholder.input')}
                             label={getIntlText('common.label.password')}
                             error={!!error}
                             helperText={error ? error.message : null}

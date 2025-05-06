@@ -26,11 +26,11 @@ const EmptySmtpHttpData: FormDataProps = {
 
 /** smtp config intl key */
 const SmtpIntlKey = {
-    host: 'setting.credentials.label.smtp_addr',
-    port: 'setting.credentials.label.smtp_port',
+    host: 'setting.credentials.smtp_addr',
+    port: 'workflow.email.label_smtp_config_service_port',
     username: 'user.label.user_name_table_title',
     accessSecret: 'common.label.password',
-    encryption: 'setting.credentials.label.smtp_encryption',
+    encryption: 'workflow.email.label_smtp_config_encryption_method',
 };
 
 /**
@@ -99,7 +99,7 @@ const WhiteLabel = () => {
     return (
         <div className="ms-credentials-white-label">
             <ConfigTable
-                title={getIntlText('setting.credentials.label.smtp_title')}
+                title={getIntlText('setting.credentials.smtp_title')}
                 configData={smtpConfig}
                 permissions={PERMISSIONS.CREDENTIAL_MODULE_EDIT}
                 onEdit={handleEditSmtp}

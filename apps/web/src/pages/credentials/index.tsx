@@ -19,13 +19,13 @@ export default () => {
         return [
             {
                 key: 'white-label',
-                label: getIntlText('setting.credentials.label.white_label'),
+                label: getIntlText('setting.credentials.white_label'),
                 component: <WhiteLabel />,
                 permission: PERMISSIONS.CREDENTIAL_MODULE,
             },
             {
                 key: 'credential',
-                label: getIntlText('setting.credentials.label.credential'),
+                label: getIntlText('setting.integration.label.credential'),
                 component: <Credential />,
                 permission: PERMISSIONS.CREDENTIAL_MODULE,
             },

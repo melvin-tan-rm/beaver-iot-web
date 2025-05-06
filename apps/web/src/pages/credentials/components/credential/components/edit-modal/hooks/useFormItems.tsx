@@ -63,7 +63,7 @@ const useFormItems = ({ type, tenantId }: IPros) => {
                             type="text"
                             autoComplete="off"
                             disabled={disabled}
-                            placeholder={getIntlText('common.label.please_enter')}
+                            placeholder={getIntlText('common.placeholder.input')}
                             label={getIntlText('user.label.user_name_table_title')}
                             error={!!error}
                             helperText={error ? error.message : null}
@@ -97,7 +97,7 @@ const useFormItems = ({ type, tenantId }: IPros) => {
                             required
                             fullWidth
                             autoComplete="off"
-                            placeholder={getIntlText('common.label.please_enter')}
+                            placeholder={getIntlText('common.placeholder.input')}
                             disabled={disabled}
                             label={getIntlText('common.label.password')}
                             error={!!error}
