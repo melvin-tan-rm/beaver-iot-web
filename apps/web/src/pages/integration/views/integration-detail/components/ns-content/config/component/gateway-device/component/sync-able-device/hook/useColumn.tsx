@@ -58,7 +58,7 @@ const useColumns = <T extends TableRowDataType>({
                 headerAlign: 'left',
                 renderCell({ row, value }) {
                     const innerValue = modelOptions.find(
-                        item => item.value === (modelMap?.get(row.eui) || value),
+                        item => item.value === modelMap?.get(row.eui),
                     );
                     return (
                         <Autocomplete
@@ -68,11 +68,7 @@ const useColumns = <T extends TableRowDataType>({
                                 <TextField
                                     {...params}
                                     label=""
-                                    error={
-                                        selectedIds.includes(row.eui) &&
-                                        !modelMap.get(row.eui) &&
-                                        !row.guessModelId
-                                    }
+                                    error={selectedIds.includes(row.eui) && !modelMap.get(row.eui)}
                                     helperText={null}
                                     placeholder={getIntlText('common.label.please_select')}
                                     InputProps={{
@@ -81,13 +77,11 @@ const useColumns = <T extends TableRowDataType>({
                                     }}
                                 />
                             )}
-                            defaultValue={value}
                             value={innerValue || null}
-                            onChange={(_, option: DeviceModelItem) => {
+                            onChange={(_, option: any) => {
                                 handleChangeModel(row.eui, option?.value);
                             }}
                             // resolve label jitter when switching options
-                            inputValue={innerValue?.label}
                             onInputChange={(event, label: string) => {
                                 setInputValue(label);
                             }}
