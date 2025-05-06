@@ -7,10 +7,10 @@
         display: flex;
         margin-bottom: @margin-lg;
 
-        .MuiAlert-root {
+        .@{mui-prefix}Alert-root {
             width: 100%;
 
-            .MuiAlert-message {
+            .@{mui-prefix}Alert-message {
                 div {
                     word-break: break-word;
                     word-wrap: break-word;
@@ -20,6 +20,6 @@
     }
 
     .@{mui-prefix}FormControl-root:last-child {
-        margin-top: @margin-xxs;
+        margin-top: @margin-xxs!important;
     }
 }

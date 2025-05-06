@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useMemo } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { isEqual } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -23,6 +23,7 @@ const useColumns = <T extends TableRowDataType>({
     setModelMap,
 }: UseColumnsProps<T>) => {
     const { getIntlText } = useI18n();
+    const [inputValue, setInputValue] = useState('');
 
     const handleChangeModel = (eui: string, model: string) => {
         modelMap.set(eui, model);
@@ -56,6 +57,9 @@ const useColumns = <T extends TableRowDataType>({
                 align: 'left',
                 headerAlign: 'left',
                 renderCell({ row, value }) {
+                    const innerValue = modelOptions.find(
+                        item => item.value === (modelMap?.get(row.eui) || value),
+                    );
                     return (
                         <Autocomplete
                             options={modelOptions}
@@ -77,9 +81,15 @@ const useColumns = <T extends TableRowDataType>({
                                     }}
                                 />
                             )}
-                            value={value || modelMap?.get(row.eui)}
-                            onChange={(_, option: any) => {
+                            defaultValue={value}
+                            value={innerValue || null}
+                            onChange={(_, option: DeviceModelItem) => {
                                 handleChangeModel(row.eui, option?.value);
+                            }}
+                            // resolve label jitter when switching options
+                            inputValue={innerValue?.label}
+                            onInputChange={(event, label: string) => {
+                                setInputValue(label);
                             }}
                         />
                     );

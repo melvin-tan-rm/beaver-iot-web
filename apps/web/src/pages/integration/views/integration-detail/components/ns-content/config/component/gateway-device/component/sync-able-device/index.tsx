@@ -120,7 +120,7 @@ const SyncAbleDevice: React.FC<IProps> = props => {
             title: getIntlText('setting.integration.message.sync_device_title'),
             description: getIntlText('setting.integration.message.sync_device_tip'),
             confirmButtonText: getIntlText('common.button.confirm'),
-            icon: <ErrorIcon sx={{ color: 'var(--orange-base)' }} />,
+            type: 'warning',
             onConfirm: async () => {
                 const syncDevices = deviceData?.content
                     .filter((item: TableRowDataType) => selectedIds.includes(item.eui))
