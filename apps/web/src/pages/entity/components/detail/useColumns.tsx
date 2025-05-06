@@ -1,10 +1,7 @@
 import { useMemo } from 'react';
-import { IconButton } from '@mui/material';
-import classnames from 'classnames';
 import { isBoolean } from 'lodash-es';
 
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
-import { FilterAltIcon } from '@milesight/shared/src/components';
 import { type ColumnType } from '@/components';
 import { type EntityAPISchema } from '@/services/http';
 
@@ -19,9 +16,11 @@ export interface UseColumnsProps<T> {
      * filtered info
      */
     filteredInfo: Record<string, any>;
+    /** entity data info */
+    detail: ObjectToCamelCase<EntityAPISchema['getList']['response']['content'][0]>;
 }
 
-const useColumns = <T extends HistoryRowDataType>({ filteredInfo }: UseColumnsProps<T>) => {
+const useColumns = <T extends HistoryRowDataType>({ filteredInfo, detail }: UseColumnsProps<T>) => {
     const { getIntlText } = useI18n();
     const { getTimeFormat } = useTime();
 
@@ -34,7 +33,11 @@ const useColumns = <T extends HistoryRowDataType>({ filteredInfo }: UseColumnsPr
                 minWidth: 150,
                 ellipsis: true,
                 renderCell({ value }) {
-                    return isBoolean(value) ? String(value) : value;
+                    let result: string = detail?.entityValueAttribute?.enum?.[value] || value;
+                    if (['true', 'false'].includes(result) || isBoolean(result)) {
+                        result = String(result).toUpperCase();
+                    }
+                    return result;
                 },
             },
             {
@@ -62,7 +65,7 @@ const useColumns = <T extends HistoryRowDataType>({ filteredInfo }: UseColumnsPr
                 ellipsis: true,
             },
         ];
-    }, [getIntlText, getTimeFormat, filteredInfo]);
+    }, [getIntlText, getTimeFormat, filteredInfo, detail]);
 
     return columns;
 };

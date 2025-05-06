@@ -64,6 +64,7 @@ export default (props: IProps) => {
 
     const columns = useColumns<HistoryRowDataType>({
         filteredInfo,
+        detail,
     });
 
     return (
