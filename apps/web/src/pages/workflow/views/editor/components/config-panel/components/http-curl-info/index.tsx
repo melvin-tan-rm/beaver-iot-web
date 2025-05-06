@@ -42,9 +42,7 @@ const HttpCurlInfo: React.FC<Props> = ({ title, data, credential, urlGenerator }
         const command = [`curl -X ${method} '${finalUrl}'`];
         const { username, password } = credential || {};
 
-        // TODO: Get credential info and generate curl command
         command.push(...["-H ' '", "-d ' '"]);
-
         if (username && password) {
             command.push(`-u '${username}:${password}'`);
         }

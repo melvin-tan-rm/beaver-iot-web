@@ -82,9 +82,8 @@ const useValidate = () => {
             fieldName?: string,
         ) => {
             const keys = Object.keys(value || {});
-            const values = Object.values(value || {});
 
-            if (value && keys.length && keys.every(val => !!val) && values.every(val => !!val)) {
+            if (keys.every(key => (key && value?.[key]) || (!key && !value?.[key]))) {
                 return true;
             }
             const message = getIntlText(ErrorIntlKey.required, { 1: fieldName });
@@ -308,7 +307,7 @@ const useValidate = () => {
                     return true;
                 },
             },
-            'mqtt.topic': {
+            'mqtt.subscriptionTopic': {
                 checkRequired,
                 checkMaxLength: genMaxLengthValidator(100),
             },
