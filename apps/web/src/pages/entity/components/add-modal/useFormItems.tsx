@@ -167,7 +167,7 @@ const useFormItems = () => {
                             fullWidth
                             error={error}
                             disabled={disabled}
-                            label={getIntlText('common.label.data_type')}
+                            label={getIntlText('common.label.type')}
                             options={entityValueTypeOptions.map(item => {
                                 return {
                                     label: getIntlText(item.label),
