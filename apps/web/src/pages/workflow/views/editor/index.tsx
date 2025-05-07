@@ -14,7 +14,7 @@ import {
     type EdgeChange,
 } from '@xyflow/react';
 import { useI18n, useStoreShallow, usePreventLeave } from '@milesight/shared/src/hooks';
-import { InfoIcon, LoadingButton, toast } from '@milesight/shared/src/components';
+import { LoadingButton, toast } from '@milesight/shared/src/components';
 import { CodeEditor, useConfirm, useEntityStore } from '@/components';
 import {
     workflowAPI,
@@ -461,22 +461,22 @@ const WorkflowEditor = () => {
         const selectedNode = nodes.find(node => node.selected);
         if (selectedNode) updateNode(selectedNode.id, { selected: false });
 
-        const hasTriggerNode = nodes.find(node => node.type === 'trigger');
-        // If has a trigger node and it is the first time to create, show tip
-        if (!wid && hasTriggerNode) {
-            let proceed = false;
-            await confirm({
-                icon: <InfoIcon />,
-                type: 'info',
-                title: getIntlText('common.label.tip'),
-                description: getIntlText('workflow.editor.editor_auto_create_service_entity_tip'),
-                onConfirm() {
-                    proceed = true;
-                },
-            });
+        // const hasTriggerNode = nodes.find(node => node.type === 'trigger');
+        // // If has a trigger node and it is the first time to create, show tip
+        // if (!wid && hasTriggerNode) {
+        //     let proceed = false;
+        //     await confirm({
+        //         icon: <InfoIcon />,
+        //         type: 'info',
+        //         title: getIntlText('common.label.tip'),
+        //         description: getIntlText('workflow.editor.editor_auto_create_service_entity_tip'),
+        //         onConfirm() {
+        //             proceed = true;
+        //         },
+        //     });
 
-            if (!proceed) return;
-        }
+        //     if (!proceed) return;
+        // }
 
         // Remove selected, dragging, hovering and `$xxx` property
         nodes = normalizeNodes(nodes, FROZEN_NODE_PROPERTY_KEYS);
@@ -505,7 +505,7 @@ const WorkflowEditor = () => {
         });
         toast.success(getIntlText('common.message.operation_success'));
         setIsPreventLeave(false);
-        setTimeout(() => navigate('/workflow'), 0);
+        setTimeout(() => navigate('/workflow'), 100);
     };
 
     // Reset state when leave
