@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useReactFlow, getIncomers, getOutgoers, type IsValidConnection } from '@xyflow/react';
-import { uniqBy, omit, cloneDeep, pick, get as getObjectValue, isEmpty, isObject } from 'lodash-es';
+import { uniqBy, omit, cloneDeep, get as getObjectValue, isEmpty, isObject } from 'lodash-es';
 import { useI18n, useStoreShallow } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 import { basicNodeConfigs } from '@/pages/workflow/config';
@@ -13,7 +13,6 @@ import {
     NODE_MIN_NUMBER_LIMIT,
     ENTRY_NODE_NUMBER_LIMIT,
     DEFAULT_BOOLEAN_DATA_ENUMS,
-    URL_PARAM_PATTERN,
 } from '../constants';
 import { genRefParamKey, isRefParamKey, getUrlParams } from '../helper';
 import { getParallelInfo } from './utils';

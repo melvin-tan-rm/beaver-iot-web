@@ -22,6 +22,10 @@ export interface DeviceDetail {
     updated_at: number;
     /** Whether it can be deleted */
     deletable: boolean;
+    /** User Email */
+    user_email: string;
+    /** User Nickname */
+    user_nickname: string;
     /** Additional data (usually used by the back end, the front end is not open for now) */
     // additional_data?: Record<string, any>;
 }

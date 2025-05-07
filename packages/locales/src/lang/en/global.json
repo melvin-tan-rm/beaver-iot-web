@@ -229,5 +229,6 @@
     "common.label.client_id": "Client ID",
     "common.label.visible": "Visible",
     "common.label.invisible": "Invisible",
-    "common.label.upload_image": "Upload Image"
+    "common.label.upload_image": "Upload Image",
+    "common.label.system": "System"
 }

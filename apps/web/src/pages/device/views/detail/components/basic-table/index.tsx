@@ -75,7 +75,10 @@ const BasicTable = (
             {
                 key: 'founder',
                 label: getIntlText('device.label.param_founder'),
-                content: data?.integrationName,
+                content:
+                    loading !== false
+                        ? ''
+                        : data?.userNickname || getIntlText('common.label.system'),
             },
             {
                 key: 'id',
@@ -83,7 +86,7 @@ const BasicTable = (
                 content: data?.id,
             },
         ];
-    }, [data, getIntlText, getTimeFormat]);
+    }, [data, loading, getIntlText, getTimeFormat]);
     const handleDialogClose = useCallback(() => {
         setDialogOpen(false);
     }, []);
