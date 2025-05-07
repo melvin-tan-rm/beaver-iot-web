@@ -8,7 +8,7 @@ import { useI18n } from '@milesight/shared/src/hooks';
 import { CheckCircleIcon, ErrorIcon, LoopIcon } from '@milesight/shared/src/components';
 import { Tooltip } from '@/components';
 import { NodeAvatar } from '@/pages/workflow/components';
-import { getNodeDefaultParams } from '../../helper';
+import { getNodeInitialParams } from '../../helper';
 import useFlowStore from '../../store';
 import Handle from '../handle';
 import './style.less';
@@ -180,7 +180,7 @@ const NodeContainer: React.FC<NodeContainerProps> = ({
                             ? getIntlText(nodeConfig.labelIntlKey)
                             : nodeConfig.label || '',
                     };
-                    const params = getNodeDefaultParams(nodeConfig);
+                    const params = getNodeInitialParams(nodeConfig);
                     if (params) data.parameters = params;
 
                     updateNode(nodeId, {

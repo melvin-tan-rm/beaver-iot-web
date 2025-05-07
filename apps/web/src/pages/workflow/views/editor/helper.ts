@@ -106,9 +106,9 @@ export const getUrlParams = (url?: string) => {
 };
 
 /**
- * Get node default params
+ * Get node initial params
  */
-export const getNodeDefaultParams = (config: NodeConfigItem) => {
+export const getNodeInitialParams = (config: NodeConfigItem) => {
     const { properties = {}, outputProperties = {} } = config.schema || {};
     const paramConfigs = cloneDeep(Object.entries(properties))
         .filter(([_, item]) => item.initialValue)

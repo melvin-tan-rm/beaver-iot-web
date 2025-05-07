@@ -10,7 +10,7 @@ import { useSize } from 'ahooks';
 import { cloneDeep, maxBy, isNil } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { useConfirm } from '@/components';
-import { genUuid, getNodeDefaultParams } from '../helper';
+import { genUuid, getNodeInitialParams } from '../helper';
 import {
     NODE_SPACING_X,
     NODE_SPACING_Y,
@@ -153,7 +153,7 @@ const useInteractions = () => {
             const nodeData: BaseNodeDataType = {
                 nodeName: defaultNodeName,
             };
-            const params = getNodeDefaultParams(nodeConfig);
+            const params = getNodeInitialParams(nodeConfig);
             if (params) nodeData.parameters = params;
 
             const newNode: WorkflowNode = {
