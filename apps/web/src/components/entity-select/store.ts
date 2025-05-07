@@ -3,7 +3,7 @@ import { immer } from 'zustand/middleware/immer';
 import { entityAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import type { FilterParameters } from './types';
 
-export type EntityFilterParams = FilterParameters & { keyword?: string };
+export type EntityFilterParams = FilterParameters & { keyword?: string; notScanKey?: boolean };
 export interface EntityStoreType {
     status: 'ready' | 'loading' | 'finish';
 
@@ -37,6 +37,7 @@ export default create(
         getEntityList: async params => {
             const {
                 keyword,
+                notScanKey,
                 entityType: type,
                 entityAccessMod: accessMode,
                 excludeChildren,
@@ -55,6 +56,7 @@ export default create(
                     entity_value_type: entityValueType,
                     entity_access_mod: entityAccessMode,
                     exclude_children: excludeChildren,
+                    not_scan_key: notScanKey,
                     page_number: 1,
                     page_size: 99999,
                 }),

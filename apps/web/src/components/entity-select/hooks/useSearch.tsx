@@ -18,14 +18,14 @@ export const useSearch = (props: FilterParameters) => {
         async () => {
             if (!keyword) return [];
 
-            const params = {
+            return getEntityList({
                 keyword,
+                notScanKey: true,
                 entityType,
                 entityAccessMod,
                 excludeChildren,
                 entityValueType,
-            };
-            return getEntityList(params);
+            });
         },
         { refreshDeps: [keyword], debounceWait: 300 },
     );

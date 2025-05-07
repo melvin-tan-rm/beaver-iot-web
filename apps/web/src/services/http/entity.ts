@@ -16,6 +16,10 @@ export interface EntityAPISchema extends APISchema {
              * Does not contain child nodes (when selecting the trigger service entity, the child entity cannot be delivered directly/when updating the attribute entity, only one child entity cannot be updated)
              */
             exclude_children?: boolean;
+            /**
+             * Whether to include the entity key
+             */
+            not_scan_key?: boolean;
             /** Whether it is a custom entity */
             customized?: boolean;
         };
