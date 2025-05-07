@@ -28,6 +28,7 @@ export type NodeParamType = {
         type?: EntityValueDataType;
         typeLabel?: string;
         key: string;
+        originKey: string;
         enums?: {
             key: string;
             label?: string;
@@ -43,6 +44,7 @@ export type FlattenNodeParamType = {
     valueType?: EntityValueDataType;
     valueTypeLabel?: string;
     valueKey: string;
+    valueOriginKey: string;
     enums?: {
         key: string;
         label?: string;
@@ -278,11 +280,13 @@ const useWorkflow = () => {
                                         ? valueType
                                         : getIntlText(typeOption.label),
                                     key: genRefParamKey(nodeId, key),
+                                    originKey: key,
                                 });
                                 break;
                             }
                             case 'url': {
                                 if (!outputData) return;
+                                const originKey = Array.isArray(path) ? path.join('.') : path || '';
                                 paramData.outputs.push({
                                     name: label || key,
                                     type: 'STRING',
@@ -290,10 +294,8 @@ const useWorkflow = () => {
                                         entityTypeOptions.find(it => it.value === 'STRING')
                                             ?.label || '',
                                     ),
-                                    key: genRefParamKey(
-                                        nodeId,
-                                        Array.isArray(path) ? path.join('.') : path || '',
-                                    ),
+                                    key: genRefParamKey(nodeId, originKey),
+                                    originKey,
                                 });
 
                                 const params = getUrlParams(outputData);
@@ -303,13 +305,15 @@ const useWorkflow = () => {
                                     const typeOption = entityTypeOptions.find(
                                         it => it.value === valueType,
                                     );
+                                    const originKey = `${key}.${param}`;
                                     paramData.outputs.push({
                                         name: `${label || key}.${param}`,
                                         type: valueType,
                                         typeLabel: !typeOption?.label
                                             ? valueType
                                             : getIntlText(typeOption.label),
-                                        key: genRefParamKey(nodeId, `${key}.${param}`),
+                                        key: genRefParamKey(nodeId, originKey),
+                                        originKey,
                                     });
                                 });
                                 break;
@@ -323,6 +327,7 @@ const useWorkflow = () => {
                                     paramData.outputs.push({
                                         name: key,
                                         key: genRefParamKey(nodeId, key),
+                                        originKey: key,
                                     });
                                 });
                                 break;
@@ -342,18 +347,18 @@ const useWorkflow = () => {
                                     const typeOption = entityTypeOptions.find(
                                         it => it.value === item.type,
                                     );
+                                    const originKey =
+                                        item.identify && nodeType === 'trigger'
+                                            ? item.identify
+                                            : item.name;
                                     paramData.outputs.push({
                                         name: item.name,
                                         type: item.type,
                                         typeLabel: !typeOption?.label
                                             ? item.type
                                             : getIntlText(typeOption.label),
-                                        key: genRefParamKey(
-                                            nodeId,
-                                            item.identify && nodeType === 'trigger'
-                                                ? item.identify
-                                                : item.name,
-                                        ),
+                                        key: genRefParamKey(nodeId, originKey),
+                                        originKey,
                                         enums,
                                     });
                                 });
@@ -379,6 +384,7 @@ const useWorkflow = () => {
                                             ? type
                                             : getIntlText(typeOption.label),
                                         key: genRefParamKey(nodeId, item),
+                                        originKey: item,
                                         enums: !isEmpty(enums)
                                             ? Object.entries(enums)?.map(([key, value]) => ({
                                                   key,
@@ -415,6 +421,7 @@ const useWorkflow = () => {
                                             ? type
                                             : getIntlText(typeOption.label),
                                         key: genRefParamKey(nodeId, key),
+                                        originKey: key,
                                         enums: !isEmpty(enums)
                                             ? Object.entries(enums)?.map(([key, value]) => ({
                                                   key,
@@ -450,6 +457,7 @@ const useWorkflow = () => {
                         valueType: output.type,
                         valueTypeLabel: output.typeLabel,
                         valueKey: output.key,
+                        valueOriginKey: output.originKey,
                         enums: output.enums,
                     })),
                 );

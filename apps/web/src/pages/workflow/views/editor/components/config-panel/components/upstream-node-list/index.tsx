@@ -39,6 +39,7 @@ const UpstreamNodeList: React.FC<UpstreamNodeListProps> = ({ filter, ...props })
                     const data = {
                         ...node,
                         valueKey: output.key,
+                        valueOriginKey: output.originKey,
                         valueName: output.name,
                         valueType: output.type,
                         valueTypeLabel: output.typeLabel,

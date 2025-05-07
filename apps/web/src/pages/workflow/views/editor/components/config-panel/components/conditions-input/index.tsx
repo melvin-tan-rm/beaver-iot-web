@@ -247,6 +247,7 @@ const ConditionsInput: React.FC<ConditionsInputProps> = props => {
                         {expressionType && expressionType !== 'condition' ? (
                             <div className="ms-conditions-input-item-mvel">
                                 <CodeEditor
+                                    variableSelectable
                                     value={{
                                         language: (expressionType ||
                                             DEFAULT_LANGUAGE) as CodeEditorData['language'],
