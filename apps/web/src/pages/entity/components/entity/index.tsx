@@ -126,7 +126,7 @@ export default () => {
             assets: url,
             fileName: `EntityData_${getTimeFormat(dayjs(), 'simpleDateFormat').replace(/-/g, '_')}_${genRandomString(
                 6,
-                { upperCase: false, lowerCase: true, number: true },
+                { upperCase: false, lowerCase: true },
             )}.csv`,
             header: {
                 'Accept-Language': getCurrentComponentLang(),

@@ -85,7 +85,7 @@ const useFormItems = () => {
                             placeholder={getIntlText('common.placeholder.input')}
                             type="text"
                             autoComplete="off"
-                            label={getIntlText('workflow.email.label_smtp_config_service_host')}
+                            label={getIntlText('setting.credentials.smtp_addr')}
                             error={!!error}
                             helperText={error ? error.message : null}
                             value={value}
