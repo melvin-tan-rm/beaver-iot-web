@@ -212,10 +212,13 @@ const WorkflowEditor = () => {
         if (wid) return { id: wid };
     });
     const [flowDataLoading, setFlowDataLoading] = useState<boolean>();
-    const handleFlowDataChange = useCallback<NonNullable<TopbarProps['onDataChange']>>(data => {
-        setBasicData(data);
-        // setIsPreventLeave(true);
-    }, []);
+    const handleFlowDataChange = useCallback<NonNullable<TopbarProps['onDataChange']>>(
+        (data, reason) => {
+            setBasicData(data);
+            if (reason === 'manual') setIsPreventLeave(true);
+        },
+        [],
+    );
 
     useRequest(
         async () => {

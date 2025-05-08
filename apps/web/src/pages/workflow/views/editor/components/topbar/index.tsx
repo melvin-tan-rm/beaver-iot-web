@@ -30,7 +30,7 @@ export interface TopbarProps {
     onDesignModeChange: (mode: DesignMode) => void;
 
     /** Data Change Callback */
-    onDataChange?: (data: TopbarProps['data']) => void;
+    onDataChange?: (data: TopbarProps['data'], reason?: 'manual') => void;
 
     /** This handler gets called before the user click 「Back」 Button */
     onBeforeBack?: () => void | Promise<void>;
@@ -64,7 +64,7 @@ const Topbar: React.FC<TopbarProps> = ({
         setFlowData(data => {
             const result = { ...data, ...params };
 
-            onDataChange?.(result);
+            onDataChange?.(result, 'manual');
             return result;
         });
     };
@@ -74,7 +74,7 @@ const Topbar: React.FC<TopbarProps> = ({
         setFlowData(data => {
             const result = { ...data, enabled: checked };
 
-            onDataChange?.(result);
+            onDataChange?.(result, 'manual');
             return result;
         });
     };
