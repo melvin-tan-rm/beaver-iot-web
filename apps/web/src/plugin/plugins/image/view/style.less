@@ -40,6 +40,12 @@
         height: 0;
         overflow: hidden;
         border-radius: @border-radius-base;
+
+        &:hover {
+            .image-wrapper__overlay {
+                opacity: 1;
+            }
+        }
     }
 
     & &__empty_icon {
@@ -84,9 +90,5 @@
         );
         opacity: 0;
         transition: opacity 0.3s ease;
-
-        &:hover {
-            opacity: 1;
-        }
     }
 }
