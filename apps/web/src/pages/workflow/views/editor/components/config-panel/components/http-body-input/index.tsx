@@ -46,6 +46,34 @@ const contentTypeOptions: {
     },
 ];
 
+const transValue2Json = (value?: ValueType['value']) => {
+    let result = '';
+    switch (typeof value) {
+        case 'string': {
+            result = value;
+            break;
+        }
+        case 'object': {
+            const tempData = Object.entries(value).filter(([key, value]) => !!(key || value));
+            if (tempData.length) {
+                const data = tempData.reduce(
+                    (acc, [key, value]) => {
+                        acc[key] = value;
+                        return acc;
+                    },
+                    {} as Record<string, any>,
+                );
+                result = JSON.stringify(data, null, 2);
+            }
+            break;
+        }
+        default:
+            break;
+    }
+
+    return result;
+};
+
 const HttpBodyInput: React.FC<HttpBodyInputProps> = ({ label, required, ...props }) => {
     const { getIntlText } = useI18n();
     const [data, setData] = useControllableValue<ValueType | undefined>(props);
@@ -63,10 +91,7 @@ const HttpBodyInput: React.FC<HttpBodyInputProps> = ({ label, required, ...props
                 break;
             case 'text/plain':
             case 'application/json':
-                value =
-                    typeof data?.value === 'object'
-                        ? JSON.stringify(data?.value, null, 2)
-                        : data?.value || '';
+                value = transValue2Json(data?.value);
                 break;
             default:
                 value = '';
@@ -96,10 +121,7 @@ const HttpBodyInput: React.FC<HttpBodyInputProps> = ({ label, required, ...props
             case 'text/plain':
             case 'application/json': {
                 const lang = data.type === 'application/json' ? 'json' : 'text';
-                const value =
-                    typeof data?.value === 'object'
-                        ? JSON.stringify(data?.value, null, 2)
-                        : data?.value || '';
+                const value = transValue2Json(data?.value);
                 const title = contentTypeOptions.find(item => item.value === data?.type)?.label;
                 const placeholder =
                     data?.type === 'application/json'
