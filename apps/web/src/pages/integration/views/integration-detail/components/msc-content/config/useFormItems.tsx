@@ -90,7 +90,7 @@ const useFormItems = () => {
                     return (
                         <TextField
                             {...commTextProps}
-                            label={getIntlText('setting.integration.param_client_id')}
+                            label={getIntlText('common.label.client_id')}
                             error={!!error}
                             helperText={error ? error.message : null}
                             value={value}
