@@ -176,7 +176,7 @@ const useValidate = () => {
             },
             nodeRemark: {
                 checkRangeLength(value) {
-                    if (value && !isRangeLength(value || '', 1, 1000)) {
+                    if (value && !isRangeLength(value || '', 1, 500)) {
                         const message = getIntlText(ErrorIntlKey.rangeLength, {
                             1: getIntlText('common.label.remark'),
                             2: 1,
