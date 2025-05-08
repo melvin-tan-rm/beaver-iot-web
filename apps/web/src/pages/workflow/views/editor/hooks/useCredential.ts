@@ -1,7 +1,11 @@
-import { useRequest } from 'ahooks';
+import { useEffect } from 'react';
+import { useRequest, clearCache } from 'ahooks';
 import { useStoreShallow } from '@milesight/shared/src/hooks';
 import { credentialsApi, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import useFlowStore from '../store';
+
+const mqttCacheKey = 'workflow-mqtt-credentials';
+const httpCacheKey = 'workflow-http-credentials';
 
 const useCredential = () => {
     const { mqttCredentials, httpCredentials, setMqttCredentials, setHttpCredentials } =
@@ -19,7 +23,7 @@ const useCredential = () => {
         async () => {
             const [err, resp] = await awaitWrap(
                 Promise.all([
-                    credentialsApi.getMqttCredential(),
+                    credentialsApi.getDefaultCredential({ credentialsType: 'MQTT' }),
                     credentialsApi.getMqttBrokerInfo(),
                 ]),
             );
@@ -42,6 +46,8 @@ const useCredential = () => {
         },
         {
             debounceWait: 300,
+            cacheKey: mqttCacheKey,
+            staleTime: 10 * 1000,
         },
     );
 
@@ -57,8 +63,17 @@ const useCredential = () => {
         },
         {
             debounceWait: 300,
+            cacheKey: httpCacheKey,
+            staleTime: 10 * 1000,
         },
     );
+
+    useEffect(() => {
+        return () => {
+            clearCache(mqttCacheKey);
+            clearCache(httpCacheKey);
+        };
+    }, []);
 
     return {
         mqttCredentials,

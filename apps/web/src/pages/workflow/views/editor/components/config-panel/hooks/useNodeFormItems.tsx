@@ -308,7 +308,7 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                 break;
                             }
                             case 'mqttTopicInput': {
-                                const { username = '' } = mqttCredentials || {};
+                                const { access_key: username = '' } = mqttCredentials || {};
                                 formItem.render = ({ field: { onChange, value } }) => {
                                     const topicPrefix = `beaver-iot/${readonly ? '-' : username}/`;
                                     return (

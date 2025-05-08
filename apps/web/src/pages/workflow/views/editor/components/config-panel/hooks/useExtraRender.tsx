@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { safeJsonParse } from '@milesight/shared/src/utils/tools';
 import { Result as ParseResult } from '@milesight/shared/src/utils/curl-parser';
@@ -54,6 +54,8 @@ interface Props {
 }
 
 type RenderGroupFooterProps = Pick<RenderFunctionProps, 'node' | 'data'>;
+
+const memoTimestamp = Date.now();
 
 const useExtraRender = ({ isLogMode }: Props = {}) => {
     const { getIntlText } = useI18n();
@@ -203,10 +205,10 @@ const useExtraRender = ({ isLogMode }: Props = {}) => {
                         host = window.location.hostname,
                         mqtt_port: mqttPort,
                         mqtts_port: mqttsPort,
-                        client_id: clientId,
-                        username,
-                        password,
+                        access_key: username,
+                        access_secret: password,
                     } = mqttCredentials || {};
+                    const clientId = `${username}#${memoTimestamp}`;
                     const port = mqttsPort || mqttPort;
                     const protocol = mqttsPort ? 'mqtts:' : 'mqtt:';
                     const address = `${protocol}//${host}:${port}`;

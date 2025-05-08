@@ -81,7 +81,7 @@ export interface FlowStore {
 
     mqttCredentials?:
         | null
-        | (CredentialAPISchema['getMqttCredential']['response'] &
+        | (CredentialAPISchema['getDefaultCredential']['response'] &
               CredentialAPISchema['getMqttBrokerInfo']['response']);
 
     httpCredentials?: null | CredentialAPISchema['getDefaultCredential']['response'];
