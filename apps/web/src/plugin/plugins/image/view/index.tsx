@@ -27,6 +27,7 @@ import './style.less';
 // };
 
 export interface ViewProps {
+    isEdit: boolean;
     config: ImageConfigType;
     configJson: {
         isPreview?: boolean;
@@ -43,7 +44,7 @@ const genFullUrl = (path?: string) => {
 };
 
 const View = (props: ViewProps) => {
-    const { config, configJson } = props;
+    const { config, configJson, isEdit } = props;
     const { label, dataType, entity, file, url } = config || {};
     const { isPreview } = configJson || {};
 
@@ -151,17 +152,27 @@ const View = (props: ViewProps) => {
 
     return (
         <div className={`image-wrapper ${isPreview ? 'image-wrapper__preview' : ''}`}>
-            {label && <div className="image-wrapper__header">{label}</div>}
+            {label && (
+                <div
+                    className="image-wrapper__header"
+                    style={{ width: isEdit ? 'calc(100% - 100px)' : 'calc(100% - 24px)' }}
+                >
+                    {label}
+                </div>
+            )}
             <div className="image-wrapper__content">
                 {!imageSrc || imageFailed ? (
                     <BrokenImageIcon className="image-wrapper__empty_icon" />
                 ) : (
-                    <img
-                        className="image-wrapper__img"
-                        src={imageSrc}
-                        alt=""
-                        onError={handleImageFailed}
-                    />
+                    <>
+                        <img
+                            className="image-wrapper__img"
+                            src={imageSrc}
+                            alt=""
+                            onError={handleImageFailed}
+                        />
+                        {label && <div className="image-wrapper__overlay" />}
+                    </>
                 )}
             </div>
         </div>
