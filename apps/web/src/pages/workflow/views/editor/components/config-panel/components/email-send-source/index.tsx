@@ -1,7 +1,7 @@
 import React from 'react';
 import { useControllableValue } from 'ahooks';
 
-import { TextField } from '@mui/material';
+import { TextField, Checkbox, FormControlLabel } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { KeyboardArrowDownIcon, MuiSelect } from '@milesight/shared/src/components';
 
@@ -32,6 +32,7 @@ export interface EmailConfigProps {
         apiKey: string;
     };
     smtpConfig?: SmtpProps;
+    useSystemSettings?: boolean;
 }
 
 export type EmailSendSourceProps = {
@@ -49,10 +50,7 @@ const EmailSendSource: React.FC<EmailSendSourceProps> = props => {
     const { getIntlText } = useI18n();
 
     const [state, setState] = useControllableValue<EmailConfigProps>({
-        value: value || {
-            provider: EMAIL_TYPE.SMTP,
-            smtpConfig: defaultSmtpValue,
-        },
+        value: value || {},
         onChange,
     });
 
@@ -97,35 +95,63 @@ const EmailSendSource: React.FC<EmailSendSourceProps> = props => {
 
     return (
         <div className="ms-workflow-email-config">
-            <div className="ms-workflow-email-config__type">
-                <MuiSelect
-                    formControlProps={{
-                        fullWidth: true,
-                        required: true,
-                    }}
-                    notched
-                    variant="outlined"
-                    label={getIntlText('workflow.label.node_email_type')}
-                    options={EmailTypeOptions}
-                    IconComponent={KeyboardArrowDownIcon}
-                    value={state.provider || ''}
-                    onChange={e => {
-                        const provider = e.target.value as EMAIL_TYPE;
-                        setState({
-                            ...(provider === EMAIL_TYPE.GMAIL
-                                ? {
-                                      gmailConfig: {
-                                          apiKey: '',
-                                      },
-                                  }
-                                : { smtpConfig: defaultSmtpValue }),
-                            provider,
-                        });
-                    }}
-                />
-            </div>
+            <FormControlLabel
+                className="ms-workflow-email-config__checkbox"
+                label={getIntlText('workflow.label.use_system_smtp_settings')}
+                control={
+                    <Checkbox
+                        checked={!!state?.useSystemSettings}
+                        onChange={() => {
+                            setState(data => {
+                                const checked = !data.useSystemSettings;
 
-            {renderEmailTypeItems()}
+                                if (checked) {
+                                    return {
+                                        useSystemSettings: true,
+                                    };
+                                }
+
+                                return {
+                                    ...data,
+                                    useSystemSettings: false,
+                                };
+                            });
+                        }}
+                    />
+                }
+            />
+            {!state?.useSystemSettings && (
+                <>
+                    <div className="ms-workflow-email-config__type">
+                        <MuiSelect
+                            formControlProps={{
+                                fullWidth: true,
+                                required: true,
+                            }}
+                            notched
+                            variant="outlined"
+                            label={getIntlText('workflow.label.node_email_type')}
+                            options={EmailTypeOptions}
+                            IconComponent={KeyboardArrowDownIcon}
+                            value={state?.provider || ''}
+                            onChange={e => {
+                                const provider = e.target.value as EMAIL_TYPE;
+                                setState({
+                                    ...(provider === EMAIL_TYPE.GMAIL
+                                        ? {
+                                              gmailConfig: {
+                                                  apiKey: '',
+                                              },
+                                          }
+                                        : { smtpConfig: defaultSmtpValue }),
+                                    provider,
+                                });
+                            }}
+                        />
+                    </div>
+                    {renderEmailTypeItems()}
+                </>
+            )}
         </div>
     );
 };

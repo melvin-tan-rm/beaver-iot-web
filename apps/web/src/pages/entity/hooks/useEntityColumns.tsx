@@ -80,11 +80,11 @@ const useEntityColumns = <T extends TableRowDataType>({
             },
             {
                 field: 'entityValueType',
-                headerName: getIntlText('common.label.data_type'),
+                headerName: getIntlText('common.label.type'),
                 align: 'left',
                 headerAlign: 'left',
                 flex: 1,
-                minWidth: 150,
+                minWidth: 100,
                 ellipsis: true,
                 // filteredValue: filteredInfo?.entityValueType,
                 // filters: Object.entries(ENTITY_DATA_VALUE_TYPE).map(([key, value]) => ({
@@ -96,10 +96,13 @@ const useEntityColumns = <T extends TableRowDataType>({
                 field: 'integrationName',
                 headerName: getIntlText('device.label.param_source'),
                 flex: 1,
-                minWidth: 250,
+                minWidth: 300,
                 ellipsis: true,
                 filteredValue: filteredInfo?.integrationName,
                 filterSearchType: 'search',
+                renderCell({ row }) {
+                    return `${row.integrationName} ${row?.deviceName ? `/${row?.deviceName}` : ''}`;
+                },
             },
             {
                 field: '$operation',

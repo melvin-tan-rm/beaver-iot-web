@@ -19,7 +19,7 @@ const BasicInfo = ({ data }: IProps) => {
             },
             {
                 key: 'dataType',
-                label: getIntlText('common.label.data_type'),
+                label: getIntlText('common.label.type'),
                 content: data.entityValueType,
             },
         ];

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Alert } from '@mui/material';
 import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { useMemoizedFn } from 'ahooks';
@@ -17,6 +17,8 @@ interface IProps {
     entities?: InteEntityType[];
     // cancel event
     onCancel: () => void;
+    // codec update
+    onUpdateSuccess?: () => void;
 }
 
 // codec repo entity key
@@ -24,9 +26,14 @@ const CODEC_REPO_KEY = 'model-repo-url';
 
 // codec repo component
 const CodecRepo: React.FC<IProps> = props => {
-    const { visible, entities, onCancel } = props;
+    const { visible, entities, onCancel, onUpdateSuccess } = props;
     const { getIntlText } = useI18n();
-    const { getEntityKey } = useEntity({ entities });
+    const { getEntityKey, getEntityValue } = useEntity({ entities });
+
+    useEffect(() => {
+        const codecRepo = getEntityValue(CODEC_REPO_KEY);
+        setValue('codecRepo', codecRepo || '');
+    }, []);
 
     const onSubmit: SubmitHandler<FormDataProps> = useMemoizedFn(async (formData, all) => {
         const { codecRepo } = formData;
@@ -47,10 +54,11 @@ const CodecRepo: React.FC<IProps> = props => {
         }
         toast.success({ content: getIntlText('common.message.operation_success') });
         onCancel();
+        onUpdateSuccess?.();
     });
 
     // ---------- Render form items ----------
-    const { control, handleSubmit } = useForm<FormDataProps>({
+    const { control, handleSubmit, setValue } = useForm<FormDataProps>({
         shouldUnregister: true,
     });
     const formItems = useFormItems();

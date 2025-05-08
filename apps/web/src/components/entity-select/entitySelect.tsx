@@ -22,7 +22,7 @@ const EntitySelect = <
     const {
         label,
         required,
-        value,
+        value = null as EntitySelectValueType,
         multiple,
         loading,
         onChange,
@@ -105,7 +105,7 @@ const EntitySelect = <
             if (reason === 'input') {
                 onSearch?.(value);
             }
-            if (reason === 'blur') {
+            if (reason === 'blur' || reason === 'clear') {
                 onSearch?.('');
             }
 
@@ -210,6 +210,7 @@ const EntitySelect = <
             handleSelectClose,
         ],
     );
+
     return (
         <Autocomplete<Value, Multiple, DisableClearable, false>
             {...rest}

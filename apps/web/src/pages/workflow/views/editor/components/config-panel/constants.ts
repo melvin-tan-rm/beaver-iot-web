@@ -39,6 +39,16 @@ export const CODE_EXPRESSION_DEFAULT_VALUE: Partial<Record<EditorSupportLang, st
  * Node Form Default Values
  */
 export const DEFAULT_VALUES: Partial<Record<WorkflowNodeType, Record<string, any>>> = {
+    httpin: {
+        method: '',
+        url: '',
+    },
+    service: {
+        payload: [],
+    },
+    select: {
+        entities: [''],
+    },
     code: {
         inputArguments: {
             arg1: '',
@@ -55,25 +65,16 @@ export const DEFAULT_VALUES: Partial<Record<WorkflowNodeType, Record<string, any
             },
         ],
     },
+    http: {
+        method: '',
+        url: '',
+    },
+    email: {
+        emailConfig: {
+            useSystemSettings: true,
+        },
+    },
     webhook: {
         inputArguments: {},
-    },
-    select: {
-        entities: [''],
-    },
-    service: {
-        payload: [],
-    },
-    mqtt: {
-        message: [
-            {
-                name: 'topic',
-                type: 'STRING',
-            },
-            {
-                name: 'payload',
-                type: 'STRING',
-            },
-        ],
     },
 };

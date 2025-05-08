@@ -10,6 +10,7 @@ import { CloseIcon, PlayArrowIcon, HelpIcon } from '@milesight/shared/src/compon
 import { NodeAvatar } from '@/pages/workflow/components';
 import { Tooltip } from '@/components';
 import useFlowStore from '../../store';
+import { getNodeInitialParams } from '../../helper';
 import useWorkflow from '../../hooks/useWorkflow';
 import useValidate from '../../hooks/useValidate';
 import { DEFAULT_VALUES } from './constants';
@@ -127,12 +128,17 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
     // Save node data
     useThrottleEffect(
         () => {
-            if (!openPanel || !finalSelectedNode?.id || !formDataReady) return;
+            if (!openPanel || !finalSelectedNode?.id || !formDataReady || !nodeConfig) return;
             const { nodeName, nodeRemark, ...formData } = latestFormData || {};
+            const initialParams = getNodeInitialParams(nodeConfig);
 
-            updateNodeData(finalSelectedNode.id, { nodeName, nodeRemark, parameters: formData });
+            updateNodeData(finalSelectedNode.id, {
+                nodeName,
+                nodeRemark,
+                parameters: { ...initialParams, ...formData },
+            });
         },
-        [openPanel, formDataReady, latestFormData, updateNodeData],
+        [openPanel, formDataReady, latestFormData, nodeConfig, updateNodeData],
         { wait: 50 },
     );
 

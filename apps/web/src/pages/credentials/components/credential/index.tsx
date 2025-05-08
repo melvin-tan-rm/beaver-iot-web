@@ -11,7 +11,8 @@ import {
     CredentialType,
     isRequestSuccess,
 } from '@/services/http';
-import ConfigCell from '../config-cell';
+import { PERMISSIONS } from '@/constants';
+import ConfigTable from '../config-table';
 import PasswordLabel from '../password-label';
 import { EditCredential } from './components';
 
@@ -128,21 +129,23 @@ const Credential = () => {
 
     return (
         <div className="ms-credentials-credential">
-            <ConfigCell
-                title={getIntlText('setting.credentials.label.mqtt')}
+            <ConfigTable
+                title={getIntlText('workflow.label.mqtt_node_name')}
                 configData={mqttConfig}
+                permissions={PERMISSIONS.CREDENTIAL_MODULE_EDIT}
                 onEdit={() => setMqttOpen(true)}
             />
-            <ConfigCell
-                title={getIntlText('setting.credentials.label.http')}
+            <ConfigTable
+                title={getIntlText('workflow.label.http_node_name')}
                 configData={httpConfig}
+                permissions={PERMISSIONS.CREDENTIAL_MODULE_EDIT}
                 onEdit={() => setHttpOpen(true)}
             />
             {mqttOpen && (
                 <EditCredential
                     data={mqttDetail}
                     type="mqtt"
-                    title={getIntlText('setting.credentials.label.edit_mqtt')}
+                    title={getIntlText('setting.credentials.edit_mqtt')}
                     visible={mqttOpen}
                     onCancel={() => setMqttOpen(false)}
                     onUpdateSuccess={handleUpdate}
@@ -152,7 +155,7 @@ const Credential = () => {
                 <EditCredential
                     data={httpDetail}
                     type="http"
-                    title={getIntlText('setting.credentials.label.edit_http')}
+                    title={getIntlText('setting.credentials.edit_http')}
                     visible={httpOpen}
                     onCancel={() => setHttpOpen(false)}
                     onUpdateSuccess={handleUpdate}

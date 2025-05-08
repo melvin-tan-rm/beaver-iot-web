@@ -72,7 +72,6 @@ const ParamAssignInput: React.FC<ParamAssignInputProps> = ({
     useEffect(() => {
         const result = arrayToObject(list);
 
-        if (Object.keys(result).every(item => !item)) return;
         setData?.(result);
     }, [list, setData]);
 

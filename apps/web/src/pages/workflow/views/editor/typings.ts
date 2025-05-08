@@ -29,6 +29,7 @@ export type NodeFormItemConfig = {
     multiValue: boolean;
     displayName: string;
     defaultValue: string;
+    initialValue?: string;
     description: string;
     index: number;
     enum?: string[] | Record<string, string>;

@@ -10,8 +10,8 @@ import {
     FilterValue,
     TableProProps,
 } from '@/components';
-import { useI18n } from '@milesight/shared/src/hooks';
-import { objectToCamelCase, xhrDownload } from '@milesight/shared/src/utils/tools';
+import { useI18n, useTime } from '@milesight/shared/src/hooks';
+import { genRandomString, objectToCamelCase, xhrDownload } from '@milesight/shared/src/utils/tools';
 import { getCurrentComponentLang } from '@milesight/shared/src/services/i18n';
 import { getAuthorizationToken } from '@milesight/shared/src/utils/request/utils';
 import { IosShareIcon, toast } from '@milesight/shared/src/components';
@@ -36,6 +36,7 @@ import ExportModal from '../export-modal';
 export default () => {
     const navigate = useNavigate();
     const { getIntlText } = useI18n();
+    const { getTimeFormat, dayjs } = useTime();
     const { hasPermission } = useUserPermissions();
 
     const [keyword, setKeyword] = useState<string>();
@@ -119,11 +120,14 @@ export default () => {
             url += `&start_timestamp=${time?.start.valueOf()}`;
         }
         if (time?.end) {
-            url += `&end_timestamp=${(time?.end.valueOf() || 0) + 86399000}`;
+            url += `&end_timestamp=${time?.end.valueOf() || 0}`;
         }
         xhrDownload({
             assets: url,
-            fileName: 'entity.csv',
+            fileName: `EntityData_${getTimeFormat(dayjs(), 'simpleDateFormat').replace(/-/g, '_')}_${genRandomString(
+                6,
+                { upperCase: false, lowerCase: true },
+            )}.csv`,
             header: {
                 'Accept-Language': getCurrentComponentLang(),
                 Authorization: getAuthorizationToken(),

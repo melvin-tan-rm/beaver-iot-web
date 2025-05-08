@@ -39,7 +39,6 @@ const apiOriginHandler = async (config: AxiosRequestConfig) => {
 
 const client = createRequestClient({
     baseURL: '/',
-    // TODO: authenticates the oauthHandler
     configHandlers: [headersHandler, apiOriginHandler, oauthHandler],
     onResponse(resp) {
         // Error handling
@@ -54,5 +53,21 @@ const client = createRequestClient({
     },
 });
 
+const unauthClient = createRequestClient({
+    baseURL: '/',
+    configHandlers: [headersHandler, apiOriginHandler],
+    onResponse(resp) {
+        // Error handling
+        errorHandler(resp.data.error_code, resp);
+        return resp;
+    },
+    onResponseError(error) {
+        const resp = error.response;
+        // @ts-ignore
+        errorHandler(resp?.data?.error_code || error.code, resp || error);
+        return error;
+    },
+});
+
 export * from './constant';
-export { client, attachAPI, awaitWrap, getResponseData, isRequestSuccess, pLimit };
+export { client, unauthClient, attachAPI, awaitWrap, getResponseData, isRequestSuccess, pLimit };

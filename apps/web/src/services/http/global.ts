@@ -1,5 +1,4 @@
-import { apiOrigin } from '@milesight/shared/src/config';
-import { client, attachAPI, API_PREFIX } from './client';
+import { client, unauthClient, attachAPI, API_PREFIX } from './client';
 import { type UserType, type UserMenuType } from './user';
 
 export interface GlobalAPISchema extends APISchema {
@@ -117,7 +116,7 @@ export default attachAPI<GlobalAPISchema>(client, {
                 ? url
                 : `${API_PREFIX}${url.startsWith('/') ? '' : '/'}${url}`;
 
-            return client.request({
+            return unauthClient.request({
                 method: 'PUT',
                 url: apiUrl,
                 headers: {

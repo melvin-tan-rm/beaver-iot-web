@@ -9,7 +9,7 @@ import {
     checkRangeLength,
     type Validate,
 } from '@milesight/shared/src/utils/validators';
-import { PARAM_REFERENCE_PATTERN, URL_PARAM_PATTERN } from './constants';
+import { PARAM_REFERENCE_PATTERN, PARAM_REFERENCE_PREFIX, URL_PARAM_PATTERN } from './constants';
 import type { NodeConfigItem } from './typings';
 
 /**
@@ -29,7 +29,7 @@ export const validatorsConfig: Record<string, Record<string, Validate>> = {
  * Generate Reference Param Key
  */
 export const genRefParamKey = (nodeId: ApiKey, valueKey: ApiKey) => {
-    return `#{properties.${nodeId}['${valueKey}']}`;
+    return `#{${PARAM_REFERENCE_PREFIX}.${nodeId}['${valueKey}']}`;
 };
 
 /**
@@ -106,12 +106,12 @@ export const getUrlParams = (url?: string) => {
 };
 
 /**
- * Get node default params
+ * Get node initial params
  */
-export const getNodeDefaultParams = (config: NodeConfigItem) => {
+export const getNodeInitialParams = (config: NodeConfigItem) => {
     const { properties = {}, outputProperties = {} } = config.schema || {};
     const paramConfigs = cloneDeep(Object.entries(properties))
-        .filter(([_, item]) => item.defaultValue)
+        .filter(([_, item]) => item.initialValue)
         .map(([name, item]) => {
             item.name = item.name || name;
             return item;
@@ -128,7 +128,7 @@ export const getNodeDefaultParams = (config: NodeConfigItem) => {
     const result: Record<string, any> = {};
 
     paramConfigs.forEach(item => {
-        const value = safeJsonParse(item.defaultValue) || item.defaultValue;
+        const value = safeJsonParse(item.initialValue) || item.initialValue;
         result[item.name] = value;
     });
 

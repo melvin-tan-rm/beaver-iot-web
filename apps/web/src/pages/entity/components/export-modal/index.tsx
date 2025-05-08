@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Box } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Modal } from '@milesight/shared/src/components';
 import { DateRangePickerValueType } from '@/components/date-range-picker';
@@ -33,11 +34,22 @@ const ExportModal = (props: IProps) => {
             onOk={handleOk}
             title={getIntlText('common.label.export')}
         >
-            <DateRangePicker
-                label={{ start: 'Start date', end: 'End date' }}
-                onChange={changeTime}
-                value={time}
-            />
+            <Box
+                sx={{
+                    '&  .MuiFormControl-root': {
+                        marginBottom: 0,
+                    },
+                    '&  .MuiBox-root': {
+                        mt: 3,
+                    },
+                }}
+            >
+                <DateRangePicker
+                    label={{ start: 'Start date', end: 'End date' }}
+                    onChange={changeTime}
+                    value={time}
+                />
+            </Box>
         </Modal>
     );
 };

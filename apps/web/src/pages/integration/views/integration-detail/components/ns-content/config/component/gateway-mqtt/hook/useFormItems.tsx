@@ -79,7 +79,7 @@ const useFormItems = () => {
                     return (
                         <CopyTextField
                             {...props}
-                            label={getIntlText('setting.integration.label.broken_address')}
+                            label={getIntlText('common.label.broker_address')}
                             value={value}
                         />
                     );
@@ -91,7 +91,7 @@ const useFormItems = () => {
                     return (
                         <CopyTextField
                             {...props}
-                            label={getIntlText('setting.integration.label.broken_port')}
+                            label={getIntlText('common.label.broker_address')}
                             value={value}
                         />
                     );
@@ -103,7 +103,7 @@ const useFormItems = () => {
                     return (
                         <CopyTextField
                             {...props}
-                            label={getIntlText('setting.integration.param_client_id')}
+                            label={getIntlText('common.label.client_id')}
                             value={value}
                         />
                     );

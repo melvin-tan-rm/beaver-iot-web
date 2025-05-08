@@ -82,7 +82,7 @@ const EntityTable: React.FC<Props> = ({ data, onRefresh }) => {
             },
             {
                 field: 'valueType',
-                headerName: getIntlText('common.label.data_type'),
+                headerName: getIntlText('common.label.type'),
                 align: 'left',
                 headerAlign: 'left',
                 flex: 1,

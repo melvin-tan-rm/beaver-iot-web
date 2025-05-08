@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useReactFlow, getIncomers, getOutgoers, type IsValidConnection } from '@xyflow/react';
-import { uniqBy, omit, cloneDeep, pick, get as getObjectValue, isEmpty, isObject } from 'lodash-es';
+import { uniqBy, omit, cloneDeep, get as getObjectValue, isEmpty, isObject } from 'lodash-es';
 import { useI18n, useStoreShallow } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 import { basicNodeConfigs } from '@/pages/workflow/config';
@@ -13,7 +13,6 @@ import {
     NODE_MIN_NUMBER_LIMIT,
     ENTRY_NODE_NUMBER_LIMIT,
     DEFAULT_BOOLEAN_DATA_ENUMS,
-    URL_PARAM_PATTERN,
 } from '../constants';
 import { genRefParamKey, isRefParamKey, getUrlParams } from '../helper';
 import { getParallelInfo } from './utils';
@@ -28,6 +27,7 @@ export type NodeParamType = {
         type?: EntityValueDataType;
         typeLabel?: string;
         key: string;
+        originKey: string;
         enums?: {
             key: string;
             label?: string;
@@ -43,6 +43,7 @@ export type FlattenNodeParamType = {
     valueType?: EntityValueDataType;
     valueTypeLabel?: string;
     valueKey: string;
+    valueOriginKey: string;
     enums?: {
         key: string;
         label?: string;
@@ -278,11 +279,23 @@ const useWorkflow = () => {
                                         ? valueType
                                         : getIntlText(typeOption.label),
                                     key: genRefParamKey(nodeId, key),
+                                    originKey: key,
                                 });
                                 break;
                             }
                             case 'url': {
                                 if (!outputData) return;
+                                const originKey = Array.isArray(path) ? path.join('.') : path || '';
+                                paramData.outputs.push({
+                                    name: label || key,
+                                    type: 'STRING',
+                                    typeLabel: getIntlText(
+                                        entityTypeOptions.find(it => it.value === 'STRING')
+                                            ?.label || '',
+                                    ),
+                                    key: genRefParamKey(nodeId, originKey),
+                                    originKey,
+                                });
 
                                 const params = getUrlParams(outputData);
                                 if (!params.length) return;
@@ -291,13 +304,15 @@ const useWorkflow = () => {
                                     const typeOption = entityTypeOptions.find(
                                         it => it.value === valueType,
                                     );
+                                    const originKey = `${key}.${param}`;
                                     paramData.outputs.push({
                                         name: `${label || key}.${param}`,
                                         type: valueType,
                                         typeLabel: !typeOption?.label
                                             ? valueType
                                             : getIntlText(typeOption.label),
-                                        key: genRefParamKey(nodeId, `${key}.${param}`),
+                                        key: genRefParamKey(nodeId, originKey),
+                                        originKey,
                                     });
                                 });
                                 break;
@@ -311,6 +326,7 @@ const useWorkflow = () => {
                                     paramData.outputs.push({
                                         name: key,
                                         key: genRefParamKey(nodeId, key),
+                                        originKey: key,
                                     });
                                 });
                                 break;
@@ -330,18 +346,18 @@ const useWorkflow = () => {
                                     const typeOption = entityTypeOptions.find(
                                         it => it.value === item.type,
                                     );
+                                    const originKey =
+                                        item.identify && nodeType === 'trigger'
+                                            ? item.identify
+                                            : item.name;
                                     paramData.outputs.push({
                                         name: item.name,
                                         type: item.type,
                                         typeLabel: !typeOption?.label
                                             ? item.type
                                             : getIntlText(typeOption.label),
-                                        key: genRefParamKey(
-                                            nodeId,
-                                            item.identify && nodeType === 'trigger'
-                                                ? item.identify
-                                                : item.name,
-                                        ),
+                                        key: genRefParamKey(nodeId, originKey),
+                                        originKey,
                                         enums,
                                     });
                                 });
@@ -367,6 +383,7 @@ const useWorkflow = () => {
                                             ? type
                                             : getIntlText(typeOption.label),
                                         key: genRefParamKey(nodeId, item),
+                                        originKey: item,
                                         enums: !isEmpty(enums)
                                             ? Object.entries(enums)?.map(([key, value]) => ({
                                                   key,
@@ -403,6 +420,7 @@ const useWorkflow = () => {
                                             ? type
                                             : getIntlText(typeOption.label),
                                         key: genRefParamKey(nodeId, key),
+                                        originKey: key,
                                         enums: !isEmpty(enums)
                                             ? Object.entries(enums)?.map(([key, value]) => ({
                                                   key,
@@ -438,6 +456,7 @@ const useWorkflow = () => {
                         valueType: output.type,
                         valueTypeLabel: output.typeLabel,
                         valueKey: output.key,
+                        valueOriginKey: output.originKey,
                         enums: output.enums,
                     })),
                 );

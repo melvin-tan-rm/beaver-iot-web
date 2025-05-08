@@ -25,17 +25,20 @@ export default () => {
     const { handlePermissionsError } = usePermissionsError();
 
     // ---------- Device details related logic ----------
+    const [loading, setLoading] = useState<boolean>();
     const [deviceDetail, setDeviceDetail] = useState<DeviceDetailType>();
     const {
-        loading,
+        // loading,
         // data: deviceDetail,
         run: getDeviceDetail,
     } = useRequest(
         async () => {
             if (!deviceId) return;
+            setLoading(true);
             const [error, resp] = await awaitWrap(deviceAPI.getDetail({ id: deviceId }));
             const respData = getResponseData(resp);
 
+            setLoading(false);
             if (error || !respData || !isRequestSuccess(resp)) {
                 handlePermissionsError(error);
                 return;

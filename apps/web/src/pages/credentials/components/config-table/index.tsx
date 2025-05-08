@@ -5,27 +5,31 @@ import { EditIcon } from '@milesight/shared/src/components';
 import { Descriptions, DescriptionsProps, PermissionControlDisabled } from '@/components';
 import { PERMISSIONS } from '@/constants';
 
+import './style.less';
+
 interface IProps {
     /** modal title */
     title: string;
     /** config detail */
     configData: DescriptionsProps['data'];
+    /** permissions module */
+    permissions: PERMISSIONS;
     /** edit event */
     onEdit: () => void;
 }
 
 /**
- * config table cell component
+ * config table with permissions component
  */
-const ConfigCell: React.FC<IProps> = props => {
+const ConfigTable: React.FC<IProps> = props => {
     const { getIntlText } = useI18n();
-    const { title, configData, onEdit } = props;
+    const { title, configData, onEdit, permissions } = props;
 
     return (
-        <div className="detail-wrap">
-            <div className="detail-wrap-container">
-                <span className="detail-wrap-container-title">{title}</span>
-                <PermissionControlDisabled permissions={PERMISSIONS.CREDENTIAL_MODULE_EDIT}>
+        <div className="ms-config-table">
+            <div className="ms-config-table-container">
+                <span className="ms-config-table-container-title">{title}</span>
+                <PermissionControlDisabled permissions={permissions}>
                     <Button
                         variant="outlined"
                         sx={{ textTransform: 'none' }}
@@ -41,4 +45,4 @@ const ConfigCell: React.FC<IProps> = props => {
     );
 };
 
-export default ConfigCell;
+export default ConfigTable;

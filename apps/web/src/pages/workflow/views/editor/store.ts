@@ -147,6 +147,7 @@ const useFlowStore = create(
                         item => item.componentName === config.name,
                     );
 
+                    // console.log(config.name, schema);
                     return {
                         type: config.name,
                         label: config.title || config.name,

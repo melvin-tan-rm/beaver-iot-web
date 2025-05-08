@@ -63,7 +63,7 @@ const useFormItems = ({ type, tenantId }: IPros) => {
                             type="text"
                             autoComplete="off"
                             disabled={disabled}
-                            placeholder={getIntlText('common.label.please_enter')}
+                            placeholder={getIntlText('common.placeholder.input')}
                             label={getIntlText('user.label.user_name_table_title')}
                             error={!!error}
                             helperText={error ? error.message : null}
@@ -85,15 +85,11 @@ const useFormItems = ({ type, tenantId }: IPros) => {
             {
                 name: 'accessSecret',
                 rules: {
-                    validate: (() => {
-                        return {
-                            ...{
-                                checkRequired: checkRequired(),
-                                checkRangeLength: checkRangeLength({ min: 8, max: 32 }),
-                                checkLettersAndNum: checkLettersAndNum(),
-                            },
-                        };
-                    })(),
+                    validate: {
+                        checkRequired: checkRequired(),
+                        checkRangeLength: checkRangeLength({ min: 8, max: 32 }),
+                        checkLettersAndNum: checkLettersAndNum(),
+                    },
                 },
                 render({ field: { onChange, value, disabled }, fieldState: { error } }) {
                     return (
@@ -101,7 +97,7 @@ const useFormItems = ({ type, tenantId }: IPros) => {
                             required
                             fullWidth
                             autoComplete="off"
-                            placeholder={getIntlText('common.label.please_enter')}
+                            placeholder={getIntlText('common.placeholder.input')}
                             disabled={disabled}
                             label={getIntlText('common.label.password')}
                             error={!!error}

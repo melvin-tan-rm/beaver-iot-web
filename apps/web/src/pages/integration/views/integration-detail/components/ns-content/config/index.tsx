@@ -231,6 +231,7 @@ const Config: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
                     visible={codecOpen}
                     entities={entities}
                     onCancel={() => setCodecOpen(false)}
+                    onUpdateSuccess={onUpdateSuccess}
                 />
             )}
         </div>

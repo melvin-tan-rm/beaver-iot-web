@@ -64,9 +64,14 @@ export const NODE_SPACING_Y = 48;
 export const DELETE_KEY_CODE = ['Delete', 'Backspace'];
 
 /**
+ * Global parameter reference prefix
+ */
+export const PARAM_REFERENCE_PREFIX = 'properties';
+
+/**
  * Global parameter reference pattern string
  */
-export const PARAM_REFERENCE_PATTERN_STRING = `#\\{properties\\.([^'\\[\\]]+)\\['([^']+)'\\]\\}`;
+export const PARAM_REFERENCE_PATTERN_STRING = `#\\{${PARAM_REFERENCE_PREFIX}\\.([^'\\[\\]]+)\\['([^']+)'\\]\\}`;
 
 /**
  * Global parameter reference pattern
