@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo } from 'react';
 import { Button, IconButton, TextField } from '@mui/material';
 import { isEqual, isNil, isEmpty } from 'lodash-es';
 import { useDynamicList, useControllableValue } from 'ahooks';
@@ -34,7 +34,8 @@ export interface ParamAssignInputProps {
 }
 
 const MAX_VALUE_LENGTH = 10;
-const DEFAULT_EMPTY_DATA = { '': '' };
+const DEFAULT_EMPTY_DATA = {};
+const DEFAULT_ONE_DATA = { '': '' };
 
 const arrayToObject = (arr: ParamAssignInputInnerValueType[]) => {
     const result: ParamAssignInputValueType = {};
@@ -60,12 +61,16 @@ const ParamAssignInput: React.FC<ParamAssignInputProps> = ({
 }) => {
     const { getIntlText } = useI18n();
     const [data, setData] = useControllableValue<ParamAssignInputValueType>(props);
+    const DEFAULT_DATA = useMemo(
+        () => (minCount > 0 ? DEFAULT_ONE_DATA : DEFAULT_EMPTY_DATA),
+        [minCount],
+    );
     const { list, remove, getKey, insert, replace, resetList } =
-        useDynamicList<ParamAssignInputInnerValueType>(Object.entries(data || DEFAULT_EMPTY_DATA));
+        useDynamicList<ParamAssignInputInnerValueType>(Object.entries(data || DEFAULT_DATA));
 
     useLayoutEffect(() => {
         if (isEqual(data, arrayToObject(list))) return;
-        resetList(Object.entries(!isEmpty(data) ? data : DEFAULT_EMPTY_DATA));
+        resetList(Object.entries(!isEmpty(data) ? data : DEFAULT_DATA));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, resetList]);
 

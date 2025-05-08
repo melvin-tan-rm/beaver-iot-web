@@ -167,10 +167,15 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                             }
                             case 'paramAssignInput': {
                                 formItem.render = ({ field: { onChange, value } }) => {
+                                    let minCount = 1;
+                                    if (nodeType === 'webhook') {
+                                        minCount = 0;
+                                    }
+
                                     return (
                                         <ParamAssignInput
                                             required={!!required}
-                                            minCount={1}
+                                            minCount={minCount}
                                             disableInput={nodeType === 'output'}
                                             value={value}
                                             onChange={onChange}
