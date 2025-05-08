@@ -85,7 +85,7 @@ const ChartEntityPosition: React.FC<ChartEntityPositionProps> = ({
     }, [list, setData]);
 
     return (
-        <div className="ms-entity-assign-select">
+        <div className="ms-chart-entity-position ms-entity-assign-select">
             <div className="ms-entity-assign-select__label">
                 {getIntlText('common.label.data_source')}
             </div>
