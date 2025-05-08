@@ -149,5 +149,6 @@
     "workflow.label.output_variables": "Output Variables",
     "workflow.valid.invalid_url_path": "The {1} field must start with /, support alphanumeric and {2} formats.",
     "workflow.label.use_system_smtp_settings": "Use system SMTP settings",
-    "workflow.editor.output_desc_request_params": "Query params carried in the request"
+    "workflow.editor.output_desc_request_params": "Query params carried in the request",
+    "workflow.label.cycle_connection_tip": "Circular connections cannot occur in the workflow."
 }

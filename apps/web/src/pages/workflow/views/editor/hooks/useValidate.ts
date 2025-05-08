@@ -857,14 +857,20 @@ const useValidate = () => {
                 const errMsgs: string[] = [];
 
                 if (edgesMap.has(id)) {
+                    const sNodeConfig = nodeConfigs[sourceNode?.type as WorkflowNodeType];
+                    const tNodeConfig = nodeConfigs[targetNode?.type as WorkflowNodeType];
                     errMsgs.push(
                         getIntlText('workflow.valid.edge_id_duplicated', {
                             1:
                                 sourceNode?.data?.nodeName ||
-                                `${getIntlText(nodeConfigs[sourceNode?.type as WorkflowNodeType]?.labelIntlKey || '')}(${id})`,
+                                (sNodeConfig?.labelIntlKey
+                                    ? `${getIntlText(sNodeConfig.labelIntlKey)}(${id})`
+                                    : id),
                             2:
                                 targetNode?.data?.nodeName ||
-                                `${getIntlText(nodeConfigs[targetNode?.type as WorkflowNodeType]?.labelIntlKey || '')}(${id})`,
+                                (tNodeConfig?.labelIntlKey
+                                    ? `${getIntlText(tNodeConfig.labelIntlKey)}(${id})`
+                                    : id),
                         }),
                     );
                 } else {

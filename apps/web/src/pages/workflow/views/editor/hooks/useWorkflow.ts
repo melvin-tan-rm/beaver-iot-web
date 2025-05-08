@@ -551,10 +551,53 @@ const useWorkflow = () => {
         [getNodes, getIntlText],
     );
 
+    // Check edge cycle, if there is a cycle, return `true`, otherwise return `false`
+    const checkEdgeCycle = useCallback(
+        (nodes?: WorkflowNode[], edges?: WorkflowEdge[]) => {
+            nodes = nodes || getNodes();
+            edges = edges || getEdges();
+
+            let result = false;
+            const hasCycle = (node: WorkflowNode, visited = new Set()) => {
+                const edge = edges.find(edge => edge.source === node.id);
+
+                if (!edge) return false;
+                if (visited.has(node.id) || edge.source === edge.target) return true;
+
+                visited.add(node.id);
+                for (const outgoer of getOutgoers(node, nodes, edges)) {
+                    if (outgoer.id === edge?.source) return true;
+                    if (hasCycle(outgoer, visited)) return true;
+                }
+
+                return false;
+            };
+
+            for (let i = 0; i < nodes.length; i++) {
+                const node = nodes[i];
+                if (hasCycle(node)) {
+                    result = true;
+                    break;
+                }
+            }
+
+            if (result) {
+                toast.error({
+                    key: 'edges-cycle',
+                    content: getIntlText('workflow.label.cycle_connection_tip'),
+                });
+            }
+
+            return result;
+        },
+        [getNodes, getEdges, getIntlText],
+    );
+
     // Check if the workflow nodes&edges is valid
     const checkWorkflowValid = useCallback(
         (nodes: WorkflowNode[], edges: WorkflowEdge[]) => {
             if (!checkNodeNumberLimit(nodes)) return false;
+            if (checkEdgeCycle(nodes, edges)) return false;
             if (checkFreeNodeLimit(nodes, edges)) return false;
             if (!checkNestedParallelLimit(nodes, edges)) return false;
             if (nodes.some(node => !checkParallelLimit(node.id, undefined, edges))) return false;
@@ -567,6 +610,7 @@ const useWorkflow = () => {
             checkFreeNodeLimit,
             checkNestedParallelLimit,
             checkParallelLimit,
+            checkEdgeCycle,
             checkOutputNodeLimit,
         ],
     );
