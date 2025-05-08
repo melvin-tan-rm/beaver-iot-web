@@ -129,6 +129,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
     };
     const clearFileList = () => {
         setFileList([]);
+        onChange?.([]);
     };
     const renderFileList = useMemo(() => {
         if (fileList.length > 0) {
