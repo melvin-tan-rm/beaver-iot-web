@@ -213,6 +213,7 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
             </FormControl>
             {data?.type === 'ONCE' && (
                 <DateTimePicker
+                    disablePast
                     ampm={false}
                     label={getIntlText('workflow.editor.form_param_execution_time')}
                     value={
@@ -235,6 +236,7 @@ const TimerInput: React.FC<TimerInputProps> = ({ required, ...props }) => {
             {data?.type === 'SCHEDULE' && (
                 <>
                     <DateTimePicker
+                        disablePast
                         ampm={false}
                         label={getIntlText('workflow.editor.form_param_expire_time')}
                         value={
