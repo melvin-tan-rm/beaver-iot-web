@@ -10,12 +10,9 @@ import {
 } from '@milesight/shared/src/components';
 import { entityAPI, awaitWrap, isRequestSuccess } from '@/services/http';
 import { useEntity, type InteEntityType } from '../../../../hooks';
-import WebhookModal, {
-    WEBHOOK_URL,
-    WEBHOOK_KEYS,
-    type WebhookFormDataProps,
-} from './webhook-modal';
+import WebhookModal, { WEBHOOK_KEYS, type WebhookFormDataProps } from './webhook-modal';
 import OpenapiModal, { OPENAPI_SCHEDULED_KEYS, type OpenapiFormDataProps } from './openapi-modal';
+import useWebhookUrl from './useWebhookUrl';
 import '../style.less';
 
 type WebhookStatusType = 'READY' | 'NOT_READY' | 'ERROR';
@@ -42,6 +39,7 @@ const Services: React.FC<Props> = ({ entities, onUpdateSuccess }) => {
     const { getEntityKey, getEntityValues } = useEntity({ entities });
 
     // ---------- Webhook related processing logic ----------
+    const webhookUrl = useWebhookUrl();
     const [webhookModalVisible, setWebhookModalVisible] = useState(false);
     const [webhookData, setWebhookData] = useState<WebhookFormDataProps>();
     const webhookStatusMap = useMemo<Record<WebhookStatusType, WebhookStatusItemType>>(
@@ -211,11 +209,8 @@ const Services: React.FC<Props> = ({ entities, onUpdateSuccess }) => {
                                 {getIntlText('common.symbol.colon')}
                             </span>
                             <span className="service-prop-value">
-                                <span>{WEBHOOK_URL}</span>
-                                <IconButton
-                                    sx={{ ml: 0.5 }}
-                                    onClick={() => handleCopy(WEBHOOK_URL)}
-                                >
+                                <span>{webhookUrl}</span>
+                                <IconButton sx={{ ml: 0.5 }} onClick={() => handleCopy(webhookUrl)}>
                                     <ContentCopyIcon sx={{ fontSize: 16 }} />
                                 </IconButton>
                             </span>

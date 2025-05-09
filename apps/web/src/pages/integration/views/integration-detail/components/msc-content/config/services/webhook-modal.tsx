@@ -8,6 +8,7 @@ import { flattenObject, genApiUrl } from '@milesight/shared/src/utils/tools';
 import { checkRequired } from '@milesight/shared/src/utils/validators';
 import { Modal, ContentCopyIcon, type ModalProps } from '@milesight/shared/src/components';
 import { API_PREFIX } from '@/services/http';
+import useWebhookUrl from './useWebhookUrl';
 
 export enum WEBHOOK_KEYS {
     /** Webhook status entity keyword */
@@ -38,16 +39,12 @@ interface Props extends Omit<ModalProps, 'onOk'> {
 }
 
 /**
- * Webhook address
- */
-export const WEBHOOK_URL = genApiUrl(apiOrigin, `${API_PREFIX}/public/integration/msc/webhook`);
-
-/**
  * Webhook Edit popup
  */
 const WebhookModal: React.FC<Props> = ({ mode, data, visible, onCancel, onSubmit }) => {
     const { getIntlText } = useI18n();
     const { handleCopy } = useCopy();
+    const webhookUrl = useWebhookUrl();
     const title = useMemo(() => {
         const subTitle = getIntlText('common.label.webhook');
         switch (mode) {
@@ -94,14 +91,14 @@ const WebhookModal: React.FC<Props> = ({ mode, data, visible, onCancel, onSubmit
                     size="small"
                     margin="dense"
                     label={getIntlText('setting.integration.webhook_url')}
-                    value={WEBHOOK_URL}
+                    value={webhookUrl}
                     slotProps={{
                         input: {
                             endAdornment: (
                                 <InputAdornment position="end">
                                     <IconButton
                                         aria-label="toggle password visibility"
-                                        onClick={e => handleCopy(WEBHOOK_URL, e.currentTarget)}
+                                        onClick={e => handleCopy(webhookUrl, e.currentTarget)}
                                         onMouseDown={(e: any) => e.preventDefault()}
                                         onMouseUp={(e: any) => e.preventDefault()}
                                         edge="end"

@@ -66,6 +66,7 @@ export interface GlobalAPISchema extends APISchema {
             roles: UserType['roles'];
             created_at: number;
             menus: UserMenuType[];
+            tenant_id: ApiKey;
         };
     };
 
