@@ -41,7 +41,7 @@ type LangListType = Partial<
             locale?: Record<string, string> | Record<string, string>[];
 
             /** MUI lang resource */
-            muiLocale?: Localization;
+            muiLocale: Localization;
 
             /** moment lang resource */
             // momentLocale?: any;

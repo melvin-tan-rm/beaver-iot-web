@@ -1,7 +1,7 @@
 import { useMatches } from 'react-router';
 import { useTitle } from 'ahooks';
 import { CssBaseline } from '@mui/material';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import Chart from 'chart.js/auto'; // Introduce Chart.js
@@ -24,11 +24,12 @@ const layouts: Record<string, React.ReactNode> = {
 
 function Layout() {
     const routeMatches = useMatches();
-    const { muiLocale, getIntlText } = useI18n();
-    const { themeConfig } = useTheme();
+    const { getIntlText } = useI18n();
+    const { muiTheme } = useTheme();
+
     useWebsocket();
-    const muiTheme = createTheme(themeConfig, muiLocale!);
     useChartTheme();
+    useTitle(getIntlText('common.document.title'));
 
     const route = routeMatches[routeMatches.length - 1];
     let { layout = '' } = (route?.handle || {}) as Record<string, any>;
@@ -36,8 +37,6 @@ function Layout() {
     if (!layout || !layouts[layout]) {
         layout = DEFAULT_LAYOUT;
     }
-
-    useTitle(getIntlText('common.document.title'));
 
     return (
         <ThemeProvider theme={muiTheme}>

@@ -170,7 +170,7 @@ export default () => {
         langs,
 
         /** Component library internationalization copy */
-        muiLocale: langs[lang || DEFAULT_LANGUAGE]?.muiLocale,
+        muiLocale: langs[lang || DEFAULT_LANGUAGE]!.muiLocale,
 
         /** Mapping table between interface error codes and copy keys */
         httpErrorKeys,

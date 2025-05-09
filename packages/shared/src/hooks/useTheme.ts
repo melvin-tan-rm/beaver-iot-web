@@ -2,9 +2,11 @@
  * System Theme Hook
  */
 import { useMemo, useCallback, useEffect } from 'react';
-import { useColorScheme } from '@mui/material/styles';
+import { createTheme, useColorScheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { theme as themeService } from '../services';
 import { useSharedGlobalStore } from '../stores';
+import useI18n from './useI18n';
 
 const palettes = themeService.getMuiSchemes();
 
@@ -12,8 +14,9 @@ export default () => {
     const { setMode } = useColorScheme();
     const theme = useSharedGlobalStore(state => state.theme);
     const setTheme = useSharedGlobalStore(state => state.setTheme);
+    const { muiLocale } = useI18n();
 
-    const themeConfig = useMemo(() => {
+    const muiTheme = useMemo(() => {
         const palette = { mode: theme, ...palettes[theme] };
         const colorSchemes = { [theme]: { palette: palettes[theme] } };
         const components = themeService.getMuiComponents(theme);
@@ -21,19 +24,34 @@ export default () => {
             colorSchemeSelector: themeService.THEME_COLOR_SCHEMA_SELECTOR,
         };
 
-        return {
-            typography: {
-                fontFamily: 'inherit',
+        return createTheme(
+            {
+                typography: {
+                    fontFamily: 'inherit',
+                },
+                shape: {
+                    borderRadius: 6,
+                },
+                palette,
+                colorSchemes,
+                components,
+                cssVariables,
+                breakpoints: {
+                    values: {
+                        xs: 0,
+                        sm: 576,
+                        md: 768,
+                        lg: 992,
+                        xl: 1200,
+                    },
+                },
             },
-            shape: {
-                borderRadius: 6,
-            },
-            palette,
-            colorSchemes,
-            components,
-            cssVariables,
-        };
-    }, [theme]);
+            muiLocale!,
+        );
+    }, [theme, muiLocale]);
+
+    const matchMobile = useMediaQuery(muiTheme.breakpoints.down('sm'));
+    const matchTablet = useMediaQuery(muiTheme.breakpoints.down('md'));
 
     const changeTheme = useCallback(
         (type: typeof theme, isPersist?: boolean) => {
@@ -54,8 +72,14 @@ export default () => {
         /** Current Theme */
         theme,
 
-        /** MUI Theme Config */
-        themeConfig,
+        /** MUI Theme instance */
+        muiTheme,
+
+        /** Whether the current device is a mobile device based on breakpoints */
+        matchMobile,
+
+        /** Whether the current device is a tablet device based on breakpoints */
+        matchTablet,
 
         /** Change Theme */
         changeTheme,

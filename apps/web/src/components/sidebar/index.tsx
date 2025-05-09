@@ -55,6 +55,7 @@ const Sidebar: React.FC<Props> = memo(({ menus, logoLinkTo = '/' }) => {
             isTooSmall && setShrink(true);
         });
     }, []);
+
     return (
         <div
             className={cls('ms-layout-left ms-sidebar', {
