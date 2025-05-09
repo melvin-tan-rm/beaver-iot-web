@@ -34,3 +34,30 @@
         }
     }
 }
+
+.@{prefix}-device-entity-data {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    &-header {
+        display: flex;
+        align-items: center;
+        margin: @margin-xl 0 @margin-md;
+
+        div {
+            flex: 1;
+            font-size: @font-size-lg;
+            font-weight: @font-weight-medium;
+        }
+    }
+
+    &-table {
+        flex: 1;
+        height: 0;
+
+        & .@{prefix}-table-pro {
+            height: calc(100vh - 300px);
+        }
+    }
+}

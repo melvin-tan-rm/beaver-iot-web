@@ -1,9 +1,12 @@
-import React, { useMemo } from 'react';
-import { Stack, Chip, type ChipProps } from '@mui/material';
-import { getGridSingleSelectOperators, getGridStringOperators } from '@mui/x-data-grid';
+import React, { useCallback, useState } from 'react';
+import { Stack } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { TablePro, type ColumnType } from '@/components';
-import { type DeviceAPISchema } from '@/services/http';
+import { toast } from '@milesight/shared/src/components';
+import { FiltersRecordType, FilterValue, TablePro, TableProProps } from '@/components';
+import { awaitWrap, entityAPI, isRequestSuccess, type DeviceAPISchema } from '@/services/http';
+import useColumns, { type TableRowDataType, type UseColumnsProps } from './hooks/useColumns';
+import EditEntity from '../edit-entity';
+import EntityDetail from '../entity-detail';
 
 interface Props {
     data?: ObjectToCamelCase<DeviceAPISchema['getDetail']['response']>;
@@ -12,87 +15,76 @@ interface Props {
     onRefresh?: () => void;
 }
 
-type TableRowDataType = ObjectToCamelCase<DeviceAPISchema['getDetail']['response']['entities'][0]>;
-
-// Entity type Tag Color mapping
-const entityTypeColorMap: Record<string, ChipProps['color']> = {
-    event: 'success',
-    service: 'warning',
-    property: 'primary',
-};
-
 /**
  * Device physical data table
  */
 const EntityTable: React.FC<Props> = ({ data, onRefresh }) => {
     const { getIntlText } = useI18n();
-    const columns = useMemo(() => {
-        const entityTypeFilterOptions: { label: EntityType; value: EntityType }[] = [
-            {
-                label: 'PROPERTY',
-                value: 'PROPERTY',
-            },
-            {
-                label: 'SERVICE',
-                value: 'SERVICE',
-            },
-            {
-                label: 'EVENT',
-                value: 'EVENT',
-            },
-        ];
-        const result: ColumnType<TableRowDataType>[] = [
-            {
-                field: 'name',
-                headerName: getIntlText('device.label.param_entity_name'),
-                flex: 1,
-                minWidth: 150,
-                ellipsis: true,
-                filterable: true,
-                disableColumnMenu: false,
-                filterOperators: getGridStringOperators().filter(item => item.value === 'contains'),
-            },
-            {
-                field: 'key',
-                headerName: getIntlText('device.label.param_entity_id'),
-                flex: 1,
-                minWidth: 150,
-                ellipsis: true,
-            },
-            {
-                field: 'type',
-                headerName: getIntlText('common.label.type'),
-                flex: 1,
-                minWidth: 150,
-                filterable: true,
-                disableColumnMenu: false,
-                type: 'singleSelect',
-                valueOptions: entityTypeFilterOptions,
-                filterOperators: getGridSingleSelectOperators().filter(item => item.value === 'is'),
-                renderCell({ value }) {
-                    return (
-                        <Chip
-                            size="small"
-                            color={entityTypeColorMap[(value || '').toLocaleLowerCase()]}
-                            label={value}
-                            sx={{ borderRadius: 1, lineHeight: '24px' }}
-                        />
-                    );
-                },
-            },
-            {
-                field: 'valueType',
-                headerName: getIntlText('common.label.type'),
-                align: 'left',
-                headerAlign: 'left',
-                flex: 1,
-                minWidth: 150,
-                ellipsis: true,
-            },
-        ];
 
-        return result;
-    }, [getIntlText]);
+    const [detail, setDetail] = useState<TableRowDataType | null>(null);
+    const [detailVisible, setDetailVisible] = useState<boolean>(false);
+    const [editVisible, setEditVisible] = useState<boolean>(false);
+    const [filteredInfo, setFilteredInfo] = useState<FiltersRecordType>({});
+
+    const handleFilterChange: TableProProps<TableRowDataType>['onFilterInfoChange'] = (
+        filters: Record<string, FilterValue | null>,
+    ) => {
+        setFilteredInfo(filters);
+    };
+
+    const handleDetail = (data: TableRowDataType) => {
+        setDetail(data);
+        setDetailVisible(true);
+    };
+
+    const handleDetailClose = () => {
+        setDetailVisible(false);
+        setDetail(null);
+    };
+
+    const showEdit = (data: TableRowDataType) => {
+        setDetail(data);
+        setEditVisible(true);
+    };
+
+    const handleEditClose = () => {
+        setEditVisible(false);
+        setDetail(null);
+    };
+
+    const handleEdit = async (name: string) => {
+        const [error, resp] = await awaitWrap(entityAPI.editEntity({ name, id: detail?.id || '' }));
+
+        if (error || !isRequestSuccess(resp)) return;
+
+        setEditVisible(false);
+        onRefresh?.();
+        setDetail(null);
+        toast.success(getIntlText('common.message.operation_success'));
+    };
+
+    const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useCallback(
+        (type, record) => {
+            switch (type) {
+                case 'detail': {
+                    handleDetail(record);
+                    break;
+                }
+                case 'edit': {
+                    showEdit(record);
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        },
+        [],
+    );
+    const columns = useColumns<TableRowDataType>({
+        onButtonClick: handleTableBtnClick,
+        filteredInfo,
+    });
 
     return (
         <Stack className="ms-com-device-entity" sx={{ height: '100%' }}>
@@ -102,7 +94,14 @@ const EntityTable: React.FC<Props> = ({ data, onRefresh }) => {
                 columns={columns}
                 rows={data?.entities}
                 onRefreshButtonClick={onRefresh}
+                onFilterInfoChange={handleFilterChange}
             />
+            {detailVisible && !!detail && (
+                <EntityDetail onCancel={handleDetailClose} detail={detail} />
+            )}
+            {editVisible && !!detail && (
+                <EditEntity onCancel={handleEditClose} onOk={handleEdit} data={detail} />
+            )}
         </Stack>
     );
 };
