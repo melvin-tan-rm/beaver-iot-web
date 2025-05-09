@@ -26,7 +26,9 @@ const View = (props: Props) => {
     const { config, configJson, isEdit, mainRef } = props;
     const { label, icon, bgColor } = config || {};
     const [visible, setVisible] = useState(false);
-    const [entities, setEntities] = useState([]);
+    const [entities, setEntities] = useState();
+    // OBJECT type entity
+    const [objectEntities, setObjectEntities] = useState<EntityData[]>([]);
     const ref = useRef<any>();
     const tempRef = useRef<any>({});
 
@@ -78,8 +80,22 @@ const View = (props: Props) => {
                     return childrenItem?.entity_access_mod?.indexOf('W') > -1;
                 }) || [];
             if (children?.length) {
-                setEntities(
-                    children.map((item: EntityData, index: number) => {
+                const objectEntityList: EntityData[] = children.filter((v: EntityData) => {
+                    return (
+                        v.entity_value_type === ENTITY_DATA_VALUE_TYPE.OBJECT &&
+                        (!v.entity_value_attribute ||
+                            JSON.stringify(v.entity_value_attribute) === '{}')
+                    );
+                });
+                // If it is of the OBJECT type, it is not displayed and the value is{}
+                const entityList = children
+                    .filter(
+                        (childrenItem: EntityData) =>
+                            !objectEntityList.find(
+                                (v: EntityData) => v.entity_id === childrenItem.entity_id,
+                            ),
+                    )
+                    .map((item: EntityData, index: number) => {
                         tempRef.current[`tempTemp-${index}`] = item.entity_key;
                         return {
                             ...item,
@@ -88,8 +104,9 @@ const View = (props: Props) => {
                             name: item.entity_name,
                             value_attribute: item.entity_value_attribute,
                         };
-                    }),
-                );
+                    });
+                setEntities(entityList);
+                setObjectEntities(objectEntityList);
                 setVisible(true);
             } else {
                 confirm({
@@ -129,6 +146,10 @@ const View = (props: Props) => {
         const resultData: any = {};
         keys.forEach((key: string) => {
             resultData[tempRef.current[key]] = newData[key];
+        });
+        // If it is of the OBJECT type, it is not displayed and the value is{}
+        objectEntities.forEach(v => {
+            resultData[v.entity_key] = {};
         });
         const entityType = config?.entity?.rawData?.entityType;
         if (entityType === 'PROPERTY') {
