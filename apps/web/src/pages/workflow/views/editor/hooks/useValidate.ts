@@ -13,7 +13,7 @@ import {
 } from '@milesight/shared/src/utils/validators';
 import { EDGE_TYPE_ADDABLE, HTTP_URL_PATH_PATTERN } from '../constants';
 import useFlowStore from '../store';
-import { isRefParamKey } from '../helper';
+import { isRefParamKey, getNodeParamName } from '../helper';
 import type { NodeDataValidator } from '../typings';
 
 type CheckOptions = {
@@ -1017,7 +1017,7 @@ const useValidate = () => {
                     const checkerMap = validators[name] || validators[key] || {};
 
                     Object.values(checkerMap).forEach(validator => {
-                        const result = validator(parameters[key], key);
+                        const result = validator(parameters[key], getNodeParamName(key, config));
                         if (result && result !== true) {
                             tempResult.errMsgs.push(result);
                         }
