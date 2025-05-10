@@ -22,7 +22,7 @@ const ErrorBoundary: React.FC<Props> = ({ inline, callback }) => {
     const { getIntlText } = useI18n();
 
     return (
-        <div className="ms-layout">
+        <div className="ms-layout ms-layout-error">
             <CssBaseline />
             <div className="ms-view-error">
                 {!inline && <Logo />}
