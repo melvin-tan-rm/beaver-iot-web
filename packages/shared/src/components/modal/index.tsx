@@ -12,6 +12,7 @@ import {
     type ButtonProps,
 } from '@mui/material';
 import useI18n from '../../hooks/useI18n';
+import useTheme from '../../hooks/useTheme';
 import LoadingButton from '../loading-button';
 import { CloseIcon } from '../icons';
 import './style.less';
@@ -119,12 +120,13 @@ const Modal: React.FC<ModalProps> = ({
     cancelButtonProps,
 }) => {
     const { getIntlText } = useI18n();
+    const { matchMobile: fullScreen } = useTheme();
     const [loading, setLoading] = useState<boolean>();
 
     const ModalWidth = useMemo(() => {
-        if (width) {
-            return width;
-        }
+        if (fullScreen) return '100%';
+        if (width) return width;
+
         if (size) {
             switch (size) {
                 case 'sm':
@@ -142,7 +144,7 @@ const Modal: React.FC<ModalProps> = ({
             }
         }
         return '450px';
-    }, [width, size]);
+    }, [width, size, fullScreen]);
 
     const handleClose = useMemoizedFn<NonNullable<DialogProps['onClose']>>((_, reason) => {
         if (disabledBackdropClose && reason === 'backdropClick') return;
@@ -164,6 +166,7 @@ const Modal: React.FC<ModalProps> = ({
             aria-labelledby="customized-dialog-title"
             className={cls('ms-modal-root', className, { loading })}
             open={!!visible}
+            fullScreen={fullScreen}
             onClose={handleClose}
             container={container}
             sx={{ '& .MuiDialog-paper': { width: ModalWidth, maxWidth: 'none' }, ...(sx || {}) }}

@@ -94,9 +94,9 @@
     .@{mui-prefix}PickersYear-yearButton.@{mui-prefix}-selected,
     .@{mui-prefix}PickersMonth-monthButton.@{mui-prefix}-selected,
     .@{mui-prefix}PickersWeek-weekButton.@{mui-prefix}-selected,
-    .@{mui-prefix}DateCalendar-root 
+    .@{mui-prefix}DateCalendar-root
         .@{mui-prefix}ButtonBase-root.@{mui-prefix}-selected,
-    .@{mui-prefix}MultiSectionDigitalClockSection-root  
+    .@{mui-prefix}MultiSectionDigitalClockSection-root
         .@{mui-prefix}MenuItem-root.@{mui-prefix}-selected {
         background-color: var(--primary-color-7);
 
@@ -177,7 +177,7 @@ input.@{mui-prefix}InputBase-input {
 }
 
 .@{mui-prefix}Dialog-container {
-    .@{mui-prefix}Paper-root.@{mui-prefix}Dialog-paper {
+    .@{mui-prefix}Paper-root.@{mui-prefix}Dialog-paper:not(.@{mui-prefix}Dialog-paperFullScreen) {
         border-radius: @border-radius-md;
 
         .@{mui-prefix}DialogContent-root {
@@ -307,7 +307,7 @@ label.@{mui-prefix}FormControlLabel-root {
                 &:hover {
                     color: var(--primary-color-7);
                 }
-                
+
                 .@{mui-prefix}SvgIcon-root {
                     &:hover {
                         fill: var(--primary-color-7);
