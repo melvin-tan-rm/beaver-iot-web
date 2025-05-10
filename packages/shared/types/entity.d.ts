@@ -137,6 +137,8 @@ declare interface EntityData {
  * Entity History Data
  */
 declare interface EntityHistoryData {
+    id: ApiKey;
+    entity_id: ApiKey;
     value: any;
     timestamp: number;
     value_type: EntityValueDataType;

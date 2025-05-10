@@ -112,7 +112,7 @@ export default (props: IProps) => {
                     <TablePro<HistoryRowDataType>
                         loading={loading}
                         columns={columns}
-                        getRowId={record => record.timestamp}
+                        getRowId={record => record.id || record.timestamp}
                         rows={entityData?.content}
                         rowCount={entityData?.total || 0}
                         paginationModel={paginationModel}
