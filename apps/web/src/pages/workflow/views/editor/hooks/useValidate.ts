@@ -367,7 +367,7 @@ const useValidate = () => {
 
                     if (when?.length) {
                         const maxValueLength = 1000;
-                        const maxCodeLength = 64000;
+                        const maxCodeLength = 2000;
                         const maxDescriptionLength = 30;
                         let message = '';
 
