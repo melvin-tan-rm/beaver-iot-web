@@ -2,7 +2,12 @@ import { useMemo } from 'react';
 import { useMemoizedFn } from 'ahooks';
 import { Stack, IconButton, Chip, type ChipProps } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
-import { ContentCopyIcon, DeleteOutlineIcon, EditIcon } from '@milesight/shared/src/components';
+import {
+    ContentCopyIcon,
+    DeleteOutlineIcon,
+    EditIcon,
+    FilterAltIcon,
+} from '@milesight/shared/src/components';
 import { Tooltip, type ColumnType, PermissionControlDisabled } from '@/components';
 import { type EntityAPISchema } from '@/services/http';
 import { ENTITY_ACCESS_MODE, ENTITY_VALUE_TYPE, PERMISSIONS } from '@/constants';
@@ -91,6 +96,15 @@ const useColumns = <T extends TableRowDataType>({
                     return getAccessModeText(value);
                 },
                 filteredValue: filteredInfo?.entityAccessMod,
+                filterIcon: (filtered: boolean) => {
+                    return (
+                        <FilterAltIcon
+                            sx={{
+                                color: filtered ? 'var(--primary-color-7)' : 'var(--gray-color-5)',
+                            }}
+                        />
+                    );
+                },
                 filters: Object.entries(ENTITY_ACCESS_MODE).map(([key, value]) => ({
                     text: getAccessModeText(value),
                     value: value as keyof typeof ENTITY_ACCESS_MODE,
