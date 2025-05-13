@@ -45,7 +45,10 @@ const ExportModal = (props: IProps) => {
                 }}
             >
                 <DateRangePicker
-                    label={{ start: 'Start date', end: 'End date' }}
+                    label={{
+                        start: getIntlText('common.label.start_date'),
+                        end: getIntlText('common.label.end_date'),
+                    }}
                     onChange={changeTime}
                     value={time}
                 />

@@ -36,6 +36,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ label, value, onChang
             <DateTimePicker
                 label={label?.start}
                 value={value?.start || startDate}
+                closeOnSelect={false}
                 onChange={start => {
                     // Passing onChange indicates that it is controlled, and no internal value handling is done.
                     if (onChange) {
@@ -53,6 +54,7 @@ const DateRangePicker: React.FC<DateRangePickerProps> = ({ label, value, onChang
             <DateTimePicker
                 label={label?.end}
                 value={value?.end || endDate}
+                closeOnSelect={false}
                 onChange={end => {
                     // Passing onChange indicates that it is controlled, and no internal value handling is done.
                     if (onChange) {
