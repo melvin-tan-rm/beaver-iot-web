@@ -244,7 +244,9 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                             }
                             case 'conditionsInput': {
                                 formItem.render = ({ field: { onChange, value } }) => {
-                                    return <ConditionsInput value={value} onChange={onChange} />;
+                                    return (
+                                        <ConditionsInput value={value || {}} onChange={onChange} />
+                                    );
                                 };
                                 break;
                             }
