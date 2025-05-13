@@ -39,7 +39,7 @@
                     "defaultValue": "Title",
                     "componentProps": {
                         "inputProps": {
-                            "maxLength": 15
+                            "maxLength": 35
                         }
                     }
                 }
