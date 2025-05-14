@@ -142,12 +142,16 @@ const useValidate = () => {
             ) {
                 if (value && Object.keys(value).length) {
                     const maxLength = 50;
-                    const hasOverLength = Object.keys(value).some(key => {
+                    const isKeyOverLength = Object.keys(value).some(key => {
                         if (key && !isMaxLength(key, maxLength)) return true;
                         return false;
                     });
+                    const isValueOverLength = Object.values(value).some(val => {
+                        if (val && !isRefParamKey(val) && !isMaxLength(val, maxLength)) return true;
+                        return false;
+                    });
 
-                    if (!hasOverLength) return true;
+                    if (!isKeyOverLength && !isValueOverLength) return true;
                     return getIntlText(ErrorIntlKey.maxLength, {
                         1: fieldName,
                         2: maxLength,
