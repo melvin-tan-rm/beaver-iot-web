@@ -21,7 +21,8 @@
                     "valueType": "array",
                     "componentProps": {
                         "entityType": ["PROPERTY"],
-                        "entityValueTypes": ["LONG", "DOUBLE"]
+                        "entityValueTypes": ["LONG", "DOUBLE"],
+                        "entityAccessMod": ["R", "RW"]
                     },
                     "rules": {
                         "required": true

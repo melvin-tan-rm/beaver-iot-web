@@ -33,6 +33,7 @@ export interface ChartEntityPositionProps {
     helperText?: React.ReactNode;
     value?: ChartEntityPositionValueType[];
     defaultValue?: ChartEntityPositionValueType[];
+    entityAccessMod?: EntityAccessMode[];
     onChange?: (value: ChartEntityPositionValueType[]) => void;
 }
 
@@ -49,6 +50,7 @@ const ChartEntityPosition: React.FC<ChartEntityPositionProps> = ({
     helperText,
     ...props
 }) => {
+    const { entityAccessMod } = props;
     const { getIntlText } = useI18n();
     const [data, setData] = useControllableValue<ChartEntityPositionValueType[]>(props);
     const { list, remove, getKey, insert, replace, resetList } =
@@ -104,6 +106,7 @@ const ChartEntityPosition: React.FC<ChartEntityPositionProps> = ({
                                 });
                             }}
                             dropdownMatchSelectWidth={365}
+                            entityAccessMod={entityAccessMod}
                         />
                         <Select
                             title={getIntlText('dashboard.label.y_axis')}

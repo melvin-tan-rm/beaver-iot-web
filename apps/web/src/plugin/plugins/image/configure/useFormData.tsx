@@ -68,6 +68,7 @@ const useFormData = (value: any, config: CustomComponentProps) => {
                             componentProps: {
                                 entityType: ['PROPERTY'],
                                 entityValueTypes: ['STRING', 'LONG', 'DOUBLE', 'BOOLEAN'],
+                                entityAccessMod: ['R', 'RW'],
                             },
                         },
                     ],
