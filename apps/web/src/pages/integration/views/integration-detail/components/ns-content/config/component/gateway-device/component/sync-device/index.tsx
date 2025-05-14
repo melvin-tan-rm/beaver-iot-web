@@ -142,7 +142,7 @@ const SyncedDevice: React.FC<IProps> = props => {
 
     return (
         <div className="ms-ns-device">
-            <div className="ms-ns-device-inner">
+            <div className="ms-ns-device-inner ms-ns-synced-device">
                 <TablePro<TableRowDataType>
                     checkboxSelection
                     loading={loading}
