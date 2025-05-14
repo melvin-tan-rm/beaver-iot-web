@@ -1,13 +1,15 @@
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect } from 'react';
 import { useMatches } from 'react-router';
 import { Link } from 'react-router-dom';
 import cls from 'classnames';
-import { MenuList, MenuItem, IconButton, type MenuItemProps } from '@mui/material';
+import { MenuList, MenuItem, IconButton, Drawer, type MenuItemProps } from '@mui/material';
+import { useTheme, useStoreShallow } from '@milesight/shared/src/hooks';
 import { iotLocalStorage, SIDEBAR_COLLAPSE_KEY } from '@milesight/shared/src/utils/storage';
 import { Logo, FormatIndentDecreaseIcon } from '@milesight/shared/src/components';
 import { useUserStore } from '@/stores';
 import Tooltip from '../tooltip';
 import { MoreUserInfo } from './components';
+import useSidebarStore from './store';
 import './style.less';
 
 interface Props {
@@ -29,14 +31,11 @@ const Sidebar: React.FC<Props> = memo(({ menus, logoLinkTo = '/' }) => {
     const routes = useMatches().slice(1);
     const userInfo = useUserStore(state => state.userInfo);
     const selectedKeys = routes.map(route => route.pathname);
-
-    // init storage status
-    const [shrink, setShrink] = useState(
-        iotLocalStorage.getItem(SIDEBAR_COLLAPSE_KEY) !== undefined
-            ? !!iotLocalStorage.getItem(SIDEBAR_COLLAPSE_KEY)
-            : true,
+    const { open, setOpen, shrink, setShrink, variant, setVariant } = useSidebarStore(
+        useStoreShallow(['open', 'shrink', 'variant', 'setOpen', 'setShrink', 'setVariant']),
     );
 
+    // ---------- Change Shrink ----------
     const changeShrink = () => {
         setShrink(!shrink);
         iotLocalStorage.setItem(SIDEBAR_COLLAPSE_KEY, !shrink);
@@ -54,14 +53,36 @@ const Sidebar: React.FC<Props> = memo(({ menus, logoLinkTo = '/' }) => {
             // When the small screen is reached, the sidebar automatically collapses
             isTooSmall && setShrink(true);
         });
-    }, []);
+    }, [setShrink]);
+
+    // ---------- Responsive ----------
+    const { matchTablet } = useTheme();
+
+    useEffect(() => {
+        if (matchTablet) {
+            setOpen(false);
+            setShrink(false);
+            setVariant('temporary');
+            return;
+        }
+
+        setOpen(true);
+        setShrink(iotLocalStorage.getItem(SIDEBAR_COLLAPSE_KEY) ?? true);
+        setVariant('persistent');
+    }, [matchTablet, setOpen, setShrink, setVariant]);
 
     return (
-        <div
+        <Drawer
+            open={open}
+            variant={variant}
             className={cls('ms-layout-left ms-sidebar', {
                 'ms-sidebar-shrink': shrink,
                 hidden: (routes?.[routes.length - 1].handle as any)?.hideSidebar,
             })}
+            onClose={() => {
+                if (!matchTablet) return;
+                setOpen(false);
+            }}
         >
             <Logo className="ms-sidebar-logo" to={logoLinkTo} mini={shrink} />
             <MenuList className="ms-sidebar-menus">
@@ -71,6 +92,10 @@ const Sidebar: React.FC<Props> = memo(({ menus, logoLinkTo = '/' }) => {
                         key={menu.path}
                         className="ms-sidebar-menu-item"
                         selected={selectedKeys.includes(menu.path)}
+                        onClick={() => {
+                            if (!matchTablet) return;
+                            setOpen(false);
+                        }}
                     >
                         <Link className="ms-sidebar-menu-item-link" to={menu.path}>
                             {!shrink ? (
@@ -91,18 +116,21 @@ const Sidebar: React.FC<Props> = memo(({ menus, logoLinkTo = '/' }) => {
                         <MoreUserInfo userInfo={userInfo} />
                     </div>
                 )}
-                <IconButton
-                    className="ms-oprt-shrink"
-                    onClick={changeShrink}
-                    sx={{
-                        padding: '10px',
-                    }}
-                >
-                    <FormatIndentDecreaseIcon />
-                </IconButton>
+                {!matchTablet && (
+                    <IconButton
+                        className="ms-oprt-shrink"
+                        onClick={changeShrink}
+                        sx={{
+                            padding: '10px',
+                        }}
+                    >
+                        <FormatIndentDecreaseIcon />
+                    </IconButton>
+                )}
             </div>
-        </div>
+        </Drawer>
     );
 });
 
+export { default as SidebarController } from './controller';
 export default Sidebar;

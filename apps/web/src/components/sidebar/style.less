@@ -3,11 +3,19 @@
 
 .@{prefix}-sidebar {
     position: relative;
-    box-sizing: content-box;
-    padding-bottom: @ms-sidebar-footer-height;
-    background-color: var(--component-background);
-    border-right: 1px solid var(--border-color-base);
     transition: width 0.3s;
+
+    .@{mui-prefix}Drawer-paper {
+        box-sizing: content-box;
+        justify-content: space-between;
+        width: 240px;
+        padding-bottom: @ms-sidebar-footer-height;
+        margin: 0;
+        background-color: var(--component-background);
+        border-right: 1px solid var(--border-color-base);
+        box-shadow: none !important;
+        transition: width 0.3s;
+    }
 
     &.hidden {
         display: none;
@@ -19,7 +27,10 @@
     }
 
     & &-menus {
+        flex: 1;
+        height: 0;
         padding: @padding-xs;
+        overflow: auto;
     }
 
     & &-menu-item {
@@ -67,8 +78,8 @@
     }
 
     &-footer {
-        position: absolute;
-        bottom: 0;
+        // position: absolute;
+        // bottom: 0;
         display: flex;
         box-sizing: border-box;
         align-items: center;
@@ -117,6 +128,10 @@
     &&-shrink {
         width: 56px;
         padding-bottom: @ms-sidebar-footer-height-shrink;
+
+        .@{mui-prefix}Drawer-paper {
+            width: 56px;
+        }
 
         .@{prefix}-sidebar-footer {
             .@{prefix}-sidebar-user-trigger {

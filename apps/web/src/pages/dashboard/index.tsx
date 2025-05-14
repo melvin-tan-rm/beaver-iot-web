@@ -6,7 +6,13 @@ import { AddIcon, toast } from '@milesight/shared/src/components';
 import { useI18n, usePreventLeave } from '@milesight/shared/src/hooks';
 import { dashboardAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import { DashboardDetail } from '@/services/http/dashboard';
-import { TabPanel, useConfirm, PermissionControlHidden, Empty } from '@/components';
+import {
+    TabPanel,
+    useConfirm,
+    PermissionControlHidden,
+    Empty,
+    SidebarController,
+} from '@/components';
 import { PERMISSIONS } from '@/constants';
 import { useDashboardStore } from '@/stores';
 import DashboardContent from './components/dashboard-content';
@@ -180,6 +186,7 @@ export default () => {
         <div className="ms-main dashboard">
             <div className="ms-view ms-view-dashboard">
                 <Toolbar className="dashboard-toolbar">
+                    <SidebarController />
                     <Tabs
                         variant="scrollable"
                         scrollButtons="auto"

@@ -2,9 +2,14 @@
     display: flex;
     align-items: center;
     height: 49px;
-    padding: 0 @padding-lg;
+    padding: 0 @padding-md;
     background-color: var(--component-background);
     border-bottom: 1px solid var(--border-color-base);
+
+    .@{prefix}-sidebar-controller {
+        margin-right: @margin-xs;
+        margin-left: -@margin-xxs;
+    }
 
     &__inner {
         .@{mui-prefix}Typography-root {
@@ -12,3 +17,9 @@
         }
     }
 }
+
+// .media-breakpoint-down(@grid-breakpoints[md], {
+//     .@{prefix}-breadcrumbs {
+//         padding: 0 @padding-xs;
+//     }
+// });

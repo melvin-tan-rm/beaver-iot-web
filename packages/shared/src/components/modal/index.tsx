@@ -120,7 +120,7 @@ const Modal: React.FC<ModalProps> = ({
     cancelButtonProps,
 }) => {
     const { getIntlText } = useI18n();
-    const { matchMobile: fullScreen } = useTheme();
+    const { matchTablet: fullScreen } = useTheme();
     const [loading, setLoading] = useState<boolean>();
 
     const ModalWidth = useMemo(() => {
