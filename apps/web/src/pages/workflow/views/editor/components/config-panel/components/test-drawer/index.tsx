@@ -90,7 +90,8 @@ const TestDrawer: React.FC<TestDrawerProps> = ({ node, open, onClose }) => {
         if (!open || !nodeId) return;
         const node = getNode(nodeId);
 
-        return genNodeTestData(node!);
+        if (!node) return;
+        return genNodeTestData(node);
     }, [open, nodeId, getNode, genNodeTestData]);
 
     // ---------- Run Test ----------
