@@ -46,3 +46,12 @@
         }
     }
 }
+
+// Mobile Responsive
+.bp-down(@grid-breakpoints[sm], {
+    .@{prefix}-view-login .@{prefix}-auth-container {
+        width: calc(100% - 48px);
+        min-width: 350px;
+        padding: 48px 24px;
+    }
+});

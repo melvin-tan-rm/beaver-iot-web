@@ -67,19 +67,19 @@
 
 // ---------- Breakpoints ----------
 /* stylelint-disable media-query-no-invalid */
-.media-breakpoint-up (@points, @content) {
+.bp-up (@points, @content) {
     @media (min-width: @points) {
         @content();
     }
 }
 
-.media-breakpoint-down (@points, @content) {
+.bp-down (@points, @content) {
     @media (max-width: @points) {
         @content();
     }
 }
 
-.media-breakpoint-between (@lower, @upper, @content) {
+.bp-between (@lower, @upper, @content) {
     @media (min-width: @min) and (max-width: @max) {
         @content();
     }
