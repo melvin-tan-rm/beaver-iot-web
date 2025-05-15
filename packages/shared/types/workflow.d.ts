@@ -367,7 +367,7 @@ declare type HttpNodeDataType = BaseNodeDataType<{
  */
 declare type OutputNodeDataType = BaseNodeDataType<{
     /** Outputs */
-    outputs: Record<ApiKey, string>;
+    outputVariables: Record<ApiKey, string>;
 }>;
 
 /**

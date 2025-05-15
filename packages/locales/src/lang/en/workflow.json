@@ -150,5 +150,6 @@
     "workflow.valid.output_node_limit_has_trigger_tip": "When a workflow contains output nodes, the start node must be a trigger node.",
     "workflow.valid.parameter_required": "The {1} node parameter is required.",
     "workflow.valid.range_length": "The length of the {1} field value should be greater than or equal to {2} and less than or equal to {3}.",
-    "workflow.valid.required": "The {1} field is required."
+    "workflow.valid.required": "The {1} field is required.",
+    "workflow.valid.invalid_reference_param": "The reference param of {1} field is invalid."
 }

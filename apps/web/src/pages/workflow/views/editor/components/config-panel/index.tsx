@@ -35,7 +35,10 @@ interface Props {
  */
 const ConfigPanel: React.FC<Props> = ({ readonly }) => {
     const { getIntlText } = useI18n();
-    const { getNode, updateNode, updateNodeData } = useReactFlow<WorkflowNode, WorkflowEdge>();
+    const { getNode, getEdges, updateNode, updateNodeData } = useReactFlow<
+        WorkflowNode,
+        WorkflowEdge
+    >();
 
     // ---------- Handle Node-related logic ----------
     const { selectedNode, nodeConfigs } = useFlowStore(
@@ -204,7 +207,7 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                                         onClick={() => {
                                             if (!finalSelectedNode) return;
                                             const node = getNode(finalSelectedNode.id)!;
-                                            const result = checkNodesData([node], {
+                                            const result = checkNodesData([node], getEdges(), {
                                                 validateFirst: true,
                                             });
 

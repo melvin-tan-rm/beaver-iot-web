@@ -15,40 +15,8 @@ import {
     DEFAULT_BOOLEAN_DATA_ENUMS,
 } from '../constants';
 import { genRefParamKey, isRefParamKey, getUrlParams } from '../helper';
+import type { NodeParamType, FlattenNodeParamType } from '../typings';
 import { getParallelInfo } from './utils';
-
-export type NodeParamType = {
-    nodeId: ApiKey;
-    nodeName?: string;
-    nodeType?: WorkflowNodeType;
-    nodeLabel?: string;
-    outputs: {
-        name: string;
-        type?: EntityValueDataType;
-        typeLabel?: string;
-        key: string;
-        originKey: string;
-        enums?: {
-            key: string;
-            label?: string;
-        }[];
-    }[];
-};
-
-export type FlattenNodeParamType = {
-    nodeId: ApiKey;
-    nodeName?: string;
-    nodeType?: WorkflowNodeType;
-    valueName: string;
-    valueType?: EntityValueDataType;
-    valueTypeLabel?: string;
-    valueKey: string;
-    valueOriginKey: string;
-    enums?: {
-        key: string;
-        label?: string;
-    }[];
-};
 
 export type UpdateNodeStatusOptions = {
     /**

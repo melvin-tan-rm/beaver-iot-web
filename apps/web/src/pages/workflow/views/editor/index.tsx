@@ -439,7 +439,7 @@ const WorkflowEditor = () => {
         const nodesCheckResult = merge(
             checkNodesId(nodes, { validateFirst: isAdvanceMode }),
             checkNodesType(nodes, { validateFirst: isAdvanceMode }),
-            checkNodesData(nodes, { validateFirst: isAdvanceMode }),
+            checkNodesData(nodes, edges, { validateFirst: isAdvanceMode }),
         );
         if (!isEmpty(nodesCheckResult)) {
             if (isAdvanceMode) return;
