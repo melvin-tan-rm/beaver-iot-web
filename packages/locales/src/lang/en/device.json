@@ -5,7 +5,7 @@
     "device.label.param_device_name": "Device Name",
     "device.label.param_entity_id": "Entity ID",
     "device.label.param_entity_name": "Entity Name",
-    "device.label.param_external_id": "External ID",
+    "device.label.param_external_id": "External Device ID",
     "device.label.param_founder": "Founder",
     "device.label.param_source": "Source",
     "device.message.delete_tip": "Are you sure to delete?"

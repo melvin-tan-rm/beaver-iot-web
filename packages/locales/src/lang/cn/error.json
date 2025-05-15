@@ -1,6 +1,6 @@
 {
     "error.http.account_session_logout": "您的账户已退出登录。",
-    "error.http.authentication_failed": "认证失败/未认证",
+    "error.http.authentication_failed": "账户不存在或密码错误，请重新输入。",
     "error.http.dashboard_name_exist": "仪表板名称已存在",
     "error.http.data_no_found": "数据未找到",
     "error.http.forbidden_permission": "没有访问权限，访问被禁止。",
