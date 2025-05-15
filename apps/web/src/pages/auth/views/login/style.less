@@ -20,6 +20,13 @@
         border-radius: @border-radius-md;
         transform: translate(-50%, -50%);
 
+        // Mobile Responsive
+        .bp-down(@grid-breakpoints[sm], {
+            width: calc(100% - 48px);
+            min-width: 350px;
+            padding: 48px 24px;
+        });
+
         &.@{mui-prefix}Paper-root {
             box-shadow: unset;
         }
@@ -46,12 +53,3 @@
         }
     }
 }
-
-// Mobile Responsive
-.bp-down(@grid-breakpoints[sm], {
-    .@{prefix}-view-login .@{prefix}-auth-container {
-        width: calc(100% - 48px);
-        min-width: 350px;
-        padding: 48px 24px;
-    }
-});
