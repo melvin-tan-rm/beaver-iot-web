@@ -221,33 +221,12 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                     size="small"
                                     sx={{ mb: 1.5 }}
                                 >
-                                    {/* <InputLabel
-                                        required={!attr.optional}
-                                        id={`select-label-${entity.name}`}
-                                        error={!!error}
-                                    >
-                                        {entity.name}
-                                    </InputLabel> */}
-                                    {/* <Select
-                                        notched
-                                        label={entity.name}
-                                        labelId={`select-label-${entity.name}`}
-                                        required={!attr.optional}
-                                        error={!!error}
-                                        value={value}
-                                        onChange={e => console.log(e)}
-                                    >
-                                        {Object.entries(attr.enum || {}).map(([key, value]) => (
-                                            <MenuItem key={value} value={key}>
-                                                {value}
-                                            </MenuItem>
-                                        ))}
-                                    </Select> */}
                                     <Autocomplete
                                         options={options}
                                         isOptionEqualToValue={(option, value) =>
                                             isEqual(option, value)
                                         }
+                                        getOptionKey={option => option.value}
                                         renderInput={params => (
                                             <TextField
                                                 {...params}
