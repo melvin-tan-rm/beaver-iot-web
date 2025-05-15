@@ -2,7 +2,12 @@ import { useState, useMemo, useCallback } from 'react';
 import { type ControllerProps } from 'react-hook-form';
 import { TextField, IconButton, InputAdornment, type TextFieldProps } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { checkRequired, checkEmail, passwordChecker } from '@milesight/shared/src/utils/validators';
+import {
+    checkRequired,
+    checkEmail,
+    passwordChecker,
+    checkMaxLength,
+} from '@milesight/shared/src/utils/validators';
 import {
     EmailIcon,
     VisibilityIcon,
@@ -43,6 +48,7 @@ const useFormItems = ({ mode = 'login' }: UseFormItemsProps) => {
                 rules: {
                     validate: {
                         checkRequired: checkRequired(),
+                        checkMaxLength: checkMaxLength({ max: 255 }),
                         checkEmail: checkEmail(),
                     },
                 },
