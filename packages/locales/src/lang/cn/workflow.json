@@ -95,7 +95,7 @@
     "workflow.label.logic_keyword_if": "IF",
     "workflow.label.logic_keyword_or": "OR",
     "workflow.label.mqtt_node_desc": "监听进入的MQTT消息触发工作流的运行。",
-    "workflow.label.mqtt_node_name": "MQTT",
+    "workflow.label.mqtt_node_name": "MQTT 监听",
     "workflow.label.no_log_record": "无日志记录",
     "workflow.label.node_category_action": "动作类",
     "workflow.label.node_category_control": "控制类",

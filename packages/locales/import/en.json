@@ -536,7 +536,7 @@
   "workflow.label.logic_keyword_if": "IF",
   "workflow.label.logic_keyword_or": "OR",
   "workflow.label.mqtt_node_desc": "Listen for incoming MQTT messages to trigger a running workflow.",
-  "workflow.label.mqtt_node_name": "MQTT",
+  "workflow.label.mqtt_node_name": "MQTT Listener",
   "workflow.label.no_log_record": "No log is recorded",
   "workflow.label.node_category_action": "Action",
   "workflow.label.node_category_control": "Control",
