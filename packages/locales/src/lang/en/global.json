@@ -230,5 +230,6 @@
     "common.label.visible": "Visible",
     "common.label.invisible": "Invisible",
     "common.label.upload_image": "Upload Image",
-    "common.label.system": "System"
+    "common.label.system": "System",
+    "valid.input.match_regexp": "Please enter a valid value that matches the regular expression: {1}."
 }
