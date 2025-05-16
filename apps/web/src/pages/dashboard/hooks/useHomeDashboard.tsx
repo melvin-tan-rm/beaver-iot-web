@@ -29,6 +29,7 @@ function useHomeDashboard(props: {
      * whether the current dashboard the home dashboard
      */
     const [isHome, setIsHome] = useState(false);
+    const [homeLoading, setHomeLoading] = useState(false);
 
     /**
      * set current dashboard whether home dashboard
@@ -45,23 +46,29 @@ function useHomeDashboard(props: {
          * Request Data Functions
          */
         const onConfirm = async () => {
-            if (!dashboardDetail?.dashboard_id) return;
+            try {
+                setHomeLoading(true);
 
-            const [error, resp] = await awaitWrap(
-                isHome
-                    ? dashboardAPI.cancelAsHomeDashboard({
-                          dashboardId: dashboardDetail.dashboard_id,
-                      })
-                    : dashboardAPI.setAsHomeDashboard({
-                          dashboardId: dashboardDetail.dashboard_id,
-                      }),
-            );
-            if (error || !isRequestSuccess(resp)) {
-                return;
+                if (!dashboardDetail?.dashboard_id) return;
+
+                const [error, resp] = await awaitWrap(
+                    isHome
+                        ? dashboardAPI.cancelAsHomeDashboard({
+                              dashboardId: dashboardDetail.dashboard_id,
+                          })
+                        : dashboardAPI.setAsHomeDashboard({
+                              dashboardId: dashboardDetail.dashboard_id,
+                          }),
+                );
+                if (error || !isRequestSuccess(resp)) {
+                    return;
+                }
+
+                refreshDashboards?.();
+                toast.success(getIntlText('common.message.operation_success'));
+            } finally {
+                setHomeLoading(false);
             }
-
-            refreshDashboards?.();
-            toast.success(getIntlText('common.message.operation_success'));
         };
 
         /**
@@ -107,6 +114,7 @@ function useHomeDashboard(props: {
         homeDashboardTip,
         homeDashboardIcon,
         homeDashboardClassName,
+        homeLoading,
     };
 }
 
