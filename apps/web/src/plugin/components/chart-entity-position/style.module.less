@@ -23,6 +23,10 @@
         align-items: center;
         margin-bottom: @margin-md;
 
+        &:not(:first-child) label {
+            display: none;
+        }
+
         :global {
             .@{mui-prefix}FormControl-root {
                 margin: 0;
