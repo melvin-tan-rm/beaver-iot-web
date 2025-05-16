@@ -271,7 +271,10 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                     <Divider className="ms-divider" /> */}
                     <div className="ms-node-form-items">
                         {nodeFormGroups.map(
-                            ({ groupName, helperText, children: formItems }, index) => (
+                            (
+                                { groupName, groupRequired, helperText, children: formItems },
+                                index,
+                            ) => (
                                 <div
                                     className="ms-node-form-group"
                                     // eslint-disable-next-line react/no-array-index-key
@@ -280,6 +283,9 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                                     <div className="ms-node-form-group-header">
                                         {!!groupName && (
                                             <div className="ms-node-form-group-title">
+                                                {groupRequired && (
+                                                    <span className="ms-asterisk">*</span>
+                                                )}
                                                 {groupName}
                                                 {helperText && (
                                                     <Tooltip

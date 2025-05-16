@@ -39,6 +39,11 @@ type NodeFormGroupType = {
     groupType?: string;
     groupName?: string;
     helperText?: string;
+    groupRequired?: boolean;
+    /**
+     * To Control whether render the groupName only (ignore the general form field name & required)
+     */
+    groupNameOnly?: boolean;
     children?: (ControllerProps<NodeFormDataProps> & {
         valueType?: NodeFormItemValueType;
         /**
@@ -117,6 +122,8 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                     const groupType = uiComponentGroup || name;
                     const groupName = uiComponentGroup || displayName;
                     const helperText = description;
+                    const groupNameOnly = !uiComponentGroup;
+                    const groupRequired = uiComponentGroup ? false : required;
                     let group = formGroups.find(item => item.groupType === groupType);
 
                     if (!group) {
@@ -124,6 +131,8 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                             groupType,
                             groupName,
                             helperText,
+                            groupRequired,
+                            groupNameOnly,
                             children: [],
                         };
                         formGroups.push(group);
@@ -139,8 +148,8 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                     type={secret ? 'password' : undefined}
                                     autoComplete={secret ? 'new-password' : 'off'}
                                     sx={{ my: 1.5 }}
-                                    required={required}
-                                    label={displayName}
+                                    required={!groupNameOnly && required}
+                                    label={groupNameOnly ? '' : displayName}
                                     defaultValue={defaultValue}
                                     value={value || ''}
                                     onChange={onChange}
@@ -317,8 +326,8 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                         <ActionInput
                                             // size="small"
                                             autoComplete="off"
-                                            label={displayName}
-                                            required={required}
+                                            required={!groupNameOnly && required}
+                                            label={groupNameOnly ? '' : displayName}
                                             value={value}
                                             onChange={onChange}
                                             startAdornment={
@@ -365,15 +374,17 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                         formItem.render = ({ field: { onChange, value } }) => {
                             return (
                                 <FormControl fullWidth size="small" sx={{ my: 1.5 }}>
-                                    <InputLabel required={required} id={`select-label-${name}`}>
-                                        {displayName}
-                                    </InputLabel>
+                                    {!groupNameOnly && (
+                                        <InputLabel required={required} id={`select-label-${name}`}>
+                                            {displayName}
+                                        </InputLabel>
+                                    )}
                                     <Select
                                         notched
-                                        label={displayName}
                                         labelId={`select-label-${name}`}
+                                        required={!groupNameOnly && required}
+                                        label={groupNameOnly ? '' : displayName}
                                         IconComponent={KeyboardArrowDownIcon}
-                                        required={required}
                                         value={value || ''}
                                         onChange={onChange}
                                     >
@@ -397,8 +408,8 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
                                             fullWidth
                                             multiline
                                             rows={4}
-                                            required={required}
-                                            label={displayName}
+                                            required={!groupNameOnly && required}
+                                            label={groupNameOnly ? '' : displayName}
                                             value={value}
                                             onChange={onChange}
                                         />
