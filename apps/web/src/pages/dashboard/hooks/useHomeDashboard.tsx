@@ -13,10 +13,14 @@ import { useConfirm } from '@/components';
  * Set or unset the home dashboard
  */
 function useHomeDashboard(props: {
+    /**
+     * Existence of homeDashboard
+     */
+    existedHomeDashboard?: boolean;
     dashboardDetail: DashboardDetail;
     refreshDashboards?: () => void;
 }) {
-    const { dashboardDetail, refreshDashboards } = props || {};
+    const { existedHomeDashboard, dashboardDetail, refreshDashboards } = props || {};
 
     const { getIntlText } = useI18n();
     const confirm = useConfirm();
@@ -37,37 +41,48 @@ function useHomeDashboard(props: {
     }, [dashboardDetail, isHome]);
 
     const toggleHomeDashboard = useMemoizedFn(() => {
-        const description = isHome
-            ? getIntlText('dashboard.unset_as_home_dashboard_description')
-            : getIntlText('dashboard.set_as_home_dashboard_description');
+        /**
+         * Request Data Functions
+         */
+        const onConfirm = async () => {
+            if (!dashboardDetail?.dashboard_id) return;
 
-        confirm({
-            title: getIntlText('common.label.tip'),
-            description,
-            icon: <ErrorIcon sx={{ color: 'var(--primary-color-base)' }} />,
-            cancelButtonProps: {
-                disableRipple: true,
-            },
-            onConfirm: async () => {
-                if (!dashboardDetail?.dashboard_id) return;
+            const [error, resp] = await awaitWrap(
+                isHome
+                    ? dashboardAPI.cancelAsHomeDashboard({
+                          dashboardId: dashboardDetail.dashboard_id,
+                      })
+                    : dashboardAPI.setAsHomeDashboard({
+                          dashboardId: dashboardDetail.dashboard_id,
+                      }),
+            );
+            if (error || !isRequestSuccess(resp)) {
+                return;
+            }
 
-                const [error, resp] = await awaitWrap(
-                    isHome
-                        ? dashboardAPI.cancelAsHomeDashboard({
-                              dashboardId: dashboardDetail.dashboard_id,
-                          })
-                        : dashboardAPI.setAsHomeDashboard({
-                              dashboardId: dashboardDetail.dashboard_id,
-                          }),
-                );
-                if (error || !isRequestSuccess(resp)) {
-                    return;
-                }
+            refreshDashboards?.();
+            toast.success(getIntlText('common.message.operation_success'));
+        };
 
-                refreshDashboards?.();
-                toast.success(getIntlText('common.message.operation_success'));
-            },
-        });
+        /**
+         * Only if home dashboard exists and you want to
+         * set up a home dashboard, you need to double check the popup.
+         */
+        if (existedHomeDashboard && !isHome) {
+            confirm({
+                title: getIntlText('common.label.tip'),
+                description: getIntlText('dashboard.set_as_home_dashboard_description'),
+                icon: <ErrorIcon sx={{ color: 'var(--primary-color-base)' }} />,
+                cancelButtonProps: {
+                    disableRipple: true,
+                },
+                onConfirm,
+            });
+
+            return;
+        }
+
+        onConfirm?.();
     });
 
     const homeDashboardTip = useMemo(() => {

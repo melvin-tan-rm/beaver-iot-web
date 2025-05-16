@@ -176,6 +176,7 @@ export default () => {
                         isEdit={isEdit}
                         onChangeIsEdit={setIsEdit}
                         isTooSmallScreen={isTooSmallScreen}
+                        existedHomeDashboard={(tabs || [])?.some(t => Boolean(t.home))}
                     />
                 </TabPanel>
             );

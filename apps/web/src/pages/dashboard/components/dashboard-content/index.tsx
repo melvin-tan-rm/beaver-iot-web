@@ -32,16 +32,28 @@ interface DashboardContentProps {
     onChangeIsEdit: (isEdit: boolean) => void;
     isEdit: boolean;
     isTooSmallScreen: boolean;
+    /**
+     * Existence of homeDashboard
+     */
+    existedHomeDashboard?: boolean;
 }
 
 export default (props: DashboardContentProps) => {
-    const { dashboardDetail, getDashboards, onChangeIsEdit, isEdit, isTooSmallScreen } = props;
+    const {
+        dashboardDetail,
+        getDashboards,
+        onChangeIsEdit,
+        isEdit,
+        isTooSmallScreen,
+        existedHomeDashboard,
+    } = props;
 
     const { getIntlText } = useI18n();
     const { pluginsConfigs } = useGetPluginConfigs();
     const confirm = useConfirm();
     const { toggleHomeDashboard, homeDashboardClassName, homeDashboardIcon, homeDashboardTip } =
         useHomeDashboard({
+            existedHomeDashboard,
             dashboardDetail,
             refreshDashboards: getDashboards,
         });
