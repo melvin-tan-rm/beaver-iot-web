@@ -5,10 +5,8 @@ import { cloneDeep } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { MenuList, MenuItem, ListSubheader } from '@mui/material';
 import { Tooltip, Empty } from '@/components';
-import useWorkflow, {
-    type FlattenNodeParamType,
-} from '@/pages/workflow/views/editor/hooks/useWorkflow';
-
+import { type FlattenNodeParamType } from '@/pages/workflow/views/editor/typings';
+import useWorkflow from '@/pages/workflow/views/editor/hooks/useWorkflow';
 import './style.less';
 
 export interface UpstreamNodeListProps {
