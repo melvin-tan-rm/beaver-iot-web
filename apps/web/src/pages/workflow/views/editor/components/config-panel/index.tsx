@@ -35,7 +35,7 @@ interface Props {
  */
 const ConfigPanel: React.FC<Props> = ({ readonly }) => {
     const { getIntlText } = useI18n();
-    const { getNode, getEdges, updateNode, updateNodeData } = useReactFlow<
+    const { getNode, getNodes, getEdges, updateNode, updateNodeData } = useReactFlow<
         WorkflowNode,
         WorkflowEdge
     >();
@@ -207,8 +207,9 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                                         onClick={() => {
                                             if (!finalSelectedNode) return;
                                             const node = getNode(finalSelectedNode.id)!;
-                                            const result = checkNodesData([node], getEdges(), {
+                                            const result = checkNodesData(getNodes(), getEdges(), {
                                                 validateFirst: true,
+                                                validateNodes: [node],
                                             });
 
                                             if (!isEmpty(result)) return;

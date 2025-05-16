@@ -26,6 +26,10 @@ type CheckOptions = {
      * When a rule fails validation, should the validation of the remaining rules be stopped
      */
     validateFirst?: boolean;
+    /**
+     * The nodes to be validated. If not set, the all nodes in the current flow will be validated.
+     */
+    validateNodes?: WorkflowNode[];
 };
 
 export type NodesDataValidResult = Record<
@@ -1077,9 +1081,10 @@ const useValidate = () => {
             nodes = nodes || getNodes();
             edges = edges || getEdges();
             const result: NodesDataValidResult = {};
+            const validateNodes = options?.validateNodes || nodes;
 
-            for (let i = 0; i < nodes.length; i++) {
-                const node = nodes[i];
+            for (let i = 0; i < validateNodes.length; i++) {
+                const node = validateNodes[i];
                 const { id, type, data } = node;
                 const nodeType = type as WorkflowNodeType;
                 const config = nodeConfigs[nodeType];
@@ -1120,11 +1125,11 @@ const useValidate = () => {
                 const validators = merge({}, dataValidators, dynamicValidators);
 
                 const nodeCheckers = Object.keys(validators).filter(key =>
-                    key.startsWith(`${type}.`),
+                    key.startsWith(`${nodeType}.`),
                 );
 
                 nodeCheckers?.forEach(name => {
-                    const key = name.replace(`${type}.`, '');
+                    const key = name.replace(`${nodeType}.`, '');
                     const checkerMap = validators[name] || validators[key] || {};
 
                     Object.values(checkerMap).forEach(validator => {
