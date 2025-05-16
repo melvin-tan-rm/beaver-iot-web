@@ -107,6 +107,7 @@ const AddModal: React.FC<Props> = ({ visible, onCancel, onError, onSuccess, ...p
 
     return (
         <Modal
+            size="lg"
             visible={visible}
             title={getIntlText('common.label.add')}
             className={cls({ loading: formState.isSubmitting })}
