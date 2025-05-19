@@ -7,7 +7,7 @@
         .@{prefix}-confirm-title {
             display: flex;
             align-items: center;
-            height: 28px;
+            // height: 28px;
             margin-bottom: @margin-xs;
             line-height: 28px;
 
@@ -64,4 +64,17 @@
             color: var(--icon-color-warning);
         }
     }
+
+    // Mobile Responsive
+    .bp-down(@grid-breakpoints[md], {
+        .@{mui-prefix}Dialog-paper {
+            margin: @margin-lg;
+            width: calc(100% - @margin-lg * 2);
+        }
+
+        .@{mui-prefix}DialogContent-root {
+            width: auto !important;
+            min-width: auto !important;
+        }
+    });
 }

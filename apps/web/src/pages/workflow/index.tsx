@@ -188,6 +188,7 @@ const Workflow = () => {
                 <PermissionControlHidden permissions={PERMISSIONS.WORKFLOW_ADD}>
                     <Button
                         variant="contained"
+                        className="md:d-none"
                         sx={{ height: 36, textTransform: 'none' }}
                         startIcon={<AddIcon />}
                         onClick={() => navigate('/workflow/editor')}
@@ -198,6 +199,7 @@ const Workflow = () => {
                 <PermissionControlHidden permissions={PERMISSIONS.WORKFLOW_ADD}>
                     <Button
                         variant="outlined"
+                        className="md:d-none"
                         sx={{ height: 36, textTransform: 'none' }}
                         startIcon={<SystemUpdateAltIcon />}
                         onClick={() => handlerImportModal(true)}
@@ -208,6 +210,7 @@ const Workflow = () => {
                 <PermissionControlHidden permissions={PERMISSIONS.WORKFLOW_DELETE}>
                     <Button
                         variant="outlined"
+                        className="md:d-none"
                         disabled={!selectedIds.length}
                         sx={{ height: 36, textTransform: 'none' }}
                         startIcon={<DeleteOutlineIcon />}

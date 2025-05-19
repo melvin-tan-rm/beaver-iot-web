@@ -263,9 +263,10 @@ export default (props: DashboardContentProps) => {
                     ) : (
                         <PermissionControlHidden permissions={PERMISSIONS.DASHBOARD_EDIT}>
                             <Button
+                                variant="contained"
+                                className="md:d-none"
                                 disabled={isTooSmallScreen}
                                 startIcon={<Edit />}
-                                variant="contained"
                                 onClick={changeEditStatus}
                             >
                                 {getIntlText('common.button.edit')}

@@ -126,6 +126,7 @@ export default () => {
                 <PermissionControlHidden permissions={PERMISSIONS.ENTITY_CUSTOM_ADD}>
                     <Button
                         variant="contained"
+                        className="md:d-none"
                         sx={{ height: 36, textTransform: 'none' }}
                         // aria-controls={open ? 'add-menu' : undefined}
                         // aria-haspopup="true"
@@ -139,6 +140,7 @@ export default () => {
                 <PermissionControlHidden permissions={PERMISSIONS.ENTITY_CUSTOM_DELETE}>
                     <Button
                         variant="outlined"
+                        className="md:d-none"
                         disabled={!selectedIds.length}
                         sx={{ height: 36, textTransform: 'none' }}
                         startIcon={<DeleteOutlineIcon />}

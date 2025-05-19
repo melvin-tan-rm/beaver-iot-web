@@ -87,6 +87,7 @@ export default () => {
                 <PermissionControlHidden permissions={PERMISSIONS.DEVICE_ADD}>
                     <Button
                         variant="contained"
+                        className="md:d-none"
                         sx={{ height: 36, textTransform: 'none' }}
                         startIcon={<AddIcon />}
                         onClick={() => setModalOpen(true)}
@@ -97,6 +98,7 @@ export default () => {
                 <PermissionControlHidden permissions={PERMISSIONS.DEVICE_DELETE}>
                     <Button
                         variant="outlined"
+                        className="md:d-none"
                         disabled={!selectedIds.length}
                         sx={{ height: 36, textTransform: 'none' }}
                         startIcon={<DeleteOutlineIcon />}
