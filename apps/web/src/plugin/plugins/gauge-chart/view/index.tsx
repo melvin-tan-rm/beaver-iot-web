@@ -1,43 +1,31 @@
-import { useEffect, useRef, useState } from 'react';
-import { clamp, debounce, isNil } from 'lodash-es';
+import { useEffect, useRef } from 'react';
+import { isNil } from 'lodash-es';
 import { useMemoizedFn } from 'ahooks';
+
+import * as echarts from 'echarts/core';
+import { GaugeChart } from 'echarts/charts';
+import { CanvasRenderer } from 'echarts/renderers';
+
 import { useTheme } from '@milesight/shared/src/hooks';
 import { Tooltip } from '@/plugin/view-components';
-import Chart from './gauge';
-import { useSource } from './hooks';
+import { useSource, useResizeChart } from './hooks';
 import type { ViewConfigProps } from '../typings';
 import './style.less';
 
+echarts.use([GaugeChart, CanvasRenderer]);
 interface Props {
     config: ViewConfigProps;
 }
 const DEFAULT_RANGE = 10;
-/** tick fontsize */
-const TICK_FONTSIZE: Record<string, number> = {
-    min: 10,
-    max: 16,
-    default: 13,
-    percent: 0.03,
-};
-/** value fontsize */
-const VALUE_FONTSIZE: Record<string, number> = {
-    min: 14,
-    max: 60,
-    default: 16,
-    percent: 0.07,
-};
 
 const View = (props: Props) => {
     const { config } = props;
     const { entity, title, time, metrics } = config || {};
     const chartRef = useRef<HTMLCanvasElement>(null);
-    const observerRef = useRef<any>(null);
-    const gaugeChartRef = useRef<HTMLDivElement>(null);
-    const lastContentRect = useRef<any>(null);
+    const chartWrapperRef = useRef<HTMLDivElement>(null);
     const { purple, grey } = useTheme();
     const { aggregateHistoryData } = useSource({ entity, metrics, time });
-    const [valueFontSize, setValueFontSize] = useState<number>(VALUE_FONTSIZE.default);
-    const [tickFontSize, setTickFontSize] = useState<number>(TICK_FONTSIZE.default);
+    const { resizeChart } = useResizeChart({ chartWrapperRef });
 
     // Calculate the most suitable maximum scale value
     const calculateMaxTickValue = (maxValue: number) => {
@@ -68,16 +56,8 @@ const View = (props: Props) => {
         return 1;
     };
 
-    /** Rendering instrument diagram */
-    const renderGaugeChart = (datasets: {
-        minValue?: number;
-        maxValue?: number;
-        currentValue: number;
-    }) => {
-        try {
-            const ctx = chartRef.current!;
-            if (!ctx) return;
-
+    const getGaugeChartData = useMemoizedFn(
+        (datasets: { minValue?: number; maxValue?: number; currentValue: number }) => {
             // Replace it into qualified data
             const { minValue: min, maxValue: max, currentValue: value } = datasets || {};
             let currentValue = value || 0;
@@ -114,82 +94,118 @@ const View = (props: Props) => {
                     currentValue = parseFloat(currentValue.toFixed(1));
                 }
             }
-            // Render chart
-            const circumference = 216; // Define the length of the dashboard
-            const rotation = (360 - 216) / 2 + 180; // According to the length of the circumference, calculate the angle of rotation
-            const chart = new Chart(ctx, {
-                type: 'gauge',
-                data: {
-                    datasets: [
-                        {
-                            data,
-                            minValue,
-                            maxValue: tickMaxValue,
-                            value: currentValue,
-                            backgroundColor: [purple[600], grey[100]],
-                            stepSize: tickInterval,
-                        },
-                    ],
-                },
-                options: {
-                    cutout: '90%', // Adjust the width of the ring attribute by setting the cutout attribute, the larger the values, the thinner the ring
-                    needle: {
-                        radiusPercentage: 1.5,
-                        widthPercentage: 3,
-                        lengthPercentage: 60,
-                        color: purple[600],
-                    },
-                    circumference,
-                    rotation,
-                    valueLabel: {
-                        fontSize: valueFontSize,
-                        fontWeight: '500',
-                        display: true,
-                        formatter: null,
-                        color: grey[900],
-                        bottomMarginPercentage: -25,
-                    },
-                    hover: {
-                        // @ts-ignore
-                        mode: null, // Disable suspension effect
-                    },
-                    plugins: {
-                        legend: {
-                            display: false,
-                        },
-                        tooltip: {
-                            enabled: true,
-                            filter: tooltipItem => tooltipItem.dataIndex === 0, // Displays only the tooltip of the first data item
-                            callbacks: {
-                                label: context => {
-                                    const { raw } = context || {};
-                                    const { rawData } = entity || {};
-                                    const { entityValueAttribute } = rawData || {};
-                                    const { unit } = entityValueAttribute || {};
 
-                                    if (!unit) return `${raw}`;
-                                    return `${raw}${unit}`;
-                                },
+            const [seriesMin, seriesMax] = data || [];
+            const chartMinValue = Math.min(seriesMin, minValue);
+            const chartMaxValue = Math.max(seriesMax, tickMaxValue);
+
+            return {
+                chartMinValue,
+                chartMaxValue,
+                currentValue,
+                tickCount,
+            };
+        },
+    );
+
+    /** Rendering instrument diagram */
+    const renderGaugeChart = useMemoizedFn(
+        (datasets: { minValue?: number; maxValue?: number; currentValue: number }) => {
+            const chartDom = chartRef.current;
+            if (!chartDom) return;
+
+            const { chartMinValue, chartMaxValue, currentValue, tickCount } =
+                getGaugeChartData(datasets);
+
+            const myChart = echarts.init(chartDom);
+            myChart.setOption({
+                series: [
+                    {
+                        name: entity?.label,
+                        type: 'gauge',
+                        min: chartMinValue,
+                        max: chartMaxValue,
+                        splitNumber: tickCount,
+                        itemStyle: {
+                            color: purple[600],
+                        },
+                        progress: {
+                            show: currentValue !== chartMinValue, // The progress bar is displayed only when the value is greater than the minimum value
+                            roundCap: true,
+                            itemStyle: {
+                                color: purple[600],
+                                borderColor: purple[600],
                             },
                         },
-                    },
-                    ticks: {
-                        tickCount,
-                        tickFontSize,
-                        tickColor: grey[700],
-                    },
-                    layout: {
-                        padding: {
-                            bottom: 5,
+                        axisLine: {
+                            roundCap: true,
+                            lineStyle: {
+                                width: 10,
+                                color: [[1, grey[100]]],
+                            },
                         },
+                        axisTick: {
+                            show: false,
+                        },
+                        pointer: {
+                            icon: 'path://M2090.36389,615.30999 L2090.36389,615.30999 C2091.48372,615.30999 2092.40383,616.194028 2092.44859,617.312956 L2096.90698,728.755929 C2097.05155,732.369577 2094.2393,735.416212 2090.62566,735.56078 C2090.53845,735.564269 2090.45117,735.566014 2090.36389,735.566014 L2090.36389,735.566014 C2086.74736,735.566014 2083.81557,732.63423 2083.81557,729.017692 C2083.81557,728.930412 2083.81732,728.84314 2083.82081,728.755929 L2088.2792,617.312956 C2088.32396,616.194028 2089.24407,615.30999 2090.36389,615.30999 Z',
+                            length: '60%',
+                            offsetCenter: [0, '5%'],
+                            width: 10,
+                            itemStyle: {
+                                color: purple[600],
+                            },
+                        },
+                        splitLine: {
+                            length: 7,
+                            lineStyle: {
+                                width: 2,
+                                color: grey[300],
+                            },
+                            distance: 10,
+                        },
+                        axisLabel: {
+                            distance: 15,
+                            fontWeight: 500,
+                            fontSize: 10,
+                            color: grey[900],
+                        },
+                        anchor: {
+                            show: false,
+                        },
+                        detail: {
+                            valueAnimation: true,
+                            fontSize: 20,
+                            offsetCenter: [0, '70%'],
+                        },
+                        data: [{ value: currentValue }],
+                    },
+                ],
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    borderColor: 'rgba(0, 0, 0, 0.9)',
+                    textStyle: {
+                        color: '#fff',
+                    },
+                    formatter(params: any) {
+                        const { rawData } = entity || {};
+                        const { entityValueAttribute } = rawData || {};
+                        const { unit } = entityValueAttribute || {};
+
+                        const { marker, seriesName, value } = params || {};
+                        return `${marker}${seriesName}: ${value}${unit || ''}`;
                     },
                 },
             });
-            return () => chart?.destroy();
-        } catch (error) {
-            console.error(error);
-        }
-    };
+
+            // Update the chart when the container size changes
+            const disconnectResize = resizeChart(myChart);
+            return () => {
+                disconnectResize?.();
+                myChart?.dispose();
+            };
+        },
+    );
 
     useEffect(() => {
         if (!aggregateHistoryData) {
@@ -206,54 +222,13 @@ const View = (props: Props) => {
         const minValue = getNumData(min);
         const maxValue = getNumData(max);
         return renderGaugeChart({ minValue, maxValue, currentValue });
-    }, [aggregateHistoryData, valueFontSize, tickFontSize]);
-
-    // chart resize event
-    const handleResize = useMemoizedFn(
-        debounce(entries => {
-            for (const entry of entries) {
-                const cr = entry.contentRect;
-                if (lastContentRect.current?.width === cr.width || !chartRef.current) {
-                    return;
-                }
-                lastContentRect.current = cr;
-                setValueFontSize(
-                    clamp(
-                        chartRef.current.width * VALUE_FONTSIZE.percent,
-                        VALUE_FONTSIZE.min,
-                        VALUE_FONTSIZE.max,
-                    ),
-                );
-
-                setTickFontSize(
-                    clamp(
-                        chartRef.current.width * TICK_FONTSIZE.percent,
-                        TICK_FONTSIZE.min,
-                        TICK_FONTSIZE.max,
-                    ),
-                );
-            }
-        }, 400),
-    );
-
-    useEffect(() => {
-        // observer chart resize
-        if (gaugeChartRef.current) {
-            observerRef.current = new ResizeObserver(handleResize);
-            observerRef.current.observe(gaugeChartRef.current);
-        }
-        return () => {
-            if (gaugeChartRef.current) {
-                observerRef?.current?.unobserve(gaugeChartRef.current);
-            }
-        };
-    }, [chartRef.current]);
+    }, [aggregateHistoryData, entity]);
 
     return (
-        <div className="ms-gauge-chart">
+        <div className="ms-gauge-chart" ref={chartWrapperRef}>
             <Tooltip className="ms-gauge-chart__header" autoEllipsis title={title} />
-            <div ref={gaugeChartRef} className="ms-gauge-chart__content">
-                <canvas id="gaugeChart" ref={chartRef} />
+            <div className="ms-gauge-chart__content">
+                <div ref={chartRef as any} className="ms-chart-content__chart" />
             </div>
         </div>
     );
