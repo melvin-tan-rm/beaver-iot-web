@@ -1,11 +1,25 @@
-import React, { useEffect, useMemo, useRef } from 'react';
-import { useMemoizedFn } from 'ahooks';
-import Chart, { type TooltipItem } from 'chart.js/auto';
+import React, { useEffect, useRef } from 'react';
+
+import * as echarts from 'echarts/core';
+import { GridComponent, DataZoomComponent, TooltipComponent } from 'echarts/components';
+import { BarChart } from 'echarts/charts';
+import { UniversalTransition } from 'echarts/features';
+import { CanvasRenderer } from 'echarts/renderers';
+
 import { useBasicChartEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
+import { useResizeChart, useZoomChart } from './hooks';
 import styles from './style.module.less';
 
+echarts.use([
+    GridComponent,
+    BarChart,
+    CanvasRenderer,
+    UniversalTransition,
+    DataZoomComponent,
+    TooltipComponent,
+]);
 export interface ViewProps {
     config: {
         entity?: EntityOptionType[];
@@ -17,182 +31,103 @@ export interface ViewProps {
     };
 }
 
-const MAX_VALUE_RATIO = 1.1;
 const View = (props: ViewProps) => {
     const { config, configJson } = props;
     const { entity, title, time } = config || {};
     const { isPreview } = configJson || {};
 
-    const {
-        chartShowData,
-        chartLabels,
-        chartRef,
-        format,
-        displayFormats,
+    const chartWrapperRef = useRef<HTMLDivElement>(null);
+    const { chartShowData, chartLabels, chartRef, xAxisRange, chartZoomRef, xAxisConfig } =
+        useBasicChartEntity({
+            entity,
+            time,
+            isPreview,
+        });
+
+    const { resizeChart } = useResizeChart({ chartWrapperRef });
+    const { zoomChart, hoverZoomBtn } = useZoomChart({
+        xAxisConfig,
         xAxisRange,
         chartZoomRef,
-        xAxisConfig,
-    } = useBasicChartEntity({
-        entity,
-        time,
-        isPreview,
+        chartWrapperRef,
     });
-    const chartWrapperRef = useRef<HTMLDivElement>(null);
 
-    // Find the maximum value of the entity data
-    const maxEntityValue = useMemo(() => {
-        if (!chartShowData?.length) return;
-
-        return (
-            Math.max(
-                ...chartShowData.map(item =>
-                    Math.max(...(item.entityValues || []).map(v => Number(v))),
-                ),
-            ) * MAX_VALUE_RATIO
-        );
-    }, [chartShowData]);
     useEffect(() => {
-        try {
-            const { suggestXAxisRange, stepSize, unit, maxTicksLimit } = xAxisConfig || {};
+        const chartDom = chartRef.current;
+        if (!chartDom) return;
 
-            let chart: Chart<'bar', (string | number | null)[], string> | null = null;
-            const resultColor = getChartColor(chartShowData);
-            if (chartRef.current) {
-                chart = new Chart(chartRef.current, {
-                    type: 'bar',
-                    data: {
-                        labels: chartLabels,
-                        datasets: chartShowData.map((chart: any, index: number) => ({
-                            label: chart.entityLabel,
-                            data: chart.entityValues,
-                            borderWidth: 1,
-                            backgroundColor: resultColor[index],
-                        })),
-                    },
-                    options: {
-                        responsive: true, // Respond to the chart
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    autoSkip: true,
-                                    autoSkipPadding: 20,
-                                },
-                                suggestedMax: maxEntityValue,
-                            },
-                            x: {
-                                type: 'time',
-                                time: {
-                                    tooltipFormat: format,
-                                    displayFormats,
-                                    unit, // Unit for the time axis
-                                },
-                                min: suggestXAxisRange[0], // The minimum value of time range
-                                max: suggestXAxisRange[1], // The maximum value of time range
-                                ticks: {
-                                    autoSkip: true, // Automatically skip the scale
-                                    maxTicksLimit,
-                                    major: {
-                                        enabled: true, // Enable the main scale
-                                    },
-                                    stepSize, // Step size between ticks
-                                },
-                                grid: {
-                                    display: false, // Remove the lines
-                                },
-                            },
-                        },
-                        plugins: {
-                            zoom: {
-                                pan: {
-                                    enabled: true,
-                                    mode: 'x', // Only move on the X axis
-                                    onPanStart: chartZoomRef.current?.show,
-                                },
-                                zoom: {
-                                    wheel: {
-                                        enabled: true, // Enable rolling wheel scaling
-                                        speed: 0.05,
-                                        modifierKey: 'ctrl',
-                                    },
-                                    pinch: {
-                                        enabled: true, // Enable touch shrinkage
-                                    },
-                                    mode: 'x', // Only zoomed in the X axis
-                                    onZoomStart: chartZoomRef.current?.show,
-                                },
-                            },
-                            legend: {
-                                labels: {
-                                    boxWidth: 10,
-                                    boxHeight: 10,
-                                    useBorderRadius: true,
-                                    borderRadius: 1,
-                                },
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label(tooltipItem: TooltipItem<'bar'>) {
-                                        const { datasetIndex, parsed } = tooltipItem || {};
-                                        const { y } = parsed || {};
-                                        const { rawData } = entity?.[datasetIndex] || {};
-                                        const { entityValueAttribute } = rawData || {};
-                                        const { unit } = entityValueAttribute || {};
+        const myChart = echarts.init(chartDom);
+        const resultColor = getChartColor(chartShowData);
+        const [xAxisMin, xAxisMax] = xAxisRange || [];
 
-                                        if (!unit) return y;
-                                        return `${y}${unit}`;
-                                    },
-                                },
-                            },
-                        } as any,
-                    },
-                });
+        myChart.setOption({
+            xAxis: {
+                type: 'time',
+                min: xAxisMin,
+                max: xAxisMax,
+            },
+            yAxis: {
+                type: 'value',
+            },
+            series: chartShowData.map((chart, index) => ({
+                name: chart.entityLabel,
+                type: 'bar',
+                data: chart.entityValues.map((value, idx) => [chartLabels[idx], value]),
+                itemStyle: {
+                    color: resultColor[index], // Data dot color
+                },
+            })),
+            legend: {
+                data: chartShowData.map(chart => chart.entityLabel),
+                itemWidth: 10,
+                itemHeight: 10,
+                icon: 'roundRect', // Set the legend item as a square
+                textStyle: {
+                    borderRadius: 10,
+                },
+                itemStyle: {
+                    borderRadius: 10,
+                },
+            },
+            grid: {
+                containLabel: true,
+                top: 30, // Adjust the top blank space of the chart area
+                left: 0,
+                right: 0,
+                bottom: 0,
+            },
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                borderColor: 'rgba(0, 0, 0, 0.9)',
+                textStyle: {
+                    color: '#fff',
+                },
+            },
+            dataZoom: [
+                {
+                    type: 'inside', // Built-in data scaling component
+                    filterMode: 'none',
+                    zoomOnMouseWheel: 'ctrl', // Hold down the ctrl key to zoom
+                },
+            ],
+        });
 
-                hoverZoomBtn(chart);
+        hoverZoomBtn();
+        zoomChart(myChart);
+        // Update the chart when the container size changes
+        const disconnectResize = resizeChart(myChart);
+        return () => {
+            disconnectResize?.();
+            myChart?.dispose();
+        };
+    }, [chartLabels, chartRef, chartShowData, xAxisRange, hoverZoomBtn, resizeChart, zoomChart]);
 
-                /**
-                 * store reset zoom state function
-                 */
-                chartZoomRef.current?.storeReset(chart);
-            }
-
-            return () => {
-                /**
-                 * Clear chart data
-                 */
-                chart?.destroy();
-            };
-        } catch (error) {
-            console.error(error);
-        }
-    }, [chartLabels, chartShowData, chartRef, maxEntityValue, xAxisConfig]);
-
-    /** Display zoom button when mouse hover */
-    const hoverZoomBtn = useMemoizedFn(
-        (chartMain: Chart<'bar', (string | number | null)[], string>) => {
-            const chartNode = chartWrapperRef.current;
-            if (!chartNode) return;
-
-            chartZoomRef.current?.hide();
-
-            chartNode.onmouseenter = () => {
-                if (!chartMain?.isZoomedOrPanned()) return;
-
-                chartZoomRef.current?.show();
-            };
-            chartNode.onmouseleave = () => {
-                if (!chartMain?.isZoomedOrPanned()) return;
-
-                chartZoomRef.current?.hide();
-            };
-        },
-    );
     return (
         <div className={styles['bar-chart-wrapper']} ref={chartWrapperRef}>
             <Tooltip className={styles.name} autoEllipsis title={title} />
             <div className={styles['bar-chart-content']}>
-                <canvas ref={chartRef} />
+                <div ref={chartRef as any} className={styles['bar-chart-content__chart']} />
                 {chartZoomRef.current?.iconNode}
             </div>
         </div>
