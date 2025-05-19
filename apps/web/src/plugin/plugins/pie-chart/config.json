@@ -21,6 +21,7 @@
                     "componentProps": {
                         "entityType": ["PROPERTY", "EVENT"],
                         "entityValueTypes": ["BOOLEAN", "STRING"],
+                        "entityAccessMod": ["R", "RW"],
                         "customFilterEntity": "filterEntityStringHasEnum"
                     },
                     "rules": {

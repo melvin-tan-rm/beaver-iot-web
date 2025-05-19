@@ -11,16 +11,25 @@ import {
     isEmail,
     isRangeLength,
 } from '@milesight/shared/src/utils/validators';
-import { EDGE_TYPE_ADDABLE, HTTP_URL_PATH_PATTERN } from '../constants';
+import {
+    EDGE_TYPE_ADDABLE,
+    HTTP_URL_PATH_PATTERN,
+    PARAM_REFERENCE_PATTERN_STRING,
+} from '../constants';
 import useFlowStore from '../store';
-import { isRefParamKey } from '../helper';
+import { isRefParamKey, getNodeParamName } from '../helper';
 import type { NodeDataValidator } from '../typings';
+import useWorkflow from './useWorkflow';
 
 type CheckOptions = {
     /**
      * When a rule fails validation, should the validation of the remaining rules be stopped
      */
     validateFirst?: boolean;
+    /**
+     * The nodes to be validated. If not set, the all nodes in the current flow will be validated.
+     */
+    validateNodes?: WorkflowNode[];
 };
 
 export type NodesDataValidResult = Record<
@@ -42,6 +51,7 @@ enum ErrorIntlKey {
     url = 'workflow.valid.invalid_url',
     email = 'workflow.valid.invalid_email',
     urlPath = 'workflow.valid.invalid_url_path',
+    refParam = 'workflow.valid.invalid_reference_param',
 }
 
 export const NODE_VALIDATE_TOAST_KEY = 'node-validate';
@@ -55,6 +65,7 @@ const useValidate = () => {
     const { getNodes, getEdges } = useReactFlow<WorkflowNode, WorkflowEdge>();
     const nodeConfigs = useFlowStore(state => state.nodeConfigs);
     const getDynamicValidators = useFlowStore(state => state.getDynamicValidators);
+    const { getUpstreamNodeParams } = useWorkflow();
 
     const dataValidators = useMemo(() => {
         const checkRequired: NodeDataValidator = (value?: any, fieldName?: string) => {
@@ -135,6 +146,42 @@ const useValidate = () => {
             },
         };
 
+        // Check referenced param is valid in object data
+        const checkReferenceParam: NodeDataValidator<Record<ApiKey, any>> = (
+            data,
+            fieldName,
+            options,
+        ) => {
+            const { upstreamParams } = options || {};
+            const paramKeys = upstreamParams?.map(item => item.valueKey);
+
+            if (
+                data &&
+                Object.values(data).some(item => isRefParamKey(item) && !paramKeys?.includes(item))
+            ) {
+                return getIntlText(ErrorIntlKey.refParam, {
+                    1: fieldName,
+                });
+            }
+
+            return true;
+        };
+
+        // Check referenced param is valid in string
+        const checkStringRefParam: NodeDataValidator<string> = (data, fieldName, options) => {
+            const { upstreamParams } = options || {};
+            const paramKeys = upstreamParams?.map(item => item.valueKey);
+            const regexp = new RegExp(PARAM_REFERENCE_PATTERN_STRING, 'g');
+            const keys = data?.match(regexp);
+
+            if (keys?.length && keys.some(key => isRefParamKey(key) && !paramKeys?.includes(key))) {
+                return getIntlText(ErrorIntlKey.refParam, {
+                    1: fieldName,
+                });
+            }
+            return true;
+        };
+
         const inputArgumentsChecker: Record<string, NodeDataValidator> = {
             checkMaxLength(
                 value: NonNullable<CodeNodeDataType['parameters']>['inputArguments'],
@@ -142,12 +189,16 @@ const useValidate = () => {
             ) {
                 if (value && Object.keys(value).length) {
                     const maxLength = 50;
-                    const hasOverLength = Object.keys(value).some(key => {
+                    const isKeyOverLength = Object.keys(value).some(key => {
                         if (key && !isMaxLength(key, maxLength)) return true;
                         return false;
                     });
+                    const isValueOverLength = Object.values(value).some(val => {
+                        if (val && !isRefParamKey(val) && !isMaxLength(val, maxLength)) return true;
+                        return false;
+                    });
 
-                    if (!hasOverLength) return true;
+                    if (!isKeyOverLength && !isValueOverLength) return true;
                     return getIntlText(ErrorIntlKey.maxLength, {
                         1: fieldName,
                         2: maxLength,
@@ -156,6 +207,7 @@ const useValidate = () => {
 
                 return true;
             },
+            checkReferenceParam,
         };
 
         // Note: The `checkRequired` name is fixed and cannot be modified
@@ -191,19 +243,17 @@ const useValidate = () => {
             'listener.entities': entitiesChecker,
             'select.entities': entitiesChecker,
             'trigger.entityConfigs': {
-                // checkRequired(
-                //     value?: NonNullable<TriggerNodeDataType['parameters']>['entityConfigs'],
-                //     fieldName?: string,
-                // ) {
-                //     if (
-                //         value?.length &&
-                //         value.every(item => Object.values(item).every(it => !!it))
-                //     ) {
-                //         return true;
-                //     }
-                //     const message = getIntlText(ErrorIntlKey.required, { 1: fieldName });
-                //     return message;
-                // },
+                checkRequired(
+                    value?: NonNullable<TriggerNodeDataType['parameters']>['entityConfigs'],
+                    fieldName?: string,
+                ) {
+                    if (value?.length && value.some(item => !item.name || !item.type)) {
+                        const message = getIntlText(ErrorIntlKey.required, { 1: fieldName });
+                        return message;
+                    }
+
+                    return true;
+                },
                 checkMaxLength(
                     value?: NonNullable<TriggerNodeDataType['parameters']>['entityConfigs'],
                     fieldName?: string,
@@ -369,7 +419,7 @@ const useValidate = () => {
 
                     if (when?.length) {
                         const maxValueLength = 1000;
-                        const maxCodeLength = 64000;
+                        const maxCodeLength = 2000;
                         const maxDescriptionLength = 30;
                         let message = '';
 
@@ -433,6 +483,32 @@ const useValidate = () => {
                     }
 
                     return true;
+                },
+                checkReferenceParam(
+                    data: NonNullable<IfElseNodeDataType['parameters']>['choice'],
+                    fieldName,
+                    options,
+                ) {
+                    const { when } = data || {};
+                    let result: boolean | string | undefined = true;
+
+                    for (let i = 0; i <= when.length; i++) {
+                        const { expressionType, conditions } = when[i] || {};
+
+                        if (typeof result === 'string') break;
+                        if (expressionType !== 'condition') continue;
+
+                        for (let j = 0; j <= conditions.length; j++) {
+                            const { expressionValue } = conditions[j] || {};
+
+                            if (typeof result === 'string') break;
+                            if (typeof expressionValue === 'string') continue;
+
+                            result = checkReferenceParam(expressionValue, fieldName, options);
+                        }
+                    }
+
+                    return result;
                 },
             },
             'code.inputArguments': {
@@ -540,6 +616,15 @@ const useValidate = () => {
                     }
                     return true;
                 },
+                checkReferenceParam(
+                    value: NonNullable<
+                        ServiceNodeDataType['parameters']
+                    >['serviceInvocationSetting'],
+                    fieldName,
+                    options,
+                ) {
+                    return checkReferenceParam(value?.serviceParams, fieldName, options);
+                },
             },
             'assigner.exchangePayload': {
                 checkRequired(
@@ -583,6 +668,7 @@ const useValidate = () => {
                     }
                     return true;
                 },
+                checkReferenceParam,
             },
             'email.emailConfig': {
                 checkRequired(
@@ -651,6 +737,7 @@ const useValidate = () => {
             'email.content': {
                 checkRequired,
                 checkMaxLength: genMaxLengthValidator(10000),
+                checkStringRefParam,
             },
             'webhook.webhookUrl': {
                 checkRequired,
@@ -671,10 +758,12 @@ const useValidate = () => {
             'http.header': {
                 checkRequired: checkObjectRequired,
                 checkMaxLength: genObjectMaxLengthValidator(1000, 1000),
+                checkReferenceParam,
             },
             'http.params': {
                 checkRequired: checkObjectRequired,
                 checkMaxLength: genObjectMaxLengthValidator(1000, 1000),
+                checkReferenceParam,
             },
             'http.body': {
                 checkRequired(
@@ -727,6 +816,27 @@ const useValidate = () => {
                         2: maxLength,
                     });
                 },
+                checkReferenceParam(
+                    data: NonNullable<HttpNodeDataType['parameters']>['body'],
+                    fieldName,
+                    options,
+                ) {
+                    const { value } = data || {};
+                    switch (typeof value) {
+                        case 'string': {
+                            return checkStringRefParam(value, fieldName, options);
+                        }
+                        case 'object': {
+                            return checkReferenceParam(value, fieldName, options);
+                        }
+                        default: {
+                            return true;
+                        }
+                    }
+                },
+            },
+            'output.outputVariables': {
+                checkReferenceParam,
             },
         };
 
@@ -967,15 +1077,19 @@ const useValidate = () => {
 
     // Check Nodes Data
     const checkNodesData = useCallback(
-        (nodes?: WorkflowNode[], options?: CheckOptions) => {
+        (nodes?: WorkflowNode[], edges?: WorkflowEdge[], options?: CheckOptions) => {
             nodes = nodes || getNodes();
+            edges = edges || getEdges();
             const result: NodesDataValidResult = {};
+            const validateNodes = options?.validateNodes || nodes;
 
-            for (let i = 0; i < nodes.length; i++) {
-                const { id, type, data } = nodes[i];
+            for (let i = 0; i < validateNodes.length; i++) {
+                const node = validateNodes[i];
+                const { id, type, data } = node;
                 const nodeType = type as WorkflowNodeType;
                 const config = nodeConfigs[nodeType];
                 const { nodeName, nodeRemark, parameters = {} } = data || {};
+                const [, upstreamParams] = getUpstreamNodeParams(node, nodes, edges);
                 let tempResult = result[id];
 
                 if (!tempResult) {
@@ -1011,15 +1125,19 @@ const useValidate = () => {
                 const validators = merge({}, dataValidators, dynamicValidators);
 
                 const nodeCheckers = Object.keys(validators).filter(key =>
-                    key.startsWith(`${type}.`),
+                    key.startsWith(`${nodeType}.`),
                 );
 
                 nodeCheckers?.forEach(name => {
-                    const key = name.replace(`${type}.`, '');
+                    const key = name.replace(`${nodeType}.`, '');
                     const checkerMap = validators[name] || validators[key] || {};
 
                     Object.values(checkerMap).forEach(validator => {
-                        const result = validator(parameters[key], key);
+                        const result = validator(parameters[key], getNodeParamName(key, config), {
+                            node,
+                            nodeConfig: config,
+                            upstreamParams,
+                        });
                         if (result && result !== true) {
                             tempResult.errMsgs.push(result);
                         }
@@ -1042,7 +1160,15 @@ const useValidate = () => {
 
             return Object.values(result).some(item => item.errMsgs.length) ? result : undefined;
         },
-        [dataValidators, nodeConfigs, getIntlText, getNodes, getDynamicValidators],
+        [
+            dataValidators,
+            nodeConfigs,
+            getIntlText,
+            getNodes,
+            getEdges,
+            getDynamicValidators,
+            getUpstreamNodeParams,
+        ],
     );
 
     return {

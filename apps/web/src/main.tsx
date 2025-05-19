@@ -2,6 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { i18n, theme } from '@milesight/shared/src/services';
+import '@milesight/shared/src/utils/lang-polyfill';
 import routes from '@/routes';
 import '@/styles/index.less';
 

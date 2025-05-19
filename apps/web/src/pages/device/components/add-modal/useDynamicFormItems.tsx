@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { type ControllerProps } from 'react-hook-form';
 import { TextField } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { checkRequired } from '@milesight/shared/src/utils/validators';
+import { checkRequired, checkMaxLength } from '@milesight/shared/src/utils/validators';
 import { type IntegrationAPISchema } from '@/services/http';
 import { useEntityFormItems } from '@/hooks';
 
@@ -35,7 +35,10 @@ const useDynamicFormItems = ({ entities }: Props) => {
         result.push({
             name: 'name',
             rules: {
-                validate: { checkRequired: checkRequired() },
+                validate: {
+                    checkRequired: checkRequired(),
+                    checkMaxLength: checkMaxLength({ max: 64 }),
+                },
             },
             defaultValue: '',
             render({ field: { onChange, value }, fieldState: { error } }) {

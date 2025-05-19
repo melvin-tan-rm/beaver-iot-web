@@ -5,6 +5,9 @@
     "dashboard.edit_title": "Edit the Dashboard",
     "dashboard.empty_description": "Quickly insert bar charts, line charts, pie charts and other component types to intuitively display data and make business dynamics clear at a glance",
     "dashboard.empty_text": "Select a widget and start building your data dashboard",
+    "dashboard.label.left_y_axis": "Left Y",
+    "dashboard.label.right_y_axis": "Right Y",
+    "dashboard.label.y_axis": "Y Axis",
     "dashboard.label_avg_value": "Avg. Value",
     "dashboard.label_count_value": "Number of counts",
     "dashboard.label_latest_value": "Latest value",
@@ -26,13 +29,9 @@
     "dashboard.plugin_class_data_chart": "Data Charts",
     "dashboard.plugin_class_operate": "Operable Widgets",
     "dashboard.plugin_class_other": "Other",
+    "dashboard.set_as_home_dashboard_description": "Is it confirmed to set the current dashboard as set as the home dashboard, this operation will overwrite the existing home dashboard?",
+    "dashboard.set_as_home_dashboard_tip": "Top-mounted dashboard",
     "dashboard.switch_title_off": "Off",
     "dashboard.switch_title_on": "On",
-    "dashboard.label.left_y_axis": "LeftY",
-    "dashboard.label.right_y_axis": "RightY",
-    "dashboard.label.y_axis": "Y Axis",
-    "dashboard.set_as_home_dashboard_tip": "Set as home dashboard",
-    "dashboard.unset_as_home_dashboard_tip": "Unset as home dashboard",
-    "dashboard.set_as_home_dashboard_description": "是否确认将当前仪表盘设为设置为主仪表盘，该操作将会 覆盖掉原有的主仪表盘？",
-    "dashboard.unset_as_home_dashboard_description": "是否确认取消将当前仪表盘设为设置为主仪表盘？"
+    "dashboard.unset_as_home_dashboard_tip": "Cancel Top"
 }

@@ -9,6 +9,7 @@ import {
     FullscreenIcon,
     InfoIcon,
     toast,
+    LoadingWrapper,
 } from '@milesight/shared/src/components';
 import cls from 'classnames';
 import { cloneDeep } from 'lodash-es';
@@ -32,19 +33,36 @@ interface DashboardContentProps {
     onChangeIsEdit: (isEdit: boolean) => void;
     isEdit: boolean;
     isTooSmallScreen: boolean;
+    /**
+     * Existence of homeDashboard
+     */
+    existedHomeDashboard?: boolean;
 }
 
 export default (props: DashboardContentProps) => {
-    const { dashboardDetail, getDashboards, onChangeIsEdit, isEdit, isTooSmallScreen } = props;
+    const {
+        dashboardDetail,
+        getDashboards,
+        onChangeIsEdit,
+        isEdit,
+        isTooSmallScreen,
+        existedHomeDashboard,
+    } = props;
 
     const { getIntlText } = useI18n();
     const { pluginsConfigs } = useGetPluginConfigs();
     const confirm = useConfirm();
-    const { toggleHomeDashboard, homeDashboardClassName, homeDashboardIcon, homeDashboardTip } =
-        useHomeDashboard({
-            dashboardDetail,
-            refreshDashboards: getDashboards,
-        });
+    const {
+        toggleHomeDashboard,
+        homeDashboardClassName,
+        homeDashboardIcon,
+        homeDashboardTip,
+        homeLoading,
+    } = useHomeDashboard({
+        existedHomeDashboard,
+        dashboardDetail,
+        refreshDashboards: getDashboards,
+    });
 
     const [isShowAddWidget, setIsShowAddWidget] = useState(false);
     const [isShowEditDashboard, setIsShowEditDashboard] = useState(false);
@@ -292,9 +310,17 @@ export default (props: DashboardContentProps) => {
                 ) : !widgets?.length && !loading ? null : (
                     <div className="dashboard-content-operate-right">
                         <Stack direction="row" spacing={1.5}>
-                            <Tooltip onClick={toggleHomeDashboard} title={homeDashboardTip}>
-                                <div className={homeDashboardClassName}>{homeDashboardIcon}</div>
-                            </Tooltip>
+                            <LoadingWrapper loading={homeLoading} size={24}>
+                                <Tooltip title={homeDashboardTip}>
+                                    <div
+                                        className={homeDashboardClassName}
+                                        onClick={toggleHomeDashboard}
+                                    >
+                                        {homeDashboardIcon}
+                                    </div>
+                                </Tooltip>
+                            </LoadingWrapper>
+
                             <div onClick={enterFullscreen} className="dashboard-button-icon">
                                 <FullscreenIcon />
                             </div>

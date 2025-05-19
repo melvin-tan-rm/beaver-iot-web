@@ -1,7 +1,7 @@
 {
     "name": "@app/web",
     "private": true,
-    "version": "1.1.1",
+    "version": "1.2.0",
     "scripts": {
         "dev": "vite",
         "build": "tsc && vite build",
@@ -44,6 +44,7 @@
         "immer": "^10.1.1",
         "lodash-es": "^4.17.21",
         "material-ui-popup-state": "^5.3.3",
+        "mqtt": "^5.13.0",
         "qs": "^6.13.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",

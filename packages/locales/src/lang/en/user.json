@@ -27,7 +27,7 @@
     "user.role.integration_permission_add_tip": "Adding the integration will allow access to all devices under this integration as well as entity data independent of the devices.",
     "user.role.integration_permission_modal_title": "Add Integration Permission",
     "user.role.members_tab_title": "Members",
-    "user.role.model_table_title": "Model",
+    "user.role.model_table_title": "Module",
     "user.role.page_table_title": "Page",
     "user.role.resource_dashboard_tab_title": "Dashboard Permission",
     "user.role.resource_device_tab_title": "Device Permission",

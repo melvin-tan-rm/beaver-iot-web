@@ -1,6 +1,6 @@
 {
     "error.http.account_session_logout": "Your account has been signed out.",
-    "error.http.authentication_failed": "Authentication failed/not authenticated",
+    "error.http.authentication_failed": "The account does not exist or the password is incorrect, please re-enter.",
     "error.http.dashboard_name_exist": "Dashboard name already exists",
     "error.http.data_no_found": "Data not found",
     "error.http.forbidden_permission": "No access rights, and access is prohibited.",

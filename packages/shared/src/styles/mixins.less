@@ -65,4 +65,23 @@
     /* stylelint-enable */
 }
 
+// ---------- Breakpoints ----------
+/* stylelint-disable media-query-no-invalid */
+.bp-up (@points, @content) {
+    @media (min-width: @points) {
+        @content();
+    }
+}
 
+.bp-down (@points, @content) {
+    @media (max-width: @points) {
+        @content();
+    }
+}
+
+.bp-between (@lower, @upper, @content) {
+    @media (min-width: @min) and (max-width: @max) {
+        @content();
+    }
+}
+/* stylelint-enable */

@@ -962,3 +962,22 @@ export const checkNotAllowStringRuleOne: TValidator = rule => {
         return Promise.resolve(true);
     };
 };
+
+/**
+ * Check if the value matches the regular expression
+ */
+export const checkRegexp: TValidator<{ regexp: RegExp }> = rule => {
+    const message = rule?.message || getErrorMessage(EErrorMessages.regexp, { 1: rule.regexp });
+
+    return value => {
+        try {
+            if (value && !isMatches(value, rule.regexp)) {
+                return message;
+            }
+        } catch (e) {
+            return message;
+        }
+
+        return Promise.resolve(true);
+    };
+};

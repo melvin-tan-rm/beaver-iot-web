@@ -95,10 +95,19 @@ declare interface EntityValueAttributeType {
     max_length: number;
     /** Min Length */
     min_length: number;
+    /** Length Range (Separate multiple values with commas `,`) */
+    length_range: string;
     /** Enums */
     enum: Record<string, string>;
-    /** Format */
-    format: string;
+    /** Default Value */
+    default_value: string;
+    /**
+     * Format
+     *
+     * @template HEX Hexadecimal
+     * @template REGEX Regular Expression, format `REGEX:${string}`, e.g. `REGEX:^[0-9a-fA-F]{6}$`
+     */
+    format: 'HEX' | `REGEX:${string}`;
     /** Fraction Digits */
     fraction_digits: number;
     /** Optional */

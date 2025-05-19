@@ -2,6 +2,7 @@ import { memo, useState, useEffect } from 'react';
 import { useMatches, Link as RouterLink } from 'react-router-dom';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Breadcrumbs, Link, Typography } from '@mui/material';
+import { SidebarController } from '../sidebar';
 import './style.less';
 
 export type NavsType = {
@@ -75,6 +76,7 @@ const MSBreadcrumbs: React.FC<Props> = memo(({ navs, rewrite }) => {
 
     return (
         <div className="ms-breadcrumbs">
+            <SidebarController />
             <Breadcrumbs aria-label="breadcrumb" className="ms-breadcrumbs__inner">
                 {innerNavs.map((nav, index) => {
                     const isLast = index === innerNavs.length - 1;

@@ -13,10 +13,14 @@ import { useConfirm } from '@/components';
  * Set or unset the home dashboard
  */
 function useHomeDashboard(props: {
+    /**
+     * Existence of homeDashboard
+     */
+    existedHomeDashboard?: boolean;
     dashboardDetail: DashboardDetail;
     refreshDashboards?: () => void;
 }) {
-    const { dashboardDetail, refreshDashboards } = props || {};
+    const { existedHomeDashboard, dashboardDetail, refreshDashboards } = props || {};
 
     const { getIntlText } = useI18n();
     const confirm = useConfirm();
@@ -25,6 +29,7 @@ function useHomeDashboard(props: {
      * whether the current dashboard the home dashboard
      */
     const [isHome, setIsHome] = useState(false);
+    const [homeLoading, setHomeLoading] = useState(false);
 
     /**
      * set current dashboard whether home dashboard
@@ -37,18 +42,13 @@ function useHomeDashboard(props: {
     }, [dashboardDetail, isHome]);
 
     const toggleHomeDashboard = useMemoizedFn(() => {
-        const description = isHome
-            ? getIntlText('dashboard.unset_as_home_dashboard_description')
-            : getIntlText('dashboard.set_as_home_dashboard_description');
+        /**
+         * Request Data Functions
+         */
+        const onConfirm = async () => {
+            try {
+                setHomeLoading(true);
 
-        confirm({
-            title: getIntlText('common.label.tip'),
-            description,
-            icon: <ErrorIcon sx={{ color: 'var(--primary-color-base)' }} />,
-            cancelButtonProps: {
-                disableRipple: true,
-            },
-            onConfirm: async () => {
                 if (!dashboardDetail?.dashboard_id) return;
 
                 const [error, resp] = await awaitWrap(
@@ -66,8 +66,30 @@ function useHomeDashboard(props: {
 
                 refreshDashboards?.();
                 toast.success(getIntlText('common.message.operation_success'));
-            },
-        });
+            } finally {
+                setHomeLoading(false);
+            }
+        };
+
+        /**
+         * Only if home dashboard exists and you want to
+         * set up a home dashboard, you need to double check the popup.
+         */
+        if (existedHomeDashboard && !isHome) {
+            confirm({
+                title: getIntlText('common.label.tip'),
+                description: getIntlText('dashboard.set_as_home_dashboard_description'),
+                icon: <ErrorIcon sx={{ color: 'var(--primary-color-base)' }} />,
+                cancelButtonProps: {
+                    disableRipple: true,
+                },
+                onConfirm,
+            });
+
+            return;
+        }
+
+        onConfirm?.();
     });
 
     const homeDashboardTip = useMemo(() => {
@@ -92,6 +114,7 @@ function useHomeDashboard(props: {
         homeDashboardTip,
         homeDashboardIcon,
         homeDashboardClassName,
+        homeLoading,
     };
 }
 

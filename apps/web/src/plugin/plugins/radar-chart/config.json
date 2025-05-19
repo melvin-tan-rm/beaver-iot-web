@@ -21,7 +21,8 @@
                     "valueType": "array",
                     "componentProps": {
                         "entityType": ["PROPERTY"],
-                        "entityValueTypes": ["LONG", "DOUBLE"]
+                        "entityValueTypes": ["LONG", "DOUBLE"],
+                        "entityAccessMod": ["R", "RW"]
                     },
                     "rules": {
                         "required": true
@@ -39,7 +40,7 @@
                     "defaultValue": "Title",
                     "componentProps": {
                         "inputProps": {
-                            "maxLength": 15
+                            "maxLength": 35
                         }
                     }
                 }

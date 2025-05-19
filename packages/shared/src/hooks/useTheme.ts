@@ -75,10 +75,10 @@ export default () => {
         /** MUI Theme instance */
         muiTheme,
 
-        /** Whether the current device is a mobile device based on breakpoints */
+        /** Whether the current device is a mobile device based on breakpoints (width < 576px) */
         matchMobile,
 
-        /** Whether the current device is a tablet device based on breakpoints */
+        /** Whether the current device is a tablet device based on breakpoints (width < 768px) */
         matchTablet,
 
         /** Change Theme */

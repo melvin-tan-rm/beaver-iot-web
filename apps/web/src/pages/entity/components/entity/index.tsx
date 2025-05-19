@@ -3,6 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Stack } from '@mui/material';
 import { useRequest } from 'ahooks';
 import { pickBy } from 'lodash-es';
+import { useI18n, useTime } from '@milesight/shared/src/hooks';
+import { genRandomString, objectToCamelCase, xhrDownload } from '@milesight/shared/src/utils/tools';
+import { getCurrentComponentLang } from '@milesight/shared/src/services/i18n';
+import { getAuthorizationToken } from '@milesight/shared/src/utils/request/utils';
+import { IosShareIcon, toast } from '@milesight/shared/src/components';
 import {
     FiltersRecordType,
     TablePro,
@@ -10,11 +15,6 @@ import {
     FilterValue,
     TableProProps,
 } from '@/components';
-import { useI18n, useTime } from '@milesight/shared/src/hooks';
-import { genRandomString, objectToCamelCase, xhrDownload } from '@milesight/shared/src/utils/tools';
-import { getCurrentComponentLang } from '@milesight/shared/src/services/i18n';
-import { getAuthorizationToken } from '@milesight/shared/src/utils/request/utils';
-import { IosShareIcon, toast } from '@milesight/shared/src/components';
 import { DateRangePickerValueType } from '@/components/date-range-picker';
 import {
     entityAPI,
@@ -25,6 +25,7 @@ import {
 } from '@/services/http';
 import { PERMISSIONS } from '@/constants';
 import { useUserPermissions } from '@/hooks';
+import errorHandler from '@/services/http/client/error-handler';
 import useColumns, {
     type UseColumnsProps,
     type TableRowDataType,
@@ -124,20 +125,35 @@ export default () => {
         }
         xhrDownload({
             assets: url,
-            fileName: `EntityData_${getTimeFormat(dayjs(), 'simpleDateFormat').replace(/-/g, '_')}_${genRandomString(
-                6,
-                { upperCase: false, lowerCase: true },
-            )}.csv`,
+            fileName: `EntityData_${getTimeFormat(dayjs(), 'simpleDateFormat').replace(
+                /-/g,
+                '_',
+            )}_${genRandomString(6, { upperCase: false, lowerCase: true })}.csv`,
             header: {
                 'Accept-Language': getCurrentComponentLang(),
                 Authorization: getAuthorizationToken(),
             },
-        }).then(() => {
-            getList();
-            setSelectedIds([]);
-            handleCloseExport();
-            toast.success(getIntlText('common.message.operation_success'));
-        });
+        })
+            .then(() => {
+                getList();
+                setSelectedIds([]);
+                handleCloseExport();
+                toast.success(getIntlText('common.message.operation_success'));
+            })
+            .catch(error => {
+                /**
+                 * Handle blob errors
+                 * Convert to string message alert
+                 */
+                error?.response?.data?.text()?.then((errorStr: string) => {
+                    if (!errorStr || typeof errorStr !== 'string') return;
+
+                    const errorObj = JSON.parse(errorStr);
+                    if (!errorObj?.error_code) return;
+
+                    errorHandler?.(errorObj?.error_code, error);
+                });
+            });
     };
 
     /** Details event related */

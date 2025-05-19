@@ -16,9 +16,8 @@ import {
 import { useI18n } from '@milesight/shared/src/hooks';
 import { SettingsOutlinedIcon, KeyboardArrowDownIcon } from '@milesight/shared/src/components';
 import { Tooltip } from '@/components';
-import useWorkflow, {
-    type FlattenNodeParamType,
-} from '@/pages/workflow/views/editor/hooks/useWorkflow';
+import { type FlattenNodeParamType } from '@/pages/workflow/views/editor/typings';
+import useWorkflow from '@/pages/workflow/views/editor/hooks/useWorkflow';
 import { isRefParamKey } from '@/pages/workflow/views/editor/helper';
 import UpstreamNodeList, { type UpstreamNodeListProps } from '../upstream-node-list';
 import './style.less';

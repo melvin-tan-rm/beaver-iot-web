@@ -15,7 +15,6 @@ import {
     PermissionControlHidden,
 } from '@/components';
 import { PERMISSIONS } from '@/constants';
-import { useUserPermissions } from '@/hooks';
 import { type WorkflowAPISchema } from '@/services/http';
 
 type OperationType = 'log' | 'delete' | 'edit' | 'enable' | 'export';
@@ -34,7 +33,6 @@ export interface UseColumnsProps<T> {
 const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsProps<T>) => {
     const { getIntlText } = useI18n();
     const { getTimeFormat } = useTime();
-    const { hasPermission } = useUserPermissions();
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const [popoverId, setPopoverId] = useState<string>('');
@@ -181,24 +179,26 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                                         {getIntlText('common.label.export')}
                                     </span>
                                 </MenuItem>
-                                <MenuItem
-                                    disabled={
-                                        row.enabled || !hasPermission(PERMISSIONS.WORKFLOW_DELETE)
-                                    }
-                                    onClick={() => {
-                                        handlerPopoverClose();
-                                        onButtonClick('delete', row);
-                                    }}
-                                    sx={{
-                                        color: 'text.secondary',
-                                        // '&:hover': { color: 'error.light' },
-                                    }}
+                                <PermissionControlDisabled
+                                    permissions={PERMISSIONS.WORKFLOW_DELETE}
                                 >
-                                    <DeleteOutlineIcon sx={{ width: 20, height: 20 }} />
-                                    <span className="ms-workflow-list-more-menu-item-text">
-                                        {getIntlText('common.label.delete')}
-                                    </span>
-                                </MenuItem>
+                                    <MenuItem
+                                        disabled={row.enabled}
+                                        onClick={() => {
+                                            handlerPopoverClose();
+                                            onButtonClick('delete', row);
+                                        }}
+                                        sx={{
+                                            color: 'text.secondary',
+                                            // '&:hover': { color: 'error.light' },
+                                        }}
+                                    >
+                                        <DeleteOutlineIcon sx={{ width: 20, height: 20 }} />
+                                        <span className="ms-workflow-list-more-menu-item-text">
+                                            {getIntlText('common.label.delete')}
+                                        </span>
+                                    </MenuItem>
+                                </PermissionControlDisabled>
                             </Menu>
                         </Stack>
                     );
@@ -213,7 +213,6 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
         onButtonClick,
         handlerPopoverOpen,
         handlerPopoverClose,
-        hasPermission,
     ]);
 
     return columns;

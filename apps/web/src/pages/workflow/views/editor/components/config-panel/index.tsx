@@ -35,7 +35,10 @@ interface Props {
  */
 const ConfigPanel: React.FC<Props> = ({ readonly }) => {
     const { getIntlText } = useI18n();
-    const { getNode, updateNode, updateNodeData } = useReactFlow<WorkflowNode, WorkflowEdge>();
+    const { getNode, getNodes, getEdges, updateNode, updateNodeData } = useReactFlow<
+        WorkflowNode,
+        WorkflowEdge
+    >();
 
     // ---------- Handle Node-related logic ----------
     const { selectedNode, nodeConfigs } = useFlowStore(
@@ -204,8 +207,9 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                                         onClick={() => {
                                             if (!finalSelectedNode) return;
                                             const node = getNode(finalSelectedNode.id)!;
-                                            const result = checkNodesData([node], {
+                                            const result = checkNodesData(getNodes(), getEdges(), {
                                                 validateFirst: true,
+                                                validateNodes: [node],
                                             });
 
                                             if (!isEmpty(result)) return;
@@ -267,7 +271,10 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                     <Divider className="ms-divider" /> */}
                     <div className="ms-node-form-items">
                         {nodeFormGroups.map(
-                            ({ groupName, helperText, children: formItems }, index) => (
+                            (
+                                { groupName, groupRequired, helperText, children: formItems },
+                                index,
+                            ) => (
                                 <div
                                     className="ms-node-form-group"
                                     // eslint-disable-next-line react/no-array-index-key
@@ -276,6 +283,9 @@ const ConfigPanel: React.FC<Props> = ({ readonly }) => {
                                     <div className="ms-node-form-group-header">
                                         {!!groupName && (
                                             <div className="ms-node-form-group-title">
+                                                {groupRequired && (
+                                                    <span className="ms-asterisk">*</span>
+                                                )}
                                                 {groupName}
                                                 {helperText && (
                                                     <Tooltip

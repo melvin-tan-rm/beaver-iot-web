@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, Suspense } from 'react';
+import React, { useRef, useState, useEffect, Suspense, useMemo } from 'react';
 import { Tabs, Tab, DialogActions, Button } from '@mui/material';
 import { Modal, JsonView, LoadingButton } from '@milesight/shared/src/components';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -60,6 +60,11 @@ const ConfigPlugin = (props: ConfigPluginProps) => {
         }
     }, [config.config]);
 
+    // resolve trigger two requests for entity historical data
+    const pluginConfig = useMemo(() => {
+        return { ...(config?.config || {}) };
+    }, [JSON.stringify(config.config)]);
+
     return (
         <Modal
             onCancel={handleClose}
@@ -84,14 +89,14 @@ const ConfigPlugin = (props: ConfigPluginProps) => {
                             {ComponentView ? (
                                 <Suspense>
                                     <ComponentView
-                                        config={formValues}
+                                        config={pluginConfig}
                                         configJson={{ ...config, isPreview: true }}
                                     />
                                 </Suspense>
                             ) : (
                                 <RenderView
                                     configJson={{ ...config, isPreview: true }}
-                                    config={formValues}
+                                    config={pluginConfig}
                                 />
                             )}
                         </Suspense>
@@ -177,4 +182,4 @@ const ConfigPlugin = (props: ConfigPluginProps) => {
     );
 };
 
-export default ConfigPlugin;
+export default React.memo(ConfigPlugin);

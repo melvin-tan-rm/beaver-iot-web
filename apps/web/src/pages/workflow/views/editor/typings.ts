@@ -75,10 +75,48 @@ export type CustomEntityValueType =
     | Extract<EntityValueDataType, 'LONG' | 'DOUBLE' | 'BOOLEAN' | 'STRING'>
     | 'OTHER';
 
+export type NodeParamType = {
+    nodeId: ApiKey;
+    nodeName?: string;
+    nodeType?: WorkflowNodeType;
+    nodeLabel?: string;
+    outputs: {
+        name: string;
+        type?: EntityValueDataType;
+        typeLabel?: string;
+        key: string;
+        originKey: string;
+        enums?: {
+            key: string;
+            label?: string;
+        }[];
+    }[];
+};
+
+export type FlattenNodeParamType = {
+    nodeId: ApiKey;
+    nodeName?: string;
+    nodeType?: WorkflowNodeType;
+    valueName: string;
+    valueType?: EntityValueDataType;
+    valueTypeLabel?: string;
+    valueKey: string;
+    valueOriginKey: string;
+    enums?: {
+        key: string;
+        label?: string;
+    }[];
+};
+
 /**
  * Node Data Validator
  */
 export type NodeDataValidator<T = any> = (
     value?: T,
     fieldName?: string,
+    options?: {
+        node?: WorkflowNode;
+        nodeConfig?: NodeConfigItem;
+        upstreamParams?: FlattenNodeParamType[];
+    },
 ) => string | boolean | undefined;

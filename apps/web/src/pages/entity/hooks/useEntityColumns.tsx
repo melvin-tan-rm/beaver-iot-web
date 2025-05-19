@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Stack, IconButton, Chip, type ChipProps } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
-import { ListAltIcon, EditIcon } from '@milesight/shared/src/components';
+import { ListAltIcon, EditIcon, FilterAltIcon } from '@milesight/shared/src/components';
 import { Tooltip, type ColumnType, PermissionControlHidden } from '@/components';
 import { ENTITY_TYPE, ENTITY_DATA_VALUE_TYPE, PERMISSIONS } from '@/constants';
 import { type EntityAPISchema } from '@/services/http';
@@ -61,7 +61,8 @@ const useEntityColumns = <T extends TableRowDataType>({
                 field: 'entityType',
                 headerName: getIntlText('common.label.type'),
                 flex: 1,
-                minWidth: 150,
+                minWidth: 100,
+                maxWidth: 100,
                 renderCell({ value }) {
                     return (
                         <Chip
@@ -69,6 +70,15 @@ const useEntityColumns = <T extends TableRowDataType>({
                             color={entityTypeColorMap[(value || '').toLocaleLowerCase()]}
                             label={value}
                             sx={{ borderRadius: 1, lineHeight: '24px' }}
+                        />
+                    );
+                },
+                filterIcon: (filtered: boolean) => {
+                    return (
+                        <FilterAltIcon
+                            sx={{
+                                color: filtered ? 'var(--primary-color-7)' : 'var(--gray-color-5)',
+                            }}
                         />
                     );
                 },
@@ -85,6 +95,7 @@ const useEntityColumns = <T extends TableRowDataType>({
                 headerAlign: 'left',
                 flex: 1,
                 minWidth: 100,
+                maxWidth: 100,
                 ellipsis: true,
                 // filteredValue: filteredInfo?.entityValueType,
                 // filters: Object.entries(ENTITY_DATA_VALUE_TYPE).map(([key, value]) => ({
@@ -96,7 +107,7 @@ const useEntityColumns = <T extends TableRowDataType>({
                 field: 'integrationName',
                 headerName: getIntlText('device.label.param_source'),
                 flex: 1,
-                minWidth: 300,
+                minWidth: 350,
                 ellipsis: true,
                 filteredValue: filteredInfo?.integrationName,
                 filterSearchType: 'search',

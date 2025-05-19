@@ -12,7 +12,7 @@ import { EntitySelect } from '@/components';
 import type { EntitySelectOption } from '@/components/entity-select';
 import Select from '../select';
 
-import './style.less';
+import styles from './style.module.less';
 
 export enum POSITION_AXIS {
     LEFT = 1,
@@ -33,6 +33,7 @@ export interface ChartEntityPositionProps {
     helperText?: React.ReactNode;
     value?: ChartEntityPositionValueType[];
     defaultValue?: ChartEntityPositionValueType[];
+    entityAccessMod?: EntityAccessMode[];
     onChange?: (value: ChartEntityPositionValueType[]) => void;
 }
 
@@ -49,6 +50,7 @@ const ChartEntityPosition: React.FC<ChartEntityPositionProps> = ({
     helperText,
     ...props
 }) => {
+    const { entityAccessMod } = props;
     const { getIntlText } = useI18n();
     const [data, setData] = useControllableValue<ChartEntityPositionValueType[]>(props);
     const { list, remove, getKey, insert, replace, resetList } =
@@ -85,34 +87,30 @@ const ChartEntityPosition: React.FC<ChartEntityPositionProps> = ({
     }, [list, setData]);
 
     return (
-        <div className="ms-chart-entity-position ms-entity-assign-select">
-            <div className="ms-entity-assign-select__label">
-                {getIntlText('common.label.data_source')}
-            </div>
-            <div className="list-content">
+        <div className={styles['chart-entity-position']}>
+            <div className={styles.label}>{getIntlText('common.label.data_source')}</div>
+            <div className={styles['list-content']}>
                 {list.map((item, index) => (
-                    <div className="ms-entity-assign-select-item" key={getKey(index)}>
+                    <div className={styles.item} key={getKey(index)}>
                         <EntitySelect
                             required
                             fieldName="entityId"
-                            className="ms-entity-select"
                             label={getIntlText('common.label.entity')}
                             popupIcon={<KeyboardArrowDownIcon />}
                             value={String(item?.id || '')}
                             onChange={option => {
-                                if (!option) return;
-
                                 replace(index, {
                                     id: option?.rawData?.entityId || '',
                                     entity: option,
                                     position: item.position,
                                 });
                             }}
-                            dropdownMatchSelectWidth={360}
+                            dropdownMatchSelectWidth={365}
+                            entityAccessMod={entityAccessMod}
                         />
                         <Select
                             title={getIntlText('dashboard.label.y_axis')}
-                            sx={{ width: '100px' }}
+                            sx={{ width: '105px' }}
                             options={positionOptions}
                             defaultValue={POSITION_AXIS.LEFT}
                             value={item.position}
@@ -127,7 +125,7 @@ const ChartEntityPosition: React.FC<ChartEntityPositionProps> = ({
                                 });
                             }}
                         />
-                        <div className="delete-icon-wrapper">
+                        <div className={styles.icon}>
                             <IconButton onClick={() => remove(index)}>
                                 <DeleteOutlineIcon />
                             </IconButton>
@@ -138,7 +136,6 @@ const ChartEntityPosition: React.FC<ChartEntityPositionProps> = ({
                     <Button
                         fullWidth
                         variant="outlined"
-                        className="ms-entity-assign-select-add-btn"
                         startIcon={<AddIcon />}
                         disabled={list.length >= MAX_VALUE_LENGTH}
                         onClick={() => {

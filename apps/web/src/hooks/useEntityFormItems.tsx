@@ -18,9 +18,12 @@ import {
     checkMinValue,
     checkMaxValue,
     checkRangeValue,
+    checkLength,
     checkMinLength,
     checkMaxLength,
     checkRangeLength,
+    checkRegexp,
+    checkHexNumber,
 } from '@milesight/shared/src/utils/validators';
 import { type IntegrationAPISchema } from '@/services/http';
 
@@ -49,10 +52,12 @@ const getValidators = (entity: NonNullable<Props['entities']>[0], required = fal
     const attr = entity.valueAttribute || {};
     const isValidNumber = (num: any): num is number => !isNil(num) && !isNaN(+num);
 
+    // Check required
     if (required && entity.valueType !== 'BOOLEAN') {
         result.checkRequired = checkRequired();
     }
 
+    // Check min/max value
     if (isValidNumber(attr.min) && isValidNumber(attr.max)) {
         result.checkRangeValue = checkRangeValue({ min: attr.min, max: attr.max });
     } else if (isValidNumber(attr.min)) {
@@ -61,12 +66,44 @@ const getValidators = (entity: NonNullable<Props['entities']>[0], required = fal
         result.checkMaxValue = checkMaxValue({ max: attr.max });
     }
 
+    // Check min/max length
     if (isValidNumber(attr.minLength) && isValidNumber(attr.maxLength)) {
         result.checkRangeLength = checkRangeLength({ min: attr.minLength, max: attr.maxLength });
     } else if (isValidNumber(attr.minLength)) {
         result.checkMinLength = checkMinLength({ min: attr.minLength });
     } else if (isValidNumber(attr.maxLength)) {
         result.checkMaxLength = checkMaxLength({ max: attr.maxLength });
+    }
+
+    // Check length range
+    if (attr.lengthRange) {
+        const lens = attr.lengthRange
+            .split(',')
+            .map(item => +item)
+            .filter(item => !isNaN(item));
+
+        if (lens.length) {
+            result.checkLength = checkLength({ enum: lens });
+        }
+    }
+
+    // Check format (HEX/REGEX)
+    if (attr.format) {
+        const [type, pattern] = attr.format.split(':');
+
+        switch (type) {
+            case 'HEX': {
+                result.checkHexNumber = checkHexNumber();
+                break;
+            }
+            case 'REGEX': {
+                result.checkRegexp = checkRegexp({ regexp: new RegExp(pattern || '') });
+                break;
+            }
+            default: {
+                break;
+            }
+        }
     }
 
     return result;
@@ -146,7 +183,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                     const formItem: ControllerProps<EntityFormDataProps> = {
                         name: encodedEntityKeys[entity.key],
                         rules: { validate },
-                        defaultValue: '',
+                        defaultValue: attr.defaultValue || '',
                         render({ field: { onChange, value, disabled }, fieldState: { error } }) {
                             return (
                                 <TextField
@@ -167,7 +204,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
 
                     // If it is an enumeration type, render the drop-down box
                     if (attr.enum) {
-                        formItem.defaultValue = '';
+                        // formItem.defaultValue = '';
                         formItem.render = ({
                             field: { onChange, value, disabled },
                             fieldState: { error },
@@ -184,33 +221,12 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                     size="small"
                                     sx={{ mb: 1.5 }}
                                 >
-                                    {/* <InputLabel
-                                        required={!attr.optional}
-                                        id={`select-label-${entity.name}`}
-                                        error={!!error}
-                                    >
-                                        {entity.name}
-                                    </InputLabel> */}
-                                    {/* <Select
-                                        notched
-                                        label={entity.name}
-                                        labelId={`select-label-${entity.name}`}
-                                        required={!attr.optional}
-                                        error={!!error}
-                                        value={value}
-                                        onChange={e => console.log(e)}
-                                    >
-                                        {Object.entries(attr.enum || {}).map(([key, value]) => (
-                                            <MenuItem key={value} value={key}>
-                                                {value}
-                                            </MenuItem>
-                                        ))}
-                                    </Select> */}
                                     <Autocomplete
                                         options={options}
                                         isOptionEqualToValue={(option, value) =>
                                             isEqual(option, value)
                                         }
+                                        getOptionKey={option => option.value}
                                         renderInput={params => (
                                             <TextField
                                                 {...params}
@@ -241,7 +257,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                     result.push({
                         name: encodedEntityKeys[entity.key],
                         rules: { validate },
-                        defaultValue: false,
+                        defaultValue: attr.defaultValue === 'true',
                         render({ field: { onChange, value, disabled }, fieldState: { error } }) {
                             return (
                                 <FormControl
@@ -272,7 +288,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                     result.push({
                         name: encodedEntityKeys[entity.key],
                         rules: { validate },
-                        defaultValue: '',
+                        defaultValue: attr.defaultValue || '',
                         render({ field: { onChange, value, disabled }, fieldState: { error } }) {
                             return (
                                 <TextField

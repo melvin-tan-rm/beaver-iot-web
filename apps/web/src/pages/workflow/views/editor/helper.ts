@@ -134,3 +134,13 @@ export const getNodeInitialParams = (config: NodeConfigItem) => {
 
     return result;
 };
+
+/**
+ * Get node param name
+ */
+export const getNodeParamName = (key: string, config: NodeConfigItem) => {
+    const { properties } = config.schema || {};
+    const paramConfig = properties?.[key];
+
+    return paramConfig?.displayName || key;
+};

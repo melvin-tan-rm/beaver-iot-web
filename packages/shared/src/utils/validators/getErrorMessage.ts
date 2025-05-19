@@ -195,6 +195,10 @@ export enum EErrorMessages {
      * Not allow string: &\/\:*?'"<>|%
      */
     notAllowStringOne = 'valid.input.not_allow_string',
+    /**
+     * Match regular expression
+     */
+    regexp = 'valid.input.match_regexp',
 }
 
 // let intlInstance: typeof intl;

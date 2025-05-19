@@ -90,8 +90,7 @@ const TablePro = <DataType extends GridValidRowModel>({
             }
             /** has filter condition */
             if (col.filterDropdown || col.filters) {
-                const originalRenderHeader = col.renderHeader;
-                col.renderHeader = originalRenderHeader || (() => renderHeader(col));
+                col.renderHeader = col.renderHeader || (() => renderHeader(col));
             }
 
             if (col.ellipsis) {

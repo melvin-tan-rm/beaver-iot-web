@@ -22,6 +22,7 @@ export {
     Fullscreen as FullscreenIcon,
     FullscreenExit as FullscreenExitIcon,
     Menu as MenuIcon,
+    MenuOpen as MenuOpenIcon,
     Monitor as MonitorIcon,
     PhoneIphone as PhoneIphoneIcon,
     Wifi as WifiIcon,
