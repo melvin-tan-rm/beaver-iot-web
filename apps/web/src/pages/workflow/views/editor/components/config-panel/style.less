@@ -10,7 +10,14 @@
     }
 
     &.readonly {
+        .@{prefix}-workflow-panel-config-header {
+            .@{prefix}-editable-text {
+                pointer-events: none;
+            }
+        }
+
         .@{prefix}-node-form-group {
+            .@{mui-prefix}FormLabel-root,
             .@{prefix}-node-form-group-actions,
             .@{prefix}-node-form-group-item {
                 pointer-events: none;
