@@ -4,11 +4,6 @@
     min-width: 100%;
     padding: @padding-md;
     background: var(--main-background);
-
-    canvas {
-        width: 100%;
-        height: 100%;
-    }
 }
 
 .line-chart-content {
@@ -18,6 +13,11 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
+
+    &__chart {
+        width: 100%;
+        height: 100%;
+    }
 }
 
 .name {
