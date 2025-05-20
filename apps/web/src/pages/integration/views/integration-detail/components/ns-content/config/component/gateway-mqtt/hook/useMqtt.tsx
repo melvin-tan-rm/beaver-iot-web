@@ -20,13 +20,12 @@ export const useMqtt = () => {
             const [, credentialResp] = await awaitWrap(embeddedNSApi.getCredential(params));
             const [, brokerResp] = await awaitWrap(embeddedNSApi.getMqttBrokerInfo());
             let brokerInfo = getResponseData(brokerResp);
-            if (!brokerInfo?.host && __APP_WEB_API_PROXY__) {
+            if (!brokerInfo?.host) {
                 try {
-                    // use proxy host
-                    const urls = new URL(__APP_WEB_API_PROXY__);
+                    // use location host
                     brokerInfo = {
                         ...brokerInfo,
-                        host: urls.hostname,
+                        host: location.host,
                     };
                 } catch (error) {
                     console.error(error, 'parse url fail');
