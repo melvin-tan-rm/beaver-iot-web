@@ -91,7 +91,7 @@ const useFormItems = () => {
                     return (
                         <CopyTextField
                             {...props}
-                            label={getIntlText('common.label.broker_address')}
+                            label={getIntlText('common.label.broker_port')}
                             value={value}
                         />
                     );

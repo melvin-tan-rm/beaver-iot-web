@@ -23,7 +23,10 @@ const useCredential = () => {
         async () => {
             const [err, resp] = await awaitWrap(
                 Promise.all([
-                    credentialsApi.getDefaultCredential({ credentialsType: 'MQTT' }),
+                    credentialsApi.getDefaultCredential({
+                        credentialsType: 'MQTT',
+                        auto_generate_password: true,
+                    }),
                     credentialsApi.getMqttBrokerInfo(),
                 ]),
             );
@@ -54,7 +57,10 @@ const useCredential = () => {
     const { loading: httpCredentialsLoading } = useRequest(
         async () => {
             const [err, resp] = await awaitWrap(
-                credentialsApi.getDefaultCredential({ credentialsType: 'HTTP' }),
+                credentialsApi.getDefaultCredential({
+                    credentialsType: 'HTTP',
+                    auto_generate_password: true,
+                }),
             );
 
             if (err) return;
