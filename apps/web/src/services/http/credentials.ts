@@ -31,6 +31,7 @@ export interface CredentialAPISchema extends APISchema {
     getDefaultCredential: {
         request: {
             credentialsType: 'SMTP' | 'MQTT' | 'HTTP';
+            auto_generate_password?: boolean;
         };
         response: CredentialType;
     };

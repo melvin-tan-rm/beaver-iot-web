@@ -3,7 +3,6 @@ import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
 import cls from 'classnames';
 import { useMemoizedFn } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { genRandomString } from '@milesight/shared/src/utils/tools';
 import { Modal, type ModalProps } from '@milesight/shared/src/components';
 import { CredentialType } from '@/services/http';
 import useFormItems, { FormDataProps } from './hooks/useFormItems';
@@ -38,13 +37,7 @@ const EditCredential: React.FC<Props> = ({
         shouldUnregister: true,
         defaultValues: {
             username: data?.accessKey?.split('@')?.[0] || '',
-            accessSecret:
-                data?.accessSecret ||
-                genRandomString(8, {
-                    lowerCase: true,
-                    upperCase: true,
-                    number: true,
-                }),
+            accessSecret: data?.accessSecret || '',
         },
     });
 
