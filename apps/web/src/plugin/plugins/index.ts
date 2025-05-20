@@ -1,7 +1,6 @@
 import React from 'react';
 import { camelCase } from 'lodash-es';
 import { isFileName } from '@milesight/shared/src/utils/tools';
-import '@/plugin/components/chart-crosshair';
 
 const modules = (() => {
     const getModuleFiles = (modules: ModuleType, suffix?: string) => {

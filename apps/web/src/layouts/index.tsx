@@ -4,17 +4,11 @@ import { CssBaseline } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import Chart from 'chart.js/auto'; // Introduce Chart.js
-import { registerables } from 'chart.js';
-import 'chartjs-adapter-date-fns'; // Import date adapter
-import zoomPlugin from 'chartjs-plugin-zoom';
 import { useI18n, useTheme } from '@milesight/shared/src/hooks';
 import { ConfirmProvider } from '@/components';
 import BasicLayout from './BasicLayout';
 import BlankLayout from './BlankLayout';
-import { useWebsocket, useChartTheme } from './hooks';
-
-Chart.register(...registerables, zoomPlugin); // Register all components and adapters
+import { useWebsocket } from './hooks';
 
 const DEFAULT_LAYOUT = 'basic';
 const layouts: Record<string, React.ReactNode> = {
@@ -28,7 +22,6 @@ function Layout() {
     const { muiTheme } = useTheme();
 
     useWebsocket();
-    useChartTheme();
     useTitle(getIntlText('common.document.title'));
 
     const route = routeMatches[routeMatches.length - 1];
