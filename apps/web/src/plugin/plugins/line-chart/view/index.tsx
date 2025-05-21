@@ -15,9 +15,9 @@ import { useBasicChartEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
 import { type ChartEntityPositionValueType } from '@/plugin/components/chart-entity-position';
+import { useLineChart, useResizeChart, useZoomChart } from './hooks';
 
 import styles from './style.module.less';
-import { useResizeChart, useZoomChart } from './hooks';
 
 echarts.use([
     TooltipComponent,
@@ -66,11 +66,14 @@ const View = (props: ViewProps) => {
         chartZoomRef,
         chartWrapperRef,
     });
+    const { newChartShowData } = useLineChart({
+        entityPosition,
+        chartShowData,
+    });
 
     useEffect(() => {
         const chartDom = chartRef.current;
         if (!chartDom) return;
-        if (chartShowData?.length < 2) return;
 
         const myChart = echarts.init(chartDom);
         const resultColor = getChartColor(chartShowData);
@@ -82,11 +85,11 @@ const View = (props: ViewProps) => {
                 min: xAxisMin,
                 max: xAxisMax,
             },
-            yAxis: new Array(chartShowData.length).fill(0).map((_, index) => ({
+            yAxis: new Array(chartShowData.length || 1).fill({ type: 'value' }).map((_, index) => ({
                 name: index === 0 ? leftYAxisUnit : rightYAxisUnit,
                 type: 'value',
             })),
-            series: chartShowData.map((chart, index) => ({
+            series: newChartShowData.map((chart, index) => ({
                 name: chart.entityLabel,
                 type: 'line',
                 data: chart.entityValues.map((value, idx) => [chartLabels[idx], value]),
@@ -124,9 +127,9 @@ const View = (props: ViewProps) => {
             },
             grid: {
                 containLabel: true,
-                top: 30, // Adjust the top blank space of the chart area
+                top: 35, // Adjust the top blank space of the chart area
                 left: 0,
-                right: 0,
+                right: 10,
                 bottom: 0,
             },
             tooltip: {
@@ -158,6 +161,7 @@ const View = (props: ViewProps) => {
         chartLabels,
         chartRef,
         chartShowData,
+        newChartShowData,
         xAxisRange,
         leftYAxisUnit,
         rightYAxisUnit,
