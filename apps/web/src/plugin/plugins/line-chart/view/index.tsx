@@ -1,16 +1,5 @@
 import React, { useEffect, useMemo, useRef } from 'react';
-
 import * as echarts from 'echarts/core';
-import {
-    TooltipComponent,
-    GridComponent,
-    LegendComponent,
-    DataZoomComponent,
-} from 'echarts/components';
-import { LineChart } from 'echarts/charts';
-import { UniversalTransition } from 'echarts/features';
-import { CanvasRenderer } from 'echarts/renderers';
-
 import { useBasicChartEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
@@ -19,15 +8,6 @@ import { useLineChart, useResizeChart, useZoomChart } from './hooks';
 
 import styles from './style.module.less';
 
-echarts.use([
-    TooltipComponent,
-    GridComponent,
-    LegendComponent,
-    DataZoomComponent,
-    LineChart,
-    CanvasRenderer,
-    UniversalTransition,
-]);
 export interface ViewProps {
     config: {
         entityPosition: ChartEntityPositionValueType[];

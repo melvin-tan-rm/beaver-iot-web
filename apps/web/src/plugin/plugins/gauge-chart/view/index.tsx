@@ -1,18 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { isNil } from 'lodash-es';
 import { useMemoizedFn } from 'ahooks';
-
 import * as echarts from 'echarts/core';
-import { GaugeChart } from 'echarts/charts';
-import { CanvasRenderer } from 'echarts/renderers';
-
 import { useTheme } from '@milesight/shared/src/hooks';
 import { Tooltip } from '@/plugin/view-components';
 import { useSource, useResizeChart } from './hooks';
 import type { ViewConfigProps } from '../typings';
 import './style.less';
 
-echarts.use([GaugeChart, CanvasRenderer]);
 interface Props {
     config: ViewConfigProps;
 }
@@ -126,6 +121,7 @@ const View = (props: Props) => {
                         min: chartMinValue,
                         max: chartMaxValue,
                         splitNumber: tickCount,
+                        radius: '80%',
                         itemStyle: {
                             color: purple[600],
                         },
@@ -177,6 +173,13 @@ const View = (props: Props) => {
                             valueAnimation: true,
                             fontSize: 20,
                             offsetCenter: [0, '70%'],
+                            formatter: (value: number) => {
+                                const { rawData } = entity || {};
+                                const { entityValueAttribute } = rawData || {};
+                                const { unit } = entityValueAttribute || {};
+
+                                return `${value}${unit || ''}`;
+                            },
                         },
                         data: [{ value: currentValue }],
                     },

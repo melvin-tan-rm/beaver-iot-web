@@ -1,18 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { renderToString } from 'react-dom/server';
-
 import * as echarts from 'echarts/core';
-import { TooltipComponent } from 'echarts/components';
-import { RadarChart } from 'echarts/charts';
-import { CanvasRenderer } from 'echarts/renderers';
-
 import { useTheme } from '@milesight/shared/src/hooks';
 import { Tooltip } from '@/plugin/view-components';
 import { useResizeChart, useSource } from './hooks';
 import type { AggregateHistoryList, ViewConfigProps } from '../typings';
 import './style.less';
 
-echarts.use([TooltipComponent, RadarChart, CanvasRenderer]);
 interface IProps {
     config: ViewConfigProps;
 }
@@ -67,11 +61,15 @@ const View = (props: IProps) => {
                         <div>
                             {((value || []) as number[]).map((v, i) => {
                                 return (
-                                    <div>
-                                        {/* eslint-disable-next-line react/no-danger */}
-                                        <span dangerouslySetInnerHTML={{ __html: marker }} />
-                                        <span>{data?.labels?.[i] || ''}: </span>
-                                        <span>{`${v}${unit || ''}`}</span>
+                                    <div
+                                        style={{ display: 'flex', justifyContent: 'space-between' }}
+                                    >
+                                        <div>
+                                            {/* eslint-disable-next-line react/no-danger */}
+                                            <span dangerouslySetInnerHTML={{ __html: marker }} />
+                                            <span>{data?.labels?.[i] || ''}:&nbsp;&nbsp;</span>
+                                        </div>
+                                        <div>{`${v}${unit || ''}`}</div>
                                     </div>
                                 );
                             })}
@@ -79,7 +77,6 @@ const View = (props: IProps) => {
                     );
                 },
             },
-
             legend: {
                 show: false,
             },
@@ -92,7 +89,7 @@ const View = (props: IProps) => {
                     areaStyle: {
                         color: purple[300],
                     },
-                    symbolSize: 6,
+                    symbolSize: 8,
                     itemStyle: {
                         borderColor: white,
                         borderWidth: 1,
@@ -105,6 +102,7 @@ const View = (props: IProps) => {
             ],
             radar: [
                 {
+                    radius: '80%',
                     indicator: data?.labels?.map((value: unknown) => ({
                         text: value,
                     })),

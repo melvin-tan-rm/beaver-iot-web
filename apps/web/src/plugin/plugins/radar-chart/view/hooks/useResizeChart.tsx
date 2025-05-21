@@ -10,12 +10,19 @@ export const useResizeChart = ({ chartWrapperRef }: IProps) => {
         const chartWrapper = chartWrapperRef.current;
         if (!chartWrapper) return;
 
-        const resizeObserver = new ResizeObserver(() => {
-            myChart.resize();
-        });
-        resizeObserver.observe(chartWrapper);
+        let resizeObserver: ResizeObserver | null = null;
+        let timer: NodeJS.Timeout | null = null;
+
+        timer = setTimeout(() => {
+            resizeObserver = new ResizeObserver(() => {
+                myChart.resize();
+            });
+            resizeObserver.observe(chartWrapper);
+        }, 1000);
+
         return () => {
-            resizeObserver.disconnect();
+            resizeObserver?.disconnect();
+            timer && clearTimeout(timer);
         };
     });
 

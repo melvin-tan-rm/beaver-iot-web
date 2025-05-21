@@ -1,75 +1,29 @@
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef } from 'react';
 import cls from 'classnames';
-import { useRequest } from 'ahooks';
 import { isEmpty } from 'lodash-es';
-
 import * as echarts from 'echarts/core';
-import { PieChart } from 'echarts/charts';
-import { CanvasRenderer } from 'echarts/renderers';
-import { TooltipComponent, LegendComponent } from 'echarts/components';
-
 import { useTheme } from '@milesight/shared/src/hooks';
-import {
-    awaitWrap,
-    entityAPI,
-    EntityAPISchema,
-    getResponseData,
-    isRequestSuccess,
-} from '@/services/http';
-import ws, { getExChangeTopic } from '@/services/ws';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
-import { useResizeChart } from './hooks';
-import { ViewConfigProps } from '../typings';
+import { useResizeChart, useSourceData } from './hooks';
+import type { ViewConfigProps } from '../typings';
 import './style.less';
 
-echarts.use([TooltipComponent, LegendComponent, PieChart, CanvasRenderer]);
 interface IProps {
     config: ViewConfigProps;
     configJson: CustomComponentProps;
 }
-interface AggregateHistoryList {
-    entity: EntityOptionType;
-    data: EntityAPISchema['getAggregateHistory']['response'];
-}
 const View = (props: IProps) => {
     const { config, configJson } = props;
     const { isPreview } = configJson || {};
-    const { entity, title, metrics, time } = config || {};
+    const { title } = config || {};
+
     const chartRef = useRef<HTMLCanvasElement>(null);
     const chartWrapperRef = useRef<HTMLDivElement>(null);
-
     const { getCSSVariableValue, grey } = useTheme();
+
     const { resizeChart } = useResizeChart({ chartWrapperRef });
-    const { data: countData, runAsync: getData } = useRequest(
-        async () => {
-            if (!entity?.value) return;
-
-            const run = async (selectEntity: EntityOptionType) => {
-                const { value: entityId } = selectEntity || {};
-                if (!entityId) return;
-
-                const now = Date.now();
-                const [error, resp] = await awaitWrap(
-                    entityAPI.getAggregateHistory({
-                        entity_id: entityId,
-                        aggregate_type: metrics,
-                        start_timestamp: now - time,
-                        end_timestamp: now,
-                    }),
-                );
-                if (error || !isRequestSuccess(resp)) return;
-
-                const data = getResponseData(resp);
-                return {
-                    entity,
-                    data,
-                } as AggregateHistoryList;
-            };
-            return Promise.resolve(run(entity));
-        },
-        { refreshDeps: [entity, time, metrics] },
-    );
+    const { countData } = useSourceData(props);
 
     /** Rendering cake map */
     const renderChart = () => {
@@ -96,6 +50,8 @@ const View = (props: IProps) => {
             series: [
                 {
                     type: 'pie',
+                    radius: '80%',
+                    center: ['50%', '55%'],
                     data: (data || []).map(item => ({
                         value: item.count,
                         name: item.value,
@@ -135,21 +91,6 @@ const View = (props: IProps) => {
     useEffect(() => {
         return renderChart();
     }, [countData]);
-
-    const topic = useMemo(() => {
-        const entityKey = entity?.value?.toString();
-        return entityKey && getExChangeTopic(entityKey);
-    }, [entity]);
-
-    // Subscribe to WS topics
-    useEffect(() => {
-        if (!topic || configJson.isPreview) return;
-
-        const unsubscribe = ws.subscribe(topic, getData);
-        return () => {
-            unsubscribe?.();
-        };
-    }, [topic]);
 
     return (
         <div
