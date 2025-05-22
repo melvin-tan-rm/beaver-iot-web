@@ -58,7 +58,7 @@ const View = (props: ViewProps) => {
             series: chartShowData.map((chart, index) => ({
                 name: chart.entityLabel,
                 type: 'bar',
-                data: chart.entityValues.map((value, idx) => [value, chartLabels[idx]]),
+                data: chart.chartOwnData.map(v => [v.timestamp, v.value]),
                 itemStyle: {
                     color: resultColor[index], // Data dot color
                 },

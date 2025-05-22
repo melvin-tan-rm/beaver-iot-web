@@ -18,6 +18,10 @@ export interface ChartShowDataProps {
     entityLabel: string;
     entityValues: (string | number | null)[];
     yAxisID?: string;
+    chartOwnData: {
+        value: ChartShowDataProps['entityValues'][number];
+        timestamp: number;
+    }[];
 }
 
 const MAX_TICKS_LIMIT = 7;
@@ -203,6 +207,7 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
              */
             (historyData || []).forEach((h, index) => {
                 const entityLabel = (entity || [])[index]?.label || '';
+                const chartOwnData: ChartShowDataProps['chartOwnData'] = [];
 
                 /**
                  * Determine whether the current entity has data in this time period according to the timestamp
@@ -210,7 +215,13 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
                 const chartData = newChartLabels.map(l => {
                     const valueIndex = h.findIndex(item => item.timestamp === l);
                     if (valueIndex !== -1) {
-                        return h[valueIndex].value;
+                        const currentValue = h[valueIndex].value;
+
+                        chartOwnData.push({
+                            value: currentValue,
+                            timestamp: Number(l),
+                        });
+                        return currentValue;
                     }
 
                     return null;
@@ -221,6 +232,7 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
                         id: (entity || [])[index]?.rawData?.entityId || '',
                         entityLabel,
                         entityValues: chartData,
+                        chartOwnData,
                     });
                 }
             });

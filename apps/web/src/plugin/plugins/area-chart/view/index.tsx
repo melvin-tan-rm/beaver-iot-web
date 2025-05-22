@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import cls from 'classnames';
 import { hexToRgba } from '@milesight/shared/src/utils/tools';
 import * as echarts from 'echarts/core';
 import { useBasicChartEntity } from '@/plugin/hooks';
@@ -59,7 +60,7 @@ const View = (props: ViewProps) => {
             series: chartShowData.map((chart, index) => ({
                 name: chart.entityLabel,
                 type: 'line',
-                data: chart.entityValues.map((value, idx) => [chartLabels[idx], value]),
+                data: chart.chartOwnData.map(v => [v.timestamp, v.value]),
                 areaStyle: {
                     color: hexToRgba(resultColor[index], CHART_BG_COLOR_OPACITY), // Fill color
                 },
@@ -70,6 +71,7 @@ const View = (props: ViewProps) => {
                 itemStyle: {
                     color: resultColor[index], // Data dot color
                 },
+                connectNulls: true,
                 showSymbol: true, // Whether to display data dots
                 symbolSize: 2, // Data dot size
                 emphasis: {
@@ -129,7 +131,12 @@ const View = (props: ViewProps) => {
     }, [chartLabels, chartRef, chartShowData, xAxisRange, hoverZoomBtn, resizeChart, zoomChart]);
 
     return (
-        <div className={styles['area-chart-wrapper']} ref={chartWrapperRef}>
+        <div
+            className={cls(styles['area-chart-wrapper'], {
+                [styles['area-chart-wrapper__preview']]: isPreview,
+            })}
+            ref={chartWrapperRef}
+        >
             <Tooltip className={styles.name} autoEllipsis title={title} />
             <div className={styles['area-chart-content']}>
                 <div ref={chartRef as any} className={styles['area-chart-content__chart']} />

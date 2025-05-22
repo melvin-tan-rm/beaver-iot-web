@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef } from 'react';
+import cls from 'classnames';
 import * as echarts from 'echarts/core';
 import { useBasicChartEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
@@ -74,7 +75,7 @@ const View = (props: ViewProps) => {
             series: newChartShowData.map((chart, index) => ({
                 name: chart.entityLabel,
                 type: 'line',
-                data: chart.entityValues.map((value, idx) => [chartLabels[idx], value]),
+                data: chart.chartOwnData.map(v => [v.timestamp, v.value]),
                 yAxisIndex: chart.yAxisID === 'y1' ? 1 : 0,
                 lineStyle: {
                     color: resultColor[index], // Line color
@@ -83,6 +84,7 @@ const View = (props: ViewProps) => {
                 itemStyle: {
                     color: resultColor[index], // Data dot color
                 },
+                connectNulls: true,
                 showSymbol: true, // Whether to display data dots
                 symbolSize: 2, // Data dot size
                 emphasis: {
@@ -153,7 +155,12 @@ const View = (props: ViewProps) => {
     ]);
 
     return (
-        <div className={styles['line-chart-wrapper']} ref={chartWrapperRef}>
+        <div
+            className={cls(styles['line-chart-wrapper'], {
+                [styles['line-chart-wrapper__preview']]: isPreview,
+            })}
+            ref={chartWrapperRef}
+        >
             <Tooltip className={styles.name} autoEllipsis title={title} />
             <div className={styles['line-chart-content']}>
                 <div ref={chartRef as any} className={styles['line-chart-content__chart']} />
