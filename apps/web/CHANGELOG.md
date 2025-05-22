@@ -1,5 +1,14 @@
 # @app/web
 
+## 1.2.1
+
+### Patch Changes
+
+-   33139c3: Fix some bugs of NS integration
+-   8e75412: Fix some bugs of workflow editor
+-   daa20cd: Fix some bugs of role validation
+-   9cdcc4d: Fix some bugs of permission management
+
 ## 1.2.0
 
 ### Minor Changes
