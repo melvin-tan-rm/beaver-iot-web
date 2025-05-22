@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import cls from 'classnames';
 import * as echarts from 'echarts/core';
 import { useBasicChartEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
@@ -93,7 +94,7 @@ const View = (props: ViewProps) => {
             dataZoom: [
                 {
                     type: 'inside', // Built-in data scaling component
-                    filterMode: 'none',
+                    filterMode: 'empty',
                     zoomOnMouseWheel: 'ctrl', // Hold down the ctrl key to zoom
                 },
             ],
@@ -110,7 +111,12 @@ const View = (props: ViewProps) => {
     }, [chartLabels, chartRef, chartShowData, xAxisRange, hoverZoomBtn, resizeChart, zoomChart]);
 
     return (
-        <div className={styles['bar-chart-wrapper']} ref={chartWrapperRef}>
+        <div
+            className={cls(styles['bar-chart-wrapper'], {
+                [styles['bar-chart-wrapper__preview']]: isPreview,
+            })}
+            ref={chartWrapperRef}
+        >
             <Tooltip className={styles.name} autoEllipsis title={title} />
             <div className={styles['bar-chart-content']}>
                 <div ref={chartRef as any} className={styles['bar-chart-content__chart']} />

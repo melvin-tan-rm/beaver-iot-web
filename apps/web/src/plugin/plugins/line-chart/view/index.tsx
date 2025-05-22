@@ -68,6 +68,8 @@ const View = (props: ViewProps) => {
             yAxis: new Array(chartShowData.length || 1).fill({ type: 'value' }).map((_, index) => ({
                 name: index === 0 ? leftYAxisUnit : rightYAxisUnit,
                 type: 'value',
+                nameLocation: 'middle',
+                nameGap: 40,
             })),
             series: newChartShowData.map((chart, index) => ({
                 name: chart.entityLabel,
@@ -108,8 +110,8 @@ const View = (props: ViewProps) => {
             grid: {
                 containLabel: true,
                 top: 35, // Adjust the top blank space of the chart area
-                left: 0,
-                right: 10,
+                left: 20,
+                right: 30,
                 bottom: 0,
             },
             tooltip: {
@@ -123,7 +125,7 @@ const View = (props: ViewProps) => {
             dataZoom: [
                 {
                     type: 'inside', // Built-in data scaling component
-                    filterMode: 'none',
+                    filterMode: 'empty',
                     zoomOnMouseWheel: 'ctrl', // Hold down the ctrl key to zoom
                 },
             ],

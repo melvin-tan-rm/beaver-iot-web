@@ -112,7 +112,7 @@ const View = (props: ViewProps) => {
             dataZoom: [
                 {
                     type: 'inside', // Built-in data scaling component
-                    filterMode: 'none',
+                    filterMode: 'empty',
                     zoomOnMouseWheel: 'ctrl', // Hold down the ctrl key to zoom
                 },
             ],
