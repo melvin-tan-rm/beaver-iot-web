@@ -12,7 +12,7 @@ interface IProps {
 export const useSource = (props: IProps) => {
     const { entityList, metrics, time } = props;
 
-    const { data: aggregateHistoryList, runAsync: getAggregateHistoryList } = useRequest(
+    const { data: aggregateHistoryList, run: getAggregateHistoryList } = useRequest(
         async () => {
             if (!entityList || entityList.length === 0) return;
 
@@ -40,7 +40,10 @@ export const useSource = (props: IProps) => {
             const fetchList = entityList.map((entity: EntityOptionType) => run(entity));
             return Promise.all(fetchList.filter(Boolean) as unknown as AggregateHistoryList[]);
         },
-        { manual: true },
+        {
+            manual: true,
+            debounceWait: 300,
+        },
     );
 
     useEffect(() => {

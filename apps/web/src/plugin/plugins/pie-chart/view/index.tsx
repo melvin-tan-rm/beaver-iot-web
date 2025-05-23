@@ -33,7 +33,7 @@ const View = (props: IProps) => {
 
     const { getCSSVariableValue } = useTheme();
     const chartRef = useRef<HTMLCanvasElement>(null);
-    const { data: countData, runAsync: getData } = useRequest(
+    const { data: countData, run: getData } = useRequest(
         async () => {
             if (!entity?.value) return;
 
@@ -60,7 +60,10 @@ const View = (props: IProps) => {
             };
             return Promise.resolve(run(entity));
         },
-        { refreshDeps: [entity, time, metrics] },
+        {
+            refreshDeps: [entity, time, metrics],
+            debounceWait: 300,
+        },
     );
 
     /** Rendering cake map */

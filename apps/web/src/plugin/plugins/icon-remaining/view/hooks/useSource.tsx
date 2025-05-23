@@ -12,7 +12,7 @@ interface IProps {
 export const useSource = (props: IProps) => {
     const { entity, metrics, time } = props;
 
-    const { data: aggregateHistoryData, runAsync: getAggregateHistoryData } = useRequest(
+    const { data: aggregateHistoryData, run: getAggregateHistoryData } = useRequest(
         async () => {
             const { value: entityId } = entity || {};
             if (!entityId) return;
@@ -30,7 +30,10 @@ export const useSource = (props: IProps) => {
 
             return getResponseData(resp);
         },
-        { manual: true },
+        {
+            manual: true,
+            debounceWait: 300,
+        },
     );
 
     useEffect(() => {

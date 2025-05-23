@@ -1,5 +1,5 @@
-import { useMemo, useState, useCallback, useEffect, memo } from 'react';
-import { useMemoizedFn } from 'ahooks';
+import { useMemo, useState, useEffect, memo } from 'react';
+import { useRequest, useMemoizedFn } from 'ahooks';
 import { BrokenImageIcon } from '@milesight/shared/src/components';
 import {
     entityAPI,
@@ -54,22 +54,28 @@ const View = (props: ViewProps) => {
     /**
      * Request physical state function
      */
-    const requestEntityStatus = useCallback(async () => {
-        if (!entity) return;
+    const { run: requestEntityStatus } = useRequest(
+        async () => {
+            if (!entity?.value) return;
 
-        const [error, res] = await awaitWrap(entityAPI.getEntityStatus({ id: entity.value }));
+            const [error, res] = await awaitWrap(entityAPI.getEntityStatus({ id: entity.value }));
 
-        if (error || !isRequestSuccess(res)) {
-            /**
-             * The request failed, the default value was closed by closing the FALSE
-             */
-            setImageSrc('');
-            return;
-        }
+            if (error || !isRequestSuccess(res)) {
+                /**
+                 * The request failed, the default value was closed by closing the FALSE
+                 */
+                setImageSrc('');
+                return;
+            }
 
-        const entityStatus = getResponseData(res);
-        setImageSrc(!entityStatus?.value ? '' : `${entityStatus.value}`);
-    }, [entity]);
+            const entityStatus = getResponseData(res);
+            setImageSrc(!entityStatus?.value ? '' : `${entityStatus.value}`);
+        },
+        {
+            refreshDeps: [entity],
+            debounceWait: 300,
+        },
+    );
 
     /**
      * Set image src based on dataType
@@ -90,7 +96,7 @@ const View = (props: ViewProps) => {
                  * If the dataType is `undefined` / `entity`, check the entity is empty
                  * and get the status.
                  */
-                if (entity) {
+                if (entity?.value) {
                     requestEntityStatus();
                 } else {
                     /**
@@ -100,7 +106,7 @@ const View = (props: ViewProps) => {
                 }
                 break;
         }
-    }, [dataType, entity, file, url, requestEntityStatus]);
+    }, [dataType, entity?.value, file, url, requestEntityStatus]);
 
     /**
      * webSocket subscription theme

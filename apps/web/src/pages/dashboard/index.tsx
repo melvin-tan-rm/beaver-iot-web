@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import cls from 'classnames';
 import { isEmpty, isNil } from 'lodash-es';
+import { useRequest } from 'ahooks';
 import { Tabs, Tab, Toolbar, CircularProgress } from '@mui/material';
 import { AddIcon, toast } from '@milesight/shared/src/components';
 import { useI18n, usePreventLeave } from '@milesight/shared/src/hooks';
@@ -36,31 +37,27 @@ export default () => {
         isPreventLeave: isEdit,
     });
 
-    const getDashboards = async () => {
-        try {
+    const { run: getDashboards } = useRequest(
+        async () => {
             setLoading(true);
-
-            const [_, res] = await awaitWrap(dashboardAPI.getDashboards());
-            if (isRequestSuccess(res)) {
-                const data = getResponseData(res);
-                setTabs(data || []);
-                // If no option is selected, the first option is selected by default
-                if (!tabKey) {
-                    setTabKey(data?.[0]?.dashboard_id || '');
-                } else {
-                    // Yes Check whether the current selection still exists. If no, the first one is selected by default
-                    const isExist = data?.some(
-                        (item: DashboardDetail) => item.dashboard_id === tabKey,
-                    );
-                    if (!isExist) {
-                        setTabKey(data?.[0]?.dashboard_id || '');
-                    }
-                }
-            }
-        } finally {
+            const [error, resp] = await awaitWrap(dashboardAPI.getDashboards());
             setLoading(false);
-        }
-    };
+            if (error || !isRequestSuccess(resp)) return;
+
+            const data = getResponseData(resp);
+
+            setTabs(data || []);
+            setTabKey(key => {
+                const isExist = data?.some(item => item.dashboard_id === key);
+
+                if (!key || !isExist) return data?.[0]?.dashboard_id || '';
+                return key;
+            });
+        },
+        {
+            debounceWait: 300,
+        },
+    );
 
     /** To storage the dashboard isEditing status */
     useEffect(() => {
@@ -69,7 +66,7 @@ export default () => {
 
     useEffect(() => {
         getDashboards();
-    }, []);
+    }, [getDashboards]);
 
     /** To judge current screen whether too small */
     useEffect(() => {
@@ -146,7 +143,7 @@ export default () => {
         }
     };
 
-    const renderTabContent = () => {
+    const tabContent = useMemo(() => {
         if (loading || isNil(loading)) {
             return (
                 <div className="ms-tab-content__empty">
@@ -181,7 +178,7 @@ export default () => {
                 </TabPanel>
             );
         });
-    };
+    }, [getDashboards, getIntlText, isEdit, isTooSmallScreen, loading, tabKey, tabs]);
 
     return (
         <div className="ms-main dashboard">
@@ -233,7 +230,7 @@ export default () => {
                         </div>
                     </PermissionControlHidden>
                 </Toolbar>
-                <div className="ms-tab-content">{renderTabContent()}</div>
+                <div className="ms-tab-content">{tabContent}</div>
             </div>
             {showAdd && <AddDashboard onCancel={handleCloseAdd} onOk={handleAdd} />}
         </div>

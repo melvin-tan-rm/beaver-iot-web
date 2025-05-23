@@ -10,9 +10,9 @@ interface IProps {
 export const useSource = (props: IProps) => {
     const { entity } = props;
 
-    const { data: entityStatusValue, runAsync: getEntityStatusValue } = useRequest(
+    const { data: entityStatusValue, run: getEntityStatusValue } = useRequest(
         async () => {
-            if (!entity) return;
+            if (!entity?.value) return;
             const { value } = entity || {};
 
             const [error, resp] = await awaitWrap(entityAPI.getEntityStatus({ id: value }));
@@ -20,11 +20,14 @@ export const useSource = (props: IProps) => {
 
             return getResponseData(resp)?.value;
         },
-        { manual: true },
+        {
+            manual: true,
+            debounceWait: 300,
+        },
     );
     useEffect(() => {
         getEntityStatusValue();
-    }, [entity]);
+    }, [entity?.value]);
 
     const topic = useMemo(() => {
         const entityKey = entity?.rawData?.entityKey?.toString();

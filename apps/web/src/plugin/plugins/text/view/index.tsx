@@ -1,4 +1,5 @@
-import { useMemo, useState, useCallback, useEffect, memo } from 'react';
+import { useMemo, useState, useEffect, memo } from 'react';
+import { useRequest } from 'ahooks';
 import { entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import ws, { getExChangeTopic } from '@/services/ws';
 import { useDashboardStore } from '@/stores';
@@ -28,38 +29,41 @@ const View = (props: ViewProps) => {
     /**
      * Request physical state function
      */
-    const requestEntityStatus = useCallback(async () => {
-        if (!entity) return;
+    const { run: requestEntityStatus } = useRequest(
+        async () => {
+            if (!entity?.value) return;
+            const [error, res] = await awaitWrap(entityAPI.getEntityStatus({ id: entity.value }));
 
-        const [error, res] = await awaitWrap(entityAPI.getEntityStatus({ id: entity.value }));
+            if (error || !isRequestSuccess(res)) {
+                /**
+                 * The request failed, the default value was closed by closing the FALSE
+                 */
+                setTextContent('');
+                return;
+            }
 
-        if (error || !isRequestSuccess(res)) {
-            /**
-             * The request failed, the default value was closed by closing the FALSE
-             */
-            setTextContent('');
-            return;
-        }
-
-        const entityStatus = getResponseData(res);
-        setTextContent(entityStatus?.value || '');
-    }, [entity]);
+            const entityStatus = getResponseData(res);
+            setTextContent(entityStatus?.value || '');
+        },
+        {
+            refreshDeps: [entity?.value],
+            debounceWait: 300,
+        },
+    );
 
     /**
      * Get the state of the selected entity
      */
     useEffect(() => {
-        (async () => {
-            if (entity) {
-                requestEntityStatus();
-            } else {
-                /**
-                 * No entity, initialization data
-                 */
-                setTextContent('');
-            }
-        })();
-    }, [entity, requestEntityStatus]);
+        if (entity?.value) {
+            requestEntityStatus();
+        } else {
+            /**
+             * No entity, initialization data
+             */
+            setTextContent('');
+        }
+    }, [entity?.value, requestEntityStatus]);
 
     /**
      * webSocket subscription theme
