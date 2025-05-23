@@ -5,6 +5,7 @@ import { useBasicChartEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
 import { type ChartEntityPositionValueType } from '@/plugin/components/chart-entity-position';
+import { useTheme } from '@milesight/shared/src/hooks';
 import { useLineChart, useResizeChart, useYAxisRange, useZoomChart } from './hooks';
 
 import styles from './style.module.less';
@@ -27,6 +28,7 @@ const View = (props: ViewProps) => {
     const { entityPosition, title, time, leftYAxisUnit, rightYAxisUnit } = config || {};
     const { isPreview } = configJson || {};
     const chartWrapperRef = useRef<HTMLDivElement>(null);
+    const { grey } = useTheme();
 
     const entity = useMemo(() => {
         if (!Array.isArray(entityPosition)) return [];
@@ -65,6 +67,18 @@ const View = (props: ViewProps) => {
         const xRangeList = getYAxisRange() || {};
 
         myChart.setOption({
+            graphic: new Array(Math.min(newChartShowData.length, 2)).fill(0).map((_, index) => ({
+                type: 'text',
+                left: index === 0 ? 0 : void 0,
+                right: index === 0 ? void 0 : 0,
+                top: 'center',
+                rotation: Math.PI / 2, // Rotate 90 degrees, with the unit being radians
+                style: {
+                    fill: grey[600],
+                    text: index === 0 ? leftYAxisUnit : rightYAxisUnit,
+                    font: "12px '-apple-system', 'Helvetica Neue', 'PingFang SC', 'SegoeUI', 'Noto Sans CJK SC', sans-serif, 'Helvetica', 'Microsoft YaHei', '微软雅黑', 'Arial'",
+                },
+            })),
             xAxis: {
                 type: 'time',
                 min: xAxisMin,
@@ -74,7 +88,6 @@ const View = (props: ViewProps) => {
             yAxis: new Array(newChartShowData.length || 1)
                 .fill({ type: 'value' })
                 .map((_, index) => ({
-                    name: index === 0 ? leftYAxisUnit : rightYAxisUnit,
                     type: 'value',
                     nameLocation: 'middle',
                     nameGap: 40,
@@ -120,8 +133,8 @@ const View = (props: ViewProps) => {
             grid: {
                 containLabel: true,
                 top: 35, // Adjust the top blank space of the chart area
-                left: 20,
-                right: 30,
+                left: 14,
+                right: 24,
                 bottom: 0,
             },
             tooltip: {
@@ -150,6 +163,7 @@ const View = (props: ViewProps) => {
             myChart?.dispose();
         };
     }, [
+        grey,
         chartLabels,
         chartRef,
         chartShowData,

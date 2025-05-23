@@ -116,15 +116,6 @@ const View = (props: ViewProps) => {
                 textStyle: {
                     color: '#fff',
                 },
-                formatter: (value: number) => {
-                    console.log('entity >>>', entity);
-                    return 'xxxx';
-                    // const { rawData } = entity || {};
-                    // const { entityValueAttribute } = rawData || {};
-                    // const { unit } = entityValueAttribute || {};
-
-                    // return `${value}${unit || ''}`;
-                },
             },
             dataZoom: [
                 {

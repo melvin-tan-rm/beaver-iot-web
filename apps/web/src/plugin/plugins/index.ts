@@ -7,12 +7,14 @@ import {
     GridComponent,
     LegendComponent,
     DataZoomComponent,
+    GraphicComponent,
 } from 'echarts/components';
 import { LineChart, BarChart, PieChart, RadarChart, GaugeChart } from 'echarts/charts';
 import { UniversalTransition } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
 
 echarts.use([
+    GraphicComponent,
     TooltipComponent,
     GridComponent,
     LegendComponent,

@@ -41,23 +41,23 @@ export const useZoomChart = ({
         initialize: true,
     });
 
-    const chartZoomTimeValue = useMemo(() => {
-        const { stepSize = 10, unit = 'minute' } = xAxisConfig || {};
-        const timeLabels = generateTimes(xAxisRange, stepSize, unit);
+    // const chartZoomTimeValue = useMemo(() => {
+    //     const { stepSize = 10, unit = 'minute' } = xAxisConfig || {};
+    //     const timeLabels = generateTimes(xAxisRange, stepSize, unit);
 
-        const startValue = timeLabels[Math.max(timeLabels.length - stepSize, 0)]; // Display the last n TH dot
-        const endValue = timeLabels[timeLabels.length - 1]; // Display the last dot
+    //     const startValue = timeLabels[Math.max(timeLabels.length - stepSize, 0)]; // Display the last n TH dot
+    //     const endValue = timeLabels[timeLabels.length - 1]; // Display the last dot
 
-        setChartZoom({
-            ...getChartZoom(),
-            initialize: true,
-        });
+    //     setChartZoom({
+    //         ...getChartZoom(),
+    //         initialize: true,
+    //     });
 
-        return {
-            startValue: dayjs(startValue).valueOf(),
-            endValue: dayjs(endValue).valueOf(),
-        };
-    }, [getChartZoom, setChartZoom, xAxisConfig, xAxisRange]);
+    //     return {
+    //         startValue: dayjs(startValue).valueOf(),
+    //         endValue: dayjs(endValue).valueOf(),
+    //     };
+    // }, [getChartZoom, setChartZoom, xAxisConfig, xAxisRange]);
 
     /** chart zoom callback */
     const zoomChart = useMemoizedFn((myChart: EChartsType) => {
@@ -78,7 +78,7 @@ export const useZoomChart = ({
         const resetZoom = () => {
             myChart.dispatchAction({
                 type: 'dataZoom',
-                ...chartZoomTimeValue,
+                // ...chartZoomTimeValue,
                 isZooming: false,
             });
         };
