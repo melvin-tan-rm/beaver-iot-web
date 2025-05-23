@@ -64,10 +64,6 @@ export default () => {
         updateIsEditing(isEdit);
     }, [isEdit]);
 
-    useEffect(() => {
-        getDashboards();
-    }, [getDashboards]);
-
     /** To judge current screen whether too small */
     useEffect(() => {
         const getWindowWidth = () => {

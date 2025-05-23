@@ -46,8 +46,9 @@ const View = (props: ViewProps) => {
             setTextContent(entityStatus?.value || '');
         },
         {
-            refreshDeps: [entity?.value],
+            manual: true,
             debounceWait: 300,
+            refreshDeps: [entity?.value],
         },
     );
 

@@ -72,8 +72,9 @@ const View = (props: ViewProps) => {
             setImageSrc(!entityStatus?.value ? '' : `${entityStatus.value}`);
         },
         {
-            refreshDeps: [entity],
+            manual: true,
             debounceWait: 300,
+            refreshDeps: [entity],
         },
     );
 
