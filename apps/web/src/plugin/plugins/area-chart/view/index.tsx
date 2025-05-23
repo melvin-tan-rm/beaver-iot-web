@@ -56,6 +56,7 @@ const View = (props: ViewProps) => {
                 type: 'time',
                 min: xAxisMin,
                 max: xAxisMax,
+                axisLine: { onZero: false },
             },
             yAxis: {
                 type: 'value',
@@ -114,6 +115,15 @@ const View = (props: ViewProps) => {
                 borderColor: 'rgba(0, 0, 0, 0.9)',
                 textStyle: {
                     color: '#fff',
+                },
+                formatter: (value: number) => {
+                    console.log('entity >>>', entity);
+                    return 'xxxx';
+                    // const { rawData } = entity || {};
+                    // const { entityValueAttribute } = rawData || {};
+                    // const { unit } = entityValueAttribute || {};
+
+                    // return `${value}${unit || ''}`;
                 },
             },
             dataZoom: [

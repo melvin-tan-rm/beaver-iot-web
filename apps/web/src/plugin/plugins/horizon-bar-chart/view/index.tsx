@@ -59,6 +59,7 @@ const View = (props: ViewProps) => {
                 type: 'time',
                 min: xAxisMin,
                 max: xAxisMax,
+                axisLine: { onZero: false },
             },
             series: chartShowData.map((chart, index) => ({
                 name: chart.entityLabel,

@@ -41,7 +41,6 @@ const View = (props: ViewProps) => {
             isPreview,
         });
 
-    const { getYAxisRange } = useYAxisRange({ chartShowData, entity });
     const { resizeChart } = useResizeChart({ chartWrapperRef });
     const { zoomChart, hoverZoomBtn } = useZoomChart({
         xAxisConfig,
@@ -53,6 +52,7 @@ const View = (props: ViewProps) => {
         entityPosition,
         chartShowData,
     });
+    const { getYAxisRange } = useYAxisRange({ newChartShowData, entity });
 
     useEffect(() => {
         const chartDom = chartRef.current;
@@ -69,19 +69,22 @@ const View = (props: ViewProps) => {
                 type: 'time',
                 min: xAxisMin,
                 max: xAxisMax,
+                axisLine: { onZero: false },
             },
-            yAxis: new Array(chartShowData.length || 1).fill({ type: 'value' }).map((_, index) => ({
-                name: index === 0 ? leftYAxisUnit : rightYAxisUnit,
-                type: 'value',
-                nameLocation: 'middle',
-                nameGap: 40,
-                ...(index < 2 ? xRangeList[index] || {} : {}),
-            })),
+            yAxis: new Array(newChartShowData.length || 1)
+                .fill({ type: 'value' })
+                .map((_, index) => ({
+                    name: index === 0 ? leftYAxisUnit : rightYAxisUnit,
+                    type: 'value',
+                    nameLocation: 'middle',
+                    nameGap: 40,
+                    ...(xRangeList[index] || {}),
+                })),
             series: newChartShowData.map((chart, index) => ({
                 name: chart.entityLabel,
                 type: 'line',
                 data: chart.chartOwnData.map(v => [v.timestamp, v.value]),
-                yAxisIndex: chart.yAxisID === 'y1' ? 1 : 0,
+                yAxisIndex: newChartShowData?.length < 2 ? 0 : chart.yAxisID === 'y1' ? 1 : 0,
                 lineStyle: {
                     color: resultColor[index], // Line color
                     width: 2, // The thickness of the line

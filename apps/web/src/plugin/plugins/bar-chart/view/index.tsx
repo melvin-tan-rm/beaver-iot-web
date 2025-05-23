@@ -55,6 +55,7 @@ const View = (props: ViewProps) => {
                 type: 'time',
                 min: xAxisMin,
                 max: xAxisMax,
+                axisLine: { onZero: false },
             },
             yAxis: {
                 type: 'value',
