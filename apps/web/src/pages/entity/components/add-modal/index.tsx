@@ -4,6 +4,7 @@ import { v4 } from 'uuid';
 import cls from 'classnames';
 import { useMemoizedFn } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
+import { objectToCamelToSnake } from '@milesight/shared/src/utils/tools';
 import { Modal, toast, type ModalProps } from '@milesight/shared/src/components';
 import { entityAPI, awaitWrap, isRequestSuccess, EntityAPISchema } from '@/services/http';
 import { ENTITY_TYPE, ENTITY_VALUE_TYPE } from '@/constants';
@@ -154,7 +155,7 @@ const AddModal: React.FC<Props> = ({
                 id: entityId,
                 name,
                 value_attribute: {
-                    ...data.entityValueAttribute,
+                    ...objectToCamelToSnake(data.entityValueAttribute),
                     enum: getEditAttributeEnum(formData),
                     unit,
                 },
@@ -223,7 +224,7 @@ const AddModal: React.FC<Props> = ({
             case ENUM_TYPE_VALUE as EntityValueDataType:
                 valueAttribute.enum = enums;
                 // Distinguish the enumerations of the time-new string data types
-                valueAttribute.isEnum = true;
+                valueAttribute.is_enum = true;
                 break;
             default:
                 break;
