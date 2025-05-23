@@ -5,7 +5,7 @@ import { useBasicChartEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
 import { type ChartEntityPositionValueType } from '@/plugin/components/chart-entity-position';
-import { useLineChart, useResizeChart, useZoomChart } from './hooks';
+import { useLineChart, useResizeChart, useYAxisRange, useZoomChart } from './hooks';
 
 import styles from './style.module.less';
 
@@ -40,6 +40,8 @@ const View = (props: ViewProps) => {
             time,
             isPreview,
         });
+
+    const { getYAxisRange } = useYAxisRange({ chartShowData, entity });
     const { resizeChart } = useResizeChart({ chartWrapperRef });
     const { zoomChart, hoverZoomBtn } = useZoomChart({
         xAxisConfig,
@@ -60,6 +62,8 @@ const View = (props: ViewProps) => {
         const resultColor = getChartColor(chartShowData);
         const [xAxisMin, xAxisMax] = xAxisRange || [];
 
+        const xRangeList = getYAxisRange() || {};
+
         myChart.setOption({
             xAxis: {
                 type: 'time',
@@ -71,6 +75,7 @@ const View = (props: ViewProps) => {
                 type: 'value',
                 nameLocation: 'middle',
                 nameGap: 40,
+                ...(index < 2 ? xRangeList[index] || {} : {}),
             })),
             series: newChartShowData.map((chart, index) => ({
                 name: chart.entityLabel,
@@ -127,7 +132,7 @@ const View = (props: ViewProps) => {
             dataZoom: [
                 {
                     type: 'inside', // Built-in data scaling component
-                    filterMode: 'empty',
+                    filterMode: 'none',
                     zoomOnMouseWheel: 'ctrl', // Hold down the ctrl key to zoom
                 },
             ],
@@ -152,6 +157,7 @@ const View = (props: ViewProps) => {
         hoverZoomBtn,
         resizeChart,
         zoomChart,
+        getYAxisRange,
     ]);
 
     return (

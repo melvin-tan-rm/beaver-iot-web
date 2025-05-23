@@ -5,7 +5,7 @@ import { useBasicChartEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
 import styles from './style.module.less';
-import { useResizeChart, useZoomChart } from './hooks';
+import { useResizeChart, useYAxisRange, useZoomChart } from './hooks';
 
 export interface ViewProps {
     config: {
@@ -30,6 +30,7 @@ const View = (props: ViewProps) => {
             isPreview,
         });
 
+    const { getYAxisRange } = useYAxisRange({ chartShowData, entity });
     const { resizeChart } = useResizeChart({ chartWrapperRef });
     const { zoomChart, hoverZoomBtn } = useZoomChart({
         xAxisConfig,
@@ -46,9 +47,13 @@ const View = (props: ViewProps) => {
         const resultColor = getChartColor(chartShowData);
         const [xAxisMin, xAxisMax] = xAxisRange || [];
 
+        const { min, max } = getYAxisRange() || {};
+
         myChart.setOption({
             xAxis: {
                 type: 'value',
+                min,
+                max,
             },
             yAxis: {
                 type: 'time',
@@ -58,7 +63,7 @@ const View = (props: ViewProps) => {
             series: chartShowData.map((chart, index) => ({
                 name: chart.entityLabel,
                 type: 'bar',
-                data: chart.chartOwnData.map(v => [v.timestamp, v.value]),
+                data: chart.chartOwnData.map(v => [v.value, v.timestamp]),
                 itemStyle: {
                     color: resultColor[index], // Data dot color
                 },
@@ -108,7 +113,16 @@ const View = (props: ViewProps) => {
             disconnectResize?.();
             myChart?.dispose();
         };
-    }, [chartLabels, chartRef, chartShowData, xAxisRange, hoverZoomBtn, resizeChart, zoomChart]);
+    }, [
+        chartLabels,
+        chartRef,
+        chartShowData,
+        xAxisRange,
+        hoverZoomBtn,
+        resizeChart,
+        zoomChart,
+        getYAxisRange,
+    ]);
 
     return (
         <div

@@ -5,7 +5,7 @@ import * as echarts from 'echarts/core';
 import { useBasicChartEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
-import { useResizeChart, useZoomChart } from './hooks';
+import { useResizeChart, useYAxisRange, useZoomChart } from './hooks';
 import styles from './style.module.less';
 
 export interface ViewProps {
@@ -32,6 +32,7 @@ const View = (props: ViewProps) => {
             isPreview,
         });
 
+    const { getYAxisRange } = useYAxisRange({ chartShowData, entity });
     const { resizeChart } = useResizeChart({ chartWrapperRef });
     const { zoomChart, hoverZoomBtn } = useZoomChart({
         xAxisConfig,
@@ -48,6 +49,8 @@ const View = (props: ViewProps) => {
         const resultColor = getChartColor(chartShowData);
         const [xAxisMin, xAxisMax] = xAxisRange || [];
 
+        const { min, max } = getYAxisRange() || {};
+
         myChart.setOption({
             xAxis: {
                 type: 'time',
@@ -56,6 +59,8 @@ const View = (props: ViewProps) => {
             },
             yAxis: {
                 type: 'value',
+                min,
+                max,
             },
             series: chartShowData.map((chart, index) => ({
                 name: chart.entityLabel,
@@ -114,7 +119,7 @@ const View = (props: ViewProps) => {
             dataZoom: [
                 {
                     type: 'inside', // Built-in data scaling component
-                    filterMode: 'empty',
+                    filterMode: 'none',
                     zoomOnMouseWheel: 'ctrl', // Hold down the ctrl key to zoom
                 },
             ],
@@ -128,7 +133,16 @@ const View = (props: ViewProps) => {
             disconnectResize?.();
             myChart?.dispose();
         };
-    }, [chartLabels, chartRef, chartShowData, xAxisRange, hoverZoomBtn, resizeChart, zoomChart]);
+    }, [
+        chartLabels,
+        chartRef,
+        chartShowData,
+        xAxisRange,
+        hoverZoomBtn,
+        resizeChart,
+        zoomChart,
+        getYAxisRange,
+    ]);
 
     return (
         <div
