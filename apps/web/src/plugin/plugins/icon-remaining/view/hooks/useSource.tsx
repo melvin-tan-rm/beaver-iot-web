@@ -33,12 +33,13 @@ export const useSource = (props: IProps) => {
         {
             manual: true,
             debounceWait: 300,
+            refreshDeps: [entity?.value, metrics, time],
         },
     );
 
     useEffect(() => {
         getAggregateHistoryData();
-    }, [entity, time, metrics]);
+    }, [getAggregateHistoryData]);
 
     const topic = useMemo(() => {
         const entityKey = entity?.rawData?.entityKey?.toString();

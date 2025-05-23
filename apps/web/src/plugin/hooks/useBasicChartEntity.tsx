@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { useRequest } from 'ahooks';
 import { IconButton } from '@mui/material';
 import { RefreshIcon } from '@milesight/shared/src/components/icons';
 
 import { useTime } from '@milesight/shared/src/hooks';
-import { entityAPI, isRequestSuccess, getResponseData } from '@/services/http';
+import { entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import ws, { getExChangeTopic } from '@/services/ws';
 
 export interface UseBasicChartEntityProps {
@@ -150,20 +151,16 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
     /**
      * Request chart data
      */
-    const requestChartData = useCallback(() => {
-        /**
-         * Initialization data
-         */
-        setChartShowData([]);
-        setChartLabels([]);
+    const { run: requestChartData } = useRequest(
+        async () => {
+            /**
+             * Initialization data
+             */
+            setChartShowData([]);
+            setChartLabels([]);
 
-        if (!Array.isArray(entity)) return;
-
-        /**
-         * Request to obtain physical historical data
-         */
-        Promise.all(
-            (entity || []).map(e =>
+            if (!Array.isArray(entity)) return;
+            const promises = (entity || []).map(e =>
                 entityAPI.getHistory({
                     entity_id: e.value,
                     start_timestamp: Date.now() - time,
@@ -171,15 +168,12 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
                     page_number: 1,
                     page_size: 999,
                 }),
-            ),
-        ).then(result => {
-            /**
-             * Determine whether there is a data that fails to fail
-             */
-            const isFailed = (result || []).some(res => !isRequestSuccess(res));
-            if (isFailed) return;
+            );
+            const [error, resp] = await awaitWrap(Promise.all(promises));
+            const isFailed = (resp || []).some(res => !isRequestSuccess(res));
 
-            const historyData = (result || [])
+            if (error || isFailed) return;
+            const historyData = (resp || [])
                 .map(res => getResponseData(res))
                 .filter(Boolean)
                 .map(d => d?.content || []);
@@ -226,8 +220,13 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
             });
 
             setChartShowData(newChartShowData);
-        });
-    }, [entity, time]);
+        },
+        {
+            manual: true,
+            debounceWait: 300,
+            refreshDeps: [entity, time],
+        },
+    );
 
     /**
      * Get data

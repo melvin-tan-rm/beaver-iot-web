@@ -1,4 +1,5 @@
 import { useMemo, useState, useCallback, useEffect } from 'react';
+import { useRequest } from 'ahooks';
 import { Switch } from '@mui/material';
 
 import * as Icons from '@milesight/shared/src/components/icons';
@@ -40,37 +41,42 @@ const View = (props: ViewProps) => {
     /**
      * Request physical state function
      */
-    const requestEntityStatus = useCallback(async () => {
-        if (!entity) return;
+    const { run: requestEntityStatus } = useRequest(
+        async () => {
+            if (!entity?.value) return;
 
-        const [error, res] = await awaitWrap(entityAPI.getEntityStatus({ id: entity.value }));
+            const [error, res] = await awaitWrap(entityAPI.getEntityStatus({ id: entity.value }));
 
-        if (error || !isRequestSuccess(res)) {
-            /**
-             * The request failed, the default value was closed by closing the FALSE
-             */
-            setIsSwitchOn(false);
-            return;
-        }
+            if (error || !isRequestSuccess(res)) {
+                /**
+                 * The request failed, the default value was closed by closing the FALSE
+                 */
+                setIsSwitchOn(false);
+                return;
+            }
 
-        const entityStatus = getResponseData(res);
-        setIsSwitchOn(Boolean(entityStatus?.value));
-    }, [entity]);
+            const entityStatus = getResponseData(res);
+            setIsSwitchOn(Boolean(entityStatus?.value));
+        },
+        {
+            manual: true,
+            refreshDeps: [entity?.value],
+            debounceWait: 300,
+        },
+    );
 
     /**
      * Get the state of the selected entity
      */
     useEffect(() => {
-        (async () => {
-            if (entity) {
-                requestEntityStatus();
-            } else {
-                /**
-                 * No entity, initialization data
-                 */
-                setIsSwitchOn(false);
-            }
-        })();
+        if (entity) {
+            requestEntityStatus();
+        } else {
+            /**
+             * No entity, initialization data
+             */
+            setIsSwitchOn(false);
+        }
     }, [entity, requestEntityStatus]);
 
     /**
