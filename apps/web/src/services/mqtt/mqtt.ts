@@ -2,7 +2,7 @@
 import mqtt from 'mqtt';
 import { safeJsonParse } from '@milesight/shared/src/utils/tools';
 import { EventEmitter } from '@milesight/shared/src/utils/event-emitter';
-import { MQTT_EVENT_TYPE, TOPIC_PREFIX, TOPIC_SUFFIX } from './constant';
+import { MQTT_EVENT_TYPE, TOPIC_PREFIX, TOPIC_SUFFIX, TOPIC_SEPARATOR } from './constant';
 import type { IEventEmitter, MqttMessageData, CallbackType } from './types';
 
 interface MqttOptions extends mqtt.IClientOptions {
@@ -135,7 +135,9 @@ class MqttService {
         if (!this.options?.username) {
             throw new Error('MQTT username is required');
         }
-        return `${TOPIC_PREFIX}/${this.options.username}/${direction}/${TOPIC_SUFFIX[event]}`;
+        return [TOPIC_PREFIX, this.options.username, direction, TOPIC_SUFFIX[event]].join(
+            TOPIC_SEPARATOR,
+        );
     }
 
     /**
@@ -171,6 +173,10 @@ class MqttService {
             });
         }
         this.eventEmitter.subscribe(topic, callback);
+
+        return () => {
+            this.unsubscribe(event, callback);
+        };
     }
 
     /**

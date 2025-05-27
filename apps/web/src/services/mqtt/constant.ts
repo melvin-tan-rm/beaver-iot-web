@@ -14,6 +14,9 @@ export const TOPIC_SUFFIX: Record<MQTT_EVENT_TYPE, string> = {
     [MQTT_EVENT_TYPE.EXCHANGE]: 'web/exchange',
 };
 
+/** Topic separator */
+export const TOPIC_SEPARATOR = '/';
+
 /** Maximum retry */
 export const MAX_RETRY = 3;
 
