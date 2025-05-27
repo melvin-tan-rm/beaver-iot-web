@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { renderToString } from 'react-dom/server';
 import cls from 'classnames';
 import * as echarts from 'echarts/core';
+import { useTheme } from '@milesight/shared/src/hooks';
 import { useBasicChartEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
@@ -26,6 +27,7 @@ const View = (props: ViewProps) => {
     const { isPreview } = configJson || {};
 
     const chartWrapperRef = useRef<HTMLDivElement>(null);
+    const { grey } = useTheme();
     const { chartShowData, chartLabels, chartRef, xAxisRange, chartZoomRef, xAxisConfig } =
         useBasicChartEntity({
             entity,
@@ -57,7 +59,12 @@ const View = (props: ViewProps) => {
                 type: 'time',
                 min: xAxisMin,
                 max: xAxisMax,
-                axisLine: { onZero: false },
+                axisLine: {
+                    onZero: false,
+                    lineStyle: {
+                        color: grey[500],
+                    },
+                },
             },
             yAxis: {
                 type: 'value',
@@ -157,6 +164,7 @@ const View = (props: ViewProps) => {
             myChart?.dispose();
         };
     }, [
+        grey,
         entity,
         chartLabels,
         chartRef,
@@ -177,7 +185,7 @@ const View = (props: ViewProps) => {
         >
             <Tooltip className={styles.name} autoEllipsis title={title} />
             <div className={styles['bar-chart-content']}>
-                <div ref={chartRef as any} className={styles['bar-chart-content__chart']} />
+                <div ref={chartRef} className={styles['bar-chart-content__chart']} />
             </div>
             {React.cloneElement(chartZoomRef.current?.iconNode, {
                 className: cls('reset-chart-zoom', { 'reset-chart-zoom--isEdit': isEdit }),

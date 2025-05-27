@@ -13,7 +13,7 @@ interface IProps {
 const View = (props: IProps) => {
     const { config } = props;
     const { entityList, title, metrics, time } = config || {};
-    const chartRef = useRef<HTMLCanvasElement>(null);
+    const chartRef = useRef<HTMLDivElement>(null);
     const chartWrapperRef = useRef<HTMLDivElement>(null);
 
     const { purple, white, grey } = useTheme();
@@ -175,7 +175,7 @@ const View = (props: IProps) => {
         <div className="ms-radar-chart" ref={chartWrapperRef}>
             <Tooltip className="ms-radar-chart__header" autoEllipsis title={title} />
             <div className="ms-radar-chart__content">
-                <div ref={chartRef as any} className="ms-chart-content__chart" />
+                <div ref={chartRef} className="ms-chart-content__chart" />
             </div>
         </div>
     );

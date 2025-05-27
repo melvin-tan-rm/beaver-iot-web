@@ -16,7 +16,7 @@ const DEFAULT_RANGE = 10;
 const View = (props: Props) => {
     const { config } = props;
     const { entity, title, time, metrics } = config || {};
-    const chartRef = useRef<HTMLCanvasElement>(null);
+    const chartRef = useRef<HTMLDivElement>(null);
     const chartWrapperRef = useRef<HTMLDivElement>(null);
     const { purple, grey } = useTheme();
     const { aggregateHistoryData } = useSource({ entity, metrics, time });
@@ -231,7 +231,7 @@ const View = (props: Props) => {
         <div className="ms-gauge-chart" ref={chartWrapperRef}>
             <Tooltip className="ms-gauge-chart__header" autoEllipsis title={title} />
             <div className="ms-gauge-chart__content">
-                <div ref={chartRef as any} className="ms-chart-content__chart" />
+                <div ref={chartRef} className="ms-chart-content__chart" />
             </div>
         </div>
     );

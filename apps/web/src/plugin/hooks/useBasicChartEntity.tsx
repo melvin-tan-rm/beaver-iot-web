@@ -85,7 +85,7 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
     /**
      * Canvas ref
      */
-    const chartRef = useRef<HTMLCanvasElement>(null);
+    const chartRef = useRef<HTMLDivElement>(null);
 
     /**
      * The data required for the chart

@@ -18,7 +18,7 @@ const View = (props: IProps) => {
     const { isPreview } = configJson || {};
     const { title } = config || {};
 
-    const chartRef = useRef<HTMLCanvasElement>(null);
+    const chartRef = useRef<HTMLDivElement>(null);
     const chartWrapperRef = useRef<HTMLDivElement>(null);
     const { getCSSVariableValue, grey } = useTheme();
 
@@ -99,7 +99,7 @@ const View = (props: IProps) => {
         >
             <Tooltip className="ms-pie-chart__header" autoEllipsis title={title} />
             <div className="ms-pie-chart__content">
-                <div ref={chartRef as any} className="ms-chart-content__chart" />
+                <div ref={chartRef} className="ms-chart-content__chart" />
             </div>
         </div>
     );

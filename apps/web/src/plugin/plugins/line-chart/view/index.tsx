@@ -85,7 +85,12 @@ const View = (props: ViewProps) => {
                 type: 'time',
                 min: xAxisMin,
                 max: xAxisMax,
-                axisLine: { onZero: false },
+                axisLine: {
+                    onZero: false,
+                    lineStyle: {
+                        color: grey[500],
+                    },
+                },
             },
             yAxis: new Array(newChartShowData.length || 1)
                 .fill({ type: 'value' })
@@ -229,7 +234,7 @@ const View = (props: ViewProps) => {
         >
             <Tooltip className={styles.name} autoEllipsis title={title} />
             <div className={styles['line-chart-content']}>
-                <div ref={chartRef as any} className={styles['line-chart-content__chart']} />
+                <div ref={chartRef} className={styles['line-chart-content__chart']} />
             </div>
             {React.cloneElement(chartZoomRef.current?.iconNode, {
                 className: cls('reset-chart-zoom', { 'reset-chart-zoom--isEdit': isEdit }),
