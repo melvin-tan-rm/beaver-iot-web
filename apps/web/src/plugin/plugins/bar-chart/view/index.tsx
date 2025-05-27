@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { renderToString } from 'react-dom/server';
 import cls from 'classnames';
 import * as echarts from 'echarts/core';
 import { useBasicChartEntity } from '@/plugin/hooks';
@@ -16,10 +17,11 @@ export interface ViewProps {
     configJson: {
         isPreview?: boolean;
     };
+    isEdit?: boolean;
 }
 
 const View = (props: ViewProps) => {
-    const { config, configJson } = props;
+    const { config, configJson, isEdit } = props;
     const { entity, title, time } = config || {};
     const { isPreview } = configJson || {};
 
@@ -96,6 +98,46 @@ const View = (props: ViewProps) => {
                 textStyle: {
                     color: '#fff',
                 },
+                formatter: (params: any[]) => {
+                    return renderToString(
+                        <div>
+                            {params.map((item, index) => {
+                                const { data, marker, seriesName, seriesIndex, axisValueLabel } =
+                                    item || {};
+
+                                const getUnit = () => {
+                                    const { rawData: currentEntity } = entity?.[seriesIndex] || {};
+                                    if (!currentEntity) return;
+                                    const { entityValueAttribute } = currentEntity || {};
+                                    const { unit } = entityValueAttribute || {};
+                                    return unit;
+                                };
+                                const unit = getUnit();
+
+                                return (
+                                    <div>
+                                        {index === 0 && <div>{axisValueLabel}</div>}
+                                        <div
+                                            style={{
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                            }}
+                                        >
+                                            <div>
+                                                <span
+                                                    //  eslint-disable-next-line react/no-danger
+                                                    dangerouslySetInnerHTML={{ __html: marker }}
+                                                />
+                                                <span>{seriesName || ''}:&nbsp;&nbsp;</span>
+                                            </div>
+                                            <div>{`${data?.[1]}${unit || ''}`}</div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>,
+                    );
+                },
             },
             dataZoom: [
                 {
@@ -115,6 +157,7 @@ const View = (props: ViewProps) => {
             myChart?.dispose();
         };
     }, [
+        entity,
         chartLabels,
         chartRef,
         chartShowData,
@@ -135,8 +178,10 @@ const View = (props: ViewProps) => {
             <Tooltip className={styles.name} autoEllipsis title={title} />
             <div className={styles['bar-chart-content']}>
                 <div ref={chartRef as any} className={styles['bar-chart-content__chart']} />
-                {chartZoomRef.current?.iconNode}
             </div>
+            {React.cloneElement(chartZoomRef.current?.iconNode, {
+                className: cls('reset-chart-zoom', { 'reset-chart-zoom--isEdit': isEdit }),
+            })}
         </div>
     );
 };

@@ -56,10 +56,11 @@ export const useResizeChart = ({ chartWrapperRef }: IProps) => {
                         distance: basicSize / 2 + 5,
                     },
                     axisLabel: {
-                        show: chartSize > 180,
-                        distance: basicSize + 10,
+                        // show: chartSize > 180,
+                        distance: basicSize * 1.6,
                         width: chartSize / splitNumber,
                         overflow: 'truncate',
+                        fontSize: basicSize * 0.85,
                     },
                     pointer: {
                         width: basicSize,
@@ -82,10 +83,11 @@ export const useResizeChart = ({ chartWrapperRef }: IProps) => {
         let resizeObserver: ResizeObserver | null = null;
         let timer: NodeJS.Timeout | null = null;
 
+        updateGaugeConfigure(myChart);
         timer = setTimeout(() => {
             resizeObserver = new ResizeObserver(() => {
-                updateGaugeConfigure(myChart);
                 myChart.resize();
+                updateGaugeConfigure(myChart);
             });
             resizeObserver.observe(chartWrapper);
         }, 1000);

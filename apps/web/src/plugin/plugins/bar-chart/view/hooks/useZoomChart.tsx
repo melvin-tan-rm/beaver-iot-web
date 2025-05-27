@@ -68,6 +68,9 @@ export const useZoomChart = ({
 
             const { isZooming } = params || {};
 
+            const isHandleScale = params.batch;
+            isHandleScale && chartZoomRef.current?.show();
+
             setChartZoom({
                 start,
                 end,
