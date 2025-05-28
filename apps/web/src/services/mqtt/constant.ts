@@ -1,4 +1,17 @@
 /**
+ * MQTT status
+ * @description The status of the MQTT connection
+ */
+export enum MQTT_STATUS {
+    /** connecting */
+    CONNECTING = 'CONNECTING',
+    /** connected */
+    CONNECTED = 'CONNECTED',
+    /** disconnected */
+    DISCONNECTED = 'DISCONNECTED',
+}
+
+/**
  * MQTT event type
  */
 export enum MQTT_EVENT_TYPE {

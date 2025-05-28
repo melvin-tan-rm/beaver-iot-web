@@ -1,8 +1,15 @@
 /* eslint-disable no-console */
 import mqtt from 'mqtt';
 import { safeJsonParse } from '@milesight/shared/src/utils/tools';
+import { Logger } from '@milesight/shared/src/utils/logger';
 import { EventEmitter } from '@milesight/shared/src/utils/event-emitter';
-import { MQTT_EVENT_TYPE, TOPIC_PREFIX, TOPIC_SUFFIX, TOPIC_SEPARATOR } from './constant';
+import {
+    MQTT_STATUS,
+    MQTT_EVENT_TYPE,
+    TOPIC_PREFIX,
+    TOPIC_SUFFIX,
+    TOPIC_SEPARATOR,
+} from './constant';
 import type { IEventEmitter, MqttMessageData, CallbackType } from './types';
 
 interface MqttOptions extends mqtt.IClientOptions {
@@ -12,6 +19,10 @@ interface MqttOptions extends mqtt.IClientOptions {
 
 type MqttMessageDataType = MqttMessageData | undefined;
 
+const logger = new Logger('MQTT');
+/**
+ * Default MQTT connection options
+ */
 const DEFAULT_OPTIONS: mqtt.IClientOptions = {
     /** Clean messages while offline */
     clean: true,
@@ -38,12 +49,13 @@ const DEFAULT_OPTIONS: mqtt.IClientOptions = {
  * MQTT service class
  */
 class MqttService {
-    private debug: boolean = false;
+    private debug: boolean;
     private client: mqtt.MqttClient | null = null;
     private options?: Omit<MqttOptions, 'url' | 'debug'>;
+    private subscribedTopics: string[] = [];
     private readonly eventEmitter: EventEmitter<IEventEmitter> = new EventEmitter(); // Event bus
 
-    status: 'connecting' | 'connected' | 'disconnected' = 'disconnected';
+    status: MQTT_STATUS = MQTT_STATUS.DISCONNECTED;
 
     constructor({ url, debug, ...options }: MqttOptions) {
         if (!options.username || !options.password) {
@@ -51,8 +63,8 @@ class MqttService {
         }
 
         this.options = options;
-        this.debug = debug || false;
-        this.status = 'connecting';
+        this.debug = !!debug;
+        this.status = MQTT_STATUS.CONNECTING;
         this.client = mqtt.connect(url, { ...DEFAULT_OPTIONS, ...options });
         this.init();
     }
@@ -61,27 +73,27 @@ class MqttService {
         if (!this.client) return;
 
         this.client.on('connect', () => {
-            this.status = 'connected';
+            this.status = MQTT_STATUS.CONNECTED;
             this.log('MQTT connected');
         });
 
         this.client.on('reconnect', () => {
-            this.status = 'connecting';
+            this.status = MQTT_STATUS.CONNECTING;
             this.log('MQTT reconnecting...');
         });
 
         this.client.on('disconnect', () => {
-            this.status = 'disconnected';
-            this.log('disconnected');
+            this.status = MQTT_STATUS.DISCONNECTED;
+            this.log(MQTT_STATUS.DISCONNECTED);
         });
 
         this.client.on('offline', () => {
-            this.status = 'disconnected';
+            this.status = MQTT_STATUS.DISCONNECTED;
             this.log('MQTT offline');
         });
 
         this.client.on('error', err => {
-            this.status = 'disconnected';
+            this.status = MQTT_STATUS.DISCONNECTED;
             this.client?.end();
             this.log(['MQTT error:', err]);
         });
@@ -109,16 +121,16 @@ class MqttService {
         const logMessage = Array.isArray(message) ? message : [message];
         switch (level) {
             case 'info':
-                console.info(...logMessage);
+                logger.info(...logMessage);
                 break;
             case 'warn':
-                console.warn(...logMessage);
+                logger.warn(...logMessage);
                 break;
             case 'error':
-                console.error(...logMessage);
+                logger.error(...logMessage);
                 break;
             default:
-                console.log(...logMessage);
+                logger.log(...logMessage);
                 break;
         }
     }
@@ -147,7 +159,7 @@ class MqttService {
      * @param {any} message - Message content to be sent (automatically serialized to JSON string)
      */
     publish(event: MQTT_EVENT_TYPE, message: any) {
-        if (this.status !== 'connected') return;
+        if (this.status !== MQTT_STATUS.CONNECTED) return;
         const topic = this.genTopic(event, 'uplink');
         this.client?.publish(topic, JSON.stringify(message));
     }
@@ -159,15 +171,15 @@ class MqttService {
      * @param {CallbackType} callback - Callback function for handling incoming messages
      */
     subscribe(event: MQTT_EVENT_TYPE, callback: CallbackType) {
-        if (this.status !== 'connected') return;
+        if (this.status !== MQTT_STATUS.CONNECTED) return;
         const topic = this.genTopic(event);
-        const topics = this.eventEmitter.getTopics();
 
-        if (!topics.includes(topic)) {
+        if (!this.subscribedTopics.includes(topic)) {
             this.client?.subscribe(topic, (err, granted) => {
                 if (err) {
                     this.log([`MQTT subscribe ${topic} failed:`, err], 'error');
                 } else {
+                    this.subscribedTopics.push(topic);
                     this.log([`MQTT subscribe ${topic} success:`, granted]);
                 }
             });
@@ -175,7 +187,7 @@ class MqttService {
         this.eventEmitter.subscribe(topic, callback);
 
         return () => {
-            this.unsubscribe(event, callback);
+            this.eventEmitter.unsubscribe(topic, callback);
         };
     }
 
@@ -186,19 +198,20 @@ class MqttService {
      * @param {CallbackType} [callback] - Optional callback function to remove specific subscription
      */
     unsubscribe(event: MQTT_EVENT_TYPE, callback?: CallbackType) {
-        if (this.status !== 'connected') return;
+        if (this.status !== MQTT_STATUS.CONNECTED) return;
         const topic = this.genTopic(event);
-        const topics = this.eventEmitter.getTopics();
 
-        if (topics.includes(topic)) {
-            this.client?.unsubscribe(topic, (err, granted) => {
-                if (err) {
-                    this.log([`MQTT unsubscribe ${topic} failed:`, err], 'error');
-                } else {
-                    this.log([`MQTT unsubscribe ${topic} success:`, granted]);
+        this.client?.unsubscribe(topic, (err, granted) => {
+            if (err) {
+                this.log([`MQTT unsubscribe ${topic} failed:`, err], 'error');
+            } else {
+                const index = this.subscribedTopics.indexOf(topic);
+                if (index > -1) {
+                    this.subscribedTopics.splice(index, 1);
                 }
-            });
-        }
+                this.log([`MQTT unsubscribe ${topic} success:`, granted]);
+            }
+        });
         this.eventEmitter.unsubscribe(topic, callback);
     }
 }

@@ -1,3 +1,5 @@
+import { isSafari } from './userAgent';
+
 /* eslint-disable no-console */
 type Methods = 'log' | 'info' | 'warn' | 'error' | 'debug' | 'groupCollapsed' | 'groupEnd';
 
@@ -23,7 +25,7 @@ export class Logger {
         if (method === 'groupCollapsed') {
             // Safari doesn't print all console.groupCollapsed() arguments:
             // https://bugs.webkit.org/show_bug.cgi?id=182754
-            if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+            if (isSafari()) {
                 console[method](...args);
                 return;
             }
