@@ -7,6 +7,7 @@ import { AddIcon, toast } from '@milesight/shared/src/components';
 import { useI18n, usePreventLeave } from '@milesight/shared/src/hooks';
 import { dashboardAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import { DashboardDetail } from '@/services/http/dashboard';
+import { useMqtt, MQTT_STATUS, MQTT_EVENT_TYPE, BATCH_PUSH_TIME } from '@/hooks';
 import {
     TabPanel,
     useConfirm,
@@ -14,6 +15,7 @@ import {
     Empty,
     SidebarController,
 } from '@/components';
+import { useActivityEntity } from '@/plugin/hooks';
 import { PERMISSIONS } from '@/constants';
 import { useDashboardStore } from '@/stores';
 import DashboardContent from './components/dashboard-content';
@@ -175,6 +177,33 @@ export default () => {
             );
         });
     }, [getDashboards, getIntlText, isEdit, isTooSmallScreen, loading, tabKey, tabs]);
+
+    // ---------- Listen the entities change by Mqtt ----------
+    const { status: mqttStatus, client: mqttClient } = useMqtt();
+    const { triggerEntityListener } = useActivityEntity();
+
+    useEffect(() => {
+        if (!tabKey || !mqttClient || mqttStatus !== MQTT_STATUS.CONNECTED) return;
+
+        const removeTriggerListener = mqttClient.subscribe(MQTT_EVENT_TYPE.EXCHANGE, payload => {
+            // console.log('[MQTT] Receive the message', payload);
+            triggerEntityListener(payload.payload?.entity_ids || [], {
+                dashboardId: tabKey,
+                payload,
+                periodTime: BATCH_PUSH_TIME,
+            });
+        });
+
+        return removeTriggerListener;
+    }, [mqttStatus, mqttClient, tabKey, triggerEntityListener]);
+
+    // Unsubscribe the topic when the dashboard page is unmounted
+    useEffect(() => {
+        return () => {
+            mqttClient?.unsubscribe(MQTT_EVENT_TYPE.EXCHANGE);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <div className="ms-main dashboard">

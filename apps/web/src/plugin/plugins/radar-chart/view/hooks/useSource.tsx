@@ -1,16 +1,19 @@
 import { useEffect, useMemo } from 'react';
 import { useRequest } from 'ahooks';
-import ws, { getExChangeTopic } from '@/services/ws';
+// import ws, { getExChangeTopic } from '@/services/ws';
 import { awaitWrap, entityAPI, getResponseData, isRequestSuccess } from '@/services/http';
+import { useActivityEntity } from '../../../../hooks';
 import { ViewConfigProps, AggregateHistoryList } from '../../typings';
 
 interface IProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     entityList: ViewConfigProps['entityList'];
     metrics: ViewConfigProps['metrics'];
     time: ViewConfigProps['time'];
 }
 export const useSource = (props: IProps) => {
-    const { entityList, metrics, time } = props;
+    const { entityList, metrics, time, widgetId, dashboardId } = props;
 
     const { data: aggregateHistoryList, run: getAggregateHistoryList } = useRequest(
         async () => {
@@ -50,20 +53,40 @@ export const useSource = (props: IProps) => {
         getAggregateHistoryList();
     }, [entityList, time, metrics]);
 
-    const topics = useMemo(() => {
-        return (entityList || [])
-            .map((entity: EntityOptionType) => {
-                const entityKey = entity?.rawData?.entityKey?.toString();
-                return entityKey && getExChangeTopic(entityKey);
-            })
-            .filter(Boolean) as string[];
-    }, [entityList]);
-    // Subscribe to WS theme
-    useEffect(() => {
-        if (!topics?.length) return;
+    // const topics = useMemo(() => {
+    //     return (entityList || [])
+    //         .map((entity: EntityOptionType) => {
+    //             const entityKey = entity?.rawData?.entityKey?.toString();
+    //             return entityKey && getExChangeTopic(entityKey);
+    //         })
+    //         .filter(Boolean) as string[];
+    // }, [entityList]);
+    // // Subscribe to WS theme
+    // useEffect(() => {
+    //     if (!topics?.length) return;
 
-        return ws.subscribe(topics, getAggregateHistoryList);
-    }, [topics]);
+    //     return ws.subscribe(topics, getAggregateHistoryList);
+    // }, [topics]);
+
+    // ---------- Entity status management ----------
+    const { addEntityListener } = useActivityEntity();
+    const entityIds = useMemo(() => {
+        return (entityList || []).map(entity => entity?.value);
+    }, [entityList]);
+
+    useEffect(() => {
+        if (!widgetId || !dashboardId || !entityIds.length) return;
+
+        const removeEventListener = addEntityListener(entityIds, {
+            widgetId,
+            dashboardId,
+            callback: getAggregateHistoryList,
+        });
+
+        return () => {
+            removeEventListener();
+        };
+    }, [entityIds, widgetId, dashboardId, addEntityListener, getAggregateHistoryList]);
 
     return {
         aggregateHistoryList,

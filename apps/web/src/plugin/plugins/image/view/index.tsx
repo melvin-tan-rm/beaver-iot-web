@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, memo } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { useRequest, useMemoizedFn } from 'ahooks';
 import { BrokenImageIcon } from '@milesight/shared/src/components';
 import {
@@ -8,7 +8,7 @@ import {
     getResponseData,
     API_PREFIX,
 } from '@/services/http';
-import ws, { getExChangeTopic } from '@/services/ws';
+import { useActivityEntity } from '../../../hooks';
 import { ImageConfigType } from '../typings';
 
 import './style.less';
@@ -28,6 +28,8 @@ import './style.less';
 
 export interface ViewProps {
     isEdit: boolean;
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: ImageConfigType;
     configJson: {
         isPreview?: boolean;
@@ -44,13 +46,22 @@ const genFullUrl = (path?: string) => {
 };
 
 const View = (props: ViewProps) => {
-    const { config, configJson, isEdit } = props;
+    const { config, configJson, widgetId, dashboardId, isEdit } = props;
     const { label, dataType, entity, file, url } = config || {};
     const { isPreview } = configJson || {};
 
     const [imageSrc, setImageSrc] = useState('');
     const [imageFailed, setImageFailed] = useState(false);
 
+    // ---------- Render Image ----------
+    /**
+     * handle image loading error failed
+     */
+    const handleImageFailed = useMemoizedFn(() => {
+        if (imageFailed) return;
+
+        setImageFailed(true);
+    });
     /**
      * Request physical state function
      */
@@ -74,7 +85,7 @@ const View = (props: ViewProps) => {
         {
             manual: true,
             debounceWait: 300,
-            refreshDeps: [entity],
+            refreshDeps: [entity?.value],
         },
     );
 
@@ -109,53 +120,23 @@ const View = (props: ViewProps) => {
         }
     }, [dataType, entity?.value, file, url, requestEntityStatus]);
 
-    /**
-     * webSocket subscription theme
-     */
-    const topic = useMemo(
-        () => entity?.rawData?.entityKey && getExChangeTopic(entity.rawData.entityKey),
-        [entity],
-    );
+    // ---------- Entity status management ----------
+    const { addEntityListener } = useActivityEntity();
 
-    /**
-     * websocket subscription
-     */
     useEffect(() => {
-        /**
-         * WEBSOCKET subscription is not performed in preview status
-         */
-        if (!topic || Boolean(isPreview)) return;
+        const entityId = entity?.value;
+        if (!widgetId || !dashboardId || !entityId) return;
 
-        /**
-         * When the subscription theme, the function of canceling the subscription will be returned, so if you return directly, you can cancel the subscription when uninstalled
-         */
-        return ws.subscribe(topic, requestEntityStatus);
-    }, [topic, requestEntityStatus, isPreview]);
+        const removeEventListener = addEntityListener(entityId, {
+            widgetId,
+            dashboardId,
+            callback: requestEntityStatus,
+        });
 
-    /**
-     * Determines whether is valid image src
-     */
-    // const convertImageSrc = useMemo(() => {
-    //     setImageFailed(false);
-
-    //     if (
-    //         isBase64(imageSrc) ||
-    //         /(.?\/)+.+(\.(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif))$/i.test(imageSrc)
-    //     ) {
-    //         return imageSrc;
-    //     }
-
-    //     return '';
-    // }, [imageSrc]);
-
-    /**
-     * handle image loading error failed
-     */
-    const handleImageFailed = useMemoizedFn(() => {
-        if (imageFailed) return;
-
-        setImageFailed(true);
-    });
+        return () => {
+            removeEventListener();
+        };
+    }, [entity?.value, widgetId, dashboardId, addEntityListener, requestEntityStatus]);
 
     return (
         <div className={`image-wrapper ${isPreview ? 'image-wrapper__preview' : ''}`}>

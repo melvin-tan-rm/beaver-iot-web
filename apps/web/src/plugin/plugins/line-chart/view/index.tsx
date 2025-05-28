@@ -12,6 +12,8 @@ import { useLineChart } from './hooks';
 import styles from './style.module.less';
 
 export interface ViewProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: {
         entityPosition: ChartEntityPositionValueType[];
         title: string;
@@ -26,7 +28,7 @@ export interface ViewProps {
 
 const MAX_VALUE_RATIO = 1.1;
 const View = (props: ViewProps) => {
-    const { config, configJson } = props;
+    const { config, configJson, widgetId, dashboardId } = props;
     const { entityPosition, title, time, leftYAxisUnit, rightYAxisUnit } = config || {};
     const { isPreview } = configJson || {};
 
@@ -45,6 +47,8 @@ const View = (props: ViewProps) => {
         chartZoomRef,
         xAxisConfig,
     } = useBasicChartEntity({
+        widgetId,
+        dashboardId,
         entity,
         time,
         isPreview,

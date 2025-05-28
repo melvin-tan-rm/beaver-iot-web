@@ -8,13 +8,15 @@ import type { ViewConfigProps } from '../typings';
 import './style.less';
 
 interface Props {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: ViewConfigProps;
     configJson: CustomComponentProps;
 }
 const View = (props: Props) => {
-    const { config, configJson } = props;
+    const { config, configJson, widgetId, dashboardId } = props;
     const { title, entity } = config || {};
-    const { entityStatusValue } = useSource({ entity });
+    const { entityStatusValue } = useSource({ entity, widgetId, dashboardId });
     const { isPreview } = configJson || {};
 
     const { getCSSVariableValue } = useTheme();

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef } from 'react';
 import cls from 'classnames';
 import { useRequest } from 'ahooks';
 import Chart from 'chart.js/auto';
@@ -12,13 +12,15 @@ import {
     getResponseData,
     isRequestSuccess,
 } from '@/services/http';
-import ws, { getExChangeTopic } from '@/services/ws';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
 import { ViewConfigProps } from '../typings';
+import { useActivityEntity } from '../../../hooks';
 import './style.less';
 
 interface IProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: ViewConfigProps;
     configJson: CustomComponentProps;
 }
@@ -27,7 +29,7 @@ interface AggregateHistoryList {
     data: EntityAPISchema['getAggregateHistory']['response'];
 }
 const View = (props: IProps) => {
-    const { config, configJson } = props;
+    const { config, configJson, widgetId, dashboardId } = props;
     const { isPreview } = configJson || {};
     const { entity, title, metrics, time } = config || {};
 
@@ -127,20 +129,23 @@ const View = (props: IProps) => {
         return renderChart();
     }, [countData]);
 
-    const topic = useMemo(() => {
-        const entityKey = entity?.value?.toString();
-        return entityKey && getExChangeTopic(entityKey);
-    }, [entity]);
+    // ---------- Entity status management ----------
+    const { addEntityListener } = useActivityEntity();
 
-    // Subscribe to WS topics
     useEffect(() => {
-        if (!topic || configJson.isPreview) return;
+        const entityId = entity?.value;
+        if (!widgetId || !dashboardId || !entityId) return;
 
-        const unsubscribe = ws.subscribe(topic, getData);
+        const removeEventListener = addEntityListener(entityId, {
+            widgetId,
+            dashboardId,
+            callback: getData,
+        });
+
         return () => {
-            unsubscribe?.();
+            removeEventListener();
         };
-    }, [topic]);
+    }, [entity?.value, widgetId, dashboardId, addEntityListener, getData]);
 
     return (
         <div className={cls('ms-pie-chart', { 'ms-pie-chart--preview': isPreview })}>

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { create } from 'zustand';
 import { useRequest } from 'ahooks';
-import { MqttService } from '@/services/mqtt';
+import { MqttService, MQTT_STATUS, MQTT_EVENT_TYPE, BATCH_PUSH_TIME } from '@/services/mqtt';
 import { credentialsApi, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 
 const useMqttStore = create<{
@@ -53,7 +53,11 @@ const useMqtt = () => {
         setClient(mqttClient);
     }, [data, client, setClient]);
 
-    return client;
+    return {
+        status: client?.status || MQTT_STATUS.DISCONNECTED,
+        client,
+    };
 };
 
+export { MQTT_STATUS, MQTT_EVENT_TYPE, BATCH_PUSH_TIME };
 export default useMqtt;

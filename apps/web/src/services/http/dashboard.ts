@@ -9,6 +9,7 @@ export interface DashboardDetail {
     widgets: WidgetDetail[];
     /** is home dashboard */
     home: boolean;
+    create_at: string;
 }
 
 export interface WidgetDetail {
@@ -25,6 +26,31 @@ export interface DashboardAPISchema extends APISchema {
     getDashboards: {
         request: void;
         response: DashboardDetail[];
+    };
+
+    /**  */
+    getDashboardDetail: {
+        request: {
+            id: ApiKey;
+        };
+        response: DashboardDetail & {
+            entities: {
+                entity_id: string;
+                entity_key: string;
+                entity_name: string;
+                entity_parent_name?: string;
+                entity_description?: string;
+                entity_type: EntityType;
+                entity_is_customized: boolean;
+                entity_access_mod: EntityAccessMode;
+                entity_value_type: string;
+                entity_value_attribute?: Partial<EntityValueAttributeType>;
+                entity_created_at: number;
+                entity_updated_at: number;
+                integration_name?: string;
+                device_name?: string;
+            }[];
+        };
     };
 
     /** Add dashboard */
@@ -51,6 +77,8 @@ export interface DashboardAPISchema extends APISchema {
             /** name */
             name?: string;
             widgets?: WidgetDetail[];
+            /** The entities ids that is used in dashboard */
+            entity_ids?: ApiKey[];
         };
         response: unknown;
     };
@@ -98,6 +126,7 @@ export interface DashboardAPISchema extends APISchema {
 export default attachAPI<DashboardAPISchema>(client, {
     apis: {
         getDashboards: `GET ${API_PREFIX}/dashboard/dashboards`,
+        getDashboardDetail: `GET ${API_PREFIX}/dashboard/:id`,
         addDashboard: `POST ${API_PREFIX}/dashboard`,
         deleteDashboard: `DELETE ${API_PREFIX}/dashboard/:id`,
         updateDashboard: `PUT ${API_PREFIX}/dashboard/:dashboard_id`,

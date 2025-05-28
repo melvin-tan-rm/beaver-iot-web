@@ -44,12 +44,14 @@ interface WidgetProps {
     onEdit: (data: WidgetDetail) => void;
     mainRef: any;
     isTooSmallScreen: boolean;
+    dashboardId: ApiKey;
 }
 
 const Widgets = (props: WidgetProps) => {
     const { getCSSVariableValue } = useTheme();
 
-    const { widgets, onChangeWidgets, isEdit, onEdit, mainRef, isTooSmallScreen } = props;
+    const { widgets, onChangeWidgets, isEdit, onEdit, mainRef, isTooSmallScreen, dashboardId } =
+        props;
     const widgetRef = useRef<WidgetDetail[]>();
     const requestRef = useRef<any>(null);
     const bgImageTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -291,6 +293,7 @@ const Widgets = (props: WidgetProps) => {
                             isEdit={isEdit}
                             key={id}
                             mainRef={mainRef}
+                            dashboardId={dashboardId}
                         />
                     </div>
                 );

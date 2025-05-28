@@ -1,13 +1,16 @@
-import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { useRequest } from 'ahooks';
 import { IconButton } from '@mui/material';
 import { RefreshIcon } from '@milesight/shared/src/components/icons';
 
 import { useTime } from '@milesight/shared/src/hooks';
 import { entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
-import ws, { getExChangeTopic } from '@/services/ws';
+// import ws, { getExChangeTopic } from '@/services/ws';
+import useActivityEntity from './useActivityEntity';
 
 export interface UseBasicChartEntityProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     entity?: EntityOptionType[];
     time: number;
     isPreview?: boolean;
@@ -75,7 +78,7 @@ const X_RANGE_MAP: Record<number, { stepSize: number; unit: 'minute' | 'hour' | 
  * Currently used in (column diagram, horizontal column diagram, folding drawing, area diagram)
  */
 export function useBasicChartEntity(props: UseBasicChartEntityProps) {
-    const { entity, time, isPreview } = props;
+    const { entity, time, isPreview, widgetId, dashboardId } = props;
 
     const { getTimeFormat, getTime } = useTime();
 
@@ -132,21 +135,6 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
             </div>
         ),
     });
-    /**
-     * webSocket subscription theme
-     */
-    const topics = useMemo(() => {
-        if (!entity) return;
-
-        const topicList: string[] = [];
-        entity.forEach(e => {
-            if (e?.rawData?.entityKey) {
-                topicList.push(getExChangeTopic(e.rawData?.entityKey));
-            }
-        });
-
-        return topicList;
-    }, [entity]);
 
     /**
      * Request chart data
@@ -235,18 +223,6 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
         requestChartData();
     }, [entity, time, requestChartData]);
 
-    /**
-     * Websocket subscription
-     */
-    useEffect(() => {
-        /**
-         * Do not subscribe in preview status
-         */
-        if (!topics || !topics.length || Boolean(isPreview)) return;
-
-        return ws.subscribe(topics, requestChartData);
-    }, [topics, requestChartData, isPreview]);
-
     // Calculate interval time
     const timeUnit: any = useMemo(() => {
         // Show less than one day according to hours
@@ -309,6 +285,54 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
             maxTicksLimit: MAX_TICKS_LIMIT,
         };
     }, [xAxisRange, getTime, time]);
+
+    // /**
+    //  * webSocket subscription theme
+    //  */
+    // const topics = useMemo(() => {
+    //     if (!entity) return;
+
+    //     const topicList: string[] = [];
+    //     entity.forEach(e => {
+    //         if (e?.rawData?.entityKey) {
+    //             topicList.push(getExChangeTopic(e.rawData?.entityKey));
+    //         }
+    //     });
+
+    //     return topicList;
+    // }, [entity]);
+
+    // /**
+    //  * Websocket subscription
+    //  */
+    // useEffect(() => {
+    //     /**
+    //      * Do not subscribe in preview status
+    //      */
+    //     if (!topics || !topics.length || Boolean(isPreview)) return;
+
+    //     return ws.subscribe(topics, requestChartData);
+    // }, [topics, requestChartData, isPreview]);
+
+    // ---------- Entity status management ----------
+    const { addEntityListener } = useActivityEntity();
+    const entityIds = useMemo(() => {
+        return (entity || []).map(entity => entity?.value);
+    }, [entity]);
+
+    useEffect(() => {
+        if (!widgetId || !dashboardId || !entityIds.length) return;
+
+        const removeEventListener = addEntityListener(entityIds, {
+            widgetId,
+            dashboardId,
+            callback: requestChartData,
+        });
+
+        return () => {
+            removeEventListener();
+        };
+    }, [entityIds, widgetId, dashboardId, addEntityListener, requestChartData]);
 
     return {
         /**

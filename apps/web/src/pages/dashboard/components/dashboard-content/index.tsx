@@ -372,6 +372,7 @@ export default (props: DashboardContentProps) => {
                             onEdit={handleSelectPlugin}
                             mainRef={mainRef}
                             isTooSmallScreen={isTooSmallScreen}
+                            dashboardId={dashboardDetail.dashboard_id}
                         />
                     </div>
                 </div>

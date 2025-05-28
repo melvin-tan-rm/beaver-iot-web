@@ -9,6 +9,8 @@ import { Tooltip } from '@/plugin/view-components';
 import styles from './style.module.less';
 
 export interface ViewProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: {
         entity?: EntityOptionType[];
         title?: string;
@@ -22,7 +24,7 @@ export interface ViewProps {
 const MAX_VALUE_RATIO = 1.1;
 const CHART_BG_COLOR_OPACITY = 0.2;
 const View = (props: ViewProps) => {
-    const { config, configJson } = props;
+    const { config, configJson, widgetId, dashboardId } = props;
     const { entity, title, time } = config || {};
     const { isPreview } = configJson || {};
     const chartWrapperRef = useRef<HTMLDivElement>(null);
@@ -35,6 +37,8 @@ const View = (props: ViewProps) => {
         chartZoomRef,
         xAxisConfig,
     } = useBasicChartEntity({
+        widgetId,
+        dashboardId,
         entity,
         time,
         isPreview,

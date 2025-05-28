@@ -8,13 +8,21 @@ import type { AggregateHistoryList, ViewConfigProps } from '../typings';
 import './style.less';
 
 interface IProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: ViewConfigProps;
 }
 const View = (props: IProps) => {
-    const { config } = props;
+    const { config, widgetId, dashboardId } = props;
     const { entityList, title, metrics, time } = config || {};
     const { purple, white } = useTheme();
-    const { aggregateHistoryList } = useSource({ entityList, metrics, time });
+    const { aggregateHistoryList } = useSource({
+        widgetId,
+        dashboardId,
+        entityList,
+        metrics,
+        time,
+    });
 
     const chartRef = useRef<HTMLCanvasElement>(null);
 

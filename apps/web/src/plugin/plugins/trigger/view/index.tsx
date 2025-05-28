@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 
 import { Modal, EntityForm, toast } from '@milesight/shared/src/components';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -8,11 +8,13 @@ import * as Icons from '@milesight/shared/src/components/icons';
 import { useConfirm } from '@/components';
 import { ENTITY_DATA_VALUE_TYPE, ENTITY_VALUE_TYPE } from '@/constants';
 import { Tooltip } from '../../../view-components';
-import { useEntityApi, type CallServiceType } from '../../../hooks';
+import { useEntityApi, useActivityEntity, type CallServiceType } from '../../../hooks';
 import { ViewConfigProps } from './typings';
 import './style.less';
 
 interface Props {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: ViewConfigProps;
     configJson: CustomComponentProps;
     isEdit?: boolean;
@@ -23,7 +25,7 @@ const View = (props: Props) => {
     const { getIntlText } = useI18n();
     const confirm = useConfirm();
     const { getEntityChildren, callService, updateProperty } = useEntityApi();
-    const { config, configJson, isEdit, mainRef } = props;
+    const { config, configJson, widgetId, dashboardId, isEdit, mainRef } = props;
     const { label, icon, bgColor } = config || {};
     const [visible, setVisible] = useState(false);
     const [entities, setEntities] = useState();
@@ -158,6 +160,24 @@ const View = (props: Props) => {
             await handleCallService(resultData);
         }
     };
+
+    // ---------- Entity status management ----------
+    const { addEntityListener } = useActivityEntity();
+    const entity = config?.entity;
+
+    useEffect(() => {
+        const entityId = entity?.value;
+        if (!widgetId || !dashboardId || !entityId) return;
+
+        const removeEventListener = addEntityListener(entityId, {
+            widgetId,
+            dashboardId,
+        });
+
+        return () => {
+            removeEventListener();
+        };
+    }, [entity?.value, widgetId, dashboardId, addEntityListener]);
 
     /**
      * Icon component
