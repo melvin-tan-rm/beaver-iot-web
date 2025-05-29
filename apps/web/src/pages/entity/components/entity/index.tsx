@@ -197,6 +197,7 @@ export default () => {
                 <PermissionControlHidden permissions={PERMISSIONS.ENTITY_DATA_EXPORT}>
                     <Button
                         variant="outlined"
+                        className="md:d-none"
                         sx={{ height: 36, textTransform: 'none' }}
                         startIcon={<IosShareIcon />}
                         onClick={handleShowExport}

@@ -128,6 +128,7 @@ const Users: React.FC = () => {
             <Stack className="ms-operations-btns" direction="row" spacing="12px">
                 <Button
                     variant="contained"
+                    className="md:d-none"
                     sx={{ height: 36, textTransform: 'none' }}
                     startIcon={<AddIcon />}
                     onClick={() => showUserModal('add')}
@@ -136,6 +137,7 @@ const Users: React.FC = () => {
                 </Button>
                 <Button
                     variant="outlined"
+                    className="md:d-none"
                     disabled={!selectedIds.length}
                     sx={{ height: 36, textTransform: 'none' }}
                     startIcon={<RemoveCircleOutlineIcon />}

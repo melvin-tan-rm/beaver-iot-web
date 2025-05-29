@@ -1,4 +1,5 @@
 @import url('@milesight/shared/src/styles/index.less');
+@import url('@milesight/responsive-style/less');
 @import url('./mui-polyfill.less');
 
 html {
@@ -9,6 +10,13 @@ body {
     background-color: var(--body-background);
     .text-size(@font-size-base);
 }
+
+// ---------- Utilities ----------
+@enable-mobile-first: false;
+@enable-utilities-important: true;
+
+.gen-utils();
+.gen-breakpoints-utils();
 
 // ---------- Layout ----------
 .@{prefix}-layout {

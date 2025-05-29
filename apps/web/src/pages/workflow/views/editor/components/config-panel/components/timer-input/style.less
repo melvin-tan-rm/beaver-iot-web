@@ -22,7 +22,8 @@
             &-labels {
                 display: flex;
                 gap: @margin-xs;
-                margin-bottom: @margin-xs;
+                margin-bottom: @margin-xxs;
+                .text-size(@font-size-base);
 
                 &.narrow {
                     padding-right: (@margin-xs + 28px);
@@ -85,7 +86,7 @@
     }
 
     div& > :not(style) ~ :not(style) {
-        margin: @margin-md 0;
+        // margin: @margin-md 0;
 
         &.@{prefix}-timer-input-exec-interval {
             margin-top: 0;

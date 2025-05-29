@@ -223,7 +223,7 @@ export default () => {
                     </Tabs>
                     <PermissionControlHidden permissions={PERMISSIONS.DASHBOARD_ADD}>
                         <div
-                            className={cls('dashboard-add-contain', {
+                            className={cls('dashboard-add-contain md:d-none', {
                                 'dashboard-add-contain-list': !!tabs?.length,
                             })}
                         >

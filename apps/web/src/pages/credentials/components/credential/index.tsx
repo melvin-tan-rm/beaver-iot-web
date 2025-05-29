@@ -47,11 +47,13 @@ const Credential = () => {
         const [mqttError, mqttResp] = await awaitWrap(
             credentialsApi.getDefaultCredential({
                 credentialsType: 'MQTT',
+                auto_generate_password: true,
             }),
         );
         const [httpError, httpResp] = await awaitWrap(
             credentialsApi.getDefaultCredential({
                 credentialsType: 'HTTP',
+                auto_generate_password: true,
             }),
         );
 
