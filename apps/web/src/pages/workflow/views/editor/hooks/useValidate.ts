@@ -675,8 +675,12 @@ const useValidate = () => {
                     value: NonNullable<EmailNodeDataType['parameters']>['emailConfig'],
                     fieldName,
                 ) {
-                    const { provider, smtpConfig } = value || {};
-                    if (!provider || !smtpConfig || Object.values(smtpConfig).some(item => !item)) {
+                    const { provider, useSystemSettings, smtpConfig } = value || {};
+
+                    if (
+                        !useSystemSettings &&
+                        (!provider || !smtpConfig || Object.values(smtpConfig).some(item => !item))
+                    ) {
                         return getIntlText(ErrorIntlKey.required, { 1: fieldName });
                     }
                     return true;
