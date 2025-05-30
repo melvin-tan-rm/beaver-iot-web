@@ -33,12 +33,17 @@ const useMqtt = () => {
             }
             const basicInfo = getResponseData(basicResp);
             const brokerInfo = getResponseData(brokerResp);
+            const isHttps = window.location.protocol === 'https:';
+            const protocol = isHttps ? 'wss' : 'ws';
+            const port = isHttps
+                ? brokerInfo?.wss_port || brokerInfo?.ws_port
+                : brokerInfo?.ws_port;
 
             return {
                 username: basicInfo?.username,
                 password: basicInfo?.password,
                 clientId: basicInfo?.client_id,
-                url: `ws://${brokerInfo?.host}:${brokerInfo?.ws_port}${brokerInfo?.ws_path}`,
+                url: `${protocol}://${brokerInfo?.host}:${port}${brokerInfo?.ws_path}`,
             };
         },
         {
