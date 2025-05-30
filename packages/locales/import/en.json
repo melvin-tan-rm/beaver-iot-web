@@ -51,6 +51,7 @@
   "common.label.enable_title": "Enable {1}",
   "common.label.end_date": "End Date",
   "common.label.entity": "Entity",
+  "common.label.entity_type": "Entity Type",
   "common.label.error": "Error",
   "common.label.export": "Export",
   "common.label.false": "False",
