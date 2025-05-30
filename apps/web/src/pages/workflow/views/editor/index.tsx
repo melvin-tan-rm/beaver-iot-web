@@ -586,6 +586,7 @@ const WorkflowEditor = () => {
                             maxZoom={MAX_ZOOM}
                             addable={!isLogMode}
                             moveMode={moveMode}
+                            designMode={designMode}
                             onMoveModeChange={setMoveMode}
                         />
                         <HelperLines
