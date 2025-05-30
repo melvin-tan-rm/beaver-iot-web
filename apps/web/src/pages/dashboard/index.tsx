@@ -19,8 +19,7 @@ export default () => {
     const { getIntlText } = useI18n();
     const confirm = useConfirm();
     const updateIsEditing = useDashboardStore(state => state.updateIsEditing);
-
-    const [loading, setLoading] = useState<boolean>();
+    const { setLatestEntities, triggerEntityListener } = useActivityEntity();
 
     // ---------- Prevent leave page ----------
     const [isEdit, setIsEdit] = useState(false);
@@ -60,6 +59,7 @@ export default () => {
     }, []);
 
     // ---------- Render dashboard list & content ----------
+    const [loading, setLoading] = useState<boolean>();
     const [currentDashboardId, setCurrentDashboardId] = useState<ApiKey>();
     const {
         data: dashboardList,
@@ -96,8 +96,10 @@ export default () => {
             setLoading(false);
 
             if (error || !isRequestSuccess(resp)) return;
+            const data = getResponseData(resp);
 
-            return getResponseData(resp);
+            setLatestEntities(data?.entities || []);
+            return data;
         },
         {
             debounceWait: 300,
@@ -125,16 +127,23 @@ export default () => {
 
     const handleEditSuccess: DashboardContentProps['onEditSuccess'] = async type => {
         switch (type) {
-            case 'rename':
+            case 'rename': {
+                getDashboardList();
+                break;
+            }
             case 'delete': {
+                setLoading(true);
+                setCurrentDashboardId(dashboardList?.[0]?.dashboard_id);
                 getDashboardList();
                 break;
             }
             case 'save': {
+                setLoading(true);
                 getDashboardDetail();
                 break;
             }
             case 'home': {
+                setLoading(true);
                 await getDashboardList();
                 await getDashboardDetail();
                 break;
@@ -167,18 +176,19 @@ export default () => {
                 description: getIntlText('dashboard.leave_to_new_dashboard_description'),
                 confirmButtonText: getIntlText('common.button.confirm'),
                 onConfirm: () => {
+                    setLoading(true);
                     setCurrentDashboardId(respData.dashboard_id);
                     setIsEdit(false);
                 },
             });
         } else {
+            setLoading(true);
             setCurrentDashboardId(respData.dashboard_id);
         }
     };
 
     // ---------- Listen the entities change by Mqtt ----------
     const { status: mqttStatus, client: mqttClient } = useMqtt();
-    const { triggerEntityListener } = useActivityEntity();
 
     // Subscribe the entity exchange topic
     useEffect(() => {

@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { create } from 'zustand';
-import { isUndefined, isNull } from 'lodash-es';
+import { isUndefined, isNull, cloneDeep } from 'lodash-es';
+import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
 import { EventEmitter } from '@milesight/shared/src/utils/event-emitter';
 import type { DashboardAPISchema } from '@/services/http';
 
@@ -18,14 +19,19 @@ interface ActivityEntityStore {
      * Entity details
      * @description The latest details of the entity that is currently being displayed in dashboard
      */
-    entities?: Record<ApiKey, DashboardAPISchema['getDashboardDetail']['response']> | null;
+    entities?: Record<
+        ApiKey,
+        DashboardAPISchema['getDashboardDetail']['response']['entities'][number]
+    > | null;
 
     /**
      * Set latest entity details
      * @description Set the latest details of the entity that is currently being
      * displayed in dashboard
      */
-    setLatestEntities: (entities: ActivityEntityStore['entities']) => void;
+    setLatestEntities: (
+        entities: DashboardAPISchema['getDashboardDetail']['response']['entities'],
+    ) => void;
 }
 
 const eventEmitter = new EventEmitter();
@@ -36,7 +42,14 @@ const genTopic = (dashboardId: ApiKey, entityId: ApiKey) => {
 
 const useActivityEntityStore = create<ActivityEntityStore>(set => ({
     entities: {},
-    setLatestEntities: entities => set({ entities }),
+    setLatestEntities: entities => {
+        const result: ActivityEntityStore['entities'] = {};
+
+        entities.forEach(entity => {
+            result[entity.entity_id] = entity;
+        });
+        set({ entities: result });
+    },
 }));
 
 type EntityPoolValue = {
@@ -73,8 +86,31 @@ const useActivityEntity = () => {
     const { entities, setLatestEntities } = useActivityEntityStore();
 
     const getLatestEntityDetail = useCallback(
-        (entityId: ApiKey) => {
-            return entities?.[entityId] || null;
+        <T extends Partial<EntityOptionType> | Partial<EntityOptionType>[]>(entity: T): T => {
+            const isArray = Array.isArray(entity);
+            const oldEntities = isArray ? entity : [entity];
+            const result = cloneDeep(oldEntities).map(entity => {
+                const newEntity = entities?.[entity.value] || null;
+
+                if (!newEntity) return entity;
+                const newEntityData = objectToCamelCase(newEntity);
+
+                if (newEntityData.entityValueAttribute?.enum) {
+                    newEntityData.entityValueAttribute.enum =
+                        newEntity.entity_value_attribute?.enum;
+                }
+
+                return {
+                    ...entity,
+                    label: newEntityData.entityName,
+                    rawData: {
+                        ...entity.rawData,
+                        ...newEntityData,
+                    },
+                };
+            });
+
+            return isArray ? (result as T) : (result[0] as T);
         },
         [entities],
     );

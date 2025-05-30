@@ -3,7 +3,7 @@ import { useMemoizedFn } from 'ahooks';
 import Chart, { type TooltipItem } from 'chart.js/auto';
 import { hexToRgba } from '@milesight/shared/src/utils/tools';
 import { useTheme } from '@milesight/shared/src/hooks';
-import { useBasicChartEntity } from '@/plugin/hooks';
+import { useBasicChartEntity, useActivityEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
 import styles from './style.module.less';
@@ -28,6 +28,17 @@ const View = (props: ViewProps) => {
     const { entity, title, time } = config || {};
     const { isPreview } = configJson || {};
     const chartWrapperRef = useRef<HTMLDivElement>(null);
+    const { getLatestEntityDetail } = useActivityEntity();
+    const latestEntities = useMemo(() => {
+        if (!entity?.length) return [];
+
+        return entity
+            .map(item => {
+                return getLatestEntityDetail(item);
+            })
+            .filter(Boolean) as EntityOptionType[];
+    }, [entity, getLatestEntityDetail]);
+
     const {
         chartShowData,
         chartLabels,
@@ -39,7 +50,7 @@ const View = (props: ViewProps) => {
     } = useBasicChartEntity({
         widgetId,
         dashboardId,
-        entity,
+        entity: latestEntities,
         time,
         isPreview,
     });

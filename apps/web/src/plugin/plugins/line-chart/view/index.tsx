@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { useMemoizedFn } from 'ahooks';
 import Chart, { TooltipItem } from 'chart.js/auto';
 import { useTheme } from '@milesight/shared/src/hooks';
-import { useBasicChartEntity } from '@/plugin/hooks';
+import { useBasicChartEntity, useActivityEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
 import { type ChartEntityPositionValueType } from '@/plugin/components/chart-entity-position';
@@ -32,11 +32,17 @@ const View = (props: ViewProps) => {
     const { entityPosition, title, time, leftYAxisUnit, rightYAxisUnit } = config || {};
     const { isPreview } = configJson || {};
 
+    const { getLatestEntityDetail } = useActivityEntity();
     const entity = useMemo(() => {
         if (!Array.isArray(entityPosition)) return [];
 
-        return entityPosition.map(e => e.entity).filter(Boolean) as EntityOptionType[];
-    }, [entityPosition]);
+        return entityPosition
+            .map(item => {
+                if (!item.entity) return;
+                return getLatestEntityDetail(item.entity);
+            })
+            .filter(Boolean) as EntityOptionType[];
+    }, [entityPosition, getLatestEntityDetail]);
 
     const {
         chartShowData,
