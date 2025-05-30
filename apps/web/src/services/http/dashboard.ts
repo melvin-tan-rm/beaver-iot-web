@@ -28,7 +28,7 @@ export interface DashboardAPISchema extends APISchema {
         response: DashboardDetail[];
     };
 
-    /**  */
+    /** Get detail */
     getDashboardDetail: {
         request: {
             id: ApiKey;

@@ -17,6 +17,7 @@ import { useFullscreen } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { dashboardAPI, awaitWrap, isRequestSuccess } from '@/services/http';
 import { DashboardDetail, WidgetDetail } from '@/services/http/dashboard';
+import { useActivityEntity } from '@/plugin/hooks';
 import { useConfirm, PermissionControlHidden, PermissionControlDisabled } from '@/components';
 import { PERMISSIONS } from '@/constants';
 import { useGetPluginConfigs, useHomeDashboard } from '../../hooks';
@@ -27,9 +28,9 @@ import AddCustomerWidget from '../custom-widget';
 import AddDashboard from '../add-dashboard';
 import Widgets from '../widgets';
 
-interface DashboardContentProps {
+export interface DashboardContentProps {
     dashboardDetail: DashboardDetail;
-    getDashboards: () => void;
+    // getDashboards: () => void;
     onChangeIsEdit: (isEdit: boolean) => void;
     isEdit: boolean;
     isTooSmallScreen: boolean;
@@ -37,13 +38,15 @@ interface DashboardContentProps {
      * Existence of homeDashboard
      */
     existedHomeDashboard?: boolean;
+    onEditSuccess?: (type: 'rename' | 'delete' | 'home' | 'save') => void;
 }
 
 export default (props: DashboardContentProps) => {
     const {
         dashboardDetail,
-        getDashboards,
+        // getDashboards,
         onChangeIsEdit,
+        onEditSuccess,
         isEdit,
         isTooSmallScreen,
         existedHomeDashboard,
@@ -61,7 +64,7 @@ export default (props: DashboardContentProps) => {
     } = useHomeDashboard({
         existedHomeDashboard,
         dashboardDetail,
-        refreshDashboards: getDashboards,
+        refreshDashboards: () => onEditSuccess?.('home'),
     });
 
     const [isShowAddWidget, setIsShowAddWidget] = useState(false);
@@ -175,17 +178,22 @@ export default (props: DashboardContentProps) => {
         setWidgets(newWidgets);
     };
 
+    const { getCurrentEntityIds } = useActivityEntity();
     // Edit dashboard Save
     const saveEditDashboard = async () => {
+        const currentEntityIds = getCurrentEntityIds(dashboardId);
+
         const [_, res] = await awaitWrap(
             dashboardAPI.updateDashboard({
                 widgets,
+                entity_ids: currentEntityIds,
                 dashboard_id: dashboardId,
                 name: dashboardDetail.name,
             }),
         );
         if (isRequestSuccess(res)) {
-            getDashboards();
+            // getDashboards();
+            onEditSuccess?.('save');
             setIsEdit(false);
             toast.success(getIntlText('common.message.operation_success'));
         }
@@ -205,7 +213,8 @@ export default (props: DashboardContentProps) => {
                     }),
                 );
                 if (isRequestSuccess(res)) {
-                    getDashboards();
+                    // getDashboards();
+                    onEditSuccess?.('delete');
                     setIsEdit(false);
                     toast.success(getIntlText('common.message.delete_success'));
                 }
@@ -232,7 +241,8 @@ export default (props: DashboardContentProps) => {
             }),
         );
         if (isRequestSuccess(res)) {
-            getDashboards();
+            // getDashboards();
+            onEditSuccess?.('rename');
             setIsShowEditDashboard(false);
             toast.success(getIntlText('common.message.operation_success'));
         }
