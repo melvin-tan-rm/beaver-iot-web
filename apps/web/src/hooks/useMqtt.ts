@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { create } from 'zustand';
 import { useRequest } from 'ahooks';
+import { useUserStore } from '@/stores';
 import { MqttService, MQTT_STATUS, MQTT_EVENT_TYPE, BATCH_PUSH_TIME } from '@/services/mqtt';
 import { credentialsApi, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 
@@ -16,10 +17,11 @@ const useMqttStore = create<{
  * Get MQTT client
  */
 const useMqtt = () => {
+    const userInfo = useUserStore(state => state.userInfo);
     const { client, setClient } = useMqttStore();
     const { data } = useRequest(
         async () => {
-            if (client) return;
+            if (client || !userInfo?.user_id) return;
             const [err, resp] = await awaitWrap(
                 Promise.all([
                     credentialsApi.getMqttCredential(),
@@ -48,7 +50,7 @@ const useMqtt = () => {
         },
         {
             debounceWait: 300,
-            refreshDeps: [client],
+            refreshDeps: [client, userInfo],
         },
     );
 
