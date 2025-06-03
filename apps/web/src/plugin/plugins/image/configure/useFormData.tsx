@@ -108,6 +108,10 @@ const useFormData = (value: any, config: CustomComponentProps) => {
                             style: 'width: 100%',
                             rules: {
                                 required: true,
+                                pattern: {
+                                    value: /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
+                                    message: getIntlText('valid.input.url'),
+                                },
                             },
                             componentProps: {
                                 placeholder: getIntlText('common.placeholder.input'),
