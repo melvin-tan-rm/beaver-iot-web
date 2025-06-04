@@ -143,7 +143,7 @@
     "workflow.valid.invalid_url": "The {1} field value is not a valid URL.",
     "workflow.valid.invalid_url_path": "The {1} field must start with /, supporting alphanumeric and {2} formats.",
     "workflow.valid.max_length": "The {1} field length of the value you entered cannot exceed {2} digits.",
-    "workflow.valid.min_length": "The {1} field length of the value you entered should be greater than or equal to {0}.",
+    "workflow.valid.min_length": "The {1} field length of the input value should be at least {2} digits.",
     "workflow.valid.node_id_duplicated": "{1} and {2} node IDs are duplicated.",
     "workflow.valid.node_parameters_required": "The {1} node parameters is required.",
     "workflow.valid.output_node_limit_count_tip": "Only one output node is allowed in a workflow.",
@@ -152,5 +152,8 @@
     "workflow.valid.range_length": "The length of the {1} field value should be greater than or equal to {2} and less than or equal to {3}.",
     "workflow.valid.required": "The {1} field is required.",
     "workflow.valid.invalid_reference_param": "The reference param of {1} field is invalid.",
-    "workflow.editor.helper_text_set_content_type_in_header": "Please set Content-Type in the Header"
+    "workflow.editor.helper_text_set_content_type_in_header": "Please set Content-Type in the Header",
+    "workflow.valid.range_num": "The value of the {1} field of the input value should be greater than or equal to {2} and less than or equal to {3}.",
+    "workflow.valid.max_value": "The {1} field value size of the input value should be less than or equal to {2}.",
+    "workflow.valid.min_value": "The {1} field value size of the input value should be greater than or equal to {2}."
 }

@@ -10,7 +10,12 @@ import {
     isMatches,
     isEmail,
     isRangeLength,
+    isRangeValue,
+    isMinValue,
+    isMaxValue,
+    isMinLength,
 } from '@milesight/shared/src/utils/validators';
+import { ENTITY_VALUE_TYPE } from '@/constants';
 import {
     EDGE_TYPE_ADDABLE,
     HTTP_URL_PATH_PATTERN,
@@ -21,6 +26,8 @@ import { isRefParamKey, getNodeParamName } from '../helper';
 import type { NodeDataValidator } from '../typings';
 import useWorkflow from './useWorkflow';
 
+const isValidNumber = (num: any): num is number => !isNil(num) && !isNaN(+num);
+
 type CheckOptions = {
     /**
      * When a rule fails validation, should the validation of the remaining rules be stopped
@@ -30,6 +37,8 @@ type CheckOptions = {
      * The nodes to be validated. If not set, the all nodes in the current flow will be validated.
      */
     validateNodes?: WorkflowNode[];
+
+    entityList?: ObjectToCamelCase<EntityData[]>;
 };
 
 export type NodesDataValidResult = Record<
@@ -52,6 +61,9 @@ enum ErrorIntlKey {
     email = 'workflow.valid.invalid_email',
     urlPath = 'workflow.valid.invalid_url_path',
     refParam = 'workflow.valid.invalid_reference_param',
+    rangeNum = 'workflow.valid.range_num',
+    minValue = 'workflow.valid.min_value',
+    maxValue = 'workflow.valid.max_value',
 }
 
 export const NODE_VALIDATE_TOAST_KEY = 'node-validate';
@@ -669,6 +681,90 @@ const useValidate = () => {
                     return true;
                 },
                 checkReferenceParam,
+                checkValueByEntityRule(data, fieldName, options) {
+                    if (!options?.entityList?.length) return true;
+                    for (const [key, value] of Object.entries(data).filter(
+                        ([key, value]) => !!key && !!value && !isRefParamKey(value as string),
+                    )) {
+                        const entity = options?.entityList?.find(
+                            item =>
+                                item.entityKey === key &&
+                                (ENTITY_VALUE_TYPE.STRING === item.entityValueType ||
+                                    [ENTITY_VALUE_TYPE.LONG, ENTITY_VALUE_TYPE.DOUBLE].includes(
+                                        item.entityValueType as ENTITY_VALUE_TYPE,
+                                    )),
+                        );
+                        if (entity?.entityValueAttribute) {
+                            const { entityValueAttribute: attr } = entity;
+                            if (ENTITY_VALUE_TYPE.STRING === entity.entityValueType) {
+                                if (
+                                    isValidNumber(attr.minLength) &&
+                                    isValidNumber(attr.maxLength) &&
+                                    !isRangeLength(
+                                        value as string,
+                                        +attr.minLength,
+                                        +attr.maxLength,
+                                    )
+                                ) {
+                                    return getIntlText(ErrorIntlKey.rangeLength, {
+                                        1: entity.entityName,
+                                        2: attr.minLength,
+                                        3: attr.maxLength,
+                                    });
+                                }
+                                if (
+                                    isValidNumber(attr.minLength) &&
+                                    !isMinLength(value as string, +attr.minLength)
+                                ) {
+                                    return getIntlText(ErrorIntlKey.minLength, {
+                                        1: entity.entityName,
+                                        2: attr.minLength,
+                                    });
+                                }
+                                if (
+                                    isValidNumber(attr.maxLength) &&
+                                    !isMaxLength(value as string, +attr.maxLength)
+                                ) {
+                                    return getIntlText(ErrorIntlKey.maxLength, {
+                                        1: entity.entityName,
+                                        2: attr.maxLength,
+                                    });
+                                }
+                            } else {
+                                if (
+                                    isValidNumber(attr.min) &&
+                                    isValidNumber(attr.max) &&
+                                    !isRangeValue(value as number, +attr.min, +attr.max)
+                                ) {
+                                    return getIntlText(ErrorIntlKey.rangeNum, {
+                                        1: entity.entityName,
+                                        2: attr.min,
+                                        3: attr.max,
+                                    });
+                                }
+                                if (
+                                    isValidNumber(attr.min) &&
+                                    !isMinValue(value as number, +attr.min)
+                                ) {
+                                    return getIntlText(ErrorIntlKey.minValue, {
+                                        1: entity.entityName,
+                                        2: attr.min,
+                                    });
+                                }
+                                if (
+                                    isValidNumber(attr.max) &&
+                                    !isMaxValue(value as number, +attr.max)
+                                ) {
+                                    return getIntlText(ErrorIntlKey.maxValue, {
+                                        1: entity.entityName,
+                                        2: attr.max,
+                                    });
+                                }
+                            }
+                        }
+                    }
+                    return true;
+                },
             },
             'email.emailConfig': {
                 checkRequired(
@@ -1086,6 +1182,7 @@ const useValidate = () => {
             edges = edges || getEdges();
             const result: NodesDataValidResult = {};
             const validateNodes = options?.validateNodes || nodes;
+            const entityList = options?.entityList;
 
             for (let i = 0; i < validateNodes.length; i++) {
                 const node = validateNodes[i];
@@ -1141,6 +1238,7 @@ const useValidate = () => {
                             node,
                             nodeConfig: config,
                             upstreamParams,
+                            entityList,
                         });
                         if (result && result !== true) {
                             tempResult.errMsgs.push(result);
