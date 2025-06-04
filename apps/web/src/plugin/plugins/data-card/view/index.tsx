@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useTheme } from '@milesight/shared/src/hooks';
 
 import * as Icons from '@milesight/shared/src/components/icons';
+import { useActivityEntity } from '@/plugin/hooks';
 import { Tooltip } from '@/plugin/view-components';
 import { useSource } from './hooks';
 import type { ViewConfigProps } from '../typings';
@@ -16,14 +17,25 @@ interface Props {
 const View = (props: Props) => {
     const { config, configJson, widgetId, dashboardId } = props;
     const { title, entity } = config || {};
-    const { entityStatusValue } = useSource({ entity, widgetId, dashboardId });
     const { isPreview } = configJson || {};
 
     const { getCSSVariableValue } = useTheme();
+    const { getLatestEntityDetail } = useActivityEntity();
+    const latestEntity = useMemo(() => {
+        if (!entity) return {};
+
+        return getLatestEntityDetail(entity);
+    }, [entity, getLatestEntityDetail]) as EntityOptionType;
+
+    const { entityStatusValue } = useSource({
+        entity: latestEntity as EntityOptionType,
+        widgetId,
+        dashboardId,
+    });
 
     // Current physical real -time data
     const currentEntityData = useMemo(() => {
-        const { rawData: currentEntity, value: entityValue } = entity || {};
+        const { rawData: currentEntity, value: entityValue } = latestEntity || {};
         if (!currentEntity) return;
 
         // Get the current selection entity
@@ -49,7 +61,8 @@ const View = (props: Props) => {
             label: unit ? `${currentEntityStatus ?? '- '}${unit}` : `${currentEntityStatus ?? ''}`,
             value: entityValue,
         };
-    }, [entity, entityStatusValue]);
+    }, [latestEntity, entityStatusValue]);
+
     // Current physical icon
     const { Icon, iconColor } = useMemo(() => {
         const { value } = currentEntityData || {};
