@@ -88,7 +88,7 @@ const useFormItems = ({ type, tenantId }: IPros) => {
                     validate: {
                         checkRequired: checkRequired(),
                         checkRangeLength: checkRangeLength({ min: 8, max: 32 }),
-                        checkLettersAndNum: checkLettersAndNum(),
+                        // checkLettersAndNum: checkLettersAndNum(),
                     },
                 },
                 render({ field: { onChange, value, disabled }, fieldState: { error } }) {

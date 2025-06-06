@@ -199,6 +199,10 @@ export enum EErrorMessages {
      * Match regular expression
      */
     regexp = 'valid.input.match_regexp',
+    /**
+     * Must No pure space
+     */
+    pureWhiteSpace = 'valid.input.not_pure_whitespace',
 }
 
 // let intlInstance: typeof intl;
