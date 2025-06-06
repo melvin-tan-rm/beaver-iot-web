@@ -28,10 +28,10 @@ export type FormDataProps = {
     accessMod: EntityAccessMode;
     valueType: EntityValueDataType;
     dataType?: DataTypeRadioProps['value'];
-    min?: number;
-    max?: number;
-    minLength?: number;
-    maxLength?: number;
+    min?: string;
+    max?: string;
+    minLength?: string;
+    maxLength?: string;
     boolEnums?: Record<string, string>;
     enums?: Record<string, string>;
     /** bool true value */

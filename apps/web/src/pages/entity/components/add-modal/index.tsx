@@ -78,12 +78,13 @@ const AddModal: React.FC<Props> = ({
                 } else {
                     setValue('dataType', 'value');
 
+                    // isNumeric prop is number will valid fail
                     if (entityValueType === 'LONG' || entityValueType === 'DOUBLE') {
-                        setValue('min', min);
-                        setValue('max', max);
+                        setValue('min', String(min));
+                        setValue('max', String(max));
                     } else {
-                        setValue('minLength', minLength);
-                        setValue('maxLength', maxLength);
+                        setValue('minLength', String(minLength));
+                        setValue('maxLength', String(maxLength));
                     }
                 }
 
