@@ -29,3 +29,4 @@ export {
     type CredentialType,
     type CredentialAPISchema,
 } from './credentials';
+export { default as aiApi, type AiAPISchema } from './ai';

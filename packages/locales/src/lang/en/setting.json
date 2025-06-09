@@ -76,5 +76,16 @@
     "setting.integration.webhook_status_error": "Webhook Error",
     "setting.integration.webhook_status_ready": "Webhook Ready",
     "setting.integration.webhook_status_waiting": "Waiting For Config",
-    "setting.integration.webhook_url": "Webhook URL"
+    "setting.integration.webhook_url": "Webhook URL",
+    "setting.integration.service_manage": "Service Management",
+    "setting.integration.device_bind": "Device Bind",
+    "setting.integration.connected": "Connected",
+    "setting.integration.not_connected": "Not Connected",
+    "setting.integration.ai_server_url": "Service IP address",
+    "setting.integration.token": "Token",
+    "setting.integration.ai_update_model": "Update Model Service",
+    "setting.integration.ai_model_reasoning": "Model Inference Service",
+    "setting.integration.ai_update_model_tip": "Are you sure you want to synchronize the model list? After confirming, you can refresh the current model inference service.",
+    "setting.integration.ai_update_model_desc": "Refresh the current model inference service",
+    "setting.integration.ai_model_reasoning_desc": "Model Inference Service Description"
 }

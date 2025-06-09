@@ -17,5 +17,12 @@
     "error.http.token_invalid": "令牌无效，请重试。",
     "error.http.token_not_found": "您的账户尚未登录。",
     "error.http.user_has_no_permission": "当前用户无权限",
-    "error.http.user_register_email_exist": "用户注册邮箱已存在。"
+    "error.http.user_register_email_exist": "用户注册邮箱已存在。",
+    "error.http.server_token_invalid": "Token无效，服务拒绝连接",
+    "error.http.server_not_reachable": "服务不可用",
+    "error.http.server_token_access_denied": "Token 被拒绝",
+    "error.http.server_data_not_found": "找不到模型",
+    "error.http.server_rate_limit_exceeded": "服务接口限流",
+    "error.http.server_model_worker_busy": "模型处理能力达到上限",
+    "error.http.server_invalid_input_data": "输入参数不正确"
 }

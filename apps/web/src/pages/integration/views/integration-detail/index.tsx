@@ -14,7 +14,7 @@ import {
 } from '@/services/http';
 import { usePermissionsError } from '@/hooks';
 import { genInteIconUrl } from '../../helper';
-import { GeneralContent, MscContent, NSContent } from './components';
+import { AiContent, GeneralContent, MscContent, NSContent } from './components';
 
 import './style.less';
 
@@ -30,10 +30,11 @@ const IntegrationDetail = () => {
     const {
         loading,
         data: entityList,
-        refresh: refreshInteDetail,
+        run: refreshInteDetail,
     } = useRequest(
-        async () => {
+        async (successCb?: (entityList: any) => void) => {
             if (!integrationId) return;
+
             const [error, resp] = await awaitWrap(integrationAPI.getDetail({ id: integrationId }));
             const respData = getResponseData(resp);
 
@@ -47,6 +48,7 @@ const IntegrationDetail = () => {
             );
 
             setBasicInfo(data);
+            successCb?.(data.integrationEntities);
             setExcludeServiceKeys(excludeKeys);
             return data.integrationEntities;
         },
@@ -68,6 +70,16 @@ const IntegrationDetail = () => {
         }
         if (basicInfo?.id === 'milesight-gateway') {
             return <NSContent entities={entityList} onUpdateSuccess={refreshInteDetail} />;
+        }
+        if (basicInfo?.id === 'ai-inference') {
+            return (
+                <AiContent
+                    entities={entityList}
+                    onUpdateSuccess={refreshInteDetail}
+                    loading={loading}
+                    excludeServiceKeys={excludeServiceKeys}
+                />
+            );
         }
         return (
             <GeneralContent
