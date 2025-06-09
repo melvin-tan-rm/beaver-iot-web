@@ -90,6 +90,7 @@ const useFormData = (value: any, config: CustomComponentProps) => {
                                 label: getIntlText('common.label.upload_image'),
                                 multiple: false,
                                 required: true,
+                                matchExt: true,
                             },
                         },
                     ],
