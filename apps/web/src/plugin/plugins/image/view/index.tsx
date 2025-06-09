@@ -51,17 +51,8 @@ const View = (props: ViewProps) => {
     const { isPreview } = configJson || {};
 
     const [imageSrc, setImageSrc] = useState('');
-    const [imageFailed, setImageFailed] = useState(false);
+    const [loadedImageSrc, setLoadedImageSrc] = useState<string>('');
 
-    // ---------- Render Image ----------
-    /**
-     * handle image loading error failed
-     */
-    const handleImageFailed = useMemoizedFn(() => {
-        if (imageFailed) return;
-
-        setImageFailed(true);
-    });
     /**
      * Request physical state function
      */
@@ -93,7 +84,6 @@ const View = (props: ViewProps) => {
      * Set image src based on dataType
      */
     useEffect(() => {
-        setImageFailed(false);
         switch (dataType) {
             case 'upload':
                 setImageSrc(genFullUrl(file?.url) || '');
@@ -119,6 +109,22 @@ const View = (props: ViewProps) => {
                 break;
         }
     }, [dataType, entity?.value, file, url, requestEntityStatus]);
+
+    useEffect(() => {
+        if (!imageSrc) {
+            setLoadedImageSrc('');
+            return;
+        }
+
+        const image = new Image();
+        image.onload = () => {
+            setLoadedImageSrc(imageSrc);
+        };
+        image.onerror = () => {
+            setLoadedImageSrc('');
+        };
+        image.src = imageSrc;
+    }, [imageSrc]);
 
     // ---------- Entity status management ----------
     const { addEntityListener } = useActivityEntity();
@@ -149,16 +155,11 @@ const View = (props: ViewProps) => {
                 </div>
             )}
             <div className="image-wrapper__content">
-                {!imageSrc || imageFailed ? (
+                {!loadedImageSrc ? (
                     <BrokenImageIcon className="image-wrapper__empty_icon" />
                 ) : (
                     <>
-                        <img
-                            className="image-wrapper__img"
-                            src={imageSrc}
-                            alt=""
-                            onError={handleImageFailed}
-                        />
+                        <img className="image-wrapper__img" src={loadedImageSrc} alt="" />
                         {label && <div className="image-wrapper__overlay" />}
                     </>
                 )}
