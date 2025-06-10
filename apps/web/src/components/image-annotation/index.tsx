@@ -5,27 +5,41 @@ import { Stage, Layer, Image, Line, Transformer } from 'react-konva';
 import { yellow, white, black } from '@milesight/shared/src/services/theme';
 import type { Vector2d } from 'konva/lib/types';
 import EditableText from './editable-text';
+import './style.less';
 
 interface PolygonAnnotationProps {
+    /** Image source */
     imgSrc: string;
+    /** Polygon points */
     points: Vector2d[][];
-    scale?: number;
+    /** Stroke color */
     strokeColor?: string | string[];
+    /** Anchor fill color */
     anchorFillColor?: string;
+    /** Container width */
+    containerWidth?: number;
+    /** Container height */
+    containerHeight?: number;
+    /** Points change callback */
     onPointsChange?: (newPoints: Vector2d[][]) => void;
 }
 
 const POLYGON_NAME_PREFIX = 'ms-polygon';
 const getPolygonId = (index: number) => `${POLYGON_NAME_PREFIX}-${index}`;
 
-const PolygonAnnotation = ({
+/**
+ * Image Annotation
+ */
+const ImageAnnotation = ({
     imgSrc,
     points = [],
-    scale = 1,
     strokeColor = yellow[600],
     anchorFillColor = white,
+    containerWidth,
+    containerHeight,
     onPointsChange,
 }: PolygonAnnotationProps) => {
+    // ---------- Load Image ----------
     const [imgSize, setImgSize] = useState({
         naturalWidth: 0,
         naturalHeight: 0,
@@ -33,21 +47,22 @@ const PolygonAnnotation = ({
         height: 0,
     });
     const [image, setImage] = useState<HTMLImageElement | null>(null);
-    const [selectedId, setSelectedId] = useState<number | null>(null);
-    const [dragMoving, setDragMoving] = useState(false);
-    const transformerRef = React.useRef<any>(null);
-
-    // Colors
-    const colors = useMemo(() => {
-        if (Array.isArray(strokeColor)) return strokeColor;
-        return Array(points.length).fill(strokeColor);
-    }, [strokeColor, points.length]);
+    const [scale, setScale] = useState(1);
 
     // Get size of image
     useEffect(() => {
         const img = new window.Image();
         img.src = imgSrc;
         img.onload = () => {
+            const { naturalWidth, naturalHeight } = img;
+            let scale = 1;
+            if (containerWidth && containerHeight) {
+                const widthRatio = containerWidth / naturalWidth;
+                const heightRatio = containerHeight / naturalHeight;
+                scale = Math.min(widthRatio, heightRatio);
+            }
+
+            setScale(scale);
             setImage(img);
             setImgSize({
                 naturalWidth: img.naturalWidth,
@@ -56,7 +71,23 @@ const PolygonAnnotation = ({
                 height: img.naturalHeight * scale,
             });
         };
-    }, [imgSrc, scale]);
+
+        return () => {
+            img.src = '';
+            img.onload = null;
+        };
+    }, [imgSrc, containerWidth, containerHeight]);
+
+    // ---------- Polygon Interaction ----------
+    const [selectedId, setSelectedId] = useState<number | null>(null);
+    const [editingId, setEditingId] = useState<ApiKey | null>(null);
+    const transformerRef = React.useRef<any>(null);
+
+    // Colors
+    const colors = useMemo(() => {
+        if (Array.isArray(strokeColor)) return strokeColor;
+        return Array(points.length).fill(strokeColor);
+    }, [strokeColor, points.length]);
 
     // Enable Transformer when selected
     useEffect(() => {
@@ -88,9 +119,9 @@ const PolygonAnnotation = ({
     });
 
     if (!image) return null;
-
     return (
         <Stage
+            className="ms-image-annotation"
             width={imgSize.width}
             height={imgSize.height}
             onClick={e => {
@@ -113,10 +144,10 @@ const PolygonAnnotation = ({
                                 name={getPolygonId(index)}
                                 points={polygonPoints.flatMap(p => [p.x, p.y])}
                                 stroke={colors[index]}
-                                strokeWidth={2 / scale}
+                                strokeWidth={2}
                                 strokeScaleEnabled={false}
                                 draggable={!!onPointsChange}
-                                onDragMove={() => setDragMoving(true)}
+                                onDragMove={() => setEditingId(index)}
                                 onDragEnd={e => {
                                     const absPos = e.target.getAbsolutePosition();
                                     const newPoints = polygonPoints.map(p => ({
@@ -124,10 +155,11 @@ const PolygonAnnotation = ({
                                         y: p.y + absPos.y / scale,
                                     }));
 
-                                    setDragMoving(false);
+                                    setEditingId(null);
                                     handlePositionChange(index, newPoints);
                                     e.target.position({ x: 0, y: 0 });
                                 }}
+                                onTransformStart={() => setEditingId(index)}
                                 onTransformEnd={e => {
                                     const node = e.target;
                                     const newPoints = polygonPoints.map((p, i) => ({
@@ -143,6 +175,7 @@ const PolygonAnnotation = ({
                                     //     scaleY: node.scaleY(),
                                     //     newPoints,
                                     // });
+                                    setEditingId(null);
                                     handlePositionChange(index, newPoints);
                                     node.scaleX(1);
                                     node.scaleY(1);
@@ -152,9 +185,12 @@ const PolygonAnnotation = ({
                             />
 
                             <EditableText
-                                visible={!(selectedId === index && dragMoving)}
-                                content={`#${index + 1}`}
-                                position={{ x: topLeft.x - 1, y: topLeft.y - 16 / scale - 7 }}
+                                visible={editingId !== index}
+                                value={`#${index + 1}`}
+                                position={{
+                                    x: topLeft.x - 1 / scale,
+                                    y: topLeft.y - 16 / scale - 7 / scale,
+                                }}
                                 scale={scale}
                                 color={black}
                                 backgroundColor={colors[index]}
@@ -182,4 +218,4 @@ const PolygonAnnotation = ({
 };
 
 export type { Vector2d };
-export default PolygonAnnotation;
+export default ImageAnnotation;
