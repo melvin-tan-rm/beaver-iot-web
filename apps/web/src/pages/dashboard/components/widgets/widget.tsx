@@ -15,11 +15,12 @@ interface WidgetProps {
     onEdit: (data: WidgetDetail) => void;
     onDelete: (data: WidgetDetail) => void;
     mainRef: any;
+    dashboardId: ApiKey;
 }
 
 const Widget = (props: WidgetProps) => {
     const { theme } = useTheme();
-    const { data, isEdit, onEdit, onDelete, mainRef } = props;
+    const { data, isEdit, dashboardId, onEdit, onDelete, mainRef } = props;
     const ComponentView = (plugins as any)[`${data.data.type}View`];
     const widgetRef = useRef<HTMLDivElement>(null);
 
@@ -60,6 +61,8 @@ const Widget = (props: WidgetProps) => {
                 <div ref={widgetRef} className="dashboard-content-widget-main">
                     <Suspense>
                         <ComponentView
+                            dashboardId={dashboardId}
+                            widgetId={data.widget_id || data.tempId || ''}
                             config={data.data.config}
                             configJson={data.data}
                             isEdit={isEdit}

@@ -9,10 +9,11 @@ import { registerables } from 'chart.js';
 import 'chartjs-adapter-date-fns'; // Import date adapter
 import zoomPlugin from 'chartjs-plugin-zoom';
 import { useI18n, useTheme } from '@milesight/shared/src/hooks';
+import { useMqtt } from '@/hooks';
 import { ConfirmProvider } from '@/components';
 import BasicLayout from './BasicLayout';
 import BlankLayout from './BlankLayout';
-import { useWebsocket, useChartTheme } from './hooks';
+import { useChartTheme } from './hooks';
 
 Chart.register(...registerables, zoomPlugin); // Register all components and adapters
 
@@ -27,7 +28,7 @@ function Layout() {
     const { getIntlText } = useI18n();
     const { muiTheme } = useTheme();
 
-    useWebsocket();
+    useMqtt();
     useChartTheme();
     useTitle(getIntlText('common.document.title'));
 

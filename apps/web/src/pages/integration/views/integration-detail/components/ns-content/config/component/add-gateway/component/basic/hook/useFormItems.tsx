@@ -45,7 +45,7 @@ const useFormItems = () => {
                 rules: {
                     validate: {
                         checkRequired: checkRequired(),
-                        checkMaxLength: checkMaxLength({ max: 25 }),
+                        checkMaxLength: checkMaxLength({ max: 127 }),
                     },
                 },
                 render({ field: { onChange, value }, fieldState: { error } }) {

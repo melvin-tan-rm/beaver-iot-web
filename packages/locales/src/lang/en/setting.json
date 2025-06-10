@@ -2,6 +2,8 @@
     "setting.credentials.edit_http": "Edit HTTP Credential",
     "setting.credentials.edit_mqtt": "Edit MQTT Credential",
     "setting.credentials.edit_smtp": "Edit SMTP Settings",
+    "setting.credentials.mqtt": "MQTT",
+    "setting.credentials.http": "HTTP",
     "setting.credentials.smtp_addr": "SMTP Server Address",
     "setting.credentials.smtp_title": "System Mail Server Settings（SMTP)",
     "setting.credentials.white_label": "Enterprise Settings",

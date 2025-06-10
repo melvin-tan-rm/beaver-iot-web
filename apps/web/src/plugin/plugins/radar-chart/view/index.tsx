@@ -1,20 +1,39 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { useMemoizedFn } from 'ahooks';
 import Chart, { ChartConfiguration } from 'chart.js/auto'; // Introduce Chart.js
 import { useTheme } from '@milesight/shared/src/hooks';
+import { useActivityEntity } from '@/plugin/hooks';
 import { Tooltip } from '@/plugin/view-components';
 import { useSource } from './hooks';
 import type { AggregateHistoryList, ViewConfigProps } from '../typings';
 import './style.less';
 
 interface IProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: ViewConfigProps;
 }
 const View = (props: IProps) => {
-    const { config } = props;
+    const { config, widgetId, dashboardId } = props;
     const { entityList, title, metrics, time } = config || {};
     const { purple, white } = useTheme();
-    const { aggregateHistoryList } = useSource({ entityList, metrics, time });
+    const { getLatestEntityDetail } = useActivityEntity();
+    const latestEntities = useMemo(() => {
+        if (!entityList?.length) return [];
+
+        return entityList
+            .map(item => {
+                return getLatestEntityDetail(item);
+            })
+            .filter(Boolean) as EntityOptionType[];
+    }, [entityList, getLatestEntityDetail]);
+    const { aggregateHistoryList } = useSource({
+        widgetId,
+        dashboardId,
+        entityList: latestEntities,
+        metrics,
+        time,
+    });
 
     const chartRef = useRef<HTMLCanvasElement>(null);
 

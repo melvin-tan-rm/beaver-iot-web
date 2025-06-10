@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { useMemoizedFn } from 'ahooks';
 import Chart, { TooltipItem } from 'chart.js/auto';
 import { useTheme } from '@milesight/shared/src/hooks';
-import { useBasicChartEntity } from '@/plugin/hooks';
+import { useBasicChartEntity, useActivityEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
 import { type ChartEntityPositionValueType } from '@/plugin/components/chart-entity-position';
@@ -12,6 +12,8 @@ import { useLineChart } from './hooks';
 import styles from './style.module.less';
 
 export interface ViewProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: {
         entityPosition: ChartEntityPositionValueType[];
         title: string;
@@ -26,15 +28,21 @@ export interface ViewProps {
 
 const MAX_VALUE_RATIO = 1.1;
 const View = (props: ViewProps) => {
-    const { config, configJson } = props;
+    const { config, configJson, widgetId, dashboardId } = props;
     const { entityPosition, title, time, leftYAxisUnit, rightYAxisUnit } = config || {};
     const { isPreview } = configJson || {};
 
+    const { getLatestEntityDetail } = useActivityEntity();
     const entity = useMemo(() => {
         if (!Array.isArray(entityPosition)) return [];
 
-        return entityPosition.map(e => e.entity).filter(Boolean) as EntityOptionType[];
-    }, [entityPosition]);
+        return entityPosition
+            .map(item => {
+                if (!item.entity) return;
+                return getLatestEntityDetail(item.entity);
+            })
+            .filter(Boolean) as EntityOptionType[];
+    }, [entityPosition, getLatestEntityDetail]);
 
     const {
         chartShowData,
@@ -45,6 +53,8 @@ const View = (props: ViewProps) => {
         chartZoomRef,
         xAxisConfig,
     } = useBasicChartEntity({
+        widgetId,
+        dashboardId,
         entity,
         time,
         isPreview,

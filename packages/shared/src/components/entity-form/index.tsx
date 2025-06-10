@@ -14,8 +14,7 @@ const EntityForm = forwardRef((props: EntityFormProps, ref: any) => {
         const enumMap = attr?.enum || {};
         switch (type) {
             case entityType.string:
-            case entityType.int:
-            case entityType.float:
+            case entityType.long:
                 if (type === entityType.string && Object.keys(enumMap)?.length) {
                     return 'Select';
                 }
@@ -43,8 +42,8 @@ const EntityForm = forwardRef((props: EntityFormProps, ref: any) => {
                     return { label: attr?.enum[key], value: key };
                 });
                 break;
-            case entityType.int:
-            case entityType.float:
+            case entityType.double:
+            case entityType.long:
                 componentProps.type = 'number';
                 break;
             default:
@@ -61,21 +60,21 @@ const EntityForm = forwardRef((props: EntityFormProps, ref: any) => {
         };
         switch (type) {
             case entityType.string:
-                if (attr.minLength) {
+                if (attr.min_length) {
                     rules.minLength = {
-                        value: attr.minLength,
-                        message: `最小长度为${attr.minLength}`,
+                        value: attr.min_length,
+                        message: `最小长度为${attr.min_length}`,
                     };
                 }
-                if (attr.maxLength) {
+                if (attr.max_length) {
                     rules.maxLength = {
-                        value: attr.maxLength,
-                        message: `最大长度为${attr.maxLength}`,
+                        value: attr.max_length,
+                        message: `最大长度为${attr.max_length}`,
                     };
                 }
                 break;
-            case entityType.int:
-            case entityType.float:
+            case entityType.double:
+            case entityType.long:
                 if (attr.min) {
                     rules.min = { value: attr.min, message: `最小值为${attr.min}` };
                 }

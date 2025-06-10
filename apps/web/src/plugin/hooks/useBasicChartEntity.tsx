@@ -1,12 +1,16 @@
-import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
+import { useRequest } from 'ahooks';
 import { IconButton } from '@mui/material';
 import { RefreshIcon } from '@milesight/shared/src/components/icons';
 
 import { useTime } from '@milesight/shared/src/hooks';
-import { entityAPI, isRequestSuccess, getResponseData } from '@/services/http';
-import ws, { getExChangeTopic } from '@/services/ws';
+import { entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
+// import ws, { getExChangeTopic } from '@/services/ws';
+import useActivityEntity from './useActivityEntity';
 
 export interface UseBasicChartEntityProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     entity?: EntityOptionType[];
     time: number;
     isPreview?: boolean;
@@ -74,7 +78,7 @@ const X_RANGE_MAP: Record<number, { stepSize: number; unit: 'minute' | 'hour' | 
  * Currently used in (column diagram, horizontal column diagram, folding drawing, area diagram)
  */
 export function useBasicChartEntity(props: UseBasicChartEntityProps) {
-    const { entity, time, isPreview } = props;
+    const { entity, time, isPreview, widgetId, dashboardId } = props;
 
     const { getTimeFormat, getTime } = useTime();
 
@@ -131,39 +135,20 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
             </div>
         ),
     });
-    /**
-     * webSocket subscription theme
-     */
-    const topics = useMemo(() => {
-        if (!entity) return;
-
-        const topicList: string[] = [];
-        entity.forEach(e => {
-            if (e?.rawData?.entityKey) {
-                topicList.push(getExChangeTopic(e.rawData?.entityKey));
-            }
-        });
-
-        return topicList;
-    }, [entity]);
 
     /**
      * Request chart data
      */
-    const requestChartData = useCallback(() => {
-        /**
-         * Initialization data
-         */
-        setChartShowData([]);
-        setChartLabels([]);
+    const { run: requestChartData } = useRequest(
+        async () => {
+            /**
+             * Initialization data
+             */
+            setChartShowData([]);
+            setChartLabels([]);
 
-        if (!Array.isArray(entity)) return;
-
-        /**
-         * Request to obtain physical historical data
-         */
-        Promise.all(
-            (entity || []).map(e =>
+            if (!Array.isArray(entity)) return;
+            const promises = (entity || []).map(e =>
                 entityAPI.getHistory({
                     entity_id: e.value,
                     start_timestamp: Date.now() - time,
@@ -171,15 +156,12 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
                     page_number: 1,
                     page_size: 999,
                 }),
-            ),
-        ).then(result => {
-            /**
-             * Determine whether there is a data that fails to fail
-             */
-            const isFailed = (result || []).some(res => !isRequestSuccess(res));
-            if (isFailed) return;
+            );
+            const [error, resp] = await awaitWrap(Promise.all(promises));
+            const isFailed = (resp || []).some(res => !isRequestSuccess(res));
 
-            const historyData = (result || [])
+            if (error || isFailed) return;
+            const historyData = (resp || [])
                 .map(res => getResponseData(res))
                 .filter(Boolean)
                 .map(d => d?.content || []);
@@ -226,8 +208,13 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
             });
 
             setChartShowData(newChartShowData);
-        });
-    }, [entity, time]);
+        },
+        {
+            manual: true,
+            debounceWait: 300,
+            refreshDeps: [entity, time],
+        },
+    );
 
     /**
      * Get data
@@ -235,18 +222,6 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
     useEffect(() => {
         requestChartData();
     }, [entity, time, requestChartData]);
-
-    /**
-     * Websocket subscription
-     */
-    useEffect(() => {
-        /**
-         * Do not subscribe in preview status
-         */
-        if (!topics || !topics.length || Boolean(isPreview)) return;
-
-        return ws.subscribe(topics, requestChartData);
-    }, [topics, requestChartData, isPreview]);
 
     // Calculate interval time
     const timeUnit: any = useMemo(() => {
@@ -310,6 +285,54 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
             maxTicksLimit: MAX_TICKS_LIMIT,
         };
     }, [xAxisRange, getTime, time]);
+
+    // /**
+    //  * webSocket subscription theme
+    //  */
+    // const topics = useMemo(() => {
+    //     if (!entity) return;
+
+    //     const topicList: string[] = [];
+    //     entity.forEach(e => {
+    //         if (e?.rawData?.entityKey) {
+    //             topicList.push(getExChangeTopic(e.rawData?.entityKey));
+    //         }
+    //     });
+
+    //     return topicList;
+    // }, [entity]);
+
+    // /**
+    //  * Websocket subscription
+    //  */
+    // useEffect(() => {
+    //     /**
+    //      * Do not subscribe in preview status
+    //      */
+    //     if (!topics || !topics.length || Boolean(isPreview)) return;
+
+    //     return ws.subscribe(topics, requestChartData);
+    // }, [topics, requestChartData, isPreview]);
+
+    // ---------- Entity status management ----------
+    const { addEntityListener } = useActivityEntity();
+    const entityIds = useMemo(() => {
+        return (entity || []).map(entity => entity?.value);
+    }, [entity]);
+
+    useEffect(() => {
+        if (!widgetId || !dashboardId || !entityIds.length) return;
+
+        const removeEventListener = addEntityListener(entityIds, {
+            widgetId,
+            dashboardId,
+            callback: requestChartData,
+        });
+
+        return () => {
+            removeEventListener();
+        };
+    }, [entityIds, widgetId, dashboardId, addEntityListener, requestChartData]);
 
     return {
         /**

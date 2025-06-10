@@ -2,6 +2,8 @@
     "setting.credentials.edit_http": "编辑HTTP凭证",
     "setting.credentials.edit_mqtt": "编辑MQTT凭证",
     "setting.credentials.edit_smtp": "编辑 SMTP 设置",
+    "setting.credentials.mqtt": "MQTT",
+    "setting.credentials.http": "HTTP",
     "setting.credentials.smtp_addr": "SMTP 服务器地址",
     "setting.credentials.smtp_title": "系统邮箱服务器设置（SMTP）",
     "setting.credentials.white_label": "企业设置",

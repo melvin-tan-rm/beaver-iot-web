@@ -9,6 +9,8 @@ import type { ViewConfigProps } from '../typings';
 import './style.less';
 
 interface Props {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: ViewConfigProps;
 }
 const DEFAULT_RANGE = 10;
@@ -28,14 +30,14 @@ const VALUE_FONTSIZE: Record<string, number> = {
 };
 
 const View = (props: Props) => {
-    const { config } = props;
+    const { config, widgetId, dashboardId } = props;
     const { entity, title, time, metrics } = config || {};
     const chartRef = useRef<HTMLCanvasElement>(null);
     const observerRef = useRef<any>(null);
     const gaugeChartRef = useRef<HTMLDivElement>(null);
     const lastContentRect = useRef<any>(null);
     const { purple, grey } = useTheme();
-    const { aggregateHistoryData } = useSource({ entity, metrics, time });
+    const { aggregateHistoryData } = useSource({ widgetId, dashboardId, entity, metrics, time });
     const [valueFontSize, setValueFontSize] = useState<number>(VALUE_FONTSIZE.default);
     const [tickFontSize, setTickFontSize] = useState<number>(TICK_FONTSIZE.default);
 
