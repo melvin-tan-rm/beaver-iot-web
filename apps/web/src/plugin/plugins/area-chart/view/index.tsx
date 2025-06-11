@@ -51,7 +51,7 @@ const View = (props: ViewProps) => {
             isPreview,
         });
 
-    const { getYAxisRange } = useYAxisRange({ chartShowData, entity });
+    const { getYAxisRange } = useYAxisRange({ chartShowData, entity: latestEntities });
     const { resizeChart } = useResizeChart({ chartWrapperRef });
     const { zoomChart, hoverZoomBtn } = useZoomChart({
         xAxisConfig,
@@ -148,7 +148,8 @@ const View = (props: ViewProps) => {
                                     item || {};
 
                                 const getUnit = () => {
-                                    const { rawData: currentEntity } = entity?.[seriesIndex] || {};
+                                    const { rawData: currentEntity } =
+                                        latestEntities?.[seriesIndex] || {};
                                     if (!currentEntity) return;
                                     const { entityValueAttribute } = currentEntity || {};
                                     const { unit } = entityValueAttribute || {};
@@ -200,7 +201,7 @@ const View = (props: ViewProps) => {
         };
     }, [
         grey,
-        entity,
+        latestEntities,
         chartLabels,
         chartRef,
         chartShowData,
