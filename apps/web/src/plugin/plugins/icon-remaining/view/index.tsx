@@ -7,13 +7,15 @@ import type { ViewConfigProps } from '../typings';
 import './style.less';
 
 interface Props {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: ViewConfigProps;
     configJson: CustomComponentProps;
 }
 const View = (props: Props) => {
-    const { config, configJson } = props;
+    const { config, configJson, widgetId, dashboardId } = props;
     const { title, entity, metrics, time } = config || {};
-    const { aggregateHistoryData } = useSource({ entity, metrics, time });
+    const { aggregateHistoryData } = useSource({ widgetId, dashboardId, entity, metrics, time });
     const { isPreview } = configJson || {};
 
     // Get the percentage value

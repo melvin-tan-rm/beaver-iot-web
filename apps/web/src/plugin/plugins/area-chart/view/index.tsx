@@ -1,16 +1,18 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { renderToString } from 'react-dom/server';
 import cls from 'classnames';
 import { useTheme } from '@milesight/shared/src/hooks';
 import { hexToRgba } from '@milesight/shared/src/utils/tools';
 import * as echarts from 'echarts/core';
-import { useBasicChartEntity } from '@/plugin/hooks';
+import { useBasicChartEntity, useActivityEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
 import { useResizeChart, useYAxisRange, useZoomChart } from './hooks';
 import styles from './style.module.less';
 
 export interface ViewProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: {
         entity?: EntityOptionType[];
         title?: string;
@@ -24,14 +26,27 @@ export interface ViewProps {
 
 const CHART_BG_COLOR_OPACITY = 0.2;
 const View = (props: ViewProps) => {
-    const { config, configJson, isEdit } = props;
+    const { config, configJson, isEdit, widgetId, dashboardId } = props;
     const { entity, title, time } = config || {};
     const { isPreview } = configJson || {};
     const chartWrapperRef = useRef<HTMLDivElement>(null);
     const { grey } = useTheme();
+    const { getLatestEntityDetail } = useActivityEntity();
+    const latestEntities = useMemo(() => {
+        if (!entity?.length) return [];
+
+        return entity
+            .map(item => {
+                return getLatestEntityDetail(item);
+            })
+            .filter(Boolean) as EntityOptionType[];
+    }, [entity, getLatestEntityDetail]);
+
     const { chartShowData, chartLabels, chartRef, chartZoomRef, xAxisConfig, xAxisRange } =
         useBasicChartEntity({
-            entity,
+            widgetId,
+            dashboardId,
+            entity: latestEntities,
             time,
             isPreview,
         });

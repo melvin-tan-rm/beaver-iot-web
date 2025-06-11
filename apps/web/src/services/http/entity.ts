@@ -8,6 +8,8 @@ export interface EntityAPISchema extends APISchema {
             keyword?: string;
             /** Entity type */
             entity_type?: EntitySchema['type'][];
+            /** Entity key */
+            entity_keys?: string[];
             /** Entity value type */
             entity_value_type?: EntityValueDataType[];
             /** Entity attributes (read, write, read only) */

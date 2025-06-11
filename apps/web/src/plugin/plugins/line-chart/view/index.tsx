@@ -3,7 +3,7 @@ import { renderToString } from 'react-dom/server';
 import cls from 'classnames';
 import * as echarts from 'echarts/core';
 import { useTheme } from '@milesight/shared/src/hooks';
-import { useBasicChartEntity } from '@/plugin/hooks';
+import { useBasicChartEntity, useActivityEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
 import { type ChartEntityPositionValueType } from '@/plugin/components/chart-entity-position';
@@ -12,6 +12,8 @@ import { useLineChart, useResizeChart, useYAxisRange, useZoomChart } from './hoo
 import styles from './style.module.less';
 
 export interface ViewProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: {
         entityPosition: ChartEntityPositionValueType[];
         title: string;
@@ -26,20 +28,28 @@ export interface ViewProps {
 }
 
 const View = (props: ViewProps) => {
-    const { config, configJson, isEdit } = props;
+    const { config, configJson, isEdit, widgetId, dashboardId } = props;
     const { entityPosition, title, time, leftYAxisUnit, rightYAxisUnit } = config || {};
     const { isPreview } = configJson || {};
     const chartWrapperRef = useRef<HTMLDivElement>(null);
     const { grey } = useTheme();
 
+    const { getLatestEntityDetail } = useActivityEntity();
     const entity = useMemo(() => {
         if (!Array.isArray(entityPosition)) return [];
 
-        return entityPosition.map(e => e.entity).filter(Boolean) as EntityOptionType[];
-    }, [entityPosition]);
+        return entityPosition
+            .map(item => {
+                if (!item.entity) return;
+                return getLatestEntityDetail(item.entity);
+            })
+            .filter(Boolean) as EntityOptionType[];
+    }, [entityPosition, getLatestEntityDetail]);
 
     const { chartShowData, chartLabels, chartRef, chartZoomRef, xAxisConfig, xAxisRange } =
         useBasicChartEntity({
+            widgetId,
+            dashboardId,
             entity,
             time,
             isPreview,

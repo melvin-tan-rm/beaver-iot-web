@@ -1,14 +1,17 @@
 import { useMemo, useState, useCallback, useEffect } from 'react';
+import { useRequest } from 'ahooks';
 import { Switch } from '@mui/material';
 
 import * as Icons from '@milesight/shared/src/components/icons';
 import { entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
-import ws, { getExChangeTopic } from '@/services/ws';
+import { useActivityEntity } from '../../../hooks';
 import { Tooltip } from '../../../view-components';
 
 import styles from './style.module.less';
 
 export interface ViewProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: {
         entity?: EntityOptionType;
         title?: string;
@@ -23,70 +26,52 @@ export interface ViewProps {
 }
 
 const View = (props: ViewProps) => {
-    const { config, configJson } = props;
+    const { config, configJson, widgetId, dashboardId } = props;
     const { entity, title, onIconColor, offIconColor, offIcon, onIcon } = config || {};
     const { isPreview } = configJson || {};
 
     const [isSwitchOn, setIsSwitchOn] = useState(false);
 
     /**
-     * webSocket subscription theme
-     */
-    const topic = useMemo(
-        () => entity?.rawData?.entityKey && getExChangeTopic(entity.rawData.entityKey),
-        [entity],
-    );
-
-    /**
      * Request physical state function
      */
-    const requestEntityStatus = useCallback(async () => {
-        if (!entity) return;
+    const { run: requestEntityStatus } = useRequest(
+        async () => {
+            if (!entity?.value) return;
 
-        const [error, res] = await awaitWrap(entityAPI.getEntityStatus({ id: entity.value }));
+            const [error, res] = await awaitWrap(entityAPI.getEntityStatus({ id: entity.value }));
 
-        if (error || !isRequestSuccess(res)) {
-            /**
-             * The request failed, the default value was closed by closing the FALSE
-             */
-            setIsSwitchOn(false);
-            return;
-        }
+            if (error || !isRequestSuccess(res)) {
+                /**
+                 * The request failed, the default value was closed by closing the FALSE
+                 */
+                setIsSwitchOn(false);
+                return;
+            }
 
-        const entityStatus = getResponseData(res);
-        setIsSwitchOn(Boolean(entityStatus?.value));
-    }, [entity]);
+            const entityStatus = getResponseData(res);
+            setIsSwitchOn(Boolean(entityStatus?.value));
+        },
+        {
+            manual: true,
+            refreshDeps: [entity?.value],
+            debounceWait: 300,
+        },
+    );
 
     /**
      * Get the state of the selected entity
      */
     useEffect(() => {
-        (async () => {
-            if (entity) {
-                requestEntityStatus();
-            } else {
-                /**
-                 * No entity, initialization data
-                 */
-                setIsSwitchOn(false);
-            }
-        })();
+        if (entity) {
+            requestEntityStatus();
+        } else {
+            /**
+             * No entity, initialization data
+             */
+            setIsSwitchOn(false);
+        }
     }, [entity, requestEntityStatus]);
-
-    /**
-     * websocket subscription
-     */
-    useEffect(() => {
-        /**
-         * WEBSOCKET subscription is not performed in preview status
-         */
-        if (!topic || Boolean(isPreview)) return;
-
-        /**
-         * When the subscription theme, the function of canceling the subscription will be returned, so if you return directly, you can cancel the subscription when uninstalled
-         */
-        return ws.subscribe(topic, requestEntityStatus);
-    }, [topic, requestEntityStatus, isPreview]);
 
     /**
      * When switching Switch state,
@@ -136,6 +121,24 @@ const View = (props: ViewProps) => {
 
         return <Icon sx={{ color: iconColor || '#9B9B9B', fontSize: 24 }} />;
     }, [isSwitchOn, onIcon, offIcon, iconColor]);
+
+    // ---------- Entity status management ----------
+    const { addEntityListener } = useActivityEntity();
+
+    useEffect(() => {
+        const entityId = entity?.value;
+        if (!widgetId || !dashboardId || !entityId) return;
+
+        const removeEventListener = addEntityListener(entityId, {
+            widgetId,
+            dashboardId,
+            callback: requestEntityStatus,
+        });
+
+        return () => {
+            removeEventListener();
+        };
+    }, [entity?.value, widgetId, dashboardId, addEntityListener, requestEntityStatus]);
 
     return (
         <div

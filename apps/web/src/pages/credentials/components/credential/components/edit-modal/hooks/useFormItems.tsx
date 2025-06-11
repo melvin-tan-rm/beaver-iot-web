@@ -88,7 +88,7 @@ const useFormItems = ({ type, tenantId }: IPros) => {
                     validate: {
                         checkRequired: checkRequired(),
                         checkRangeLength: checkRangeLength({ min: 8, max: 32 }),
-                        checkLettersAndNum: checkLettersAndNum(),
+                        checkLettersAndNum: type === 'http' ? checkLettersAndNum() : () => true,
                     },
                 },
                 render({ field: { onChange, value, disabled }, fieldState: { error } }) {

@@ -1,6 +1,5 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useRequest } from 'ahooks';
-import ws, { getExChangeTopic } from '@/services/ws';
 import {
     awaitWrap,
     entityAPI,
@@ -8,6 +7,7 @@ import {
     getResponseData,
     isRequestSuccess,
 } from '@/services/http';
+import { useActivityEntity } from '@/plugin/hooks';
 import type { ViewConfigProps } from '../../typings';
 
 interface AggregateHistoryList {
@@ -15,12 +15,13 @@ interface AggregateHistoryList {
     data: EntityAPISchema['getAggregateHistory']['response'];
 }
 interface IProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: ViewConfigProps;
     configJson: CustomComponentProps;
 }
 export const useSourceData = (props: IProps) => {
-    const { config, configJson } = props;
-    const { isPreview } = configJson || {};
+    const { config, widgetId, dashboardId } = props;
     const { entity, metrics, time } = config || {};
 
     const { data: countData, runAsync: getData } = useRequest(
@@ -53,19 +54,23 @@ export const useSourceData = (props: IProps) => {
         { refreshDeps: [entity, time, metrics] },
     );
 
-    const topic = useMemo(() => {
-        const entityKey = entity?.value?.toString();
-        return entityKey && getExChangeTopic(entityKey);
-    }, [entity]);
-    // Subscribe to WS topics
-    useEffect(() => {
-        if (!topic || isPreview) return;
+    // ---------- Entity status management ----------
+    const { addEntityListener } = useActivityEntity();
 
-        const unsubscribe = ws.subscribe(topic, getData);
+    useEffect(() => {
+        const entityId = entity?.value;
+        if (!widgetId || !dashboardId || !entityId) return;
+
+        const removeEventListener = addEntityListener(entityId, {
+            widgetId,
+            dashboardId,
+            callback: getData,
+        });
+
         return () => {
-            unsubscribe?.();
+            removeEventListener();
         };
-    }, [topic, isPreview]);
+    }, [entity?.value, widgetId, dashboardId, addEntityListener, getData]);
 
     return {
         countData,

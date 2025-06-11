@@ -57,7 +57,10 @@ export interface UseDropzoneProps {
      * Enable or disable the dropzone
      */
     disabled?: boolean;
-
+    /**
+     * Exact Match file extension
+     */
+    matchExt?: boolean;
     /**
      * Prevent dropped items to take over the current browser window
      */

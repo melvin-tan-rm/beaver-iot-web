@@ -9,18 +9,20 @@ import type { ViewConfigProps } from '../typings';
 import './style.less';
 
 interface Props {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: ViewConfigProps;
 }
 const DEFAULT_RANGE = 10;
 
 const View = (props: Props) => {
-    const { config } = props;
+    const { config, widgetId, dashboardId } = props;
     const { entity, title, time, metrics } = config || {};
     const chartRef = useRef<HTMLDivElement>(null);
     const chartWrapperRef = useRef<HTMLDivElement>(null);
     const { purple, grey } = useTheme();
-    const { aggregateHistoryData } = useSource({ entity, metrics, time });
     const { resizeChart } = useResizeChart({ chartWrapperRef });
+    const { aggregateHistoryData } = useSource({ widgetId, dashboardId, entity, metrics, time });
 
     // Calculate the most suitable maximum scale value
     const calculateMaxTickValue = (maxValue: number) => {

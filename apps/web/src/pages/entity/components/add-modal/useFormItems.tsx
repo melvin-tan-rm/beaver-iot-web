@@ -28,10 +28,10 @@ export type FormDataProps = {
     accessMod: EntityAccessMode;
     valueType: EntityValueDataType;
     dataType?: DataTypeRadioProps['value'];
-    min?: number;
-    max?: number;
-    minLength?: number;
-    maxLength?: number;
+    min?: string;
+    max?: string;
+    minLength?: string;
+    maxLength?: string;
     boolEnums?: Record<string, string>;
     enums?: Record<string, string>;
     /** bool true value */
@@ -167,7 +167,7 @@ const useFormItems = () => {
                             fullWidth
                             error={error}
                             disabled={disabled}
-                            label={getIntlText('common.label.type')}
+                            label={getIntlText('common.label.entity_type')}
                             options={entityValueTypeOptions.map(item => {
                                 return {
                                     label: getIntlText(item.label),
@@ -207,7 +207,11 @@ const useFormItems = () => {
             {
                 name: 'min',
                 rules: {
-                    validate: { checkRequired: checkRequired(), checkNumber: checkNumber() },
+                    validate: {
+                        checkRequired: checkRequired(),
+                        checkNumber: checkNumber(),
+                        checkMaxLength: checkMaxLength({ max: 25 }),
+                    },
                 },
                 render({ field: { onChange, value, disabled }, fieldState: { error } }) {
                     return (
@@ -235,7 +239,11 @@ const useFormItems = () => {
             {
                 name: 'max',
                 rules: {
-                    validate: { checkRequired: checkRequired(), checkNumber: checkNumber() },
+                    validate: {
+                        checkRequired: checkRequired(),
+                        checkNumber: checkNumber(),
+                        checkMaxLength: checkMaxLength({ max: 25 }),
+                    },
                 },
                 render({ field: { onChange, value, disabled }, fieldState: { error } }) {
                     return (
@@ -264,14 +272,15 @@ const useFormItems = () => {
                 name: 'minLength',
                 rules: {
                     validate: {
-                        checkRequired: checkRequired(),
+                        // checkRequired: checkRequired(),
                         checkNumber: checkNumber(),
+                        checkMaxLength: checkMaxLength({ max: 25 }),
                     },
                 },
                 render({ field: { onChange, value, disabled }, fieldState: { error } }) {
                     return (
                         <TextField
-                            required
+                            // required
                             fullWidth
                             type="text"
                             autoComplete="off"
@@ -291,7 +300,11 @@ const useFormItems = () => {
             {
                 name: 'maxLength',
                 rules: {
-                    validate: { checkRequired: checkRequired(), checkNumber: checkNumber() },
+                    validate: {
+                        checkRequired: checkRequired(),
+                        checkNumber: checkNumber(),
+                        checkMaxLength: checkMaxLength({ max: 25 }),
+                    },
                 },
                 render({ field: { onChange, value, disabled }, fieldState: { error } }) {
                     return (
@@ -473,6 +486,11 @@ const useFormItems = () => {
             },
             {
                 name: 'unit',
+                rules: {
+                    validate: {
+                        checkMaxLength: checkMaxLength({ max: 15 }),
+                    },
+                },
                 render({ field: { onChange, value, disabled }, fieldState: { error } }) {
                     return (
                         <TextField

@@ -5,10 +5,10 @@ import { ThemeProvider } from '@mui/material/styles';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useI18n, useTheme } from '@milesight/shared/src/hooks';
+import { useMqtt } from '@/hooks';
 import { ConfirmProvider } from '@/components';
 import BasicLayout from './BasicLayout';
 import BlankLayout from './BlankLayout';
-import { useWebsocket } from './hooks';
 
 const DEFAULT_LAYOUT = 'basic';
 const layouts: Record<string, React.ReactNode> = {
@@ -21,7 +21,7 @@ function Layout() {
     const { getIntlText } = useI18n();
     const { muiTheme } = useTheme();
 
-    useWebsocket();
+    useMqtt();
     useTitle(getIntlText('common.document.title'));
 
     const route = routeMatches[routeMatches.length - 1];

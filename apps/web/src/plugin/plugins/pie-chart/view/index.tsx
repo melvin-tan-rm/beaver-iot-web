@@ -10,11 +10,13 @@ import type { ViewConfigProps } from '../typings';
 import './style.less';
 
 interface IProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: ViewConfigProps;
     configJson: CustomComponentProps;
 }
 const View = (props: IProps) => {
-    const { config, configJson } = props;
+    const { config, configJson, widgetId, dashboardId } = props;
     const { isPreview } = configJson || {};
     const { title } = config || {};
 

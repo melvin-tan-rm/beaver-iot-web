@@ -1,18 +1,21 @@
 import { useEffect, useMemo } from 'react';
 import { useRequest } from 'ahooks';
-import ws, { getExChangeTopic } from '@/services/ws';
+// import ws, { getExChangeTopic } from '@/services/ws';
 import { awaitWrap, entityAPI, getResponseData, isRequestSuccess } from '@/services/http';
+import { useActivityEntity } from '../../../../hooks';
 import { ViewConfigProps, AggregateHistoryList } from '../../typings';
 
 interface IProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     entityList: ViewConfigProps['entityList'];
     metrics: ViewConfigProps['metrics'];
     time: ViewConfigProps['time'];
 }
 export const useSource = (props: IProps) => {
-    const { entityList, metrics, time } = props;
+    const { entityList, metrics, time, widgetId, dashboardId } = props;
 
-    const { data: aggregateHistoryList, runAsync: getAggregateHistoryList } = useRequest(
+    const { data: aggregateHistoryList, run: getAggregateHistoryList } = useRequest(
         async () => {
             if (!entityList || entityList.length === 0) return;
 
@@ -40,27 +43,35 @@ export const useSource = (props: IProps) => {
             const fetchList = entityList.map((entity: EntityOptionType) => run(entity));
             return Promise.all(fetchList.filter(Boolean) as unknown as AggregateHistoryList[]);
         },
-        { manual: true },
+        {
+            manual: true,
+            debounceWait: 300,
+        },
     );
 
     useEffect(() => {
         getAggregateHistoryList();
     }, [entityList, time, metrics]);
 
-    const topics = useMemo(() => {
-        return (entityList || [])
-            .map((entity: EntityOptionType) => {
-                const entityKey = entity?.rawData?.entityKey?.toString();
-                return entityKey && getExChangeTopic(entityKey);
-            })
-            .filter(Boolean) as string[];
+    // ---------- Entity status management ----------
+    const { addEntityListener } = useActivityEntity();
+    const entityIds = useMemo(() => {
+        return (entityList || []).map(entity => entity?.value);
     }, [entityList]);
-    // Subscribe to WS theme
-    useEffect(() => {
-        if (!topics?.length) return;
 
-        return ws.subscribe(topics, getAggregateHistoryList);
-    }, [topics]);
+    useEffect(() => {
+        if (!widgetId || !dashboardId || !entityIds.length) return;
+
+        const removeEventListener = addEntityListener(entityIds, {
+            widgetId,
+            dashboardId,
+            callback: getAggregateHistoryList,
+        });
+
+        return () => {
+            removeEventListener();
+        };
+    }, [entityIds, widgetId, dashboardId, addEntityListener, getAggregateHistoryList]);
 
     return {
         aggregateHistoryList,

@@ -83,7 +83,7 @@ export default (props: IProps) => {
             },
             {
                 key: 'dataType',
-                label: getIntlText('common.label.type'),
+                label: getIntlText('common.label.entity_type'),
                 content: detail.valueType,
             },
         ];

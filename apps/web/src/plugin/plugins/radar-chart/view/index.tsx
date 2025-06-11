@@ -1,24 +1,44 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { renderToString } from 'react-dom/server';
 import * as echarts from 'echarts/core';
 import { useTheme } from '@milesight/shared/src/hooks';
+import { useActivityEntity } from '@/plugin/hooks';
 import { Tooltip } from '@/plugin/view-components';
 import { useResizeChart, useSource } from './hooks';
 import type { AggregateHistoryList, ViewConfigProps } from '../typings';
 import './style.less';
 
 interface IProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: ViewConfigProps;
 }
 const View = (props: IProps) => {
-    const { config } = props;
+    const { config, widgetId, dashboardId } = props;
     const { entityList, title, metrics, time } = config || {};
     const chartRef = useRef<HTMLDivElement>(null);
     const chartWrapperRef = useRef<HTMLDivElement>(null);
 
     const { purple, white, grey } = useTheme();
-    const { aggregateHistoryList } = useSource({ entityList, metrics, time });
     const { resizeChart } = useResizeChart({ chartWrapperRef });
+
+    const { getLatestEntityDetail } = useActivityEntity();
+    const latestEntities = useMemo(() => {
+        if (!entityList?.length) return [];
+
+        return entityList
+            .map(item => {
+                return getLatestEntityDetail(item);
+            })
+            .filter(Boolean) as EntityOptionType[];
+    }, [entityList, getLatestEntityDetail]);
+    const { aggregateHistoryList } = useSource({
+        widgetId,
+        dashboardId,
+        entityList: latestEntities,
+        metrics,
+        time,
+    });
 
     /** Rendering radar map */
     const renderRadarChart = (

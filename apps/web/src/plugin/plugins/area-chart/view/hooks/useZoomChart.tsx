@@ -81,7 +81,8 @@ export const useZoomChart = ({
         const resetZoom = () => {
             myChart.dispatchAction({
                 type: 'dataZoom',
-                // ...chartZoomTimeValue,
+                start: 0,
+                end: 100,
                 isZooming: false,
             });
         };
