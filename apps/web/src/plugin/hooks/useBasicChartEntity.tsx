@@ -267,7 +267,7 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
     const xAxisRange = useMemo(() => {
         // The current time is used as the final scale, and the time time is pushed forward as the start scale
         return [Date.now() - time, Date.now()];
-    }, [time]);
+    }, [time, chartShowData]);
 
     // Calculate the suggested X-axis range
     const xAxisConfig = useMemo(() => {
