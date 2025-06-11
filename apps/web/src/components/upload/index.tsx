@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, Fragment } from 'react';
 import cls from 'classnames';
-import { useRequest, useUpdateEffect } from 'ahooks';
+import { useRequest, useUpdateEffect, useMemoizedFn } from 'ahooks';
 import { FieldError } from 'react-hook-form';
 import { Button, IconButton, CircularProgress } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -56,7 +56,7 @@ export type UploadFile = FileWithPath & {
 
 export type FileValueType = Pick<UploadFile, 'name' | 'size' | 'path' | 'key' | 'url' | 'preview'>;
 
-type Props = UseDropzoneProps & {
+export type Props = UseDropzoneProps & {
     // type?: string;
 
     /**
@@ -241,6 +241,7 @@ const Upload: React.FC<Props> = ({
     // ---------- Handle uploading status ----------
     const [isUploading, setIsUploading] = useState(false);
     const [isAllDone, setIsAllDone] = useState(false);
+    const handleChange = useMemoizedFn(onChange || (() => {}));
     const handleCancel = useCallback((e: React.MouseEvent) => {
         e.stopPropagation();
         setFiles(files => {
@@ -350,8 +351,8 @@ const Upload: React.FC<Props> = ({
             }
         }
 
-        onChange?.(resultValues, resultFiles);
-    }, [files, multiple, onChange]);
+        handleChange?.(resultValues, resultFiles);
+    }, [files, multiple, handleChange]);
 
     useEffect(() => {
         if (!value) {

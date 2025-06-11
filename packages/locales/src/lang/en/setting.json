@@ -89,5 +89,8 @@
     "setting.integration.ai_model_reasoning": "Model Inference Service",
     "setting.integration.ai_update_model_tip": "Are you sure you want to synchronize the model list? After confirming, you can refresh the current model inference service.",
     "setting.integration.ai_update_model_desc": "Refresh the current model inference service",
-    "setting.integration.ai_model_reasoning_desc": "Model Inference Service Description"
+    "setting.integration.ai_model_reasoning_desc": "Model Inference Service Description",
+    "setting.integration.generate_infer_result": "Generate Inference Result",
+    "setting.integration.ai_model_param_input_tip": "Enter the parameters on the left, and the preview of the inference result will be displayed here",
+    "setting.integration.ai_infer_service_title": "{1} Model Inference Service"
 }

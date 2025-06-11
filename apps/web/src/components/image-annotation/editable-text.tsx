@@ -88,7 +88,7 @@ const EditableText: React.FC<Props> = ({
         result.maxWidth = `${MAX_INPUT_WIDTH / scale}px`;
         result.height = `${labelNode.height()}px`;
         result.margin = '0px';
-        result.padding = `${padding / scale}px`;
+        result.padding = `${padding}px`;
 
         result.color = color;
         result.fontSize = `${fontSize / scale}px`;

@@ -4,7 +4,7 @@ import { Stack } from '@mui/material';
 import { useRequest } from 'ahooks';
 import { DevicesOtherIcon, EntityIcon } from '@milesight/shared/src/components';
 import { thousandSeparate, objectToCamelCase } from '@milesight/shared/src/utils/tools';
-import { Breadcrumbs, Tooltip } from '@/components';
+import { Breadcrumbs } from '@/components';
 import {
     integrationAPI,
     IntegrationAPISchema,
@@ -65,30 +65,34 @@ const IntegrationDetail = () => {
 
     // render content
     const renderContent = () => {
-        if (basicInfo?.id === 'msc-integration') {
-            return <MscContent entities={entityList} onUpdateSuccess={refreshInteDetail} />;
+        switch (basicInfo?.id) {
+            case 'msc-integration': {
+                return <MscContent entities={entityList} onUpdateSuccess={refreshInteDetail} />;
+            }
+            case 'milesight-gateway': {
+                return <NSContent entities={entityList} onUpdateSuccess={refreshInteDetail} />;
+            }
+            case 'ai-inference': {
+                return (
+                    <AiContent
+                        entities={entityList}
+                        onUpdateSuccess={refreshInteDetail}
+                        loading={loading}
+                        excludeServiceKeys={excludeServiceKeys}
+                    />
+                );
+            }
+            default: {
+                return (
+                    <GeneralContent
+                        loading={loading}
+                        entities={entityList}
+                        excludeServiceKeys={excludeServiceKeys}
+                        onUpdateSuccess={refreshInteDetail}
+                    />
+                );
+            }
         }
-        if (basicInfo?.id === 'milesight-gateway') {
-            return <NSContent entities={entityList} onUpdateSuccess={refreshInteDetail} />;
-        }
-        if (basicInfo?.id === 'ai-inference') {
-            return (
-                <AiContent
-                    entities={entityList}
-                    onUpdateSuccess={refreshInteDetail}
-                    loading={loading}
-                    excludeServiceKeys={excludeServiceKeys}
-                />
-            );
-        }
-        return (
-            <GeneralContent
-                loading={loading}
-                entities={entityList}
-                excludeServiceKeys={excludeServiceKeys}
-                onUpdateSuccess={refreshInteDetail}
-            />
-        );
     };
 
     return (

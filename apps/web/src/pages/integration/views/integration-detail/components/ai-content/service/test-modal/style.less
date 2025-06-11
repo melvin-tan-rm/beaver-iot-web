@@ -1,0 +1,165 @@
+.@{prefix}-test-modal {
+    .@{prefix}-modal-title {
+        border-bottom: 1px solid var(--border-color-base);
+    }
+
+    .@{prefix}-modal-footer {
+        display: none;
+    }
+
+    .@{prefix}-modal-content {
+        padding: 0;
+    }
+
+    &-content {
+        display: flex;
+
+        .@{prefix}-test-modal-form {
+            display: flex;
+            flex-direction: column;
+            width: 400px;
+            padding: @padding-lg;
+            border-right: 1px solid var(--border-color-base);
+
+            .@{mui-prefix}ButtonBase-root {
+                .@{mui-prefix}SvgIcon-root {
+                    margin-right: @margin-xs;
+                }
+            }
+
+            &-items {
+                flex: 1;
+                margin-bottom: @margin-sm;
+                overflow: auto;
+            }
+        }
+
+        .@{prefix}-test-modal-result {
+            position: relative;
+            flex: 1;
+            align-items: center;
+            justify-content: center;
+            width: 0;
+            height: 688px;
+            background-color: var(--component-background-gray);
+
+            .@{prefix}-empty {
+                position: absolute;
+                top: 50%;
+                right: 0;
+                left: 0;
+                transform: translateY(-50%);
+            }
+
+            .result-main {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                height: 100%;
+
+                &-header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: @padding-xs @padding-lg;
+                    border-bottom: 1px solid var(--border-color-base);
+                    .text-size(@font-size-base);
+
+                    .@{mui-prefix}ToggleButtonGroup-root {
+                        width: 124px;
+                        margin: 0;
+
+                        .@{mui-prefix}ToggleButtonGroup-grouped {
+                            padding-top: 2px;
+                            padding-bottom: 2px;
+                            .text-size(@font-size-sm);
+                        }
+                    }
+
+                    &-title {
+                        flex: 1;
+                    }
+
+                    &-action {
+                        display: flex;
+                        flex: 1;
+                        justify-content: flex-end;
+
+                        .@{mui-prefix}ButtonBase-root {
+                            padding: 0;
+
+                            &:not(&:last-child) {
+                                margin-right: @margin-md;
+                            }
+                        }
+                    }
+                }
+
+                &-content {
+                    display: flex;
+                    flex: 1;
+                    align-items: center;
+                    justify-content: center;
+
+                    .@{prefix}-code-editor {
+                        border: none;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ---------- Image Input Component ----------
+.@{prefix}-image-input-root {
+    background-color: var(--component-background-gray);
+    border: 1px dashed var(--border-color-base);
+    border-radius: @border-radius-base;
+
+    .@{prefix}-upload-cont-default {
+        background-color: transparent;
+        border: none;
+    }
+
+    .@{prefix}-image-input-text {
+        display: flex;
+        align-items: center;
+        height: 136px;
+        padding: @padding-lg @padding-sm;
+
+        .@{mui-prefix}InputBase-root {
+            background-color: var(--white);
+        }
+    }
+
+    .@{prefix}-image-input-footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: @padding-xs;
+        border-top: 1px solid var(--border-color-base);
+
+        .@{mui-prefix}Divider-root {
+            margin: 0 @padding-sm;
+        }
+
+        .input-type-btn {
+            display: flex;
+            align-items: center;
+            color: var(--text-color-secondary);
+            cursor: pointer;
+
+            .@{mui-prefix}SvgIcon-root {
+                margin-right: @margin-xxs;
+            }
+
+            &:hover {
+                color: var(--text-color-main);
+            }
+
+            &.active {
+                color: var(--text-color-dark);
+            }
+        }
+    }
+}
