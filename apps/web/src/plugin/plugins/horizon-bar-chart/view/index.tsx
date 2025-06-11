@@ -149,7 +149,7 @@ const View = (props: ViewProps) => {
                                     label(tooltipItem: TooltipItem<'bar'>) {
                                         const { datasetIndex, parsed } = tooltipItem || {};
                                         const { x } = parsed || {};
-                                        const { rawData } = entity?.[datasetIndex] || {};
+                                        const { rawData } = latestEntities?.[datasetIndex] || {};
                                         const { entityValueAttribute } = rawData || {};
                                         const { unit } = entityValueAttribute || {};
 
