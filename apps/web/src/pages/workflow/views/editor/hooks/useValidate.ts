@@ -849,7 +849,10 @@ const useValidate = () => {
                     return true;
                 },
             },
-            'webhook.inputArguments': inputArgumentsChecker,
+            'webhook.inputArguments': {
+                ...inputArgumentsChecker,
+                checkMaxLength: genObjectMaxLengthValidator(25, 25),
+            },
             'http.method': { checkRequired },
             'http.url': {
                 checkRequired,

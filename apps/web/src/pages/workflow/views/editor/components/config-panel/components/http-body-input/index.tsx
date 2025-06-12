@@ -115,6 +115,7 @@ const HttpBodyInput: React.FC<HttpBodyInputProps> = ({ label, required, ...props
                         onChange={value => {
                             setData({ type: data?.type, value });
                         }}
+                        minCount={1}
                     />
                 );
             }
