@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useRef } from 'react';
-import { useMemoizedFn } from 'ahooks';
-import Chart, { type TooltipItem } from 'chart.js/auto';
-import { hexToRgba } from '@milesight/shared/src/utils/tools';
+import { renderToString } from 'react-dom/server';
+import cls from 'classnames';
 import { useTheme } from '@milesight/shared/src/hooks';
+import { hexToRgba } from '@milesight/shared/src/utils/tools';
+import * as echarts from 'echarts/core';
 import { useBasicChartEntity, useActivityEntity } from '@/plugin/hooks';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
+import { useResizeChart, useYAxisRange, useZoomChart } from './hooks';
 import styles from './style.module.less';
 
 export interface ViewProps {
@@ -19,15 +21,16 @@ export interface ViewProps {
     configJson: {
         isPreview?: boolean;
     };
+    isEdit?: boolean;
 }
 
-const MAX_VALUE_RATIO = 1.1;
 const CHART_BG_COLOR_OPACITY = 0.2;
 const View = (props: ViewProps) => {
-    const { config, configJson, widgetId, dashboardId } = props;
+    const { config, configJson, isEdit, widgetId, dashboardId } = props;
     const { entity, title, time } = config || {};
     const { isPreview } = configJson || {};
     const chartWrapperRef = useRef<HTMLDivElement>(null);
+    const { grey } = useTheme();
     const { getLatestEntityDetail } = useActivityEntity();
     const latestEntities = useMemo(() => {
         if (!entity?.length) return [];
@@ -39,199 +42,190 @@ const View = (props: ViewProps) => {
             .filter(Boolean) as EntityOptionType[];
     }, [entity, getLatestEntityDetail]);
 
-    const {
-        chartShowData,
-        chartLabels,
-        chartRef,
-        format,
-        displayFormats,
-        chartZoomRef,
+    const { chartShowData, chartLabels, chartRef, chartZoomRef, xAxisConfig, xAxisRange } =
+        useBasicChartEntity({
+            widgetId,
+            dashboardId,
+            entity: latestEntities,
+            time,
+            isPreview,
+        });
+
+    const { getYAxisRange } = useYAxisRange({ chartShowData, entity: latestEntities });
+    const { resizeChart } = useResizeChart({ chartWrapperRef });
+    const { zoomChart, hoverZoomBtn } = useZoomChart({
         xAxisConfig,
-    } = useBasicChartEntity({
-        widgetId,
-        dashboardId,
-        entity: latestEntities,
-        time,
-        isPreview,
+        xAxisRange,
+        chartZoomRef,
+        chartWrapperRef,
     });
-    const { getCSSVariableValue } = useTheme();
-
-    // Find the maximum value of the entity data
-    const maxEntityValue = useMemo(() => {
-        if (!chartShowData?.length) return;
-
-        return (
-            Math.max(
-                ...chartShowData.map(item =>
-                    Math.max(...(item.entityValues || []).map(v => Number(v))),
-                ),
-            ) * MAX_VALUE_RATIO
-        );
-    }, [chartShowData]);
 
     useEffect(() => {
-        try {
-            const { suggestXAxisRange, stepSize, unit, maxTicksLimit } = xAxisConfig || {};
+        const chartDom = chartRef.current;
+        if (!chartDom) return;
 
-            let chartMain: Chart<'line', (string | number | null)[], string> | null = null;
-            const resultColor = getChartColor(chartShowData);
-            if (chartRef.current) {
-                chartMain = new Chart(chartRef.current, {
-                    type: 'line',
-                    data: {
-                        labels: chartLabels,
-                        datasets: chartShowData.map((chart: any, index: number) => ({
-                            label: chart.entityLabel,
-                            data: chart.entityValues,
-                            borderWidth: 2,
-                            fill: true,
-                            spanGaps: true,
-                            backgroundColor: hexToRgba(resultColor[index], CHART_BG_COLOR_OPACITY),
-                            pointBackgroundColor: resultColor[index],
-                            borderColor: resultColor[index],
-                            pointBorderWidth: 0.1,
-                            pointRadius: 2,
-                        })),
+        const myChart = echarts.init(chartDom);
+        const resultColor = getChartColor(chartShowData);
+        const [xAxisMin, xAxisMax] = xAxisRange || [];
+
+        const { min, max } = getYAxisRange() || {};
+
+        myChart.setOption({
+            xAxis: {
+                type: 'time',
+                min: xAxisMin,
+                max: xAxisMax,
+                axisLine: {
+                    onZero: false,
+                    lineStyle: {
+                        color: grey[500],
                     },
-                    options: {
-                        responsive: true, // Respond to the chart
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    autoSkip: true,
-                                    autoSkipPadding: 20,
-                                },
-                                suggestedMax: maxEntityValue,
-                            },
-                            x: {
-                                type: 'time',
-                                time: {
-                                    tooltipFormat: format,
-                                    displayFormats,
-                                    unit, // Unit for the time axis
-                                },
-                                min: suggestXAxisRange[0], // The minimum value of time range
-                                max: suggestXAxisRange[1], // The maximum value of time range
-                                ticks: {
-                                    autoSkip: true, // Automatically skip the scale
-                                    maxTicksLimit,
-                                    major: {
-                                        enabled: true, // Enable the main scale
-                                    },
-                                    stepSize, // Step size between ticks
-                                },
-                                grid: {
-                                    display: false,
-                                },
-                            },
-                        },
-                        plugins: {
-                            tooltip: {
-                                callbacks: {
-                                    label(tooltipItem: TooltipItem<'line'>) {
-                                        const { datasetIndex, parsed } = tooltipItem || {};
-                                        const { y } = parsed || {};
-                                        const { rawData } = latestEntities?.[datasetIndex] || {};
-                                        const { entityValueAttribute } = rawData || {};
-                                        const { unit } = entityValueAttribute || {};
-
-                                        if (!unit) return y;
-                                        return `${y}${unit}`;
-                                    },
-                                },
-                            },
-                            zoom: {
-                                pan: {
-                                    enabled: true,
-                                    mode: 'x', // Only move on the X axis
-                                    onPanStart: chartZoomRef.current?.show,
-                                },
-                                zoom: {
-                                    wheel: {
-                                        enabled: true, // Enable rolling wheel scaling
-                                        speed: 0.05,
-                                        modifierKey: 'ctrl',
-                                    },
-                                    pinch: {
-                                        enabled: true, // Enable touch shrinkage
-                                    },
-                                    mode: 'x', // Only zoomed in the X axis
-                                    onZoomStart: chartZoomRef.current?.show,
-                                },
-                            },
-                            legend: {
-                                labels: {
-                                    boxWidth: 10,
-                                    boxHeight: 10,
-                                    useBorderRadius: true,
-                                    borderRadius: 1,
-                                },
-                            },
-                            crosshair: {
-                                enabled: true,
-                                line: {
-                                    color: getCSSVariableValue('--gray-7'), // crosshair line color
-                                    width: 1, // crosshair line width
-                                    dashPattern: [4, 4],
-                                },
-                            },
-                        } as any,
-                        interaction: {
-                            mode: 'index',
-                            intersect: false,
-                        },
+                },
+            },
+            yAxis: {
+                type: 'value',
+                min,
+                max,
+            },
+            series: chartShowData.map((chart, index) => ({
+                name: chart.entityLabel,
+                type: 'line',
+                data: chart.chartOwnData.map(v => [v.timestamp, v.value]),
+                areaStyle: {
+                    color: hexToRgba(resultColor[index], CHART_BG_COLOR_OPACITY), // Fill color
+                },
+                lineStyle: {
+                    color: resultColor[index], // Line color
+                    width: 2, // The thickness of the line
+                },
+                itemStyle: {
+                    color: resultColor[index], // Data dot color
+                },
+                connectNulls: true,
+                showSymbol: true, // Whether to display data dots
+                symbolSize: 2, // Data dot size
+                emphasis: {
+                    focus: 'series',
+                    scale: 4,
+                    itemStyle: {
+                        borderColor: resultColor[index],
+                        borderWidth: 0, // Set it to 0 to make the dot solid when hovering
+                        color: resultColor[index], // Make sure the color is consistent with the lines
                     },
-                });
+                },
+            })),
+            legend: {
+                data: chartShowData.map(chart => chart.entityLabel),
+                itemWidth: 10,
+                itemHeight: 10,
+                icon: 'roundRect', // Set the legend item as a square
+                textStyle: {
+                    borderRadius: 10,
+                },
+                itemStyle: {
+                    borderRadius: 10,
+                },
+            },
+            grid: {
+                containLabel: true,
+                top: 30, // Adjust the top blank space of the chart area
+                left: 0,
+                right: 0,
+                bottom: 0,
+            },
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                borderColor: 'rgba(0, 0, 0, 0.9)',
+                textStyle: {
+                    color: '#fff',
+                },
+                formatter: (params: any[]) => {
+                    return renderToString(
+                        <div>
+                            {params.map((item, index) => {
+                                const { data, marker, seriesName, seriesIndex, axisValueLabel } =
+                                    item || {};
 
-                hoverZoomBtn(chartMain);
+                                const getUnit = () => {
+                                    const { rawData: currentEntity } =
+                                        latestEntities?.[seriesIndex] || {};
+                                    if (!currentEntity) return;
+                                    const { entityValueAttribute } = currentEntity || {};
+                                    const { unit } = entityValueAttribute || {};
+                                    return unit;
+                                };
+                                const unit = getUnit();
 
-                /**
-                 * store reset zoom state function
-                 */
-                chartZoomRef.current?.storeReset(chartMain);
-            }
+                                return (
+                                    <div>
+                                        {index === 0 && <div>{axisValueLabel}</div>}
+                                        <div
+                                            style={{
+                                                display: 'flex',
+                                                justifyContent: 'space-between',
+                                            }}
+                                        >
+                                            <div>
+                                                <span
+                                                    //  eslint-disable-next-line react/no-danger
+                                                    dangerouslySetInnerHTML={{ __html: marker }}
+                                                />
+                                                <span>{seriesName || ''}:&nbsp;&nbsp;</span>
+                                            </div>
+                                            <div>{`${data?.[1]}${unit || ''}`}</div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>,
+                    );
+                },
+            },
+            dataZoom: [
+                {
+                    type: 'inside', // Built-in data scaling component
+                    filterMode: 'none',
+                    zoomOnMouseWheel: 'ctrl', // Hold down the ctrl key to zoom
+                },
+            ],
+        });
 
-            return () => {
-                /**
-                 * Clear chart data
-                 */
-                chartMain?.destroy();
-            };
-        } catch (error) {
-            console.error(error);
-        }
-    }, [chartShowData, chartLabels, maxEntityValue, xAxisConfig]);
-
-    /** Display zoom button when mouse hover */
-    const hoverZoomBtn = useMemoizedFn(
-        (chartMain: Chart<'line', (string | number | null)[], string>) => {
-            const chartNode = chartWrapperRef.current;
-            if (!chartNode) return;
-
-            chartZoomRef.current?.hide();
-
-            chartNode.onmouseenter = () => {
-                if (!chartMain?.isZoomedOrPanned()) return;
-
-                chartZoomRef.current?.show();
-            };
-            chartNode.onmouseleave = () => {
-                if (!chartMain?.isZoomedOrPanned()) return;
-
-                chartZoomRef.current?.hide();
-            };
-        },
-    );
+        hoverZoomBtn();
+        zoomChart(myChart);
+        // Update the chart when the container size changes
+        const disconnectResize = resizeChart(myChart);
+        return () => {
+            disconnectResize?.();
+            myChart?.dispose();
+        };
+    }, [
+        grey,
+        latestEntities,
+        chartLabels,
+        chartRef,
+        chartShowData,
+        xAxisRange,
+        hoverZoomBtn,
+        resizeChart,
+        zoomChart,
+        getYAxisRange,
+    ]);
 
     return (
-        <div className={styles['area-chart-wrapper']} ref={chartWrapperRef}>
+        <div
+            className={cls(styles['area-chart-wrapper'], {
+                [styles['area-chart-wrapper__preview']]: isPreview,
+            })}
+            ref={chartWrapperRef}
+        >
             <Tooltip className={styles.name} autoEllipsis title={title} />
             <div className={styles['area-chart-content']}>
-                <canvas ref={chartRef} />
-                {chartZoomRef.current?.iconNode}
+                <div ref={chartRef} className={styles['area-chart-content__chart']} />
             </div>
+            {React.cloneElement(chartZoomRef.current?.iconNode, {
+                className: cls('reset-chart-zoom', { 'reset-chart-zoom--isEdit': isEdit }),
+            })}
         </div>
     );
 };

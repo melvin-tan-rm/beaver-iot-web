@@ -274,8 +274,3 @@ declare interface EntitySelectCommonProps<T = EntityOptionType> {
     maxCount?: number;
     onChange: (value: T | null) => void;
 }
-
-declare module 'chartjs-plugin-zoom' {
-    const ChartZoom: any;
-    export default ChartZoom;
-}

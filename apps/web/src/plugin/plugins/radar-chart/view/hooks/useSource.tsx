@@ -53,21 +53,6 @@ export const useSource = (props: IProps) => {
         getAggregateHistoryList();
     }, [entityList, time, metrics]);
 
-    // const topics = useMemo(() => {
-    //     return (entityList || [])
-    //         .map((entity: EntityOptionType) => {
-    //             const entityKey = entity?.rawData?.entityKey?.toString();
-    //             return entityKey && getExChangeTopic(entityKey);
-    //         })
-    //         .filter(Boolean) as string[];
-    // }, [entityList]);
-    // // Subscribe to WS theme
-    // useEffect(() => {
-    //     if (!topics?.length) return;
-
-    //     return ws.subscribe(topics, getAggregateHistoryList);
-    // }, [topics]);
-
     // ---------- Entity status management ----------
     const { addEntityListener } = useActivityEntity();
     const entityIds = useMemo(() => {
