@@ -897,10 +897,18 @@ const useValidate = () => {
                 ) {
                     if (!data?.type || !data.value) return true;
                     const maxLength = 1000;
-
+                    const rowOrJsonBodyMaxLength = 2000;
                     switch (data.type) {
                         case 'application/x-www-form-urlencoded': {
                             const validator = genObjectMaxLengthValidator(maxLength, maxLength);
+                            return validator(data.value, fieldName);
+                        }
+                        case 'application/json': {
+                            const validator = genMaxLengthValidator(rowOrJsonBodyMaxLength);
+                            return validator(data.value, fieldName);
+                        }
+                        case 'text/plain': {
+                            const validator = genMaxLengthValidator(rowOrJsonBodyMaxLength);
                             return validator(data.value, fieldName);
                         }
                         default: {
