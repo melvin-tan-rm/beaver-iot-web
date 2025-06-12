@@ -52,10 +52,10 @@ const AiContent: React.FC<IProps> = ({
                 label: getIntlText('setting.integration.service_manage'),
                 component: (
                     <Service
-                        entities={entities}
-                        onUpdateSuccess={onUpdateSuccess}
                         loading={loading}
+                        entities={entities}
                         excludeKeys={excludeServiceKeys}
+                        onUpdateSuccess={onUpdateSuccess}
                     />
                 ),
             },
@@ -65,7 +65,7 @@ const AiContent: React.FC<IProps> = ({
                 component: <DeviceBind entities={entities} onUpdateSuccess={onUpdateSuccess} />,
             },
         ];
-    }, [getIntlText, entities]);
+    }, [getIntlText, entities, onUpdateSuccess, loading, excludeServiceKeys]);
     const [tabKey, setTabKey] = useRouteTab<TabKey>(tabs[0].key);
 
     return (

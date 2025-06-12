@@ -1,10 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Grid2, IconButton } from '@mui/material';
-import { cloneDeep, isUndefined } from 'lodash-es';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { cloneDeep } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { ChevronRightIcon, toast } from '@milesight/shared/src/components';
-import { useEntityFormItems, type EntityFormDataProps } from '@/hooks';
 import { useConfirm, Tooltip } from '@/components';
 import {
     entityAPI,
@@ -14,8 +12,8 @@ import {
     aiApi,
     getResponseData,
 } from '@/services/http';
-import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
-import { InteEntityType, useEntity } from '../../../hooks';
+import { InteEntityType } from '../../../hooks';
+import TestModal from './test-modal';
 
 type InteServiceType = InteEntityType & {
     children?: InteServiceType[];
@@ -28,23 +26,27 @@ interface Props {
     excludeKeys?: ApiKey[];
     /** Entity list */
     entities?: InteEntityType[];
-    /** Edit successful callback */
-    onUpdateSuccess?: (successCb?: (entityList: any) => void) => void;
+    /** Service call successful callback */
+    onUpdateSuccess?: () => void;
 }
 
-const refreshModelKey = 'refresh_model';
+/**
+ * This keyword indicates that this service is used to refresh AI models
+ */
+const REFRESH_SERVICE_KEYWORD = 'refresh_model';
+/**
+ * This keyword indicates that this service is used to call AI models
+ */
+const TEST_SERVICE_KEYWORD = 'model_';
 
 /**
  * ai model services component
  */
 const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSuccess }) => {
     const { getIntlText } = useI18n();
-    const { getEntityKey } = useEntity({ entities });
 
-    const [modelOutput, setModelOutput] =
-        useState<ObjectToCamelCase<AiAPISchema['syncModelDetail']['response']>>();
-
-    const assembleService = useCallback((entities: InteEntityType[] | undefined) => {
+    // ---------- Render service list ----------
+    const serviceEntities = useMemo(() => {
         const services = entities?.filter(item => {
             return (
                 item.type === 'SERVICE' &&
@@ -80,23 +82,21 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
         });
 
         return result.filter(item => !item.parent);
-    }, []);
-
-    const modelServiceEntities = useMemo(() => {
-        return assembleService(entities);
     }, [entities, excludeKeys]);
 
-    // ---------- card Click on Related Processing logic ----------
+    // ---------- Handle service calls ----------
     const confirm = useConfirm();
+    const [targetService, setTargetService] = useState<InteServiceType | null>();
     const handleClick = async (service: InteServiceType) => {
-        const modelKeyWord = 'model_';
-        // refresh model list
-        if (String(service.key).includes(refreshModelKey)) {
+        // Refresh model list
+        if (`${service.key}`.includes(REFRESH_SERVICE_KEYWORD)) {
             confirm({
                 title: getIntlText('setting.integration.ai_update_model'),
                 description: getIntlText('setting.integration.ai_update_model_tip'),
                 type: 'info',
                 async onConfirm() {
+                    // TODO: Refresh model list
+
                     onUpdateSuccess?.();
                     toast.success({ content: getIntlText('common.message.operation_success') });
                 },
@@ -104,31 +104,26 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
             return;
         }
 
-        // update model field detail if is model
-        if (String(service.key).includes(modelKeyWord)) {
-            const modelId = String(service.key).substring(
-                String(service.key).lastIndexOf(modelKeyWord) + modelKeyWord.length,
-            );
+        // Get AI model config and open test modal
+        if (`${service.key}`.includes(TEST_SERVICE_KEYWORD)) {
+            const modelId = `${service.key}`
+                .split('.')
+                .pop()
+                ?.replace(`${TEST_SERVICE_KEYWORD}`, '');
             const [error, resp] = await awaitWrap(
                 aiApi.syncModelDetail({
-                    model_id: modelId,
+                    model_id: modelId || '',
                 }),
             );
             const data = getResponseData(resp);
-            if (error || !data || !isRequestSuccess(resp)) {
-                return;
-            }
-            // save model output format
-            setModelOutput(objectToCamelCase(data));
-            onUpdateSuccess?.(entityList => {
-                const serviceEntities = assembleService(entityList);
-                setTargetService(serviceEntities.find(entity => entity.key === service.key));
-            });
-            return;
-        }
 
-        if (service.children) {
+            // TODO: This is for debug and it should be removed later
+            console.log({ service });
             setTargetService(service);
+
+            if (error || !data || !isRequestSuccess(resp)) return;
+
+            // TODO: Parse model config and open test modal
             return;
         }
 
@@ -140,61 +135,17 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
                 const [error, resp] = await awaitWrap(
                     entityAPI.callService({ exchange: { [service.key]: {} } }),
                 );
+
                 if (error || !isRequestSuccess(resp)) return;
-                onUpdateSuccess?.();
                 toast.success({ content: getIntlText('common.message.operation_success') });
             },
         });
     };
 
-    // ---------- pop-up form related processing logic ----------
-    const [targetService, setTargetService] = useState<InteServiceType>();
-    const { control, handleSubmit, setValue, getValues } = useForm<EntityFormDataProps>({
-        shouldUnregister: true,
-    });
-    const { formItems, decodeFormParams, encodeFormData } = useEntityFormItems({
-        entities: targetService?.children,
-        // isAllRequired: true,
-    });
-
-    const onSubmit: SubmitHandler<EntityFormDataProps> = async params => {
-        if (!targetService) return;
-        const finalParams = decodeFormParams(params);
-
-        if (!finalParams) {
-            console.warn(`params is empty, the origin params is ${JSON.stringify(params)}`);
-            return;
-        }
-
-        const [error, resp] = await awaitWrap(
-            entityAPI.callService({
-                exchange: Object.values(finalParams).every(val => isUndefined(val))
-                    ? {}
-                    : finalParams,
-            }),
-        );
-        if (error || !isRequestSuccess(resp)) return;
-
-        onUpdateSuccess?.();
-        setTargetService(undefined);
-        toast.success({ content: getIntlText('common.message.operation_success') });
-    };
-
-    // Form data backfill
-    useEffect(() => {
-        if (!targetService?.children?.length) return;
-
-        const formData = encodeFormData(targetService.children);
-
-        Object.entries(formData || {}).forEach(([key, value]) => {
-            setValue(key, value);
-        });
-    }, [targetService, setValue, encodeFormData]);
-
     return (
         <div className="ms-view-ai-service">
             <Grid2 container spacing={2}>
-                {modelServiceEntities.map(service => (
+                {serviceEntities.map(service => (
                     <Grid2 key={service.key} size={{ sm: 6, md: 4, xl: 3 }}>
                         <div className="ms-int-feat-card" onClick={() => handleClick(service)}>
                             <div className="header">
@@ -214,6 +165,11 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
                     </Grid2>
                 ))}
             </Grid2>
+            <TestModal
+                visible={!!targetService}
+                modelName={targetService?.name || ''}
+                onCancel={() => setTargetService(null)}
+            />
         </div>
     );
 };

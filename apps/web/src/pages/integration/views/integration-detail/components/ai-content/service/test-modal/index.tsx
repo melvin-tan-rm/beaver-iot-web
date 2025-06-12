@@ -153,7 +153,7 @@ const TestModal: React.FC<Props> = ({ modelName, onCancel, ...props }) => {
                                     points={points}
                                     containerWidth={800 - 40}
                                     containerHeight={643 - 40}
-                                    onPointsChange={setPoints}
+                                    // onPointsChange={setPoints}
                                 />
                             </div>
                         )}
@@ -161,6 +161,7 @@ const TestModal: React.FC<Props> = ({ modelName, onCancel, ...props }) => {
                             <div className="result-main-content result-main-code">
                                 <CodeEditor
                                     readOnly
+                                    editorLang="json"
                                     value={`{\n    "a": "aa",\n    "b": "bb",\n    "c": "cc"\n}`}
                                     editable={false}
                                     renderHeader={() => null}
