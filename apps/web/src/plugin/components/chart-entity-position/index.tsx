@@ -8,12 +8,14 @@ import {
     AddIcon,
     KeyboardArrowDownIcon,
 } from '@milesight/shared/src/components';
-import { EntitySelect } from '@/components';
+import { EntitySelect, type EntitySelectProps } from '@/components';
 import type { EntitySelectOption } from '@/components/entity-select';
+import { filterEntityMap } from '@/plugin/utils';
 import Select from '../select';
 
 import styles from './style.module.less';
 
+type SingleEntitySelectProps = EntitySelectProps<EntityOptionType, false, false>;
 export enum POSITION_AXIS {
     LEFT = 1,
     RIGHT = 2,
@@ -25,7 +27,11 @@ export interface ChartEntityPositionValueType {
     position: POSITION_AXIS;
 }
 
-export interface ChartEntityPositionProps {
+export interface ChartEntityPositionProps
+    extends Pick<
+        SingleEntitySelectProps,
+        'entityType' | 'entityValueType' | 'entityAccessMod' | 'excludeChildren'
+    > {
     label?: string[];
     required?: boolean;
     multiple?: boolean;
@@ -33,8 +39,12 @@ export interface ChartEntityPositionProps {
     helperText?: React.ReactNode;
     value?: ChartEntityPositionValueType[];
     defaultValue?: ChartEntityPositionValueType[];
-    entityAccessMod?: EntityAccessMode[];
     onChange?: (value: ChartEntityPositionValueType[]) => void;
+    entityType: SingleEntitySelectProps['entityType'];
+    entityValueTypes: SingleEntitySelectProps['entityValueType'];
+    entityAccessMods: SingleEntitySelectProps['entityAccessMod'];
+    entityExcludeChildren: SingleEntitySelectProps['excludeChildren'];
+    customFilterEntity: keyof typeof filterEntityMap;
 }
 
 const MAX_VALUE_LENGTH = 5;
@@ -48,9 +58,14 @@ const ChartEntityPosition: React.FC<ChartEntityPositionProps> = ({
     multiple = true,
     error,
     helperText,
+    entityType,
+    entityValueType,
+    entityValueTypes,
+    entityAccessMod,
+    entityAccessMods,
+    entityExcludeChildren,
     ...props
 }) => {
-    const { entityAccessMod } = props;
     const { getIntlText } = useI18n();
     const [data, setData] = useControllableValue<ChartEntityPositionValueType[]>(props);
     const { list, remove, getKey, insert, replace, resetList } =
@@ -106,7 +121,10 @@ const ChartEntityPosition: React.FC<ChartEntityPositionProps> = ({
                                 });
                             }}
                             dropdownMatchSelectWidth={365}
-                            entityAccessMod={entityAccessMod}
+                            entityType={entityType}
+                            entityValueType={entityValueTypes || entityValueType}
+                            entityAccessMod={entityAccessMods || entityAccessMod}
+                            excludeChildren={entityExcludeChildren}
                         />
                         <Select
                             title={getIntlText('dashboard.label.y_axis')}

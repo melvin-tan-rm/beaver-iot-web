@@ -39,6 +39,7 @@
                     "getDataUrl": "",
                     "valueType": "array",
                     "componentProps": {
+                        "entityType": ["PROPERTY"],
                         "entityAccessMod": ["R", "RW"]
                     },
                     "rules": {
