@@ -78,6 +78,11 @@ const View = (props: ViewProps) => {
 
         const xRangeList = getYAxisRange() || {};
 
+        let mousePos = [0, 0];
+        myChart.getZr().on('mousemove', e => {
+            mousePos = [e.offsetX, e.offsetY];
+        });
+
         myChart.setOption({
             graphic: new Array(Math.min(newChartShowData.length, 2)).fill(0).map((_, index) => ({
                 type: 'text',
@@ -100,6 +105,11 @@ const View = (props: ViewProps) => {
                     lineStyle: {
                         color: grey[500],
                     },
+                },
+                axisPointer: {
+                    show: true,
+                    type: 'line',
+                    snap: false,
                 },
             },
             yAxis: new Array(newChartShowData.length || 1)
@@ -162,6 +172,24 @@ const View = (props: ViewProps) => {
                     color: '#fff',
                 },
                 formatter: (params: any[]) => {
+                    const timeValue = params[0].axisValue;
+                    // Take the y value of the current data point
+                    const yValue = params[0].data[1];
+                    // Take the yAxisIndex of the current series
+                    const yAxisIndex =
+                        (myChart as any).getOption()?.series?.[params[0].seriesIndex].yAxisIndex ??
+                        0;
+                    // Pass in the complete xAxisIndex/yAxisIndex
+                    const pointInGrid = myChart.convertToPixel({ xAxisIndex: 0, yAxisIndex }, [
+                        timeValue,
+                        yValue,
+                    ]);
+
+                    // Calculate the distance between the mouse and the data points
+                    const distance = Math.abs(pointInGrid[0] - mousePos[0]);
+                    // The Tooltip is displayed only when the distance is less than the threshold (5 pixels)
+                    if (distance > 5) return '';
+
                     return renderToString(
                         <div>
                             {params.map((item, index) => {
