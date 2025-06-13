@@ -2,11 +2,7 @@ import { useMemo } from 'react';
 import { type ControllerProps } from 'react-hook-form';
 import { TextField } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
-import {
-    checkRequired,
-    checkMaxLength,
-    checkPureWhiteSpace,
-} from '@milesight/shared/src/utils/validators';
+import { checkRequired, checkMaxLength } from '@milesight/shared/src/utils/validators';
 import { type IntegrationAPISchema } from '@/services/http';
 import { useEntityFormItems } from '@/hooks';
 
@@ -42,7 +38,6 @@ const useDynamicFormItems = ({ entities }: Props) => {
                 validate: {
                     checkRequired: checkRequired(),
                     checkMaxLength: checkMaxLength({ max: 64 }),
-                    checkPureWhiteSpace: checkPureWhiteSpace(),
                 },
             },
             defaultValue: '',

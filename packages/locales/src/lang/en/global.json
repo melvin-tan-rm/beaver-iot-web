@@ -203,7 +203,6 @@
     "valid.input.netmask": "Please enter your subnet mask in the following format: XXX.XXX.XXX.XXX.",
     "valid.input.no_includes_space_ascii": "Please enter the ASCII without any spaces.",
     "valid.input.not_allow_string": "Not allowed string: {0}",
-    "valid.input.not_pure_whitespace": "No pure spaces are allowed.",
     "valid.input.not_include_whitespace": "No spaces are allowed.",
     "valid.input.num_letter_space_simple_special": "Numbers, letters, spaces, and special characters such as (). -+*# are allowed.",
     "valid.input.number": "Please enter a number.",

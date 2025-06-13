@@ -414,7 +414,6 @@
   "valid.input.no_includes_space_ascii": "请输入不含空格的ASCII字符。",
   "valid.input.not_allow_string": "不允许的字符串：{0}",
   "valid.input.not_include_whitespace": "不允许空格。",
-  "valid.input.not_pure_whitespace": "不允许纯空格。",
   "valid.input.num_letter_space_simple_special": "允许数字、字母、空格和特殊字符如(). -+*#。",
   "valid.input.number": "请输入数字。",
   "valid.input.number_has_min_max": "请输入{1}到{2}之间的数字。",
