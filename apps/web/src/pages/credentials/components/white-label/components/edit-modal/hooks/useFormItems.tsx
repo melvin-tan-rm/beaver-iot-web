@@ -180,7 +180,6 @@ const useFormItems = () => {
                 rules: {
                     validate: {
                         checkRequired: checkRequired(),
-                        checkLettersAndNum: checkLettersAndNum(),
                         checkMaxLength: checkMaxLength({ max: 35 }),
                     },
                 },

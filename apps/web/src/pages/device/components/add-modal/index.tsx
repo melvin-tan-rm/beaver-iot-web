@@ -84,7 +84,11 @@ const AddModal: React.FC<Props> = ({ visible, onCancel, onError, onSuccess, ...p
         const entityParams = decodeFormParams(params);
 
         const [error, resp] = await awaitWrap(
-            deviceAPI.addDevice({ name, integration: inteID, param_entities: entityParams }),
+            deviceAPI.addDevice({
+                name: name.trim(),
+                integration: inteID,
+                param_entities: entityParams,
+            }),
         );
 
         // console.log({ error, resp });
