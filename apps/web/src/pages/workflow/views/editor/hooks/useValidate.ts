@@ -393,6 +393,9 @@ const useValidate = () => {
                 checkRequired,
                 checkMaxLength: genMaxLengthValidator(100),
             },
+            'mqtt.encoding': {
+                checkRequired,
+            },
             'httpin.method': { checkRequired },
             'httpin.url': {
                 checkRequired,
