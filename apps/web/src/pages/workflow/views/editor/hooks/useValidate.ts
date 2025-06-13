@@ -116,6 +116,7 @@ const useValidate = () => {
         const genObjectMaxLengthValidator = (
             keyMaxLength?: number,
             valueMaxLength?: number,
+            neglectReferenceValue?: boolean,
         ): NodeDataValidator => {
             return (
                 value: NonNullable<CodeNodeDataType['parameters']>['inputArguments'],
@@ -131,10 +132,12 @@ const useValidate = () => {
                     });
                 const hasValueOverLength =
                     !isNil(valueMaxLength) &&
-                    Object.values(value).some(val => {
-                        if (val && !isMaxLength(val, valueMaxLength)) return true;
-                        return false;
-                    });
+                    Object.values(value)
+                        .filter(val => (neglectReferenceValue ? !isRefParamKey(val) : true))
+                        .some(val => {
+                            if (val && !isMaxLength(val, valueMaxLength)) return true;
+                            return false;
+                        });
 
                 if (!hasKeyOverLength && !hasValueOverLength) return true;
                 const options = hasKeyOverLength
@@ -851,7 +854,7 @@ const useValidate = () => {
             },
             'webhook.inputArguments': {
                 ...inputArgumentsChecker,
-                checkMaxLength: genObjectMaxLengthValidator(25, 25),
+                checkMaxLength: genObjectMaxLengthValidator(25, 25, true),
             },
             'http.method': { checkRequired },
             'http.url': {
