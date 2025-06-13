@@ -5,7 +5,7 @@ import {
     FormControl,
     // FormLabel,
     FormControlLabel,
-    // InputLabel,
+    InputLabel,
     // Select,
     // MenuItem,
     FormHelperText,
@@ -25,6 +25,9 @@ import {
     checkRegexp,
     checkHexNumber,
 } from '@milesight/shared/src/utils/validators';
+import { HelpOutlineIcon } from '@milesight/shared/src/components';
+import ImageInput from '@/components/image-input';
+import Tooltip from '@/components/tooltip';
 import { type IntegrationAPISchema } from '@/services/http';
 
 interface Props {
@@ -43,6 +46,11 @@ interface Props {
  * Form data type
  */
 export type EntityFormDataProps = Record<string, any>;
+
+/**
+ * This keyword indicates that this entity will be rendered as an image input
+ */
+const IMAGE_KEYWORD = 'IMAGE:';
 
 /**
  * Gets entity verification rules
@@ -168,6 +176,18 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
 
     const formItems = useMemo(() => {
         const result: ControllerProps<EntityFormDataProps>[] = [];
+        const renderLabel = (label?: string, helperText?: string) => {
+            if (!helperText) return label;
+
+            return (
+                <>
+                    {label}
+                    <Tooltip className="ms-form-label-help" title={helperText}>
+                        <HelpOutlineIcon sx={{ fontSize: 16 }} />
+                    </Tooltip>
+                </>
+            );
+        };
 
         if (!entities?.length) return result;
 
@@ -192,7 +212,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                     sx={{ my: 1.5 }}
                                     required={!attr.optional}
                                     disabled={disabled}
-                                    label={entity.name}
+                                    label={renderLabel(entity.name, entity.description)}
                                     error={!!error}
                                     helperText={error ? error.message : null}
                                     value={value}
@@ -202,7 +222,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                         },
                     };
 
-                    // If it is an enumeration type, render the drop-down box
+                    // If it is an enumeration type, rendered as drop-down box
                     if (attr.enum) {
                         // formItem.defaultValue = '';
                         formItem.render = ({
@@ -230,7 +250,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                         renderInput={params => (
                                             <TextField
                                                 {...params}
-                                                label={entity.name}
+                                                label={renderLabel(entity.name, entity.description)}
                                                 error={!!error}
                                                 required={!attr.optional}
                                                 InputProps={{
@@ -248,6 +268,26 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                 </FormControl>
                             );
                         };
+                    }
+
+                    // If it is an image type, rendered as image input
+                    if (attr.format?.includes(IMAGE_KEYWORD)) {
+                        formItem.render = ({
+                            field: { onChange, value, disabled },
+                            fieldState: { error },
+                        }) => (
+                            <FormControl required disabled fullWidth>
+                                <InputLabel>
+                                    {renderLabel(entity.name, entity.description)}
+                                </InputLabel>
+                                <ImageInput value={value} onChange={onChange} />
+                                {error && (
+                                    <FormHelperText error sx={{ mt: 1 }}>
+                                        {error.message}
+                                    </FormHelperText>
+                                )}
+                            </FormControl>
+                        );
                     }
 
                     result.push(formItem);
@@ -268,7 +308,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                     sx={{ my: 1.5 }}
                                 >
                                     <FormControlLabel
-                                        label={entity.name}
+                                        label={renderLabel(entity.name, entity.description)}
                                         required={!attr.optional}
                                         checked={!!value}
                                         onChange={onChange}
@@ -298,7 +338,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                     rows={4}
                                     required={!attr.optional}
                                     disabled={disabled}
-                                    label={entity.name}
+                                    label={renderLabel(entity.name, entity.description)}
                                     error={!!error}
                                     helperText={error ? error.message : null}
                                     value={value}

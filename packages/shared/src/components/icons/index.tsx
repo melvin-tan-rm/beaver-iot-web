@@ -141,6 +141,7 @@ export {
     Star as StarIcon,
     AddLink as AddLinkIcon,
     SaveAlt as SaveAltIcon,
+    HelpOutline as HelpOutlineIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';

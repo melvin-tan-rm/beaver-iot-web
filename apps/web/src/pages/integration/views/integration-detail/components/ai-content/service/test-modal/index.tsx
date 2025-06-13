@@ -18,12 +18,16 @@ import {
     CodeEditor,
     type Vector2d,
 } from '@/components';
-import useFormItems, { type FormDataType } from './useFormItems';
+import { useEntityFormItems, type EntityFormDataProps } from '@/hooks';
+import { type InteEntityType } from '../../../../hooks';
 import './style.less';
 
 interface Props extends Omit<ModalProps, 'onOk'> {
     /** AI model name */
     modelName?: string;
+
+    /** Entity list that used to generate form items */
+    entities?: InteEntityType[];
 }
 
 type ResultType = 'image' | 'json';
@@ -36,14 +40,14 @@ const resultOptionConfigs: {
     { labelIntlKey: 'common.label.json', value: 'json' },
 ];
 
-const TestModal: React.FC<Props> = ({ modelName, onCancel, ...props }) => {
+const TestModal: React.FC<Props> = ({ modelName, entities, onCancel, ...props }) => {
     const { getIntlText } = useI18n();
 
     // ---------- Render dynamic form items ----------
-    const { control, handleSubmit, reset, setValue } = useForm<FormDataType>();
-    const { formItems } = useFormItems();
+    const { control, handleSubmit, reset, setValue } = useForm<EntityFormDataProps>();
+    const { formItems } = useEntityFormItems({ entities });
 
-    const onSubmit: SubmitHandler<FormDataType> = async ({ name, ...params }) => {
+    const onSubmit: SubmitHandler<EntityFormDataProps> = async ({ name, ...params }) => {
         console.log({ name, params });
     };
 
@@ -103,7 +107,7 @@ const TestModal: React.FC<Props> = ({ modelName, onCancel, ...props }) => {
                     <div className="ms-test-modal-form-items">
                         {/* TODO: Generate dynamic form items... */}
                         {formItems.map(props => (
-                            <Controller<FormDataType>
+                            <Controller<EntityFormDataProps>
                                 {...props}
                                 key={props.name}
                                 control={control}

@@ -72,6 +72,7 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
          */
         result.forEach(item => {
             if (
+                item.parent ||
                 item.children?.length ||
                 (['BINARY', 'ENUM', 'OBJECT'] as EntityValueDataType[]).includes(item.valueType)
             ) {
@@ -168,6 +169,7 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
             <TestModal
                 visible={!!targetService}
                 modelName={targetService?.name || ''}
+                entities={targetService?.children || []}
                 onCancel={() => setTargetService(null)}
             />
         </div>

@@ -3,8 +3,9 @@ import { Stack, IconButton } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import { ListAltIcon, DeleteOutlineIcon } from '@milesight/shared/src/components';
 import { Tooltip, type ColumnType } from '@/components';
+import { ImagePreview } from './components';
 
-type OperationType = 'detail' | 'delete';
+type OperationType = 'log' | 'delete';
 
 export type TableRowDataType = Record<string, any>;
 
@@ -22,10 +23,55 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
     const columns: ColumnType<T>[] = useMemo(() => {
         return [
             {
-                field: 'name',
-                headerName: getIntlText('device.label.param_device_name'),
-                flex: 2,
-                minWidth: 350,
+                field: 'deviceId',
+                headerName: 'Device ID',
+                minWidth: 160,
+                ellipsis: true,
+                // disableColumnMenu: false,
+            },
+            {
+                field: 'deviceName',
+                headerName: 'Device Name',
+                minWidth: 160,
+                ellipsis: true,
+                // disableColumnMenu: false,
+            },
+            {
+                field: 'aiServiceName',
+                headerName: 'AI Service Name',
+                minWidth: 160,
+                ellipsis: true,
+                // disableColumnMenu: false,
+            },
+            {
+                field: 'originalImageUrl',
+                headerName: 'Original Image',
+                minWidth: 160,
+                align: 'center',
+                cellClassName: 'ms-image-cell',
+                // disableColumnMenu: false,
+                renderCell({ value }) {
+                    return <ImagePreview src={value} />;
+                },
+            },
+            {
+                field: 'resultImageUrl',
+                headerName: 'Result Image',
+                minWidth: 160,
+                ellipsis: true,
+                // disableColumnMenu: false,
+            },
+            {
+                field: 'inferenceResult',
+                headerName: 'Inference Result',
+                minWidth: 160,
+                ellipsis: true,
+                // disableColumnMenu: false,
+            },
+            {
+                field: 'status',
+                headerName: 'Status',
+                minWidth: 160,
                 ellipsis: true,
                 // disableColumnMenu: false,
             },
@@ -33,18 +79,21 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 field: 'createdAt',
                 headerName: getIntlText('common.label.create_time'),
                 flex: 1,
-                minWidth: 200,
+                minWidth: 150,
                 ellipsis: true,
                 renderCell({ value }) {
                     return getTimeFormat(value);
                 },
             },
             {
-                field: 'integrationName',
-                headerName: getIntlText('device.label.param_source'),
+                field: 'inferenceAt',
+                headerName: 'Inference Time',
                 ellipsis: true,
                 flex: 1,
-                minWidth: 300,
+                minWidth: 150,
+                renderCell({ value }) {
+                    return getTimeFormat(value);
+                },
             },
             {
                 field: '$operation',
@@ -63,7 +112,7 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                             <Tooltip title={getIntlText('common.label.detail')}>
                                 <IconButton
                                     sx={{ width: 30, height: 30 }}
-                                    onClick={() => onButtonClick('detail', row)}
+                                    onClick={() => onButtonClick('log', row)}
                                 >
                                     <ListAltIcon sx={{ width: 20, height: 20 }} />
                                 </IconButton>

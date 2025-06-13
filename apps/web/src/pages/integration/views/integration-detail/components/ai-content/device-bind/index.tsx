@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { AddIcon, DeleteOutlineIcon, toast, CodeIcon } from '@milesight/shared/src/components';
 import { TablePro, useConfirm } from '@/components';
-import { awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
+import { aiApi, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import { InteEntityType } from '../../../hooks';
 import useColumns, { type UseColumnsProps, type TableRowDataType } from './useColumns';
 
@@ -33,7 +33,7 @@ const DeviceBind: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const [selectedIds, setSelectedIds] = useState<readonly ApiKey[]>([]);
 
-    // ---------- Table rendering related to ----------
+    // ---------- Render table and handle actions ----------
     const toolbarRender = useMemo(() => {
         return (
             <Stack className="ms-operations-btns" direction="row" spacing="12px">
@@ -64,12 +64,10 @@ const DeviceBind: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
         (type, record) => {
             // console.log(type, record);
             switch (type) {
-                case 'detail': {
-                    navigate(`/device/detail/${record.id}`, { state: record });
+                case 'log': {
                     break;
                 }
                 case 'delete': {
-                    // handleDeleteConfirm([record.id]);
                     break;
                 }
                 default: {
@@ -77,9 +75,37 @@ const DeviceBind: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
                 }
             }
         },
-        [navigate],
+        [],
     );
     const columns = useColumns<TableRowDataType>({ onButtonClick: handleTableBtnClick });
+
+    // ---------- Get device list ----------
+    const { data: deviceList } = useRequest(
+        async () => {
+            return [
+                {
+                    id: '123',
+                    deviceId: '123',
+                    deviceName: 'device1',
+                    aiServiceName: 'service1',
+                    originalImageUrl:
+                        'http://192.168.43.48:9000/beaver-iot-resource/beaver-iot-public/abc856a0-5d17-46e3-bdd3-26b3aa7ec343-20200108-213609-uqZwL.jpg',
+                    resultImageUrl:
+                        'http://192.168.43.48:9000/beaver-iot-resource/beaver-iot-public/abc856a0-5d17-46e3-bdd3-26b3aa7ec343-20200108-213609-uqZwL.jpg',
+                    inferenceResult: '1231',
+                    status: 'normal',
+                    createdAt: Date.now(),
+                    inferenceAt: Date.now(),
+                },
+            ];
+            // const [err, res] = await awaitWrap(aiApi.getDeviceList({ keyword }));
+            // if (err || !isRequestSuccess(res)) return;
+            // return getResponseData(res);
+        },
+        {
+            debounceWait: 300,
+        },
+    );
 
     return (
         <div className="ms-view-ai-device-bind">
@@ -87,8 +113,8 @@ const DeviceBind: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
                 // checkboxSelection={hasPermission(PERMISSIONS.DEVICE_DELETE)}
                 // loading={loading}
                 columns={columns}
-                // rows={deviceData?.content}
-                // rowCount={deviceData?.total || 0}
+                rows={deviceList || []}
+                rowCount={deviceList?.length || 0}
                 paginationModel={paginationModel}
                 rowSelectionModel={selectedIds}
                 isRowSelectable={({ row }) => row.deletable}

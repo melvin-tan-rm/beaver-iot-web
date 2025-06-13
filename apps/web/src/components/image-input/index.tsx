@@ -4,7 +4,7 @@ import cls from 'classnames';
 import { TextField, Divider } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { UploadFileIcon, AddLinkIcon } from '@milesight/shared/src/components';
-import { Upload, type FileValueType } from '@/components';
+import Upload, { type FileValueType } from '../upload';
 import './style.less';
 
 interface Props {
@@ -17,6 +17,12 @@ interface Props {
 
 type DataType = 'file' | 'url';
 
+/**
+ * Image input component
+ * @param props
+ * @example
+ * <ImageInput value={value} onChange={setValue} />
+ */
 const ImageInput: React.FC<Props> = props => {
     const { getIntlText } = useI18n();
     const [value, setValue] = useControllableValue(props);
