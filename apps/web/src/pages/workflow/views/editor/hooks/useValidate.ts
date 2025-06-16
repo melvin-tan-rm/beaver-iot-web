@@ -132,7 +132,7 @@ const useValidate = () => {
                 const hasValueOverLength =
                     !isNil(valueMaxLength) &&
                     Object.values(value).some(val => {
-                        if (isRefParamKey(val) || (val && !isMaxLength(val, valueMaxLength)))
+                        if (val && !isRefParamKey(val) && !isMaxLength(val, valueMaxLength))
                             return true;
                         return false;
                     });

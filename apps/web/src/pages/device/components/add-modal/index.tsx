@@ -85,7 +85,7 @@ const AddModal: React.FC<Props> = ({ visible, onCancel, onError, onSuccess, ...p
 
         const [error, resp] = await awaitWrap(
             deviceAPI.addDevice({
-                name: name.trim(),
+                name,
                 integration: inteID,
                 param_entities: entityParams,
             }),
