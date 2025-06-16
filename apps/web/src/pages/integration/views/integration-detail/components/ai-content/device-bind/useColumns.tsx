@@ -3,7 +3,7 @@ import { Stack, IconButton } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import { ListAltIcon, DeleteOutlineIcon } from '@milesight/shared/src/components';
 import { Tooltip, type ColumnType } from '@/components';
-import { ImagePreview } from './components';
+import { ImagePreview, CodePreview } from './components';
 
 type OperationType = 'log' | 'delete';
 
@@ -27,53 +27,51 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 headerName: 'Device ID',
                 minWidth: 160,
                 ellipsis: true,
-                // disableColumnMenu: false,
             },
             {
                 field: 'deviceName',
                 headerName: 'Device Name',
                 minWidth: 160,
                 ellipsis: true,
-                // disableColumnMenu: false,
             },
             {
                 field: 'aiServiceName',
                 headerName: 'AI Service Name',
                 minWidth: 160,
                 ellipsis: true,
-                // disableColumnMenu: false,
             },
             {
                 field: 'originalImageUrl',
                 headerName: 'Original Image',
                 minWidth: 160,
-                align: 'center',
-                cellClassName: 'ms-image-cell',
-                // disableColumnMenu: false,
-                renderCell({ value }) {
-                    return <ImagePreview src={value} />;
+                cellClassName: 'd-flex align-items-center',
+                renderCell({ id, value }) {
+                    return <ImagePreview key={id} src={value} />;
                 },
             },
             {
                 field: 'resultImageUrl',
                 headerName: 'Result Image',
                 minWidth: 160,
-                ellipsis: true,
-                // disableColumnMenu: false,
+                cellClassName: 'd-flex align-items-center',
+                renderCell({ id, value }) {
+                    return <ImagePreview key={id} src={value} />;
+                },
             },
             {
                 field: 'inferenceResult',
                 headerName: 'Inference Result',
                 minWidth: 160,
-                ellipsis: true,
-                // disableColumnMenu: false,
+                cellClassName: 'd-flex align-items-center',
+                renderCell({ id, value }) {
+                    return <CodePreview key={id} content={value} />;
+                },
             },
             {
                 field: 'status',
                 headerName: 'Status',
                 minWidth: 160,
                 ellipsis: true,
-                // disableColumnMenu: false,
             },
             {
                 field: 'createdAt',

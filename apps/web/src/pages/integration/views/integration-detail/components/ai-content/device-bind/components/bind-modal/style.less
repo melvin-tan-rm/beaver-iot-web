@@ -1,0 +1,48 @@
+.@{prefix}-com-device-bind-modal {
+    .@{prefix}-modal-title,
+    .@{prefix}-modal-footer {
+        display: none;
+    }
+
+    .@{prefix}-modal-content {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: @padding-xs @padding-md;
+            border-bottom: 1px solid var(--border-color-base);
+
+            &-left {
+                display: flex;
+                gap: @margin-md;
+                align-items: center;
+            }
+
+            &-title {
+                font-weight: @font-weight-medium;
+            }
+        }
+
+        .modal-content {
+            display: flex;
+            flex: 1;
+
+            .modal-infer-form {
+                width: 400px;
+                padding: @padding-lg @padding-md;
+                overflow: auto;
+                background-color: var(--component-background);
+            }
+
+            .modal-infer-setting-root {
+                flex: 1;
+                background-color: var(--component-background-gray);
+                border-left: 1px solid var(--border-color-base);
+            }
+        }
+    }
+}

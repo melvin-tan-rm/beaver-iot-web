@@ -1,41 +1,28 @@
-import React, { useState, useRef } from 'react';
-import { Popover } from '@mui/material';
-import { useDebounceFn } from 'ahooks';
+import React, { memo } from 'react';
+import HoverPopover from 'material-ui-popup-state/HoverPopover';
+import { usePopupState, bindHover, bindPopover } from 'material-ui-popup-state/hooks';
 import './style.less';
 
 interface Props {
+    /** Popover ID */
+    key: ApiKey;
     /** Image URL */
     src: string;
 }
 
-const ImagePreview: React.FC<Props> = ({ src }) => {
-    const triggerRef = useRef<HTMLDivElement>(null);
-    const [anchorEl, setAnchorEl] = React.useState<HTMLDivElement | null>(null);
-
-    const { run: handleMouseEnter, cancel: cancelMouseEnter } = useDebounceFn(
-        () => {
-            setAnchorEl(triggerRef.current);
-        },
-        { wait: 300 },
-    );
+/**
+ *  Image preview component
+ */
+const ImagePreview: React.FC<Props> = memo(({ key, src }) => {
+    const popupState = usePopupState({ variant: 'popover', popupId: `${key}` });
 
     return (
         <>
-            <div
-                ref={triggerRef}
-                className="ms-com-image-preview"
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={() => {
-                    setAnchorEl(null);
-                    cancelMouseEnter();
-                }}
-            >
+            <div className="ms-com-image-preview" {...bindHover(popupState)}>
                 <img src={src} alt="preview" />
             </div>
-            <Popover
-                open={!!anchorEl}
-                onClose={() => setAnchorEl(null)}
-                anchorEl={anchorEl}
+            <HoverPopover
+                {...bindPopover(popupState)}
                 anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'left',
@@ -44,9 +31,9 @@ const ImagePreview: React.FC<Props> = ({ src }) => {
                 <div className="ms-com-image-preview-picture">
                     <img src={src} alt="preview" />
                 </div>
-            </Popover>
+            </HoverPopover>
         </>
     );
-};
+});
 
 export default ImagePreview;

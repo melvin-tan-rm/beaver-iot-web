@@ -7,6 +7,7 @@ import { AddIcon, DeleteOutlineIcon, toast, CodeIcon } from '@milesight/shared/s
 import { TablePro, useConfirm } from '@/components';
 import { aiApi, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import { InteEntityType } from '../../../hooks';
+import { LogModal, BindModal } from './components';
 import useColumns, { type UseColumnsProps, type TableRowDataType } from './useColumns';
 
 import './style.less';
@@ -26,14 +27,13 @@ const DeviceBind: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
     const { getIntlText } = useI18n();
     const navigate = useNavigate();
     const confirm = useConfirm();
-    const [addOpen, setAddOpen] = useState<boolean>(false);
 
-    // ---------- list data related to ----------
+    // ---------- Render table and handle actions ----------
     const [keyword, setKeyword] = useState<string>();
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const [selectedIds, setSelectedIds] = useState<readonly ApiKey[]>([]);
-
-    // ---------- Render table and handle actions ----------
+    const [openBind, setOpenBind] = useState(false);
+    const [logDevice, setLogDevice] = useState<TableRowDataType | null>(null);
     const toolbarRender = useMemo(() => {
         return (
             <Stack className="ms-operations-btns" direction="row" spacing="12px">
@@ -42,9 +42,9 @@ const DeviceBind: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
                     className="md:d-none"
                     sx={{ height: 36, textTransform: 'none' }}
                     startIcon={<AddIcon />}
-                    // onClick={() => setModalOpen(true)}
+                    onClick={() => setOpenBind(true)}
                 >
-                    {getIntlText('common.label.add')}
+                    {getIntlText('setting.integration.ai_bind_device')}
                 </Button>
                 <Button
                     variant="outlined"
@@ -65,6 +65,7 @@ const DeviceBind: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
             // console.log(type, record);
             switch (type) {
                 case 'log': {
+                    setLogDevice(record);
                     break;
                 }
                 case 'delete': {
@@ -130,6 +131,12 @@ const DeviceBind: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
                 }}
                 // onRefreshButtonClick={getDeviceList}
             />
+            <LogModal
+                device={logDevice}
+                visible={!!logDevice}
+                onCancel={() => setLogDevice(null)}
+            />
+            <BindModal visible={openBind} onCancel={() => setOpenBind(false)} />
         </div>
     );
 };
