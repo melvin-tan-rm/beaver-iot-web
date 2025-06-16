@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import cls from 'classnames';
 import { useMemoizedFn } from 'ahooks';
 import {
@@ -44,6 +44,10 @@ export interface ModalProps {
      * @description Value selection：small(200px)、medium(450px)、large(600px)、full(100%)
      */
     size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+    /**
+     * Whether to display in full screen
+     */
+    fullScreen?: boolean;
     /**
      * Bombs
      */
@@ -104,6 +108,7 @@ const Modal: React.FC<ModalProps> = ({
     title,
     width,
     visible,
+    fullScreen,
     onOkText,
     onCancelText,
     className,
@@ -120,11 +125,23 @@ const Modal: React.FC<ModalProps> = ({
     cancelButtonProps,
 }) => {
     const { getIntlText } = useI18n();
-    const { matchTablet: fullScreen } = useTheme();
     const [loading, setLoading] = useState<boolean>();
 
+    // ---------- FullScreen ----------
+    const { matchTablet } = useTheme();
+    const [isFullScreen, setIsFullScreen] = useState(false);
+
+    useEffect(() => {
+        if (matchTablet) {
+            setIsFullScreen(true);
+            return;
+        }
+        setIsFullScreen(!!fullScreen);
+    }, [fullScreen, matchTablet]);
+
+    // ---------- Render Modal ----------
     const ModalWidth = useMemo(() => {
-        if (fullScreen) return '100%';
+        if (isFullScreen) return '100%';
         if (width) return width;
 
         if (size) {
@@ -144,7 +161,7 @@ const Modal: React.FC<ModalProps> = ({
             }
         }
         return '450px';
-    }, [width, size, fullScreen]);
+    }, [width, size, isFullScreen]);
 
     const handleClose = useMemoizedFn<NonNullable<DialogProps['onClose']>>((_, reason) => {
         if (disabledBackdropClose && reason === 'backdropClick') return;
@@ -157,16 +174,12 @@ const Modal: React.FC<ModalProps> = ({
         setLoading(false);
     });
 
-    const handleCloseIcon = () => {
-        onCancel();
-    };
-
     return (
         <Dialog
             aria-labelledby="customized-dialog-title"
             className={cls('ms-modal-root', className, { loading })}
             open={!!visible}
-            fullScreen={fullScreen}
+            fullScreen={isFullScreen}
             onClose={handleClose}
             container={container}
             sx={{ '& .MuiDialog-paper': { width: ModalWidth, maxWidth: 'none' }, ...(sx || {}) }}
@@ -188,7 +201,7 @@ const Modal: React.FC<ModalProps> = ({
                 <IconButton
                     aria-label="close"
                     className="ms-modal-close-icon"
-                    onClick={handleCloseIcon as any}
+                    onClick={() => onCancel?.()}
                 >
                     <CloseIcon fontSize="inherit" />
                 </IconButton>
