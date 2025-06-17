@@ -1,17 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { Grid2, IconButton } from '@mui/material';
 import { cloneDeep } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { ChevronRightIcon, toast } from '@milesight/shared/src/components';
 import { useConfirm, Tooltip } from '@/components';
-import {
-    entityAPI,
-    awaitWrap,
-    isRequestSuccess,
-    AiAPISchema,
-    aiApi,
-    getResponseData,
-} from '@/services/http';
+import { aiApi, entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import { InteEntityType } from '../../../hooks';
 import TestModal from './test-modal';
 
@@ -27,7 +20,9 @@ interface Props {
     /** Entity list */
     entities?: InteEntityType[];
     /** Service call successful callback */
-    onUpdateSuccess?: () => void;
+    onUpdateSuccess?: (
+        successCb?: (entityList?: InteEntityType[], excludeKeys?: ApiKey[]) => void,
+    ) => void;
 }
 
 /**
@@ -46,7 +41,7 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
     const { getIntlText } = useI18n();
 
     // ---------- Render service list ----------
-    const serviceEntities = useMemo(() => {
+    const serviceCompose = useCallback((entities?: InteEntityType[], excludeKeys?: ApiKey[]) => {
         const services = entities?.filter(item => {
             return (
                 item.type === 'SERVICE' &&
@@ -83,7 +78,12 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
         });
 
         return result.filter(item => !item.parent);
-    }, [entities, excludeKeys]);
+    }, []);
+
+    const serviceEntities = useMemo(
+        () => serviceCompose(entities, excludeKeys),
+        [entities, excludeKeys, serviceCompose],
+    );
 
     // ---------- Handle service calls ----------
     const confirm = useConfirm();
@@ -96,8 +96,11 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
                 description: getIntlText('setting.integration.ai_update_model_tip'),
                 type: 'info',
                 async onConfirm() {
-                    // TODO: Refresh model list
+                    const [error, resp] = await awaitWrap(
+                        entityAPI.callService({ exchange: { [service.key]: {} } }),
+                    );
 
+                    if (error || !isRequestSuccess(resp)) return;
                     onUpdateSuccess?.();
                     toast.success({ content: getIntlText('common.message.operation_success') });
                 },
@@ -118,13 +121,15 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
             );
             const data = getResponseData(resp);
 
-            // TODO: This is for debug and it should be removed later
-            console.log({ service });
-            setTargetService(service);
-
+            // console.log({ service, data });
             if (error || !data || !isRequestSuccess(resp)) return;
 
-            // TODO: Parse model config and open test modal
+            onUpdateSuccess?.((list, excludeKeys) => {
+                const services = serviceCompose(list, excludeKeys);
+                const latestService = services?.find(it => it.key === service.key);
+
+                setTargetService(latestService || service);
+            });
             return;
         }
 

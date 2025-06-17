@@ -48,9 +48,9 @@ interface Props {
 export type EntityFormDataProps = Record<string, any>;
 
 /**
- * This keyword indicates that this entity will be rendered as an image input
+ * This keyword in format field indicates that this entity will be rendered as an image input
  */
-const IMAGE_KEYWORD = 'IMAGE:';
+export const IMAGE_ENTITY_KEYWORD = 'IMAGE:';
 
 /**
  * Gets entity verification rules
@@ -271,7 +271,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                     }
 
                     // If it is an image type, rendered as image input
-                    if (attr.format?.includes(IMAGE_KEYWORD)) {
+                    if (attr.format?.includes(IMAGE_ENTITY_KEYWORD)) {
                         formItem.render = ({
                             field: { onChange, value, disabled },
                             fieldState: { error },

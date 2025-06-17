@@ -14,6 +14,7 @@ import {
 } from '@/services/http';
 import { usePermissionsError } from '@/hooks';
 import { genInteIconUrl } from '../../helper';
+import { type InteEntityType } from './hooks';
 import { AiContent, GeneralContent, MscContent, NSContent } from './components';
 
 import './style.less';
@@ -32,7 +33,7 @@ const IntegrationDetail = () => {
         data: entityList,
         run: refreshInteDetail,
     } = useRequest(
-        async (successCb?: (entityList: any) => void) => {
+        async (successCb?: (entityList: InteEntityType[], excludeKeys?: ApiKey[]) => void) => {
             if (!integrationId) return;
 
             const [error, resp] = await awaitWrap(integrationAPI.getDetail({ id: integrationId }));
@@ -48,7 +49,7 @@ const IntegrationDetail = () => {
             );
 
             setBasicInfo(data);
-            successCb?.(data.integrationEntities);
+            successCb?.(data.integrationEntities, excludeKeys);
             setExcludeServiceKeys(excludeKeys);
             return data.integrationEntities;
         },

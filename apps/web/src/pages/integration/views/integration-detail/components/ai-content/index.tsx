@@ -25,7 +25,9 @@ interface IProps {
     /** Entity list */
     entities?: InteEntityType[];
     /** Edit successful callback */
-    onUpdateSuccess?: (successCb?: (entityList: any) => void) => void;
+    onUpdateSuccess?: (
+        successCb?: (entityList?: InteEntityType[], excludeKeys?: ApiKey[]) => void,
+    ) => void;
 }
 
 /**

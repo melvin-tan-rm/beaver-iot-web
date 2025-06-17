@@ -21,9 +21,10 @@
             padding: @padding-lg;
             border-right: 1px solid var(--border-color-base);
 
-            .@{mui-prefix}ButtonBase-root {
-                .@{mui-prefix}SvgIcon-root {
-                    margin-right: @margin-xs;
+            > .@{mui-prefix}ButtonBase-root {
+                .@{mui-prefix}SvgIcon-root,
+                .@{mui-prefix}CircularProgress-root {
+                    color: var(--white);
                 }
             }
 
@@ -48,7 +49,11 @@
                 top: 50%;
                 right: 0;
                 left: 0;
-                transform: translateY(-50%);
+                transform: translateY(-60%);
+
+                .@{prefix}-empty-text {
+                    text-align: center;
+                }
             }
 
             .result-main {
@@ -100,6 +105,7 @@
                     flex: 1;
                     align-items: center;
                     justify-content: center;
+                    height: 0;
 
                     .@{prefix}-code-editor {
                         border: none;
