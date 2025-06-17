@@ -41,7 +41,7 @@ export const useSource = (props: IProps) => {
 
     useEffect(() => {
         getAggregateHistoryData();
-    }, [getAggregateHistoryData]);
+    }, [entity?.value, metrics, time, getAggregateHistoryData]);
 
     // ---------- Entity status management ----------
     const { addEntityListener } = useActivityEntity();
