@@ -39,8 +39,8 @@ const useMqtt = () => {
             const protocol = isHttps ? 'wss' : 'ws';
             const host = brokerInfo?.host || location.hostname;
             const port = isHttps
-                ? brokerInfo?.wss_port || brokerInfo?.ws_port
-                : brokerInfo?.ws_port;
+                ? brokerInfo?.wss_port || brokerInfo?.ws_port || location.port
+                : brokerInfo?.ws_port || location.port;
 
             return {
                 username: basicInfo?.username,

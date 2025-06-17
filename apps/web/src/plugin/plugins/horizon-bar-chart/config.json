@@ -20,7 +20,7 @@
                     "getDataUrl": "",
                     "valueType": "array",
                     "componentProps": {
-                        "entityType": ["PROPERTY", "EVENT"],
+                        "entityType": ["PROPERTY"],
                         "entityValueTypes": ["LONG", "DOUBLE"],
                         "entityAccessMod": ["R", "RW"]
                     },

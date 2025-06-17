@@ -22,6 +22,10 @@ export interface ChartShowDataProps {
     entityLabel: string;
     entityValues: (string | number | null)[];
     yAxisID?: string;
+    chartOwnData: {
+        value: ChartShowDataProps['entityValues'][number];
+        timestamp: number;
+    }[];
 }
 
 const MAX_TICKS_LIMIT = 7;
@@ -85,7 +89,7 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
     /**
      * Canvas ref
      */
-    const chartRef = useRef<HTMLCanvasElement>(null);
+    const chartRef = useRef<HTMLDivElement>(null);
 
     /**
      * The data required for the chart
@@ -185,6 +189,7 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
              */
             (historyData || []).forEach((h, index) => {
                 const entityLabel = (entity || [])[index]?.label || '';
+                const chartOwnData: ChartShowDataProps['chartOwnData'] = [];
 
                 /**
                  * Determine whether the current entity has data in this time period according to the timestamp
@@ -192,7 +197,13 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
                 const chartData = newChartLabels.map(l => {
                     const valueIndex = h.findIndex(item => item.timestamp === l);
                     if (valueIndex !== -1) {
-                        return h[valueIndex].value;
+                        const currentValue = h[valueIndex].value;
+
+                        chartOwnData.push({
+                            value: currentValue,
+                            timestamp: Number(l),
+                        });
+                        return currentValue;
                     }
 
                     return null;
@@ -203,6 +214,7 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
                         id: (entity || [])[index]?.rawData?.entityId || '',
                         entityLabel,
                         entityValues: chartData,
+                        chartOwnData,
                     });
                 }
             });
@@ -255,7 +267,7 @@ export function useBasicChartEntity(props: UseBasicChartEntityProps) {
     const xAxisRange = useMemo(() => {
         // The current time is used as the final scale, and the time time is pushed forward as the start scale
         return [Date.now() - time, Date.now()];
-    }, [time]);
+    }, [time, chartShowData]);
 
     // Calculate the suggested X-axis range
     const xAxisConfig = useMemo(() => {

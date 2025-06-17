@@ -123,6 +123,7 @@ export default () => {
         if (time?.end) {
             url += `&end_timestamp=${time?.end.valueOf() || 0}`;
         }
+        url += `&timeZone=${encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone)}`;
         xhrDownload({
             assets: url,
             fileName: `EntityData_${getTimeFormat(dayjs(), 'simpleDateFormat').replace(

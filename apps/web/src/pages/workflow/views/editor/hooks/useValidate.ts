@@ -132,7 +132,8 @@ const useValidate = () => {
                 const hasValueOverLength =
                     !isNil(valueMaxLength) &&
                     Object.values(value).some(val => {
-                        if (val && !isMaxLength(val, valueMaxLength)) return true;
+                        if (val && !isRefParamKey(val) && !isMaxLength(val, valueMaxLength))
+                            return true;
                         return false;
                     });
 
@@ -142,6 +143,25 @@ const useValidate = () => {
                     : { 1: fieldName, 2: valueMaxLength };
 
                 return getIntlText(ErrorIntlKey.maxLength, options);
+            };
+        };
+
+        const genObjectKeyValueRequiredValidator = (): NodeDataValidator => {
+            return (
+                value: NonNullable<CodeNodeDataType['parameters']>['inputArguments'],
+                fieldName,
+            ) => {
+                if (!value || !Object.keys(value).length) return true;
+
+                if (
+                    value &&
+                    Object.keys(value).length &&
+                    Object.keys(value).every(val => !!val) &&
+                    Object.values(value).every(val => !!val)
+                ) {
+                    return true;
+                }
+                return getIntlText(ErrorIntlKey.required, { 1: fieldName });
             };
         };
 
@@ -373,6 +393,9 @@ const useValidate = () => {
                 checkRequired,
                 checkMaxLength: genMaxLengthValidator(100),
             },
+            'mqtt.encoding': {
+                checkRequired,
+            },
             'httpin.method': { checkRequired },
             'httpin.url': {
                 checkRequired,
@@ -524,20 +547,7 @@ const useValidate = () => {
                 },
             },
             'code.inputArguments': {
-                checkRequired(
-                    value: NonNullable<CodeNodeDataType['parameters']>['inputArguments'],
-                    fieldName,
-                ) {
-                    if (
-                        value &&
-                        Object.keys(value).length &&
-                        Object.values(value).every(val => !!val)
-                    ) {
-                        return true;
-                    }
-                    const message = getIntlText(ErrorIntlKey.required, { 1: fieldName });
-                    return message;
-                },
+                checkKeyValueRequired: genObjectKeyValueRequiredValidator(),
                 ...inputArgumentsChecker,
             },
             'code.expression': {
@@ -569,6 +579,20 @@ const useValidate = () => {
                 },
             },
             'code.payload': {
+                checkKeyValueRequired(
+                    value?: NonNullable<CodeNodeDataType['parameters']>['payload'],
+                    fieldName?: string,
+                ) {
+                    if (value?.length) {
+                        const hasRequired = value?.some(({ name, type }) => {
+                            if (!name || !type) return true;
+                            return false;
+                        });
+                        if (!hasRequired) return true;
+                        return getIntlText(ErrorIntlKey.required, { 1: fieldName });
+                    }
+                    return true;
+                },
                 checkMaxLength(
                     value?: NonNullable<CodeNodeDataType['parameters']>['payload'],
                     fieldName?: string,
@@ -636,6 +660,41 @@ const useValidate = () => {
                     options,
                 ) {
                     return checkReferenceParam(value?.serviceParams, fieldName, options);
+                },
+            },
+            'service.payload': {
+                checkRequired(
+                    value: NonNullable<ServiceNodeDataType['parameters']>['payload'],
+                    fieldName,
+                ) {
+                    if (value?.length) {
+                        const hasRequired = value?.some(({ name, type }) => {
+                            if (!name || !type) return true;
+                            return false;
+                        });
+                        if (!hasRequired) return true;
+                        return getIntlText(ErrorIntlKey.required, { 1: fieldName });
+                    }
+                    return true;
+                },
+                checkMaxLength(
+                    value?: NonNullable<ServiceNodeDataType['parameters']>['payload'],
+                    fieldName?: string,
+                ) {
+                    if (value?.length) {
+                        const maxLength = 50;
+                        const hasOverLength = value?.some(item => {
+                            if (item.name && !isMaxLength(`${item.name}`, maxLength)) return true;
+                            return false;
+                        });
+
+                        if (!hasOverLength) return true;
+                        return getIntlText(ErrorIntlKey.maxLength, {
+                            1: fieldName,
+                            2: maxLength,
+                        });
+                    }
+                    return true;
                 },
             },
             'assigner.exchangePayload': {
@@ -849,7 +908,11 @@ const useValidate = () => {
                     return true;
                 },
             },
-            'webhook.inputArguments': inputArgumentsChecker,
+            'webhook.inputArguments': {
+                checkKeyValueRequired: genObjectKeyValueRequiredValidator(),
+                ...inputArgumentsChecker,
+                checkMaxLength: genObjectMaxLengthValidator(25, 25),
+            },
             'http.method': { checkRequired },
             'http.url': {
                 checkRequired,
@@ -897,10 +960,18 @@ const useValidate = () => {
                 ) {
                     if (!data?.type || !data.value) return true;
                     const maxLength = 1000;
-
+                    const rawOrJsonBodyMaxLength = 2000;
                     switch (data.type) {
                         case 'application/x-www-form-urlencoded': {
                             const validator = genObjectMaxLengthValidator(maxLength, maxLength);
+                            return validator(data.value, fieldName);
+                        }
+                        case 'application/json': {
+                            const validator = genMaxLengthValidator(rawOrJsonBodyMaxLength);
+                            return validator(data.value, fieldName);
+                        }
+                        case 'text/plain': {
+                            const validator = genMaxLengthValidator(rawOrJsonBodyMaxLength);
                             return validator(data.value, fieldName);
                         }
                         default: {

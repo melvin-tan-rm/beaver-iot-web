@@ -19,7 +19,7 @@
                     "style": "width: 100%",
                     "getDataUrl": "",
                     "componentProps": {
-                        "entityType": ["PROPERTY", "EVENT"],
+                        "entityType": ["PROPERTY"],
                         "entityValueTypes": ["BOOLEAN", "STRING"],
                         "entityAccessMod": ["R", "RW"],
                         "customFilterEntity": "filterEntityStringHasEnum"

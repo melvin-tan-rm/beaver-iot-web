@@ -981,22 +981,3 @@ export const checkRegexp: TValidator<{ regexp: RegExp }> = rule => {
         return Promise.resolve(true);
     };
 };
-
-/**
- * Check if the value is pure whiteSpace
- */
-export const checkPureWhiteSpace: TValidator = rule => {
-    const message = rule?.message || getErrorMessage(EErrorMessages.pureWhiteSpace);
-
-    return value => {
-        try {
-            if (value && !value.trim().length) {
-                return message;
-            }
-        } catch (e) {
-            return message;
-        }
-
-        return Promise.resolve(true);
-    };
-};

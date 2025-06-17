@@ -1,7 +1,32 @@
 import React from 'react';
 import { camelCase } from 'lodash-es';
 import { isFileName } from '@milesight/shared/src/utils/tools';
-import '@/plugin/components/chart-crosshair';
+import * as echarts from 'echarts/core';
+import {
+    TooltipComponent,
+    GridComponent,
+    LegendComponent,
+    DataZoomComponent,
+    GraphicComponent,
+} from 'echarts/components';
+import { LineChart, BarChart, PieChart, RadarChart, GaugeChart } from 'echarts/charts';
+import { UniversalTransition } from 'echarts/features';
+import { CanvasRenderer } from 'echarts/renderers';
+
+echarts.use([
+    GraphicComponent,
+    TooltipComponent,
+    GridComponent,
+    LegendComponent,
+    DataZoomComponent,
+    CanvasRenderer,
+    UniversalTransition,
+    LineChart,
+    BarChart,
+    PieChart,
+    RadarChart,
+    GaugeChart,
+]);
 
 const modules = (() => {
     const getModuleFiles = (modules: ModuleType, suffix?: string) => {
