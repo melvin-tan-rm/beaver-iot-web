@@ -1,17 +1,25 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useMemoizedFn } from 'ahooks';
-import { isNil } from 'lodash-es';
+import { isNil, cloneDeep } from 'lodash-es';
 import { Stage, Layer, Image, Line, Transformer } from 'react-konva';
 import { yellow, white, black } from '@milesight/shared/src/services/theme';
 import type { Vector2d } from 'konva/lib/types';
 import EditableText from './editable-text';
 import './style.less';
 
+/**
+ * Points data type
+ */
+export type PointType = {
+    label?: string;
+    value: Vector2d[];
+};
+
 interface PolygonAnnotationProps {
     /** Image source */
     imgSrc: string;
     /** Polygon points */
-    points: Vector2d[][];
+    points: PointType[];
     /** Stroke color */
     strokeColor?: string | string[];
     /** Anchor fill color */
@@ -21,7 +29,7 @@ interface PolygonAnnotationProps {
     /** Container height */
     containerHeight?: number;
     /** Points change callback */
-    onPointsChange?: (newPoints: Vector2d[][]) => void;
+    onPointsChange?: (newPoints: PointType[]) => void;
 }
 
 const POLYGON_NAME_PREFIX = 'ms-polygon';
@@ -82,6 +90,7 @@ const ImageAnnotation = ({
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [editingId, setEditingId] = useState<ApiKey | null>(null);
     const transformerRef = React.useRef<any>(null);
+    const editable = !!onPointsChange;
 
     // Colors
     const colors = useMemo(() => {
@@ -113,9 +122,13 @@ const ImageAnnotation = ({
 
     // Update position
     const handlePositionChange = useMemoizedFn((index: number, newPoints: Vector2d[]) => {
-        const updated = [...points];
-        updated[index] = newPoints;
-        onPointsChange?.(updated);
+        const result = cloneDeep(points);
+
+        result.splice(index, 1, {
+            label: result[index].label,
+            value: newPoints,
+        });
+        onPointsChange?.(result);
     });
 
     if (!image) return null;
@@ -134,8 +147,9 @@ const ImageAnnotation = ({
             <Layer scaleX={scale} scaleY={scale}>
                 <Image image={image} width={imgSize.naturalWidth} height={imgSize.naturalHeight} />
 
-                {points.map((polygonPoints, index) => {
+                {points.map(({ label, value: polygonPoints }, index) => {
                     const topLeft = getPolygonTopLeft(polygonPoints);
+                    const innerLabel = label || (!editable ? '' : `#${index + 1}`);
 
                     return (
                         <React.Fragment key={getPolygonId(index)}>
@@ -146,7 +160,7 @@ const ImageAnnotation = ({
                                 stroke={colors[index]}
                                 strokeWidth={2}
                                 strokeScaleEnabled={false}
-                                draggable={!!onPointsChange}
+                                draggable={editable}
                                 onDragMove={() => setEditingId(index)}
                                 onDragEnd={e => {
                                     const absPos = e.target.getAbsolutePosition();
@@ -186,7 +200,7 @@ const ImageAnnotation = ({
 
                             <EditableText
                                 visible={editingId !== index}
-                                value={`#${index + 1}`}
+                                value={innerLabel}
                                 position={{
                                     x: topLeft.x - 1 / scale,
                                     y: topLeft.y - 16 / scale - 7 / scale,
@@ -200,7 +214,7 @@ const ImageAnnotation = ({
                     );
                 })}
 
-                {!isNil(selectedId) && onPointsChange && (
+                {editable && !isNil(selectedId) && (
                     <Transformer
                         ref={transformerRef}
                         anchorSize={8}
