@@ -41,7 +41,7 @@ const ToggleRadio: React.FC<Props> = ({ options, disabled, ...props }) => {
             sx={{ my: 1.5 }}
         >
             {options?.map(({ label, value }) => (
-                <ToggleButton value={value} aria-label={label}>
+                <ToggleButton key={value} value={value} aria-label={label}>
                     {label}
                 </ToggleButton>
             ))}
