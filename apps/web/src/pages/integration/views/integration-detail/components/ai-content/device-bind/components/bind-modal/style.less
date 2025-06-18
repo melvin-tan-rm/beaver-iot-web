@@ -30,18 +30,95 @@
         .modal-content {
             display: flex;
             flex: 1;
+            height: 0;
 
             .modal-infer-form {
-                width: 400px;
+                width: 30vw;
                 padding: @padding-lg @padding-md;
                 overflow: auto;
                 background-color: var(--component-background);
             }
 
             .modal-infer-setting-root {
+                display: flex;
                 flex: 1;
+                flex-direction: column;
                 background-color: var(--component-background-gray);
                 border-left: 1px solid var(--border-color-base);
+            }
+        }
+
+        .modal-infer-mode-setting {
+            &-header {
+                display: flex;
+                justify-content: space-between;
+                padding: @padding-md;
+
+                .title {
+                    width: 200px;
+                    font-weight: @font-weight-medium;
+                    .text-size(@font-size-base);
+                }
+
+                .@{prefix}-toggle-button-group {
+                    width: auto;
+                    margin: 0;
+
+                    .@{mui-prefix}ButtonBase-root {
+                        display: flex;
+                        gap: @margin-xxs;
+                        align-items: center;
+                        justify-content: center;
+                        white-space: nowrap;
+
+                        .@{prefix}-tooltip {
+                            display: flex;
+                            align-items: center;
+                        }
+                    }
+                }
+
+                .actions {
+                    width: 200px;
+                    text-align: right;
+
+                    .@{mui-prefix}ButtonBase-root:not(.@{mui-prefix}-disabled) {
+                        color: var(--text-color-base);
+                        background-color: var(--component-background);
+                    }
+                }
+            }
+
+            &-body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 424px;
+                border-bottom: 1px solid var(--border-color-base);
+            }
+        }
+
+        .modal-infer-result-setting {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            height: 0;
+
+            &-header {
+                display: flex;
+                justify-content: space-between;
+                padding: @padding-md @padding-md @padding-sm;
+
+                .title {
+                    font-weight: @font-weight-medium;
+                    .text-size(@font-size-base);
+                }
+            }
+
+            &-body {
+                flex: 1;
+                padding: 0 @padding-md @padding-md;
+                overflow: auto;
             }
         }
     }

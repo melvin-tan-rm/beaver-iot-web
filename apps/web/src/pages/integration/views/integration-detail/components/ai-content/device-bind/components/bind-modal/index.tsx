@@ -1,14 +1,60 @@
 import React, { useState, useMemo } from 'react';
 import { useRequest } from 'ahooks';
 import { Button } from '@mui/material';
-import { useI18n, useTime } from '@milesight/shared/src/hooks';
-import { Modal, ArrowBackIcon, type ModalProps } from '@milesight/shared/src/components';
-import { ImageAnnotation } from '@/components';
+import { useI18n } from '@milesight/shared/src/hooks';
+import {
+    Modal,
+    ArrowBackIcon,
+    AddIcon,
+    InfoOutlinedIcon,
+    type ModalProps,
+} from '@milesight/shared/src/components';
+import { ImageAnnotation, ToggleRadio, Tooltip } from '@/components';
 import { aiApi, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
+import ResultSetting from '../result-setting';
 import './style.less';
+
+/**
+ * @param single Single-image inference
+ * @param multiple Multiple-area inference
+ */
+type InferMode = 'single' | 'multiple';
+
+const inferModeSettingOptions: {
+    labelIntlKey: string;
+    descIntlKey: string;
+    value: InferMode;
+}[] = [
+    {
+        labelIntlKey: 'setting.integration.ai_infer_single_image',
+        value: 'single',
+        descIntlKey: 'setting.integration.ai_infer_single_image_desc',
+    },
+    {
+        labelIntlKey: 'setting.integration.ai_infer_area_cut_image',
+        value: 'multiple',
+        descIntlKey: 'setting.integration.ai_infer_area_cut_image_desc',
+    },
+];
 
 const BindModal: React.FC<ModalProps> = ({ onCancel, ...props }) => {
     const { getIntlText } = useI18n();
+
+    // ---------- Inference Mode ----------
+    const [inferMode, setInferMode] = useState<InferMode>('single');
+    const inferModeOptions = useMemo(() => {
+        return inferModeSettingOptions.map(item => ({
+            label: (
+                <>
+                    {getIntlText(item.labelIntlKey)}
+                    <Tooltip title={getIntlText(item.descIntlKey)}>
+                        <InfoOutlinedIcon />
+                    </Tooltip>
+                </>
+            ),
+            value: item.value,
+        }));
+    }, [getIntlText]);
 
     return (
         <Modal
@@ -33,9 +79,90 @@ const BindModal: React.FC<ModalProps> = ({ onCancel, ...props }) => {
                 </div>
             </div>
             <div className="modal-content">
-                <div className="modal-infer-form">AI Inference Form</div>
+                <div className="modal-infer-form">
+                    <div className="modal-infer-form-device">
+                        <span className="title">
+                            {getIntlText('setting.integration.ai_bind_device_choose_device')}
+                        </span>
+                        <div className="device-form-root">
+                            {/* Device form items should be rendered here */}
+                        </div>
+                    </div>
+                    <div className="modal-infer-form-ai">
+                        <span className="title">
+                            {getIntlText('setting.integration.ai_bind_device_ai_settings')}
+                        </span>
+                        <div className="ai-form-root">
+                            {/* AI Setting form items should be rendered here */}
+                        </div>
+                    </div>
+                </div>
                 <div className="modal-infer-setting-root">
-                    <div className="modal-infer-setting-header">Inference Mode Setting</div>
+                    <div className="modal-infer-mode-setting">
+                        <div className="modal-infer-mode-setting-header">
+                            <span className="title">
+                                {getIntlText('setting.integration.ai_infer_mode_setting')}
+                            </span>
+                            <ToggleRadio
+                                size="small"
+                                value={inferMode}
+                                options={inferModeOptions}
+                                onChange={val => setInferMode(val as InferMode)}
+                            />
+                            <div className="actions">
+                                {inferMode === 'multiple' && (
+                                    <Button size="small" variant="outlined" startIcon={<AddIcon />}>
+                                        {getIntlText('setting.integration.ai_infer_mode_add_area')}
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
+                        <div className="modal-infer-mode-setting-body">
+                            <ImageAnnotation
+                                imgSrc="http://192.168.43.48:9000/beaver-iot-resource/beaver-iot-public/abc856a0-5d17-46e3-bdd3-26b3aa7ec343-20200108-213609-uqZwL.jpg"
+                                points={[]}
+                                containerWidth={800 - 32}
+                                containerHeight={424 - 32}
+                            />
+                        </div>
+                    </div>
+                    <div className="modal-infer-result-setting">
+                        <div className="modal-infer-result-setting-header">
+                            <span className="title">
+                                {getIntlText('setting.integration.ai_infer_result_setting')}
+                            </span>
+                        </div>
+                        <div className="modal-infer-result-setting-body">
+                            <ResultSetting
+                                data={[
+                                    {
+                                        title: 'box1',
+                                        params: [
+                                            {
+                                                name: 'result_image',
+                                                entityName: 'result_image',
+                                                entityId: 'xxxxxxxxxx',
+                                                entityValueType: 'STRING',
+                                            },
+                                            {
+                                                name: 'text',
+                                                entityName: 'text',
+                                                entityId: 'xxxxxxxxxx',
+                                                entityValueType: 'STRING',
+                                            },
+                                            {
+                                                name: 'data',
+                                                entityName: 'data',
+                                                entityId: 'xxxxxxxxxx',
+                                                entityValueType: 'STRING',
+                                            },
+                                        ],
+                                    },
+                                ]}
+                                onChange={() => {}}
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </Modal>

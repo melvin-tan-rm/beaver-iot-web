@@ -232,6 +232,7 @@ const TestModal: React.FC<Props> = ({ modelName, entities, visible, onCancel, ..
                                     {getIntlText('common.label.result')}
                                 </div>
                                 <ToggleRadio
+                                    size="small"
                                     value={resultType}
                                     options={resultOptions}
                                     onChange={val => setResultType(val as ResultType)}

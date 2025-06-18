@@ -111,14 +111,14 @@ const DeviceBind: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
     return (
         <div className="ms-view-ai-device-bind">
             <TablePro<TableRowDataType>
-                // checkboxSelection={hasPermission(PERMISSIONS.DEVICE_DELETE)}
+                checkboxSelection
                 // loading={loading}
                 columns={columns}
                 rows={deviceList || []}
                 rowCount={deviceList?.length || 0}
                 paginationModel={paginationModel}
                 rowSelectionModel={selectedIds}
-                isRowSelectable={({ row }) => row.deletable}
+                // isRowSelectable={({ row }) => row.deletable}
                 toolbarRender={toolbarRender}
                 onPaginationModelChange={setPaginationModel}
                 onRowSelectionModelChange={setSelectedIds}

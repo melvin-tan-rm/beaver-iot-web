@@ -236,5 +236,6 @@
     "common.label.connect_status": "Status",
     "common.label.upload": "Upload",
     "common.placeholder.input_image_url": "Please enter image URL",
-    "common.label.result": "Result"
+    "common.label.result": "Result",
+    "common.label.param_name": "Param Name"
 }
