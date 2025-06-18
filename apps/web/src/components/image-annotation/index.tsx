@@ -15,6 +15,13 @@ export type PointType = {
     value: Vector2d[];
 };
 
+type ImageSize = {
+    naturalWidth: number;
+    naturalHeight: number;
+    width: number;
+    height: number;
+};
+
 interface PolygonAnnotationProps {
     /** Image source */
     imgSrc: string;
@@ -28,6 +35,8 @@ interface PolygonAnnotationProps {
     containerWidth?: number;
     /** Container height */
     containerHeight?: number;
+    /** Image loaded callback */
+    onImageLoaded?: (imgSize: ImageSize) => void;
     /** Points change callback */
     onPointsChange?: (newPoints: PointType[]) => void;
 }
@@ -45,6 +54,7 @@ const ImageAnnotation = ({
     anchorFillColor = white,
     containerWidth,
     containerHeight,
+    onImageLoaded,
     onPointsChange,
 }: PolygonAnnotationProps) => {
     // ---------- Load Image ----------
@@ -56,6 +66,7 @@ const ImageAnnotation = ({
     });
     const [image, setImage] = useState<HTMLImageElement | null>(null);
     const [scale, setScale] = useState(1);
+    const handleImageLoaded = useMemoizedFn(onImageLoaded || (() => {}));
 
     // Get size of image
     useEffect(() => {
@@ -70,21 +81,24 @@ const ImageAnnotation = ({
                 scale = Math.min(widthRatio, heightRatio);
             }
 
+            const size = {
+                naturalWidth,
+                naturalHeight,
+                width: naturalWidth * scale,
+                height: naturalHeight * scale,
+            };
+
             setScale(scale);
             setImage(img);
-            setImgSize({
-                naturalWidth: img.naturalWidth,
-                naturalHeight: img.naturalHeight,
-                width: img.naturalWidth * scale,
-                height: img.naturalHeight * scale,
-            });
+            setImgSize(size);
+            handleImageLoaded?.(size);
         };
 
         return () => {
             img.src = '';
             img.onload = null;
         };
-    }, [imgSrc, containerWidth, containerHeight]);
+    }, [imgSrc, containerWidth, containerHeight, handleImageLoaded]);
 
     // ---------- Polygon Interaction ----------
     const [selectedId, setSelectedId] = useState<number | null>(null);
