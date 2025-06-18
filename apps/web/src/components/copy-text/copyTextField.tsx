@@ -23,16 +23,6 @@ const CopyTextField: React.FC<CopyTextFieldProps> = props => {
     const { handleCopy } = useCopy();
     const [showPassword, setShowPassword] = useState<boolean>(false);
 
-    // copy text value
-    const handleClickCopy = (event?: any) => {
-        // fix when parentElement is svg or path copy fail
-        let parentElement = event?.target?.parentElement;
-        if (parentElement.localName === 'svg') {
-            parentElement = event?.target?.parentElement?.parentElement;
-        }
-        handleCopy(value ? String(value) : '', parentElement);
-    };
-
     // switch password or text
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
@@ -66,7 +56,12 @@ const CopyTextField: React.FC<CopyTextFieldProps> = props => {
                                 )}
                                 <IconButton
                                     aria-label="copy text"
-                                    onClick={handleClickCopy}
+                                    onClick={e => {
+                                        handleCopy(
+                                            value ? String(value) : '',
+                                            e.currentTarget?.closest('div'),
+                                        );
+                                    }}
                                     onMouseDown={(e: any) => e.preventDefault()}
                                     onMouseUp={(e: any) => e.preventDefault()}
                                     edge="end"
