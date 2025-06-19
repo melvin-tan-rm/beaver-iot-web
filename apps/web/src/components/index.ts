@@ -52,3 +52,4 @@ export { default as ActionInput } from './action-input';
 export { default as GradientBgContainer } from './gradient-bg-container';
 export { default as ImageAnnotation, type Vector2d, type PointType } from './image-annotation';
 export { default as ImageInput } from './image-input';
+export { default as CopyTextField } from './copy-text';
