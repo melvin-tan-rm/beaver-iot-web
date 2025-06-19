@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 
 import { Modal, EntityForm, toast } from '@milesight/shared/src/components';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -8,11 +8,13 @@ import * as Icons from '@milesight/shared/src/components/icons';
 import { useConfirm } from '@/components';
 import { ENTITY_DATA_VALUE_TYPE, ENTITY_VALUE_TYPE } from '@/constants';
 import { Tooltip } from '../../../view-components';
-import { useEntityApi, type CallServiceType } from '../../../hooks';
+import { useEntityApi, useActivityEntity, type CallServiceType } from '../../../hooks';
 import { ViewConfigProps } from './typings';
 import './style.less';
 
 interface Props {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: ViewConfigProps;
     configJson: CustomComponentProps;
     isEdit?: boolean;
@@ -23,8 +25,9 @@ const View = (props: Props) => {
     const { getIntlText } = useI18n();
     const confirm = useConfirm();
     const { getEntityChildren, callService, updateProperty } = useEntityApi();
-    const { config, configJson, isEdit, mainRef } = props;
-    const { label, icon, bgColor } = config || {};
+    const { getLatestEntityDetail } = useActivityEntity();
+    const { config, configJson, widgetId, dashboardId, isEdit, mainRef } = props;
+    const { label, icon, bgColor, entity } = config || {};
     const [visible, setVisible] = useState(false);
     const [entities, setEntities] = useState();
     // OBJECT type entity
@@ -32,10 +35,15 @@ const View = (props: Props) => {
     const ref = useRef<any>();
     const tempRef = useRef<any>({});
 
+    const latestEntity = useMemo(() => {
+        if (!entity) return {};
+        return getLatestEntityDetail(entity);
+    }, [entity, getLatestEntityDetail]);
+
     // Call service
     const handleCallService = async (data: Record<string, any>) => {
         const { error } = await callService({
-            entity_id: (config?.entity as any)?.value as ApiKey,
+            entity_id: (latestEntity as any)?.value as ApiKey,
             exchange: data,
         } as CallServiceType);
         if (!error) {
@@ -49,7 +57,7 @@ const View = (props: Props) => {
 
     const handleUpdateProperty = async (data: Record<string, any>) => {
         const { error } = await updateProperty({
-            entity_id: (config?.entity as any)?.value as ApiKey,
+            entity_id: (latestEntity as any)?.value as ApiKey,
             exchange: data,
         } as CallServiceType);
         if (!error) {
@@ -66,14 +74,14 @@ const View = (props: Props) => {
             return;
         }
         const { error, res } = await getEntityChildren({
-            id: (config?.entity as any)?.value as ApiKey,
+            id: (latestEntity as any)?.value as ApiKey,
         });
-        const entityType = config?.entity?.rawData?.entityType;
-        const valueType = config?.entity?.rawData?.entityValueType;
+        const entityType = latestEntity?.rawData?.entityType;
+        const valueType = latestEntity?.rawData?.entityValueType;
         if (!error) {
             let list = res || [];
             if (valueType !== ENTITY_DATA_VALUE_TYPE.OBJECT && !list.length) {
-                list = [objectToCamelToSnake(config?.entity?.rawData)];
+                list = [objectToCamelToSnake(latestEntity?.rawData)];
             }
             const children =
                 list?.filter((childrenItem: EntityData) => {
@@ -114,7 +122,7 @@ const View = (props: Props) => {
                     description: getIntlText('dashboard.plugin.trigger_confirm_text'),
                     confirmButtonText: getIntlText('common.button.confirm'),
                     onConfirm: async () => {
-                        const entityKey = (config?.entity as any).rawData?.entityKey;
+                        const entityKey = (latestEntity as any).rawData?.entityKey;
                         // If the entity itself is the object default is {}, otherwise it is null
                         const resultValue = valueType === ENTITY_DATA_VALUE_TYPE.OBJECT ? {} : null;
                         if (entityType === 'SERVICE') {
@@ -151,13 +159,30 @@ const View = (props: Props) => {
         objectEntities.forEach(v => {
             resultData[v.entity_key] = {};
         });
-        const entityType = config?.entity?.rawData?.entityType;
+        const entityType = latestEntity?.rawData?.entityType;
         if (entityType === 'PROPERTY') {
             await handleUpdateProperty(resultData);
         } else if (entityType === 'SERVICE') {
             await handleCallService(resultData);
         }
     };
+
+    // ---------- Entity status management ----------
+    const { addEntityListener } = useActivityEntity();
+
+    useEffect(() => {
+        const entityId = entity?.value;
+        if (!widgetId || !dashboardId || !entityId) return;
+
+        const removeEventListener = addEntityListener(entityId, {
+            widgetId,
+            dashboardId,
+        });
+
+        return () => {
+            removeEventListener();
+        };
+    }, [entity?.value, widgetId, dashboardId, addEntityListener]);
 
     /**
      * Icon component

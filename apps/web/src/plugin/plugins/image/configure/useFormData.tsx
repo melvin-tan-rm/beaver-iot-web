@@ -90,6 +90,7 @@ const useFormData = (value: any, config: CustomComponentProps) => {
                                 label: getIntlText('common.label.upload_image'),
                                 multiple: false,
                                 required: true,
+                                matchExt: true,
                             },
                         },
                     ],
@@ -108,6 +109,10 @@ const useFormData = (value: any, config: CustomComponentProps) => {
                             style: 'width: 100%',
                             rules: {
                                 required: true,
+                                pattern: {
+                                    value: /^https?:\/\//,
+                                    message: getIntlText('valid.input.url'),
+                                },
                             },
                             componentProps: {
                                 placeholder: getIntlText('common.placeholder.input'),

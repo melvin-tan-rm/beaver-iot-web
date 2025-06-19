@@ -1,5 +1,5 @@
-import { useMemo, useState, useCallback, useEffect, memo } from 'react';
-import { useMemoizedFn } from 'ahooks';
+import { useState, useEffect, memo } from 'react';
+import { useRequest, useMemoizedFn } from 'ahooks';
 import { BrokenImageIcon } from '@milesight/shared/src/components';
 import {
     entityAPI,
@@ -8,7 +8,7 @@ import {
     getResponseData,
     API_PREFIX,
 } from '@/services/http';
-import ws, { getExChangeTopic } from '@/services/ws';
+import { useActivityEntity } from '../../../hooks';
 import { ImageConfigType } from '../typings';
 
 import './style.less';
@@ -28,6 +28,8 @@ import './style.less';
 
 export interface ViewProps {
     isEdit: boolean;
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: ImageConfigType;
     configJson: {
         isPreview?: boolean;
@@ -44,38 +46,44 @@ const genFullUrl = (path?: string) => {
 };
 
 const View = (props: ViewProps) => {
-    const { config, configJson, isEdit } = props;
+    const { config, configJson, widgetId, dashboardId, isEdit } = props;
     const { label, dataType, entity, file, url } = config || {};
     const { isPreview } = configJson || {};
 
     const [imageSrc, setImageSrc] = useState('');
-    const [imageFailed, setImageFailed] = useState(false);
+    const [loadedImageSrc, setLoadedImageSrc] = useState<string>('');
 
     /**
      * Request physical state function
      */
-    const requestEntityStatus = useCallback(async () => {
-        if (!entity) return;
+    const { run: requestEntityStatus } = useRequest(
+        async () => {
+            if (!entity?.value) return;
 
-        const [error, res] = await awaitWrap(entityAPI.getEntityStatus({ id: entity.value }));
+            const [error, res] = await awaitWrap(entityAPI.getEntityStatus({ id: entity.value }));
 
-        if (error || !isRequestSuccess(res)) {
-            /**
-             * The request failed, the default value was closed by closing the FALSE
-             */
-            setImageSrc('');
-            return;
-        }
+            if (error || !isRequestSuccess(res)) {
+                /**
+                 * The request failed, the default value was closed by closing the FALSE
+                 */
+                setImageSrc('');
+                return;
+            }
 
-        const entityStatus = getResponseData(res);
-        setImageSrc(!entityStatus?.value ? '' : `${entityStatus.value}`);
-    }, [entity]);
+            const entityStatus = getResponseData(res);
+            setImageSrc(!entityStatus?.value ? '' : `${entityStatus.value}`);
+        },
+        {
+            manual: true,
+            debounceWait: 300,
+            refreshDeps: [entity?.value],
+        },
+    );
 
     /**
      * Set image src based on dataType
      */
     useEffect(() => {
-        setImageFailed(false);
         switch (dataType) {
             case 'upload':
                 setImageSrc(genFullUrl(file?.url) || '');
@@ -90,7 +98,7 @@ const View = (props: ViewProps) => {
                  * If the dataType is `undefined` / `entity`, check the entity is empty
                  * and get the status.
                  */
-                if (entity) {
+                if (entity?.value) {
                     requestEntityStatus();
                 } else {
                     /**
@@ -100,55 +108,41 @@ const View = (props: ViewProps) => {
                 }
                 break;
         }
-    }, [dataType, entity, file, url, requestEntityStatus]);
+    }, [dataType, entity?.value, file, url, requestEntityStatus]);
 
-    /**
-     * webSocket subscription theme
-     */
-    const topic = useMemo(
-        () => entity?.rawData?.entityKey && getExChangeTopic(entity.rawData.entityKey),
-        [entity],
-    );
-
-    /**
-     * websocket subscription
-     */
     useEffect(() => {
-        /**
-         * WEBSOCKET subscription is not performed in preview status
-         */
-        if (!topic || Boolean(isPreview)) return;
+        if (!imageSrc) {
+            setLoadedImageSrc('');
+            return;
+        }
 
-        /**
-         * When the subscription theme, the function of canceling the subscription will be returned, so if you return directly, you can cancel the subscription when uninstalled
-         */
-        return ws.subscribe(topic, requestEntityStatus);
-    }, [topic, requestEntityStatus, isPreview]);
+        const image = new Image();
+        image.onload = () => {
+            setLoadedImageSrc(imageSrc);
+        };
+        image.onerror = () => {
+            setLoadedImageSrc('');
+        };
+        image.src = imageSrc;
+    }, [imageSrc]);
 
-    /**
-     * Determines whether is valid image src
-     */
-    // const convertImageSrc = useMemo(() => {
-    //     setImageFailed(false);
+    // ---------- Entity status management ----------
+    const { addEntityListener } = useActivityEntity();
 
-    //     if (
-    //         isBase64(imageSrc) ||
-    //         /(.?\/)+.+(\.(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif))$/i.test(imageSrc)
-    //     ) {
-    //         return imageSrc;
-    //     }
+    useEffect(() => {
+        const entityId = entity?.value;
+        if (!widgetId || !dashboardId || !entityId) return;
 
-    //     return '';
-    // }, [imageSrc]);
+        const removeEventListener = addEntityListener(entityId, {
+            widgetId,
+            dashboardId,
+            callback: requestEntityStatus,
+        });
 
-    /**
-     * handle image loading error failed
-     */
-    const handleImageFailed = useMemoizedFn(() => {
-        if (imageFailed) return;
-
-        setImageFailed(true);
-    });
+        return () => {
+            removeEventListener();
+        };
+    }, [entity?.value, widgetId, dashboardId, addEntityListener, requestEntityStatus]);
 
     return (
         <div className={`image-wrapper ${isPreview ? 'image-wrapper__preview' : ''}`}>
@@ -161,16 +155,11 @@ const View = (props: ViewProps) => {
                 </div>
             )}
             <div className="image-wrapper__content">
-                {!imageSrc || imageFailed ? (
+                {!loadedImageSrc ? (
                     <BrokenImageIcon className="image-wrapper__empty_icon" />
                 ) : (
                     <>
-                        <img
-                            className="image-wrapper__img"
-                            src={imageSrc}
-                            alt=""
-                            onError={handleImageFailed}
-                        />
+                        <img className="image-wrapper__img" src={loadedImageSrc} alt="" />
                         {label && <div className="image-wrapper__overlay" />}
                     </>
                 )}

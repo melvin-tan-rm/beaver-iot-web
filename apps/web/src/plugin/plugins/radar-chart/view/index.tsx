@@ -1,131 +1,161 @@
-import { useEffect, useRef } from 'react';
-import { useMemoizedFn } from 'ahooks';
-import Chart, { ChartConfiguration } from 'chart.js/auto'; // Introduce Chart.js
+import { useEffect, useMemo, useRef } from 'react';
+import { renderToString } from 'react-dom/server';
+import * as echarts from 'echarts/core';
 import { useTheme } from '@milesight/shared/src/hooks';
+import { useActivityEntity } from '@/plugin/hooks';
 import { Tooltip } from '@/plugin/view-components';
-import { useSource } from './hooks';
+import { useResizeChart, useSource } from './hooks';
 import type { AggregateHistoryList, ViewConfigProps } from '../typings';
 import './style.less';
 
 interface IProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: ViewConfigProps;
 }
 const View = (props: IProps) => {
-    const { config } = props;
+    const { config, widgetId, dashboardId } = props;
     const { entityList, title, metrics, time } = config || {};
-    const { purple, white } = useTheme();
-    const { aggregateHistoryList } = useSource({ entityList, metrics, time });
+    const chartRef = useRef<HTMLDivElement>(null);
+    const chartWrapperRef = useRef<HTMLDivElement>(null);
 
-    const chartRef = useRef<HTMLCanvasElement>(null);
+    const { purple, white, grey } = useTheme();
+    const { resizeChart } = useResizeChart({ chartWrapperRef });
 
-    // handle text that is too long, resulting in a small chart scale.
-    // convert the long label into an array[label1,label2,...]
-    const formatLabel = useMemoizedFn((str: string, maxwidth: number = 10) => {
-        const sections: string[] = [];
-        const words = str.split(' ');
-        let temp = '';
+    const { getLatestEntityDetail } = useActivityEntity();
+    const latestEntities = useMemo(() => {
+        if (!entityList?.length) return [];
 
-        words.forEach((item: string, index: number) => {
-            if (temp.length > 0) {
-                const concat = `${temp} ${item}`;
-
-                if (concat.length > maxwidth) {
-                    sections.push(temp);
-                    temp = '';
-                } else {
-                    if (index === words.length - 1) {
-                        sections.push(concat);
-                        return;
-                    }
-                    temp = concat;
-                    return;
-                }
-            }
-
-            if (index === words.length - 1) {
-                sections.push(item);
-                return;
-            }
-
-            if (item.length < maxwidth) {
-                temp = item;
-            } else {
-                sections.push(item);
-            }
-        });
-
-        return sections;
+        return entityList
+            .map(item => {
+                return getLatestEntityDetail(item);
+            })
+            .filter(Boolean) as EntityOptionType[];
+    }, [entityList, getLatestEntityDetail]);
+    const { aggregateHistoryList } = useSource({
+        widgetId,
+        dashboardId,
+        entityList: latestEntities,
+        metrics,
+        time,
     });
 
     /** Rendering radar map */
     const renderRadarChart = (
-        data: ChartConfiguration['data'],
+        data: {
+            labels: string[];
+            datasets: {
+                data: number[];
+            }[];
+        },
         aggregateHistoryList: AggregateHistoryList[],
     ) => {
-        try {
-            const ctx = chartRef.current!;
-            if (!ctx) return;
+        const chartDom = chartRef.current;
+        if (!chartDom) return;
 
-            const chart = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    ...data,
-                    labels: data?.labels?.map((value: unknown) => {
-                        return formatLabel(value as string);
-                    }),
+        const myChart = echarts.init(chartDom);
+
+        myChart.setOption({
+            tooltip: {
+                trigger: 'item',
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                borderColor: 'rgba(0, 0, 0, 0.9)',
+                textStyle: {
+                    color: '#fff',
                 },
-                options: {
-                    plugins: {
-                        legend: {
-                            display: false,
-                        },
-                        tooltip: {
-                            filter: tooltipItem => {
-                                return tooltipItem.dataIndex <= aggregateHistoryList.length - 1; // Show only real points
-                            },
-                            callbacks: {
-                                label: context => {
-                                    const { raw, dataset, dataIndex } = context || {};
+                formatter: (params: any) => {
+                    const { value, marker } = params;
 
-                                    const label = dataset.label || '';
+                    const getUnit = (dataIndex: number) => {
+                        const { entity } = aggregateHistoryList[dataIndex] || {};
+                        const { rawData: currentEntity } = entity || {};
+                        if (!currentEntity) return;
 
-                                    // Acquisition unit
-                                    const getUnit = () => {
-                                        const { entity } = aggregateHistoryList[dataIndex] || {};
-                                        const { rawData: currentEntity } = entity || {};
-                                        if (!currentEntity) return;
+                        const { entityValueAttribute } = currentEntity || {};
+                        const { unit } = entityValueAttribute || {};
+                        return unit;
+                    };
 
-                                        // Get the current selection entity
-                                        const { entityValueAttribute } = currentEntity || {};
-                                        const { unit } = entityValueAttribute || {};
-                                        return unit;
-                                    };
-                                    const unit = getUnit();
-
-                                    // Customized text content displayed when hovering
-                                    return `${label}${raw}${unit || ''}`;
-                                },
-                            },
+                    return renderToString(
+                        <div>
+                            {((value || []) as number[]).map((v, i) => {
+                                return (
+                                    <div
+                                        style={{ display: 'flex', justifyContent: 'space-between' }}
+                                    >
+                                        <div>
+                                            {/* eslint-disable-next-line react/no-danger */}
+                                            <span dangerouslySetInnerHTML={{ __html: marker }} />
+                                            <span>{data?.labels?.[i] || ''}:&nbsp;&nbsp;</span>
+                                        </div>
+                                        <div>{`${v}${getUnit(i) || ''}`}</div>
+                                    </div>
+                                );
+                            })}
+                        </div>,
+                    );
+                },
+            },
+            legend: {
+                show: false,
+            },
+            series: [
+                {
+                    type: 'radar',
+                    data: data.datasets.map(dataset => ({
+                        value: dataset.data,
+                    })),
+                    areaStyle: {
+                        color: purple[300],
+                    },
+                    symbolSize: 8,
+                    itemStyle: {
+                        borderColor: white,
+                        borderWidth: 1,
+                        color: purple[700],
+                    },
+                    lineStyle: {
+                        color: purple[700],
+                    },
+                },
+            ],
+            radar: [
+                {
+                    radius: '80%',
+                    indicator: data?.labels?.map((value: unknown) => ({
+                        text: value,
+                    })),
+                    axisName: {
+                        color: grey[600],
+                        overflow: 'break',
+                    },
+                    splitArea: {
+                        areaStyle: {
+                            color: [white],
                         },
                     },
-                    elements: {
-                        line: {
-                            borderWidth: 3,
+                    axisLine: {
+                        lineStyle: {
+                            color: grey[200],
+                        },
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            color: grey[200],
                         },
                     },
                 },
-            });
+            ],
+        });
 
-            return () => {
-                /**
-                 * Clear chart data
-                 */
-                chart.destroy();
-            };
-        } catch (error) {
-            console.error(error);
-        }
+        // Update the chart when the container size changes
+        const disconnectResize = resizeChart(myChart);
+        return () => {
+            disconnectResize?.();
+            myChart?.dispose();
+        };
     };
+
     useEffect(() => {
         const historyList = aggregateHistoryList || [];
 
@@ -154,13 +184,6 @@ const View = (props: IProps) => {
             datasets: [
                 {
                     data: historyList.map((item: AggregateHistoryList) => item?.data?.value || 0),
-                    fill: true,
-                    backgroundColor: purple[300],
-                    borderColor: purple[600],
-                    pointBackgroundColor: purple[700],
-                    pointBorderColor: white,
-                    pointHoverBackgroundColor: white,
-                    pointHoverBorderColor: purple[700],
                 },
             ],
         };
@@ -168,10 +191,10 @@ const View = (props: IProps) => {
     }, [aggregateHistoryList]);
 
     return (
-        <div className="ms-radar-chart">
+        <div className="ms-radar-chart" ref={chartWrapperRef}>
             <Tooltip className="ms-radar-chart__header" autoEllipsis title={title} />
             <div className="ms-radar-chart__content">
-                <canvas id="radarChart" ref={chartRef} />
+                <div ref={chartRef} className="ms-chart-content__chart" />
             </div>
         </div>
     );

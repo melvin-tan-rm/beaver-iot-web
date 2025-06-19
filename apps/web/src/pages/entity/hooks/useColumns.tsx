@@ -72,7 +72,7 @@ const useColumns = <T extends TableRowDataType>({
             },
             {
                 field: 'entityType',
-                headerName: getIntlText('common.label.type'),
+                headerName: getIntlText('common.label.entity_type'),
                 flex: 1,
                 minWidth: 150,
                 renderCell({ value }) {

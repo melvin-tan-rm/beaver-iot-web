@@ -121,6 +121,7 @@ const Upload: React.FC<Props> = ({
     accept = {
         'image/*': ['.jpg', '.jpeg', '.png', '.gif', '.svg'],
     },
+    matchExt = false,
     parallel = DEFAULT_PARALLEL_UPLOADING_FILES,
     minSize = DEFAULT_MIN_SIZE,
     maxSize = DEFAULT_MAX_SIZE,
@@ -135,6 +136,7 @@ const Upload: React.FC<Props> = ({
     const { acceptedFiles, fileRejections, getRootProps, getInputProps } = useDropzone({
         ...props,
         accept,
+        matchExt,
         minSize,
         maxSize,
         multiple,
@@ -264,7 +266,7 @@ const Upload: React.FC<Props> = ({
         if (!file) return result;
         result.push(
             <Fragment key={file.path}>
-                <Tooltip autoEllipsis className="name" title={file.url} />
+                <Tooltip autoEllipsis className="name" title={file.name} />
                 {`(${getSizeString(file.size)})`}
             </Fragment>,
         );
@@ -324,18 +326,27 @@ const Upload: React.FC<Props> = ({
         let resultValues: Props['value'] = null;
 
         if (files?.length) {
-            resultValues = files?.map(file => {
-                const { name, size, path, key, url, preview } = file;
-                const result: FileValueType = { name, size, path, key, url };
+            resultValues = files
+                .filter(file => {
+                    return file.status !== UploadStatus.Canceled;
+                })
+                ?.map(file => {
+                    const { name, size, path, key, url, preview } = file;
+                    const result: FileValueType = { name, size, path, key, url };
 
-                if (!url) {
-                    result.preview = preview;
+                    if (!url) {
+                        result.preview = preview;
+                    }
+                    return result;
+                });
+
+            if (resultValues.length) {
+                if (!multiple) {
+                    // if canceled and file is empty then need to verification
+                    resultValues = resultValues?.[0];
                 }
-                return result;
-            });
-
-            if (!multiple) {
-                resultValues = resultValues[0];
+            } else {
+                resultValues = undefined;
             }
         }
 

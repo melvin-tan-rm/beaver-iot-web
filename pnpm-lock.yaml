@@ -125,27 +125,24 @@ importers:
       axios:
         specifier: ^1.7.7
         version: 1.7.7
-      chart.js:
-        specifier: ^4.4.4
-        version: 4.4.4
-      chartjs-adapter-date-fns:
-        specifier: ^3.0.0
-        version: 3.0.0(chart.js@4.4.4)(date-fns@4.1.0)
-      chartjs-plugin-zoom:
-        specifier: ^2.1.0
-        version: 2.2.0(chart.js@4.4.4)
       classnames:
         specifier: ^2.5.1
         version: 2.5.1
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
+      echarts:
+        specifier: ^5.6.0
+        version: 5.6.0
       file-selector:
         specifier: ^2.1.2
         version: 2.1.2
       immer:
         specifier: ^10.1.1
         version: 10.1.1
+      konva:
+        specifier: ^9.3.20
+        version: 9.3.20
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
@@ -173,6 +170,12 @@ importers:
       react-intl-universal:
         specifier: ^2.11.1
         version: 2.11.1(react@18.3.1)
+      react-konva:
+        specifier: ^18.2.10
+        version: 18.2.10(@types/react@18.3.5)(konva@9.3.20)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-konva-utils:
+        specifier: ^1.1.0
+        version: 1.1.0(konva@9.3.20)(react-dom@18.3.1(react@18.3.1))(react-konva@18.2.10(@types/react@18.3.5)(konva@9.3.20)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       react-router:
         specifier: ^6.26.1
         version: 6.26.1(react@18.3.1)
@@ -1155,9 +1158,6 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@kurkle/color@0.3.2':
-    resolution: {integrity: sha512-fuscdXJ9G1qb7W8VdHi+IwRqij3lBkosAm4ydQtEmbY58OzHXqQhvlxqEkoz0yssNVn38bcpRWgA9PP+OGoisw==}
-
   '@lexical/clipboard@0.17.1':
     resolution: {integrity: sha512-OVqnEfWX8XN5xxuMPo6BfgGKHREbz++D5V5ISOiml0Z8fV/TQkdgwqbBJcUdJHGRHWSUwdK7CWGs/VALvVvZyw==}
 
@@ -1688,9 +1688,6 @@ packages:
   '@types/fs-extra@9.0.13':
     resolution: {integrity: sha512-nEnwB++1u5lVDM2UI4c1+5R+FYaKfaAzS4OococimjVm3nQw3TuzH5UNsocrcTBbhnerblyHj4A49qXbIiZdpA==}
 
-  '@types/hammerjs@2.0.46':
-    resolution: {integrity: sha512-ynRvcq6wvqexJ9brDMS4BnBLzmr0e14d6ZJTEShTBWKymQiHwlAyGu0ZPEFI2Fh1U53F7tN9ufClWM5KvqkKOw==}
-
   '@types/inquirer@8.2.10':
     resolution: {integrity: sha512-IdD5NmHyVjWM8SHWo/kPBgtzXatwPkfwzyP3fN1jF2g9BWt5WO+8hL2F4o2GKIYsU40PpqeevuUWvkS/roXJkA==}
 
@@ -1735,6 +1732,11 @@ packages:
 
   '@types/react-grid-layout@1.3.5':
     resolution: {integrity: sha512-WH/po1gcEcoR6y857yAnPGug+ZhkF4PaTUxgAbwfeSH/QOgVSakKHBXoPGad/sEznmkiaK3pqHk+etdWisoeBQ==}
+
+  '@types/react-reconciler@0.28.9':
+    resolution: {integrity: sha512-HHM3nxyUZ3zAylX8ZEyrDNd2XZOnQ0D5XfunJF5FLQnZbHHYq4UWvW1QfelQNXv1ICNkwYhfxjwfnqivYB6bFg==}
+    peerDependencies:
+      '@types/react': '*'
 
   '@types/react-resizable@3.0.8':
     resolution: {integrity: sha512-Pcvt2eGA7KNXldt1hkhVhAgZ8hK41m0mp89mFgQi7LAAEZiaLgm4fHJ5zbJZ/4m2LVaAyYrrRRv1LHDcrGQanA==}
@@ -2296,21 +2298,6 @@ packages:
   chardet@0.7.0:
     resolution: {integrity: sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==}
 
-  chart.js@4.4.4:
-    resolution: {integrity: sha512-emICKGBABnxhMjUjlYRR12PmOXhJ2eJjEHL2/dZlWjxRAZT1D8xplLFq5M0tMQK8ja+wBS/tuVEJB5C6r7VxJA==}
-    engines: {pnpm: '>=8'}
-
-  chartjs-adapter-date-fns@3.0.0:
-    resolution: {integrity: sha512-Rs3iEB3Q5pJ973J93OBTpnP7qoGwvq3nUnoMdtxO+9aoJof7UFcRbWcIDteXuYd1fgAvct/32T9qaLyLuZVwCg==}
-    peerDependencies:
-      chart.js: '>=2.8.0'
-      date-fns: '>=2.0.0'
-
-  chartjs-plugin-zoom@2.2.0:
-    resolution: {integrity: sha512-in6kcdiTlP6npIVLMd4zXZ08PDUXC52gZ4FAy5oyjk1zX3gKarXMAof7B9eFiisf9WOC3bh2saHg+J5WtLXZeA==}
-    peerDependencies:
-      chart.js: '>=3.2.0'
-
   chokidar@3.6.0:
     resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
     engines: {node: '>= 8.10.0'}
@@ -2726,6 +2713,9 @@ packages:
 
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
+
+  echarts@5.6.0:
+    resolution: {integrity: sha512-oTbVTsXfKuEhxftHqL5xprgLoc0k7uScAwtryCgWF6hPYFLRwOUHiFmHGCBKP5NPFNkDVopOieyUqYGH8Fa3kA==}
 
   electron-to-chromium@1.5.18:
     resolution: {integrity: sha512-1OfuVACu+zKlmjsNdcJuVQuVE61sZOLbNM4JAQ1Rvh6EOj0/EUKhMJjRH73InPlXSh8HIJk1cVZ8pyOV/FMdUQ==}
@@ -3232,10 +3222,6 @@ packages:
   graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
 
-  hammerjs@2.0.8:
-    resolution: {integrity: sha512-tSQXBXS/MWQOn/RKckawJ61vvsDpCom87JgxiYdGwHdOa0ht0vzUWDlfioofFCRU0L+6NGDt6XzbgoJvZkMeRQ==}
-    engines: {node: '>=0.8.0'}
-
   hard-rejection@2.1.0:
     resolution: {integrity: sha512-VIZB+ibDhx7ObhAe7OVtoEbuP4h/MuOTHJ+J8h/eBXotJYl0fBgR72xDFCKgIh22OJZIOVNxBMWuhAr10r8HdA==}
     engines: {node: '>=6'}
@@ -3602,6 +3588,11 @@ packages:
   iterator.prototype@1.1.2:
     resolution: {integrity: sha512-DR33HMMr8EzwuRL8Y9D3u2BMj8+RqSE850jfGu59kS7tbmPLzGkZmVSfyCFSDxuZiEY6Rzt3T2NA/qU+NwVj1w==}
 
+  its-fine@1.2.5:
+    resolution: {integrity: sha512-fXtDA0X0t0eBYAGLVM5YsgJGsJ5jEmqZEPrGbzdf5awjv0xE7nqv3TVnvtUF060Tkes15DbDAKW/I48vsb6SyA==}
+    peerDependencies:
+      react: '>=18.0'
+
   jackspeak@4.0.1:
     resolution: {integrity: sha512-cub8rahkh0Q/bw1+GxP7aeSe29hHHn2V4m29nnDlvCdlgU+3UGxkZp7Z53jLUdpX3jdTO0nJZUDl3xvbWc2Xog==}
     engines: {node: 20 || >=22}
@@ -3689,6 +3680,9 @@ packages:
 
   known-css-properties@0.29.0:
     resolution: {integrity: sha512-Ne7wqW7/9Cz54PDt4I3tcV+hAyat8ypyOGzYRJQfdxnnjeWsTxt1cy8pjvvKeI5kfXuyvULyeeAvwvvtAX3ayQ==}
+
+  konva@9.3.20:
+    resolution: {integrity: sha512-7XPD/YtgfzC8b1c7z0hhY5TF1IO/pBYNa29zMTA2PeBaqI0n5YplUeo4JRuRcljeAF8lWtW65jePZZF7064c8w==}
 
   language-subtag-registry@0.3.23:
     resolution: {integrity: sha512-0K65Lea881pHotoGEa5gDlMxt3pctLi2RplBb7Ezh4rRdLEOtgi7n4EwK9lamnUCkKBqaeKRVebTq6BAxSkpXQ==}
@@ -4408,6 +4402,27 @@ packages:
   react-is@18.3.1:
     resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
 
+  react-konva-utils@1.1.0:
+    resolution: {integrity: sha512-3ylRN4eUeYU553tmY2Hgi69efrlUBjE8MLXXAQT+rLDBCPW4CwlvJFUCgPQoSEZmaJKTH/gvZz0Y4f8tUfV0rw==}
+    peerDependencies:
+      konva: ^8.3.5 || ^9.0.0
+      react: ^18.2.0 || ^19.0.0
+      react-dom: ^18.2.0 || ^19.0.0
+      react-konva: ^18.2.10 || ^19.0.1
+
+  react-konva@18.2.10:
+    resolution: {integrity: sha512-ohcX1BJINL43m4ynjZ24MxFI1syjBdrXhqVxYVDw2rKgr3yuS0x/6m1Y2Z4sl4T/gKhfreBx8KHisd0XC6OT1g==}
+    peerDependencies:
+      konva: ^8.0.1 || ^7.2.5 || ^9.0.0
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+
+  react-reconciler@0.29.2:
+    resolution: {integrity: sha512-zZQqIiYgDCTP/f1N/mAR10nJGrPD2ZR+jDSEsKWJHYC7Cm2wodlwbR3upZRdC3cjIjSlTLNVyO7Iu0Yy7t2AYg==}
+    engines: {node: '>=0.10.0'}
+    peerDependencies:
+      react: ^18.3.1
+
   react-refresh@0.14.2:
     resolution: {integrity: sha512-jCvmsr+1IUSMUyzOkRcvnVbX3ZYC6g9TDrDbFuFmRDq7PD4yaGbLKNQL6k2jnArV8hjYxh7hVhAZB6s9HDGpZA==}
     engines: {node: '>=0.10.0'}
@@ -4918,6 +4933,9 @@ packages:
   tsconfig-paths@3.15.0:
     resolution: {integrity: sha512-2Ac2RgzDe/cn48GvOe3M+o82pEFewD3UPbyoUHHdKasHwJKjds4fLXWf/Ux5kATBKN20oaFGu+jbElp1pos0mg==}
 
+  tslib@2.3.0:
+    resolution: {integrity: sha512-N82ooyxVNm6h1riLCoyS9e3fuJ3AMG2zIZs2Gd1ATcSFjSA23Q0fzjjZeh0jbJvWVDZ0cJT8yaNNaaXHzueNjg==}
+
   tslib@2.7.0:
     resolution: {integrity: sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==}
 
@@ -4999,6 +5017,12 @@ packages:
   url@0.11.4:
     resolution: {integrity: sha512-oCwdVC7mTuWiPyjLUz/COz5TLk6wgp0RCsN+wHZ2Ekneac9w8uuV0njcbbie2ME+Vs+d6duwmYuR3HgQXs1fOg==}
     engines: {node: '>= 0.4'}
+
+  use-image@1.1.4:
+    resolution: {integrity: sha512-P+swhszzHHgEb2X2yQ+vQNPCq/8Ks3hyfdXAVN133pvnvK7UK++bUaZUa5E+A3S02Mw8xOCBr9O6CLhk2fjrWA==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
 
   use-sync-external-store@1.2.2:
     resolution: {integrity: sha512-PElTlVMwpblvbNqQ82d2n6RjStvdSoNe9FG28kNfz3WiXilJm4DdNkEzRhCZuIDwY8U08WVihhGR5iRqAwfDiw==}
@@ -5222,6 +5246,9 @@ packages:
   yocto-queue@1.1.1:
     resolution: {integrity: sha512-b4JR1PFR10y1mKjhHY9LaGo6tmrgjit7hxVIeAmyMw3jegXR4dhYqLaQF5zMXZxY7tLpMyJeLjr1C4rLmkVe8g==}
     engines: {node: '>=12.20'}
+
+  zrender@5.6.1:
+    resolution: {integrity: sha512-OFXkDJKcrlx5su2XbzJvj/34Q3m6PvyCZkVPHGYpcCJ52ek4U/ymZyfuV1nKE23AyBJ51E/6Yr0mhZ7xGTO4ag==}
 
   zustand@4.5.5:
     resolution: {integrity: sha512-+0PALYNJNgK6hldkgDq2vLrw5f6g/jCInz52n9RTpropGgeAf/ioFUCdtsjCqu4gNhW9D01rUQBROoRjdzyn2Q==}
@@ -5988,8 +6015,6 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@kurkle/color@0.3.2': {}
-
   '@lexical/clipboard@0.17.1':
     dependencies:
       '@lexical/html': 0.17.1
@@ -6563,8 +6588,6 @@ snapshots:
     dependencies:
       '@types/node': 20.16.5
 
-  '@types/hammerjs@2.0.46': {}
-
   '@types/inquirer@8.2.10':
     dependencies:
       '@types/through': 0.0.33
@@ -6603,6 +6626,10 @@ snapshots:
       '@types/react': 18.3.5
 
   '@types/react-grid-layout@1.3.5':
+    dependencies:
+      '@types/react': 18.3.5
+
+  '@types/react-reconciler@0.28.9(@types/react@18.3.5)':
     dependencies:
       '@types/react': 18.3.5
 
@@ -7339,21 +7366,6 @@ snapshots:
 
   chardet@0.7.0: {}
 
-  chart.js@4.4.4:
-    dependencies:
-      '@kurkle/color': 0.3.2
-
-  chartjs-adapter-date-fns@3.0.0(chart.js@4.4.4)(date-fns@4.1.0):
-    dependencies:
-      chart.js: 4.4.4
-      date-fns: 4.1.0
-
-  chartjs-plugin-zoom@2.2.0(chart.js@4.4.4):
-    dependencies:
-      '@types/hammerjs': 2.0.46
-      chart.js: 4.4.4
-      hammerjs: 2.0.8
-
   chokidar@3.6.0:
     dependencies:
       anymatch: 3.1.3
@@ -7664,7 +7676,8 @@ snapshots:
       es-errors: 1.3.0
       is-data-view: 1.0.1
 
-  date-fns@4.1.0: {}
+  date-fns@4.1.0:
+    optional: true
 
   dayjs@1.11.13: {}
 
@@ -7800,6 +7813,11 @@ snapshots:
   dotenv@16.4.5: {}
 
   eastasianwidth@0.2.0: {}
+
+  echarts@5.6.0:
+    dependencies:
+      tslib: 2.3.0
+      zrender: 5.6.1
 
   electron-to-chromium@1.5.18: {}
 
@@ -8479,8 +8497,6 @@ snapshots:
 
   graphemer@1.4.0: {}
 
-  hammerjs@2.0.8: {}
-
   hard-rejection@2.1.0: {}
 
   has-bigints@1.0.2: {}
@@ -8816,6 +8832,13 @@ snapshots:
       reflect.getprototypeof: 1.0.6
       set-function-name: 2.0.2
 
+  its-fine@1.2.5(@types/react@18.3.5)(react@18.3.1):
+    dependencies:
+      '@types/react-reconciler': 0.28.9(@types/react@18.3.5)
+      react: 18.3.1
+    transitivePeerDependencies:
+      - '@types/react'
+
   jackspeak@4.0.1:
     dependencies:
       '@isaacs/cliui': 8.0.2
@@ -8889,6 +8912,8 @@ snapshots:
   kind-of@6.0.3: {}
 
   known-css-properties@0.29.0: {}
+
+  konva@9.3.20: {}
 
   language-subtag-registry@0.3.23: {}
 
@@ -9656,6 +9681,32 @@ snapshots:
 
   react-is@18.3.1: {}
 
+  react-konva-utils@1.1.0(konva@9.3.20)(react-dom@18.3.1(react@18.3.1))(react-konva@18.2.10(@types/react@18.3.5)(konva@9.3.20)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1):
+    dependencies:
+      konva: 9.3.20
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-konva: 18.2.10(@types/react@18.3.5)(konva@9.3.20)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      use-image: 1.1.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+
+  react-konva@18.2.10(@types/react@18.3.5)(konva@9.3.20)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@types/react-reconciler': 0.28.9(@types/react@18.3.5)
+      its-fine: 1.2.5(@types/react@18.3.5)(react@18.3.1)
+      konva: 9.3.20
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+      react-reconciler: 0.29.2(react@18.3.1)
+      scheduler: 0.23.2
+    transitivePeerDependencies:
+      - '@types/react'
+
+  react-reconciler@0.29.2(react@18.3.1):
+    dependencies:
+      loose-envify: 1.4.0
+      react: 18.3.1
+      scheduler: 0.23.2
+
   react-refresh@0.14.2: {}
 
   react-resizable@3.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
@@ -10261,6 +10312,8 @@ snapshots:
       minimist: 1.2.8
       strip-bom: 3.0.0
 
+  tslib@2.3.0: {}
+
   tslib@2.7.0: {}
 
   tsx@4.19.0:
@@ -10347,6 +10400,11 @@ snapshots:
     dependencies:
       punycode: 1.4.1
       qs: 6.13.0
+
+  use-image@1.1.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   use-sync-external-store@1.2.2(react@18.3.1):
     dependencies:
@@ -10569,6 +10627,10 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   yocto-queue@1.1.1: {}
+
+  zrender@5.6.1:
+    dependencies:
+      tslib: 2.3.0
 
   zustand@4.5.5(@types/react@18.3.5)(immer@10.1.1)(react@18.3.1):
     dependencies:

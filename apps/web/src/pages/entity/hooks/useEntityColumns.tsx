@@ -59,7 +59,7 @@ const useEntityColumns = <T extends TableRowDataType>({
             },
             {
                 field: 'entityType',
-                headerName: getIntlText('common.label.type'),
+                headerName: getIntlText('common.label.entity_type'),
                 flex: 1,
                 minWidth: 100,
                 maxWidth: 100,
@@ -112,7 +112,7 @@ const useEntityColumns = <T extends TableRowDataType>({
                 filteredValue: filteredInfo?.integrationName,
                 filterSearchType: 'search',
                 renderCell({ row }) {
-                    return `${row.integrationName} ${row?.deviceName ? `/${row?.deviceName}` : ''}`;
+                    return `${row.integrationName || '-'} ${row?.deviceName ? `/${row?.deviceName}` : ''}`;
                 },
             },
             {

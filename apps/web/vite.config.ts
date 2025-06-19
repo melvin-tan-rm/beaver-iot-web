@@ -105,7 +105,7 @@ export default defineConfig({
                 changeOrigin: true,
                 rewrite: path => path.replace(/^\/api\/v1/, ''),
             },
-            '/websocket': {
+            '/mqtt': {
                 target: WEB_SOCKET_PROXY,
                 ws: true, // Enable the WebSocket proxy
                 changeOrigin: true,

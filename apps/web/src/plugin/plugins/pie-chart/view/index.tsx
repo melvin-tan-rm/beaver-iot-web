@@ -1,149 +1,107 @@
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useRef } from 'react';
 import cls from 'classnames';
-import { useRequest } from 'ahooks';
-import Chart from 'chart.js/auto';
 import { isEmpty } from 'lodash-es';
-
+import * as echarts from 'echarts/core';
 import { useTheme } from '@milesight/shared/src/hooks';
-import {
-    awaitWrap,
-    entityAPI,
-    EntityAPISchema,
-    getResponseData,
-    isRequestSuccess,
-} from '@/services/http';
-import ws, { getExChangeTopic } from '@/services/ws';
 import { getChartColor } from '@/plugin/utils';
 import { Tooltip } from '@/plugin/view-components';
-import { ViewConfigProps } from '../typings';
+import { useResizeChart, useSourceData } from './hooks';
+import type { ViewConfigProps } from '../typings';
 import './style.less';
 
 interface IProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     config: ViewConfigProps;
     configJson: CustomComponentProps;
 }
-interface AggregateHistoryList {
-    entity: EntityOptionType;
-    data: EntityAPISchema['getAggregateHistory']['response'];
-}
 const View = (props: IProps) => {
-    const { config, configJson } = props;
+    const { config, configJson, widgetId, dashboardId } = props;
     const { isPreview } = configJson || {};
-    const { entity, title, metrics, time } = config || {};
+    const { title } = config || {};
 
-    const { getCSSVariableValue } = useTheme();
-    const chartRef = useRef<HTMLCanvasElement>(null);
-    const { data: countData, runAsync: getData } = useRequest(
-        async () => {
-            if (!entity?.value) return;
+    const chartRef = useRef<HTMLDivElement>(null);
+    const chartWrapperRef = useRef<HTMLDivElement>(null);
+    const { getCSSVariableValue, grey } = useTheme();
 
-            const run = async (selectEntity: EntityOptionType) => {
-                const { value: entityId } = selectEntity || {};
-                if (!entityId) return;
-
-                const now = Date.now();
-                const [error, resp] = await awaitWrap(
-                    entityAPI.getAggregateHistory({
-                        entity_id: entityId,
-                        aggregate_type: metrics,
-                        start_timestamp: now - time,
-                        end_timestamp: now,
-                    }),
-                );
-                if (error || !isRequestSuccess(resp)) return;
-
-                const data = getResponseData(resp);
-                return {
-                    entity,
-                    data,
-                } as AggregateHistoryList;
-            };
-            return Promise.resolve(run(entity));
-        },
-        { refreshDeps: [entity, time, metrics] },
-    );
+    const { resizeChart } = useResizeChart({ chartWrapperRef });
+    const { countData } = useSourceData(props);
 
     /** Rendering cake map */
     const renderChart = () => {
-        try {
-            const ctx = chartRef.current!;
-            const data = countData?.data?.count_result || [];
-            if (!ctx) return;
-            const resultColor = getChartColor(data);
-            const pieCountData = data?.map(item => item.count);
+        const chartDom = chartRef.current;
+        if (!chartDom) return;
 
-            const pieData = !isEmpty(pieCountData) ? pieCountData : [1];
-            const pieColor = !isEmpty(resultColor)
-                ? resultColor
-                : [getCSSVariableValue('--gray-2')];
+        const data = countData?.data?.count_result || [];
+        const resultColor = getChartColor(data);
+        const pieColor = !isEmpty(resultColor) ? resultColor : [getCSSVariableValue('--gray-2')];
 
-            const chart = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: data?.map(item => String(item.value)), // Data label
-                    datasets: [
-                        {
-                            // label: 'My First Dataset',
-                            data: pieData, // Data value
-                            borderWidth: 1, // Border width
-                            backgroundColor: pieColor,
-                        },
-                    ],
+        const myChart = echarts.init(chartDom);
+        myChart.setOption({
+            legend: {
+                itemWidth: 10,
+                itemHeight: 10,
+                icon: 'roundRect', // Set the legend item as a square
+                textStyle: {
+                    borderRadius: 10,
                 },
-                options: {
-                    responsive: true, // Respond to the chart
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            // position: 'right', // Legend position
-                            labels: {
-                                // Legend box size
-                                boxWidth: 10,
-                                boxHeight: 10,
-                                useBorderRadius: true,
-                                borderRadius: 1,
-                            },
-                        },
-                        tooltip: {
-                            enabled: Boolean(data?.length), // Enlightenment prompts
+                itemStyle: {
+                    borderRadius: 10,
+                },
+            },
+            series: [
+                {
+                    type: 'pie',
+                    radius: '80%',
+                    center: ['50%', '55%'],
+                    data: (data || []).map(item => ({
+                        value: item.count,
+                        name: item.value,
+                    })),
+
+                    itemStyle: {
+                        color: (params: any) => {
+                            const { dataIndex } = params || {};
+                            return pieColor[dataIndex];
                         },
                     },
+                    label: {
+                        show: false,
+                    },
+                    emptyCircleStyle: {
+                        color: grey[100],
+                    },
                 },
-            });
-            return () => {
-                /**
-                 * Clear chart data
-                 */
-                chart.destroy();
-            };
-        } catch (error) {
-            console.error(error);
-        }
+            ],
+            tooltip: {
+                trigger: 'item',
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                borderColor: 'rgba(0, 0, 0, 0.9)',
+                textStyle: {
+                    color: '#fff',
+                },
+            },
+        });
+
+        // Update the chart when the container size changes
+        const disconnectResize = resizeChart(myChart);
+        return () => {
+            disconnectResize?.();
+            myChart?.dispose();
+        };
     };
     useEffect(() => {
         return renderChart();
     }, [countData]);
 
-    const topic = useMemo(() => {
-        const entityKey = entity?.value?.toString();
-        return entityKey && getExChangeTopic(entityKey);
-    }, [entity]);
-
-    // Subscribe to WS topics
-    useEffect(() => {
-        if (!topic || configJson.isPreview) return;
-
-        const unsubscribe = ws.subscribe(topic, getData);
-        return () => {
-            unsubscribe?.();
-        };
-    }, [topic]);
-
     return (
-        <div className={cls('ms-pie-chart', { 'ms-pie-chart--preview': isPreview })}>
+        <div
+            className={cls('ms-pie-chart', { 'ms-pie-chart--preview': isPreview })}
+            ref={chartWrapperRef}
+        >
             <Tooltip className="ms-pie-chart__header" autoEllipsis title={title} />
             <div className="ms-pie-chart__content">
-                <canvas id="pieChart" ref={chartRef} />
+                <div ref={chartRef} className="ms-chart-content__chart" />
             </div>
         </div>
     );

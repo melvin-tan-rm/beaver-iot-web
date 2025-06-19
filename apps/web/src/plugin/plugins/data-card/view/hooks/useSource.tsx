@@ -1,18 +1,20 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useRequest } from 'ahooks';
-import ws, { getExChangeTopic } from '@/services/ws';
 import { awaitWrap, entityAPI, getResponseData, isRequestSuccess } from '@/services/http';
+import { useActivityEntity } from '../../../../hooks';
 import type { ViewConfigProps } from '../../typings';
 
 interface IProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     entity: ViewConfigProps['entity'];
 }
 export const useSource = (props: IProps) => {
-    const { entity } = props;
+    const { entity, widgetId, dashboardId } = props;
 
-    const { data: entityStatusValue, runAsync: getEntityStatusValue } = useRequest(
+    const { data: entityStatusValue, run: getEntityStatusValue } = useRequest(
         async () => {
-            if (!entity) return;
+            if (!entity?.value) return;
             const { value } = entity || {};
 
             const [error, resp] = await awaitWrap(entityAPI.getEntityStatus({ id: value }));
@@ -20,22 +22,32 @@ export const useSource = (props: IProps) => {
 
             return getResponseData(resp)?.value;
         },
-        { manual: true },
+        {
+            manual: true,
+            debounceWait: 300,
+        },
     );
     useEffect(() => {
         getEntityStatusValue();
-    }, [entity]);
+    }, [entity?.value]);
 
-    const topic = useMemo(() => {
-        const entityKey = entity?.rawData?.entityKey?.toString();
-        return entityKey && getExChangeTopic(entityKey);
-    }, [entity]);
-    // Subscribe to WS theme
+    // ---------- Entity status management ----------
+    const { addEntityListener } = useActivityEntity();
+
     useEffect(() => {
-        if (!topic) return;
+        const entityId = entity?.value;
+        if (!widgetId || !dashboardId || !entityId) return;
 
-        return ws.subscribe(topic, getEntityStatusValue);
-    }, [topic]);
+        const removeEventListener = addEntityListener(entityId, {
+            widgetId,
+            dashboardId,
+            callback: getEntityStatusValue,
+        });
+
+        return () => {
+            removeEventListener();
+        };
+    }, [entity?.value, widgetId, dashboardId, addEntityListener, getEntityStatusValue]);
 
     return {
         entityStatusValue,

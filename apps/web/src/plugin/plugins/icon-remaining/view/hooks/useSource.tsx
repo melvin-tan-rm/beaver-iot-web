@@ -1,18 +1,20 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useRequest } from 'ahooks';
-import ws, { getExChangeTopic } from '@/services/ws';
 import { awaitWrap, entityAPI, getResponseData, isRequestSuccess } from '@/services/http';
+import { useActivityEntity } from '../../../../hooks';
 import type { ViewConfigProps } from '../../typings';
 
 interface IProps {
+    widgetId: ApiKey;
+    dashboardId: ApiKey;
     entity: ViewConfigProps['entity'];
     metrics: ViewConfigProps['metrics'];
     time: ViewConfigProps['time'];
 }
 export const useSource = (props: IProps) => {
-    const { entity, metrics, time } = props;
+    const { entity, metrics, time, widgetId, dashboardId } = props;
 
-    const { data: aggregateHistoryData, runAsync: getAggregateHistoryData } = useRequest(
+    const { data: aggregateHistoryData, run: getAggregateHistoryData } = useRequest(
         async () => {
             const { value: entityId } = entity || {};
             if (!entityId) return;
@@ -30,23 +32,34 @@ export const useSource = (props: IProps) => {
 
             return getResponseData(resp);
         },
-        { manual: true },
+        {
+            manual: true,
+            debounceWait: 300,
+            refreshDeps: [entity?.value, metrics, time],
+        },
     );
 
     useEffect(() => {
         getAggregateHistoryData();
-    }, [entity, time, metrics]);
+    }, [entity?.value, metrics, time, getAggregateHistoryData]);
 
-    const topic = useMemo(() => {
-        const entityKey = entity?.rawData?.entityKey?.toString();
-        return entityKey && getExChangeTopic(entityKey);
-    }, [entity]);
-    // Subscribe to WS theme
+    // ---------- Entity status management ----------
+    const { addEntityListener } = useActivityEntity();
+
     useEffect(() => {
-        if (!topic) return;
+        const entityId = entity?.value;
+        if (!widgetId || !dashboardId || !entityId) return;
 
-        return ws.subscribe(topic, getAggregateHistoryData);
-    }, [topic]);
+        const removeEventListener = addEntityListener(entityId, {
+            widgetId,
+            dashboardId,
+            callback: getAggregateHistoryData,
+        });
+
+        return () => {
+            removeEventListener();
+        };
+    }, [entity?.value, widgetId, dashboardId, addEntityListener, getAggregateHistoryData]);
 
     return {
         aggregateHistoryData,
