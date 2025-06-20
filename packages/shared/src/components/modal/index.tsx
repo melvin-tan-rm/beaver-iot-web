@@ -53,6 +53,11 @@ export interface ModalProps {
      */
     className?: string;
     /**
+     * If `true`, hitting escape will not fire the `onClose` callback.
+     * @default false
+     */
+    disableEscapeKeyDown?: DialogProps['disableEscapeKeyDown'];
+    /**
      * Whether to prohibit click the mask layer to close the bullet frame
      */
     disabledBackdropClose?: boolean;
@@ -118,6 +123,7 @@ const Modal: React.FC<ModalProps> = ({
     container,
     footer,
     children,
+    disableEscapeKeyDown = false,
     disabledBackdropClose = true,
     showCloseIcon = false,
     disableScrollLock = false,
@@ -184,6 +190,7 @@ const Modal: React.FC<ModalProps> = ({
             container={container}
             sx={{ '& .MuiDialog-paper': { width: ModalWidth, maxWidth: 'none' }, ...(sx || {}) }}
             disableScrollLock={disableScrollLock}
+            disableEscapeKeyDown={disableEscapeKeyDown}
         >
             {!!title &&
                 (typeof title === 'string' ? (

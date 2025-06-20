@@ -12,6 +12,7 @@ import {
 import { ImageAnnotation, ToggleRadio, Tooltip } from '@/components';
 import { aiApi, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import ResultSetting from '../result-setting';
+import DeviceSelect, { type ValueType as DeviceSelectValueType } from '../device-select';
 import './style.less';
 
 /**
@@ -56,10 +57,13 @@ const BindModal: React.FC<ModalProps> = ({ onCancel, ...props }) => {
         }));
     }, [getIntlText]);
 
+    const [deviceValue, setDeviceValue] = useState<DeviceSelectValueType | string | null>(null);
+
     return (
         <Modal
             {...props}
             fullScreen
+            disableEscapeKeyDown
             size="full"
             className="ms-com-device-bind-modal"
             title={getIntlText('setting.integration.ai_bind_device')}
@@ -85,6 +89,10 @@ const BindModal: React.FC<ModalProps> = ({ onCancel, ...props }) => {
                             {getIntlText('setting.integration.ai_bind_device_choose_device')}
                         </span>
                         <div className="device-form-root">
+                            <DeviceSelect
+                                value={deviceValue}
+                                onChange={(_, value) => setDeviceValue(value)}
+                            />
                             {/* Device form items should be rendered here */}
                         </div>
                     </div>
@@ -141,19 +149,19 @@ const BindModal: React.FC<ModalProps> = ({ onCancel, ...props }) => {
                                             {
                                                 name: 'result_image',
                                                 entityName: 'result_image',
-                                                entityId: 'xxxxxxxxxx',
+                                                entityId: 'xxxxxxxxxx1',
                                                 entityValueType: 'STRING',
                                             },
                                             {
                                                 name: 'text',
                                                 entityName: 'text',
-                                                entityId: 'xxxxxxxxxx',
+                                                entityId: 'xxxxxxxxxx2',
                                                 entityValueType: 'STRING',
                                             },
                                             {
                                                 name: 'data',
                                                 entityName: 'data',
-                                                entityId: 'xxxxxxxxxx',
+                                                entityId: 'xxxxxxxxxx3',
                                                 entityValueType: 'STRING',
                                             },
                                         ],

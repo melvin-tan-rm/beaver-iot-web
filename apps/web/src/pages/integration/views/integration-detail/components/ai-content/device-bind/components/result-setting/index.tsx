@@ -26,8 +26,9 @@ const ResultSetting: React.FC<Props> = ({ data, onChange }) => {
 
     return (
         <div className="ms-com-ai-result-setting-root">
-            {data?.map(({ title, params }) => (
-                <div className="result-setting-item">
+            {data?.map(({ title, params }, index) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <div className="result-setting-item" key={index}>
                     <div className="result-setting-item-header">
                         <span className="title">
                             {getIntlText('setting.integration.ai_infer_result_area_setting', {
@@ -40,7 +41,7 @@ const ResultSetting: React.FC<Props> = ({ data, onChange }) => {
                     </div>
                     <div className="result-setting-item-body">
                         {params.map(param => (
-                            <div className="params-item">
+                            <div className="params-item" key={param.entityId}>
                                 <TextField
                                     disabled
                                     fullWidth
