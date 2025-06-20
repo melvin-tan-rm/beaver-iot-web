@@ -24,5 +24,10 @@
     "error.http.server_data_not_found": "Model not found",
     "error.http.server_rate_limit_exceeded": "Service interface current limit",
     "error.http.server_model_worker_busy": "Model processing capacity reaches the upper limit",
-    "error.http.server_invalid_input_data": "Incorrect input parameters"
+    "error.http.server_invalid_input_data": "Incorrect input parameters",
+    "error.http.device_template_validate_error": "Device template validation error",
+    "error.http.topic_exists": "Topic already exists",
+    "error.http.device_id_not_found": "Key device_id not found",
+    "error.http.json_validate_error": "Json validation error",
+    "error.http.device_entity_value_validate_error": "Device entity value validation error"
 }

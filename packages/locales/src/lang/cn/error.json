@@ -24,5 +24,10 @@
     "error.http.server_data_not_found": "找不到模型",
     "error.http.server_rate_limit_exceeded": "服务接口限流",
     "error.http.server_model_worker_busy": "模型处理能力达到上限",
-    "error.http.server_invalid_input_data": "输入参数不正确"
+    "error.http.server_invalid_input_data": "输入参数不正确",
+    "error.http.device_template_validate_error": "设备模板校验错误",
+    "error.http.topic_exists": "Topic 已存在",
+    "error.http.device_id_not_found": "键 device_id 找不到",
+    "error.http.json_validate_error": "Json 校验错误",
+    "error.http.device_entity_value_validate_error": "设备实体值校验错误"
 }

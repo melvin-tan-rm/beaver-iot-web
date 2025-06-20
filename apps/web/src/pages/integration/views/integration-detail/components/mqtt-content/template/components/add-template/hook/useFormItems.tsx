@@ -1,0 +1,187 @@
+import { useMemo } from 'react';
+import { type ControllerProps } from 'react-hook-form';
+import { Box, IconButton, TextField, TextFieldProps, InputAdornment, Tooltip } from '@mui/material';
+import { useI18n } from '@milesight/shared/src/hooks';
+import {
+    checkLettersAndNum,
+    checkMaxLength,
+    checkRequired,
+} from '@milesight/shared/src/utils/validators';
+import { OpenInNewIcon } from '@milesight/shared/src/components';
+import CodeEditor from '../../code-editor';
+
+export interface FormDataProps {
+    name: string;
+    topic: string;
+    description: string;
+    yaml: string;
+}
+
+const useFormItems = ({ prefixTopic }: { prefixTopic: string }) => {
+    const { lang, getIntlText } = useI18n();
+
+    const yamlGuideLink = useMemo(() => {
+        if (lang === 'CN') {
+            return 'https://www.milesight.com/beaver-iot/zh-Hans/docs/dev-guides/backend/advanced/entity-definition/#%E5%9F%BA%E4%BA%8Eyaml%E6%9E%84%E5%BB%BA';
+        }
+        return 'https://www.milesight.com/beaver-iot/docs/dev-guides/backend/advanced/entity-definition/#yaml-based-construction';
+    }, [getIntlText]);
+
+    const handleClickLink = () => {
+        window.open(yamlGuideLink);
+    };
+
+    const formItems = useMemo(() => {
+        const commTextProps: Partial<TextFieldProps> = {
+            fullWidth: true,
+            required: true,
+        };
+        const result: ControllerProps<FormDataProps>[] = [
+            {
+                name: 'name',
+                rules: {
+                    validate: {
+                        checkRequired: checkRequired(),
+                        checkMaxLength: checkMaxLength({ max: 64 }),
+                        checkLettersAndNum: checkLettersAndNum(),
+                        checkRepeat: value => {
+                            return new Set(value as string).size === (value as string).length
+                                ? true
+                                : getIntlText('setting.integration.valid_repeat_char');
+                        },
+                    },
+                },
+                render({ field: { onChange, value }, fieldState: { error } }) {
+                    return (
+                        <TextField
+                            {...commTextProps}
+                            label={getIntlText('setting.integration.device_template_name')}
+                            placeholder={getIntlText('common.placeholder.input')}
+                            error={!!error}
+                            helperText={error ? error.message : null}
+                            value={value}
+                            onChange={onChange}
+                            onBlur={event => {
+                                const newValue = event?.target?.value;
+                                onChange(typeof newValue === 'string' ? newValue.trim() : newValue);
+                            }}
+                        />
+                    );
+                },
+            },
+            {
+                name: 'topic',
+                rules: {
+                    validate: {
+                        checkRequired: checkRequired(),
+                        checkMaxLength: checkMaxLength({ max: 64 }),
+                    },
+                },
+                render({ field: { onChange, value }, fieldState: { error } }) {
+                    return (
+                        <TextField
+                            {...commTextProps}
+                            label={getIntlText('setting.integration.device_topic')}
+                            placeholder={getIntlText('common.placeholder.input')}
+                            error={!!error}
+                            helperText={error ? error.message : null}
+                            value={value}
+                            onChange={onChange}
+                            slotProps={{
+                                input: {
+                                    startAdornment: (
+                                        <InputAdornment position="start" sx={{ mr: 0.6 }}>
+                                            <Tooltip title={prefixTopic}>
+                                                <span>{prefixTopic}</span>
+                                            </Tooltip>
+                                        </InputAdornment>
+                                    ),
+                                },
+                            }}
+                            onBlur={event => {
+                                const newValue = event?.target?.value;
+                                onChange(typeof newValue === 'string' ? newValue.trim() : newValue);
+                            }}
+                        />
+                    );
+                },
+            },
+            {
+                name: 'yaml',
+                rules: {
+                    validate: {
+                        checkRequired: checkRequired(),
+                    },
+                },
+                render({ field: { onChange, value }, fieldState: { error } }) {
+                    return (
+                        <CodeEditor
+                            title={getIntlText('setting.integration.device_entity_design')}
+                            value={value}
+                            error={error}
+                            onChange={onChange}
+                            rightSlot={
+                                <Box
+                                    onClick={handleClickLink}
+                                    sx={{
+                                        color: 'var(--primary-color-7)',
+                                        '& .MuiSvgIcon-root': {
+                                            color: 'var(--primary-color-7)',
+                                        },
+                                        fontSize: 14,
+                                        cursor: 'pointer',
+                                    }}
+                                >
+                                    {getIntlText('setting.integration.view_doc')}
+                                    <IconButton>
+                                        <OpenInNewIcon sx={{ width: 16, height: 16 }} />
+                                    </IconButton>
+                                </Box>
+                            }
+                        />
+                    );
+                },
+            },
+            {
+                name: 'description',
+                rules: {
+                    validate: {
+                        checkMaxLength: checkMaxLength({ max: 200 }),
+                    },
+                },
+                render({ field: { onChange, value }, fieldState: { error } }) {
+                    return (
+                        <TextField
+                            {...commTextProps}
+                            required={false}
+                            multiline
+                            rows={3}
+                            maxRows={3}
+                            label={getIntlText('common.label.remark')}
+                            placeholder={getIntlText('common.placeholder.input')}
+                            error={!!error}
+                            helperText={error ? error.message : null}
+                            value={value}
+                            onChange={onChange}
+                            sx={{
+                                '& .MuiInputBase-multiline': {
+                                    pt: 1,
+                                    pb: 1,
+                                },
+                                '& textarea': {
+                                    pt: 0.5,
+                                    pb: 0.5,
+                                },
+                            }}
+                        />
+                    );
+                },
+            },
+        ];
+        return result;
+    }, [getIntlText, prefixTopic]);
+
+    return formItems;
+};
+
+export default useFormItems;

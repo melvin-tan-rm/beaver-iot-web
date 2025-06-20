@@ -15,7 +15,7 @@ import {
 import { usePermissionsError } from '@/hooks';
 import { genInteIconUrl } from '../../helper';
 import { type InteEntityType } from './hooks';
-import { AiContent, GeneralContent, MscContent, NSContent } from './components';
+import { AiContent, GeneralContent, MscContent, NSContent, MqttContent } from './components';
 
 import './style.less';
 
@@ -82,6 +82,9 @@ const IntegrationDetail = () => {
                         excludeServiceKeys={excludeServiceKeys}
                     />
                 );
+            }
+            case 'mqtt-device': {
+                return <MqttContent entities={entityList} onUpdateSuccess={refreshInteDetail} />;
             }
             default: {
                 return (

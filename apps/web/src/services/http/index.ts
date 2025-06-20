@@ -30,3 +30,12 @@ export {
     type CredentialAPISchema,
 } from './credentials';
 export { default as aiApi, type AiAPISchema } from './ai';
+export {
+    default as mqttApi,
+    type TemplateType,
+    type TemplateDetailType,
+    type TemplateProperty,
+    type EntitySchemaType,
+    type MqttBrokerInfoType,
+    type DataReportResult,
+} from './mqtt';

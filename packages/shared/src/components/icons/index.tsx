@@ -142,6 +142,9 @@ export {
     AddLink as AddLinkIcon,
     SaveAlt as SaveAltIcon,
     HelpOutline as HelpOutlineIcon,
+    PlayCircleOutline as PlayCircleOutlineIcon,
+    CloseFullscreen as CloseFullscreenIcon,
+    OpenInNewSharp as OpenInNewSharpIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';
