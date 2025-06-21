@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useRequest } from 'ahooks';
 import { Button, Stack } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -31,6 +32,7 @@ interface Props {
  */
 const DeviceTemplate: React.FC<Props> = ({ entities, brokerInfo, onUpdateSuccess }) => {
     const { getIntlText } = useI18n();
+    const navigate = useNavigate();
     const [addOpen, setAddOpen] = useState<boolean>(false);
     const [templateDetail, setTemplateDetail] = useState<
         ObjectToCamelCase<TemplateType | TemplateDetailType> | undefined
@@ -126,8 +128,10 @@ const DeviceTemplate: React.FC<Props> = ({ entities, brokerInfo, onUpdateSuccess
         setTestOpen(true);
     };
 
-    // quick search equipment with the same type of template
-    const handleSearchDevice = (template: TableRowDataType) => {};
+    // quick search device with the same type of template
+    const handleSearchDevice = (template: TableRowDataType) => {
+        navigate(`/device?template_key=${template.key}`);
+    };
 
     // ---------- Table rendering related to ----------
     const toolbarRender = useMemo(() => {
@@ -157,6 +161,10 @@ const DeviceTemplate: React.FC<Props> = ({ entities, brokerInfo, onUpdateSuccess
     const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useCallback(
         (type, record) => {
             switch (type) {
+                case 'count': {
+                    handleSearchDevice(record);
+                    break;
+                }
                 case 'edit': {
                     handleEditTemplate(record);
                     break;

@@ -51,16 +51,16 @@ const useFormItems = ({ simulatedDataLoading, genSimulatedData }: FormItemsType)
                                 <Box
                                     onClick={genSimulatedData}
                                     sx={{
-                                        color: 'var(--primary-color-7)',
-                                        '& .MuiSvgIcon-root': {
-                                            color: 'var(--primary-color-7)',
-                                        },
+                                        color: 'primary.main',
                                         fontSize: 14,
                                         cursor: 'pointer',
                                     }}
                                 >
                                     <IconButton>
-                                        <AutoAwesomeIcon sx={{ width: 16, height: 16 }} />
+                                        <AutoAwesomeIcon
+                                            color="primary"
+                                            sx={{ width: 16, height: 16 }}
+                                        />
                                     </IconButton>
                                     {getIntlText('setting.integration.gen_simulating_data')}
                                 </Box>

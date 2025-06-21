@@ -35,7 +35,7 @@ export const convertWithDecimal = (number: number, fractionDigits: number = 1): 
  * @param fractionDigits
  * @returns number
  */
-export const randomValueInRange = (min: number, max: number, fractionDigits?: number) => {
+export const randomValueInRange = (min: number, max: number, fractionDigits?: number): number => {
     if (fractionDigits) {
         return convertWithDecimal(Math.random() * (max - min) + min, fractionDigits);
     }
@@ -48,7 +48,7 @@ export const randomValueInRange = (min: number, max: number, fractionDigits?: nu
  * @param fractionDigits
  * @returns number
  */
-export const randomGreaterValue = (min: number, fractionDigits?: number) => {
+export const randomGreaterValue = (min: number, fractionDigits?: number): number => {
     if (fractionDigits) {
         return convertWithDecimal(Math.random() * 10 + min, fractionDigits);
     }

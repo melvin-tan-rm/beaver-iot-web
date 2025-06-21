@@ -35,7 +35,11 @@ export interface EntitySchemaObj {
 const useTemplateData = () => {
     const { validatorsMapper } = useValidate();
 
-    // convert entity schema list to object
+    /**
+     * Convert entity schema list to object
+     * @param entitySchema
+     * @returns EntitySchemaObj
+     */
     const convertEntitySchema2Obj = (
         entitySchema: ObjectToCamelCase<EntitySchemaType[]> | undefined,
     ): EntitySchemaObj => {
@@ -56,8 +60,13 @@ const useTemplateData = () => {
         );
     };
 
-    // collect input entity key map to entity entityMapping, eg: metrics.hum => metrics.temperature
-    // input json data verification will then the entitySchema rules can be associated
+    /**
+     * Collect input entity key map to entity entityMapping, eg: metrics.hum => metrics.temperature
+            input json data verification will then the entitySchema rules can be associated
+     * @param inputProperties 
+     * @param parentKey 
+     * @returns Record<string, TemplatePropertyType | undefined>
+     */
     const collectInputKeyMapping = (
         inputProperties: TemplatePropertyType[] | undefined,
         parentKey: string = '',
@@ -83,6 +92,12 @@ const useTemplateData = () => {
         );
     };
 
+    /**
+     * Convert entity schema list to object
+     * @param property
+     * @param entitySchema
+     * @returns any
+     */
     const randomValueByType = useMemoizedFn(
         (property: TemplatePropertyType, entitySchema: EntitySchemaValue | undefined): any => {
             const {
@@ -186,7 +201,12 @@ const useTemplateData = () => {
         },
     );
 
-    // random json by property and schema
+    /**
+     * Random json by property and schema
+     * @param inputProperties
+     * @param entitySchemaObj
+     * @returns Record<string, any>
+     */
     const randomJsonByProperties = (
         inputProperties: TemplatePropertyType[] | undefined,
         entitySchemaObj: EntitySchemaObj,
@@ -213,7 +233,11 @@ const useTemplateData = () => {
         );
     };
 
-    // random input json by inputSchema and entitySchema
+    /**
+     * Random input json by inputSchema and entitySchema
+     * @param template
+     * @returns  Record<string, any>
+     */
     const randomJsonByInputSchema = (
         template: ObjectToCamelCase<TemplateDetailType> | undefined,
     ): Record<string, any> => {
@@ -225,7 +249,12 @@ const useTemplateData = () => {
         return inputParams;
     };
 
-    // valid json format
+    /**
+     * Valid json format
+     * @param inputData
+     * @param templateDetail
+     * @returns string (errorMessage) | boolean
+     */
     const checkInputJsonFormat = (
         inputData: Record<string, any>,
         templateDetail: ObjectToCamelCase<TemplateDetailType> | undefined,
@@ -239,7 +268,13 @@ const useTemplateData = () => {
         );
     };
 
-    // transform InputData to flatten list
+    /**
+     * Transform InputData to flatten list
+     * @param inputData
+     * @param parentKey
+     * @param result
+     * @returns [string, any][]
+     */
     const transformInputDataToArray = (
         inputData: Record<string, any>,
         parentKey: string = '',
@@ -256,7 +291,13 @@ const useTemplateData = () => {
         return result;
     };
 
-    // check input value by entitySchema
+    /**
+     * Check input value by entitySchema
+     * @param inputEntity
+     * @param inputKeyMapping
+     * @param entitySchemaObj
+     * @returns string (errorMessage) | boolean
+     */
     const checkValueByEntitySchema = (
         inputEntity: [string, any][],
         inputKeyMapping: Record<string, TemplatePropertyType | undefined>,
@@ -278,7 +319,12 @@ const useTemplateData = () => {
         return errorMessage;
     };
 
-    // check input field required
+    /**
+     * Check input field required
+     * @param inputEntity
+     * @param inputKeyMapping
+     * @returns string (errorMessage) | boolean
+     */
     const checkRequiredByInputSchema = (
         inputEntity: [string, any][],
         inputKeyMapping: Record<string, TemplatePropertyType | undefined>,

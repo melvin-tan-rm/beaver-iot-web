@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Stack, IconButton } from '@mui/material';
+import { Stack, IconButton, Link } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import {
     DeleteOutlineIcon,
@@ -9,7 +9,7 @@ import {
 import { Tooltip, type ColumnType } from '@/components';
 import { MqttDeviceAPISchema } from '@/services/http/mqtt';
 
-type OperationType = 'edit' | 'test' | 'delete';
+type OperationType = 'edit' | 'test' | 'delete' | 'count';
 
 export type TableRowDataType = ObjectToCamelCase<
     MqttDeviceAPISchema['getList']['response']['content'][0]
@@ -49,8 +49,18 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 flex: 1,
                 minWidth: 100,
                 maxWidth: 160,
-                renderCell({ value }) {
-                    return String(value);
+                renderCell({ row, value }) {
+                    return (
+                        <Stack>
+                            <Link
+                                underline="hover"
+                                component="button"
+                                onClick={() => onButtonClick('count', row)}
+                            >
+                                {String(value)}
+                            </Link>
+                        </Stack>
+                    );
                 },
             },
             {

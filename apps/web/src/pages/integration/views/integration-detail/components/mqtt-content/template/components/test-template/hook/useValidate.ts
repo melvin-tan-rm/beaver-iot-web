@@ -63,6 +63,7 @@ export type RequiredValidatorFunction = (
     inputEntities: [string, any][],
 ) => string | boolean;
 
+/** Verify the relevant rules of the json input fields */
 const useValidate = () => {
     const { getIntlText } = useI18n();
 

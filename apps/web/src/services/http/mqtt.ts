@@ -1,7 +1,7 @@
 import { ENTITY_ACCESS_MODE, ENTITY_DATA_VALUE_TYPE, ENTITY_TYPE } from '@/constants';
 import { client, attachAPI, API_PREFIX } from './client';
 
-/** template detail */
+/** List template  */
 export interface TemplateType {
     id: string;
     key: string;
@@ -12,7 +12,7 @@ export interface TemplateType {
     created_at: string;
 }
 
-/** input | output property */
+/** Input | Output property */
 export interface TemplateProperty {
     key: string;
     type: 'string' | 'long' | 'double' | 'boolean';
@@ -22,7 +22,7 @@ export interface TemplateProperty {
     properties?: TemplateProperty[];
 }
 
-/** entity schema */
+/** Entity schema */
 export interface EntitySchemaType {
     device_key: string;
     name: string;
@@ -38,7 +38,7 @@ export interface EntitySchemaType {
     full_identifier: string;
 }
 
-/** input output schema */
+/** Template detail */
 export interface TemplateDetailType extends Omit<TemplateType, 'device_count'> {
     integration: string;
     input_schema: {
@@ -52,6 +52,7 @@ export interface TemplateDetailType extends Omit<TemplateType, 'device_count'> {
     entity_schema: EntitySchemaType[];
 }
 
+/** Mqtt broker info */
 export interface MqttBrokerInfoType {
     server: string;
     port: string;
@@ -60,12 +61,15 @@ export interface MqttBrokerInfoType {
     topic_prefix: string;
 }
 
+/** Data report result */
 export interface DataReportResult {
     entities: {
         entity_name: string;
         value: ApiKey;
     }[];
 }
+
+/** Mqtt device integration API */
 export interface MqttDeviceAPISchema extends APISchema {
     /** Get mqtt broker */
     getBrokerInfo: {
@@ -137,7 +141,7 @@ export interface MqttDeviceAPISchema extends APISchema {
 }
 
 /**
- * gateway related API services
+ *  Mqtt device integration related API services
  */
 export default attachAPI<MqttDeviceAPISchema>(client, {
     apis: {

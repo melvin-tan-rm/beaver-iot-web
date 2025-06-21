@@ -1,6 +1,13 @@
 import { useMemo } from 'react';
 import { type ControllerProps } from 'react-hook-form';
-import { Box, IconButton, TextField, TextFieldProps, InputAdornment, Tooltip } from '@mui/material';
+import {
+    IconButton,
+    TextField,
+    TextFieldProps,
+    InputAdornment,
+    Tooltip,
+    Link,
+} from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import {
     checkLettersAndNum,
@@ -25,7 +32,7 @@ const useFormItems = ({ prefixTopic }: { prefixTopic: string }) => {
             return 'https://www.milesight.com/beaver-iot/zh-Hans/docs/dev-guides/backend/advanced/entity-definition/#%E5%9F%BA%E4%BA%8Eyaml%E6%9E%84%E5%BB%BA';
         }
         return 'https://www.milesight.com/beaver-iot/docs/dev-guides/backend/advanced/entity-definition/#yaml-based-construction';
-    }, [getIntlText]);
+    }, [lang]);
 
     const handleClickLink = () => {
         window.open(yamlGuideLink);
@@ -121,22 +128,22 @@ const useFormItems = ({ prefixTopic }: { prefixTopic: string }) => {
                             error={error}
                             onChange={onChange}
                             rightSlot={
-                                <Box
+                                <Link
+                                    underline="hover"
+                                    component="button"
                                     onClick={handleClickLink}
                                     sx={{
-                                        color: 'var(--primary-color-7)',
-                                        '& .MuiSvgIcon-root': {
-                                            color: 'var(--primary-color-7)',
-                                        },
                                         fontSize: 14,
-                                        cursor: 'pointer',
                                     }}
                                 >
                                     {getIntlText('setting.integration.view_doc')}
                                     <IconButton>
-                                        <OpenInNewIcon sx={{ width: 16, height: 16 }} />
+                                        <OpenInNewIcon
+                                            color="primary"
+                                            sx={{ width: 16, height: 16 }}
+                                        />
                                     </IconButton>
-                                </Box>
+                                </Link>
                             }
                         />
                     );
