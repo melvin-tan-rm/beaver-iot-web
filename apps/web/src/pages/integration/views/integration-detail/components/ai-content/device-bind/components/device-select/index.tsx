@@ -4,8 +4,6 @@ import {
     Chip,
     TextField,
     Tooltip,
-    Popper,
-    type PopperProps,
     type AutocompleteProps,
     type AutocompleteValue,
     type ChipTypeMap,
@@ -14,7 +12,6 @@ import cls from 'classnames';
 import { useDebounceFn, useMemoizedFn } from 'ahooks';
 import { useI18n, useStoreShallow } from '@milesight/shared/src/hooks';
 import { KeyboardArrowDownIcon } from '@milesight/shared/src/components';
-import { type AiAPISchema } from '@/services/http';
 import List from './list';
 import useDeviceSelectStore from './store';
 import type { ValueType } from './typings';
@@ -29,7 +26,11 @@ type DeviceSelectProps<
 > = Omit<
     AutocompleteProps<Value, Multiple, DisableClearable, FreeSolo, ChipComponent>,
     'options' | 'renderInput'
->;
+> & {
+    label?: string;
+    required?: boolean;
+    popperWidth?: number;
+};
 
 /**
  * DeviceSelect Component
@@ -46,6 +47,9 @@ const DeviceSelect = <
     loadingText,
     noOptionsText,
     className,
+    label,
+    required,
+    popperWidth = 500,
     value,
     onChange,
     ...props
@@ -64,7 +68,6 @@ const DeviceSelect = <
     }, []);
 
     // ---------- Get search result ----------
-    const [searchKeyword, setSearchKeyword] = useState('');
     const [searchDevices, setSearchDevices] = useState<ValueType[] | null>();
     const { run: handleSearch } = useDebounceFn(
         async (keyword?: string | null) => {
@@ -99,7 +102,7 @@ const DeviceSelect = <
         >
     >(
         (_, value, reason) => {
-            console.log({ _, value, reason });
+            // console.log({ _, value, reason });
             setInputValue(value);
 
             switch (reason) {
@@ -122,7 +125,6 @@ const DeviceSelect = <
         (value: AutocompleteValue<Value, Multiple, DisableClearable, FreeSolo>) => {
             if (!multiple) {
                 setPopperOpen(false);
-                setSearchKeyword('');
             }
 
             onChange?.({} as React.SyntheticEvent, value, 'selectOption');
@@ -142,10 +144,14 @@ const DeviceSelect = <
                 InputProps={{
                     ...params.InputProps,
                     size,
+                    label,
+                    required,
                 }}
+                label={label}
+                required={required}
             />
         ),
-        [size],
+        [size, label, required],
     );
 
     /**
@@ -165,20 +171,15 @@ const DeviceSelect = <
         (value, getTagProps) => {
             if (!multiple) return;
 
-            // const valueList = value
-            //     .map(v => entityOptionMap.get(getOptionValue(v))!)
-            //     .filter(Boolean);
-            // return valueList.map((option, index) => {
-            //     const { key, ...tagProps } = getTagProps({ index });
+            return value.map(({ name, integration_name: integrationName }, index) => {
+                const { key, ...tagProps } = getTagProps({ index });
 
-            //     return (
-            //         <Tooltip key={key} title={option.description}>
-            //             <Chip label={option.label} {...tagProps} />
-            //         </Tooltip>
-            //     );
-            // });
-            console.log('render tag', { value });
-            return <>tag</>;
+                return (
+                    <Tooltip key={key} title={`${integrationName} / ${name}`}>
+                        <Chip label={name} {...tagProps} />
+                    </Tooltip>
+                );
+            });
         },
         [multiple],
     );
@@ -196,10 +197,14 @@ const DeviceSelect = <
                 ChipComponent
             >['getOptionLabel']
         >
-    >(option => {
-        if (typeof option === 'string') return option;
-        return option.name;
-    }, []);
+    >(
+        option => {
+            if (typeof option === 'string') return option;
+            const item = devices?.find(dev => dev.id === option.id);
+            return item?.name || option.name || '';
+        },
+        [devices],
+    );
 
     /**
      * Disable the built-in filtering
@@ -251,10 +256,10 @@ const DeviceSelect = <
             popper: {
                 className: 'ms-device-select-popper',
                 placement: 'bottom-start',
-                style: { width: 560 },
+                style: { width: popperWidth },
             },
         }),
-        [value, multiple, devices, searchDevices, handleChange],
+        [value, multiple, popperWidth, devices, searchDevices, handleChange],
     );
 
     return (

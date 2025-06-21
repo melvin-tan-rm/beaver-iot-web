@@ -1,13 +1,14 @@
 import { useMemo } from 'react';
 import { Stack, IconButton } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
-import { ListAltIcon, DeleteOutlineIcon } from '@milesight/shared/src/components';
+import { ListAltIcon, DeleteOutlineIcon, EventNoteIcon } from '@milesight/shared/src/components';
 import { Tooltip, type ColumnType } from '@/components';
+import { type AiAPISchema } from '@/services/http';
 import { ImagePreview, CodePreview } from './components';
 
-type OperationType = 'log' | 'delete';
+type OperationType = 'detail' | 'log' | 'delete';
 
-export type TableRowDataType = Record<string, any>;
+export type TableRowDataType = AiAPISchema['getBoundDevices']['response']['content'][0];
 
 export interface UseColumnsProps<T> {
     /**
@@ -23,59 +24,62 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
     const columns: ColumnType<T>[] = useMemo(() => {
         return [
             {
-                field: 'deviceId',
-                headerName: 'Device ID',
+                field: 'device_id',
+                headerName: getIntlText('device.label.param_device_id'),
                 minWidth: 160,
                 ellipsis: true,
             },
             {
-                field: 'deviceName',
-                headerName: 'Device Name',
+                field: 'device_name',
+                headerName: getIntlText('device.label.param_device_name'),
                 minWidth: 160,
                 ellipsis: true,
             },
             {
-                field: 'aiServiceName',
-                headerName: 'AI Service Name',
+                field: 'model_name',
+                headerName: getIntlText('setting.integration.ai_bind_label_ai_model_name'),
                 minWidth: 160,
                 ellipsis: true,
             },
             {
-                field: 'originalImageUrl',
-                headerName: 'Original Image',
+                field: 'origin_image',
+                headerName: getIntlText('setting.integration.ai_bind_label_origin_image'),
                 minWidth: 160,
                 cellClassName: 'd-flex align-items-center',
                 renderCell({ id, value }) {
+                    if (!value) return '-';
                     return <ImagePreview key={id} src={value} />;
                 },
             },
             {
-                field: 'resultImageUrl',
-                headerName: 'Result Image',
+                field: 'result_image',
+                headerName: getIntlText('setting.integration.ai_bind_label_result_image'),
                 minWidth: 160,
                 cellClassName: 'd-flex align-items-center',
                 renderCell({ id, value }) {
+                    if (!value) return '-';
                     return <ImagePreview key={id} src={value} />;
                 },
             },
             {
-                field: 'inferenceResult',
-                headerName: 'Inference Result',
+                field: 'infer_outputs_data',
+                headerName: getIntlText('setting.integration.ai_bind_label_infer_result'),
                 minWidth: 160,
                 cellClassName: 'd-flex align-items-center',
                 renderCell({ id, value }) {
+                    if (!value) return '-';
                     return <CodePreview key={id} content={value} />;
                 },
             },
             {
-                field: 'status',
-                headerName: 'Status',
+                field: 'infer_status',
+                headerName: getIntlText('setting.integration.ai_bind_label_infer_status'),
                 minWidth: 160,
                 ellipsis: true,
             },
             {
-                field: 'createdAt',
-                headerName: getIntlText('common.label.create_time'),
+                field: 'uplink_at',
+                headerName: getIntlText('setting.integration.ai_bind_label_device_uplink_time'),
                 flex: 1,
                 minWidth: 150,
                 ellipsis: true,
@@ -84,8 +88,8 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 },
             },
             {
-                field: 'inferenceAt',
-                headerName: 'Inference Time',
+                field: 'infer_at',
+                headerName: getIntlText('setting.integration.ai_bind_label_infer_time'),
                 ellipsis: true,
                 flex: 1,
                 minWidth: 150,
@@ -110,20 +114,25 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                             <Tooltip title={getIntlText('common.label.detail')}>
                                 <IconButton
                                     sx={{ width: 30, height: 30 }}
-                                    onClick={() => onButtonClick('log', row)}
+                                    onClick={() => onButtonClick('detail', row)}
                                 >
                                     <ListAltIcon sx={{ width: 20, height: 20 }} />
                                 </IconButton>
                             </Tooltip>
+                            <Tooltip title={getIntlText('common.label.log')}>
+                                <IconButton
+                                    sx={{ width: 30, height: 30 }}
+                                    onClick={() => onButtonClick('log', row)}
+                                >
+                                    <EventNoteIcon sx={{ width: 20, height: 20 }} />
+                                </IconButton>
+                            </Tooltip>
                             <Tooltip title={getIntlText('common.label.delete')}>
                                 <IconButton
-                                    // color="error"
-                                    disabled={!row.deletable}
                                     sx={{
                                         width: 30,
                                         height: 30,
                                         color: 'text.secondary',
-                                        // '&:hover': { color: 'error.light' },
                                     }}
                                     onClick={() => onButtonClick('delete', row)}
                                 >

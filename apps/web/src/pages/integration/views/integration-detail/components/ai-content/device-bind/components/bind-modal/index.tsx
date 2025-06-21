@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useRequest } from 'ahooks';
 import { Button } from '@mui/material';
+import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
 import { useI18n } from '@milesight/shared/src/hooks';
 import {
     Modal,
@@ -12,7 +13,7 @@ import {
 import { ImageAnnotation, ToggleRadio, Tooltip } from '@/components';
 import { aiApi, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import ResultSetting from '../result-setting';
-import DeviceSelect, { type ValueType as DeviceSelectValueType } from '../device-select';
+import useFormItems, { type FormDataProps } from './useFormItems';
 import './style.less';
 
 /**
@@ -41,6 +42,10 @@ const inferModeSettingOptions: {
 const BindModal: React.FC<ModalProps> = ({ onCancel, ...props }) => {
     const { getIntlText } = useI18n();
 
+    // ---------- Render Form Items ----------
+    const { deviceFormItems } = useFormItems();
+    const { control, formState, handleSubmit, reset } = useForm<FormDataProps>();
+
     // ---------- Inference Mode ----------
     const [inferMode, setInferMode] = useState<InferMode>('single');
     const inferModeOptions = useMemo(() => {
@@ -56,8 +61,6 @@ const BindModal: React.FC<ModalProps> = ({ onCancel, ...props }) => {
             value: item.value,
         }));
     }, [getIntlText]);
-
-    const [deviceValue, setDeviceValue] = useState<DeviceSelectValueType | string | null>(null);
 
     return (
         <Modal
@@ -89,11 +92,13 @@ const BindModal: React.FC<ModalProps> = ({ onCancel, ...props }) => {
                             {getIntlText('setting.integration.ai_bind_device_choose_device')}
                         </span>
                         <div className="device-form-root">
-                            <DeviceSelect
-                                value={deviceValue}
-                                onChange={(_, value) => setDeviceValue(value)}
-                            />
-                            {/* Device form items should be rendered here */}
+                            {deviceFormItems.map(props => (
+                                <Controller<FormDataProps>
+                                    {...props}
+                                    key={props.name}
+                                    control={control}
+                                />
+                            ))}
                         </div>
                     </div>
                     <div className="modal-infer-form-ai">

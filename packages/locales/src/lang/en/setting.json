@@ -137,5 +137,12 @@
     "setting.valid.regex": "{1} field value must conform to the regular expression {2}.",
     "setting.valid.len_range": "{1} field value length must be one of {2}.",
     "setting.valid.fraction_digits": "The length of fraction digits for the {1} field value should be {2}.",
-    "setting.valid.url_image": "{1} field value should be a valid image URL."
+    "setting.valid.url_image": "{1} field value should be a valid image URL.",
+    "setting.integration.ai_bind_label_ai_model_name": "AI Model Name",
+    "setting.integration.ai_bind_label_origin_image": "Original Image",
+    "setting.integration.ai_bind_label_result_image": "Result Image",
+    "setting.integration.ai_bind_label_infer_result": "Inference Result",
+    "setting.integration.ai_bind_label_infer_status": "Inference Status",
+    "setting.integration.ai_bind_label_device_uplink_time": "Device Uplink Time",
+    "setting.integration.ai_bind_label_infer_time": "Inference Time"
 }

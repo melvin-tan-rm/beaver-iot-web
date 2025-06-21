@@ -3,14 +3,21 @@ import { useRequest } from 'ahooks';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import { Modal, type ModalProps } from '@milesight/shared/src/components';
 import { TablePro, type ColumnType } from '@/components';
-import { aiApi, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
+import {
+    aiApi,
+    entityAPI,
+    awaitWrap,
+    isRequestSuccess,
+    getResponseData,
+    type AiAPISchema,
+} from '@/services/http';
 import CodePreview from '../code-preview';
 import ImagePreview from '../image-preview';
 import './style.less';
 
 interface Props extends ModalProps {
     /** Target device detail */
-    device?: Record<string, any> | null;
+    device?: AiAPISchema['getBoundDevices']['response']['content'][0] | null;
 }
 
 type TableRowDataType = Record<string, any>;
@@ -20,6 +27,7 @@ const LogModal: React.FC<Props> = ({ device, ...props }) => {
     const { getTimeFormat } = useTime();
 
     // ---------- Render Table ----------
+    const historyKey = device?.infer_history_key;
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const columns: ColumnType<TableRowDataType>[] = useMemo(
         () => [
@@ -86,8 +94,19 @@ const LogModal: React.FC<Props> = ({ device, ...props }) => {
         [getIntlText, getTimeFormat],
     );
 
-    const { loading, data: logList } = useRequest(
+    const {
+        loading,
+        run: getHistory,
+        data: logList,
+    } = useRequest(
         async () => {
+            if (!historyKey) return;
+            const [err, resp] = await awaitWrap(entityAPI.getHistory({ entity_id: historyKey }));
+
+            if (err || !isRequestSuccess(resp)) return;
+            const data = getResponseData(resp);
+
+            console.log({ data, resp });
             return [
                 {
                     id: '123',
@@ -105,6 +124,7 @@ const LogModal: React.FC<Props> = ({ device, ...props }) => {
         },
         {
             debounceWait: 300,
+            refreshDeps: [historyKey],
         },
     );
 

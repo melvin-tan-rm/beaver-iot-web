@@ -23,7 +23,7 @@ interface IProps {
 /**
  * device binding component
  */
-const DeviceBind: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
+const DeviceBind: React.FC<IProps> = ({ entities }) => {
     const { getIntlText } = useI18n();
     const navigate = useNavigate();
     const confirm = useConfirm();
@@ -62,7 +62,6 @@ const DeviceBind: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
 
     const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useCallback(
         (type, record) => {
-            // console.log(type, record);
             switch (type) {
                 case 'log': {
                     setLogDevice(record);
@@ -81,30 +80,26 @@ const DeviceBind: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
     const columns = useColumns<TableRowDataType>({ onButtonClick: handleTableBtnClick });
 
     // ---------- Get device list ----------
-    const { data: deviceList } = useRequest(
+    const {
+        loading,
+        run: getBoundDevices,
+        data: deviceData,
+    } = useRequest(
         async () => {
-            return [
-                {
-                    id: '123',
-                    deviceId: '123',
-                    deviceName: 'device1',
-                    aiServiceName: 'service1',
-                    originalImageUrl:
-                        'http://192.168.43.48:9000/beaver-iot-resource/beaver-iot-public/abc856a0-5d17-46e3-bdd3-26b3aa7ec343-20200108-213609-uqZwL.jpg',
-                    resultImageUrl:
-                        'http://192.168.43.48:9000/beaver-iot-resource/beaver-iot-public/abc856a0-5d17-46e3-bdd3-26b3aa7ec343-20200108-213609-uqZwL.jpg',
-                    inferenceResult: '1231',
-                    status: 'normal',
-                    createdAt: Date.now(),
-                    inferenceAt: Date.now(),
-                },
-            ];
-            // const [err, res] = await awaitWrap(aiApi.getDeviceList({ keyword }));
-            // if (err || !isRequestSuccess(res)) return;
-            // return getResponseData(res);
+            const { pageSize, page } = paginationModel;
+            const [err, resp] = await awaitWrap(
+                aiApi.getBoundDevices({
+                    name: keyword,
+                    page_size: pageSize,
+                    page_number: page + 1,
+                }),
+            );
+            if (err || !isRequestSuccess(resp)) return;
+            return getResponseData(resp);
         },
         {
             debounceWait: 300,
+            refreshDeps: [keyword, paginationModel],
         },
     );
 
@@ -112,24 +107,24 @@ const DeviceBind: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
         <div className="ms-view-ai-device-bind">
             <TablePro<TableRowDataType>
                 checkboxSelection
-                // loading={loading}
+                getRowId={record => record.device_id}
+                loading={loading}
                 columns={columns}
-                rows={deviceList || []}
-                rowCount={deviceList?.length || 0}
+                rows={deviceData?.content || []}
+                rowCount={deviceData?.total || 0}
                 paginationModel={paginationModel}
                 rowSelectionModel={selectedIds}
-                // isRowSelectable={({ row }) => row.deletable}
                 toolbarRender={toolbarRender}
                 onPaginationModelChange={setPaginationModel}
                 onRowSelectionModelChange={setSelectedIds}
-                onRowDoubleClick={({ row }) => {
-                    navigate(`/device/detail/${row.id}`, { state: row });
-                }}
+                // onRowDoubleClick={({ row }) => {
+                //     navigate(`/device/detail/${row.id}`, { state: row });
+                // }}
                 onSearch={value => {
                     setKeyword(value);
                     setPaginationModel(model => ({ ...model, page: 0 }));
                 }}
-                // onRefreshButtonClick={getDeviceList}
+                onRefreshButtonClick={getBoundDevices}
             />
             <LogModal
                 device={logDevice}

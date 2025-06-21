@@ -1,11 +1,12 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState } from 'react';
 import { Grid2, IconButton } from '@mui/material';
-import { cloneDeep } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { ChevronRightIcon, toast } from '@milesight/shared/src/components';
 import { useConfirm, Tooltip } from '@/components';
 import { aiApi, entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import { InteEntityType } from '../../../hooks';
+import { entitiesCompose } from '../helper';
+import { TEST_SERVICE_KEYWORD, REFRESH_SERVICE_KEYWORD } from '../constants';
 import TestModal from './test-modal';
 
 type InteServiceType = InteEntityType & {
@@ -26,63 +27,15 @@ interface Props {
 }
 
 /**
- * This keyword indicates that this service is used to refresh AI models
- */
-const REFRESH_SERVICE_KEYWORD = 'refresh_model';
-/**
- * This keyword indicates that this service is used to call AI models
- */
-const TEST_SERVICE_KEYWORD = 'model_';
-
-/**
  * ai model services component
  */
 const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSuccess }) => {
     const { getIntlText } = useI18n();
 
     // ---------- Render service list ----------
-    const serviceCompose = useCallback((entities?: InteEntityType[], excludeKeys?: ApiKey[]) => {
-        const services = entities?.filter(item => {
-            return (
-                item.type === 'SERVICE' &&
-                !excludeKeys?.some(key => `${item.key}`.includes(`${key}`))
-            );
-        });
-        const result: InteServiceType[] = cloneDeep(services || []);
-
-        // TODO: Multi-level (>2) service parameter processing
-        result?.forEach(item => {
-            if (!item.parent) return;
-
-            const service = result.find(it => it.key === item.parent);
-
-            if (!service) return;
-            service.children = service.children || [];
-            service.children.push(item);
-        });
-
-        /**
-         * If the sub entity is empty, and the entity value type is not BINARY, ENUM, or OBJECT,
-         * use the entity itself as the sub entity.
-         */
-        result.forEach(item => {
-            if (
-                item.parent ||
-                item.children?.length ||
-                (['BINARY', 'ENUM', 'OBJECT'] as EntityValueDataType[]).includes(item.valueType)
-            ) {
-                return;
-            }
-            item.children = item.children || [];
-            item.children.push(item);
-        });
-
-        return result.filter(item => !item.parent);
-    }, []);
-
     const serviceEntities = useMemo(
-        () => serviceCompose(entities, excludeKeys),
-        [entities, excludeKeys, serviceCompose],
+        () => entitiesCompose(entities, excludeKeys),
+        [entities, excludeKeys],
     );
 
     // ---------- Handle service calls ----------
@@ -125,7 +78,7 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
             if (error || !data || !isRequestSuccess(resp)) return;
 
             onUpdateSuccess?.((list, excludeKeys) => {
-                const services = serviceCompose(list, excludeKeys);
+                const services = entitiesCompose(list, excludeKeys);
                 const latestService = services?.find(it => it.key === service.key);
 
                 setTargetService(latestService || service);

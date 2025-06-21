@@ -34,9 +34,26 @@
 
             .modal-infer-form {
                 width: 30vw;
-                padding: @padding-lg @padding-md;
+                padding: @padding-lg 0;
                 overflow: auto;
                 background-color: var(--component-background);
+
+                .title {
+                    display: block;
+                    margin-bottom: @margin-md;
+                    font-weight: @font-weight-medium;
+                    .text-size(@font-size-base);
+                }
+
+                &-device {
+                    padding: 0 @padding-md @padding-md;
+                    border-bottom: 1px solid var(--border-color-base);
+                }
+
+                &-ai {
+                    padding: 0 @padding-md @padding-md;
+                    margin-top: @margin-lg;
+                }
             }
 
             .modal-infer-setting-root {

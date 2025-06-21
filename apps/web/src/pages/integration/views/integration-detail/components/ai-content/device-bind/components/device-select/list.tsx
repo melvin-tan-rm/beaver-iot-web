@@ -37,7 +37,7 @@ const List = forwardRef<HTMLDivElement, Props>(
             const result: NormalDataType[] = [];
 
             devices?.forEach(item => {
-                const integrationId = item.integration_id;
+                const integrationId = item.integration_id!;
                 if (!map.has(integrationId)) {
                     map.set(integrationId, []);
                 }
@@ -45,7 +45,7 @@ const List = forwardRef<HTMLDivElement, Props>(
             });
 
             map.forEach((devices, integrationId) => {
-                const integrationName = devices[0].integration_name;
+                const integrationName = devices[0].integration_name || '';
                 result.push({
                     integrationId,
                     integrationName,
@@ -82,7 +82,11 @@ const List = forwardRef<HTMLDivElement, Props>(
             const firstValue = !Array.isArray(value) ? value : value[0];
             const defaultRecord = !value
                 ? dataList[0]
-                : dataList.find(item => item.integrationId === firstValue?.integration_id);
+                : dataList.find(
+                      item =>
+                          item.integrationId === firstValue?.integration_id ||
+                          item.devices.find(it => it.id === firstValue?.id),
+                  );
 
             setTargetRecord(record => {
                 if (record) return record;
