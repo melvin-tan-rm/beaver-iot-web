@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useRequest } from 'ahooks';
+import { safeJsonParse } from '@milesight/shared/src/utils/tools';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import { Modal, type ModalProps } from '@milesight/shared/src/components';
 import { TablePro, type ColumnType } from '@/components';
@@ -10,6 +11,7 @@ import {
     isRequestSuccess,
     getResponseData,
     type AiAPISchema,
+    type EntityAPISchema,
 } from '@/services/http';
 import CodePreview from '../code-preview';
 import ImagePreview from '../image-preview';
@@ -20,35 +22,49 @@ interface Props extends ModalProps {
     device?: AiAPISchema['getBoundDevices']['response']['content'][0] | null;
 }
 
-type TableRowDataType = Record<string, any>;
+type LogDetailType = Pick<
+    AiAPISchema['getBoundDevices']['response']['content'][0],
+    | 'model_name'
+    | 'origin_image'
+    | 'result_image'
+    | 'infer_at'
+    | 'uplink_at'
+    | 'infer_status'
+    | 'infer_outputs_data'
+>;
+
+type TableRowDataType = LogDetailType;
+
+type HistoryItem = EntityAPISchema['getHistory']['response']['content'][0] & LogDetailType;
 
 const LogModal: React.FC<Props> = ({ device, ...props }) => {
     const { getIntlText } = useI18n();
     const { getTimeFormat } = useTime();
 
     // ---------- Render Table ----------
-    const historyKey = device?.infer_history_key;
+    const historyId = device?.infer_history_entity_id;
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const columns: ColumnType<TableRowDataType>[] = useMemo(
         () => [
             {
-                field: 'originalImageUrl',
-                headerName: 'Original Image',
+                field: 'origin_image',
+                headerName: getIntlText('setting.integration.ai_bind_label_origin_image'),
                 minWidth: 120,
                 cellClassName: 'd-flex align-items-center',
                 renderCell({ id, value }) {
+                    if (!value) return '-';
                     return <ImagePreview key={id} src={value} />;
                 },
             },
             {
-                field: 'modelName',
-                headerName: 'Model Name',
+                field: 'model_name',
+                headerName: getIntlText('setting.integration.ai_bind_label_ai_model_name'),
                 minWidth: 160,
                 ellipsis: true,
             },
             {
-                field: 'createdAt',
-                headerName: getIntlText('common.label.create_time'),
+                field: 'uplink_at',
+                headerName: getIntlText('setting.integration.ai_bind_label_device_uplink_time'),
                 flex: 1,
                 minWidth: 150,
                 ellipsis: true,
@@ -57,8 +73,8 @@ const LogModal: React.FC<Props> = ({ device, ...props }) => {
                 },
             },
             {
-                field: 'inferenceAt',
-                headerName: 'Inference Time',
+                field: 'infer_at',
+                headerName: getIntlText('setting.integration.ai_bind_label_infer_time'),
                 ellipsis: true,
                 flex: 1,
                 minWidth: 150,
@@ -67,26 +83,29 @@ const LogModal: React.FC<Props> = ({ device, ...props }) => {
                 },
             },
             {
-                field: 'resultImageUrl',
-                headerName: 'Result Image',
+                field: 'result_image',
+                headerName: getIntlText('setting.integration.ai_bind_label_result_image'),
                 minWidth: 120,
                 cellClassName: 'd-flex align-items-center',
                 renderCell({ id, value }) {
+                    if (!value) return '-';
                     return <ImagePreview key={id} src={value} />;
                 },
             },
             {
-                field: 'inferenceResult',
-                headerName: 'Inference Result',
+                field: 'infer_outputs_data',
+                headerName: getIntlText('setting.integration.ai_bind_label_infer_result'),
                 minWidth: 160,
                 cellClassName: 'd-flex align-items-center',
                 renderCell({ id, value }) {
-                    return <CodePreview key={id} content={value} />;
+                    if (!value) return '-';
+                    const content = JSON.stringify(safeJsonParse(value), null, 2);
+                    return <CodePreview key={id} content={content} />;
                 },
             },
             {
-                field: 'status',
-                headerName: 'Status',
+                field: 'infer_status',
+                headerName: getIntlText('setting.integration.ai_bind_label_infer_status'),
                 minWidth: 160,
                 ellipsis: true,
             },
@@ -97,34 +116,38 @@ const LogModal: React.FC<Props> = ({ device, ...props }) => {
     const {
         loading,
         run: getHistory,
-        data: logList,
+        data: logData,
     } = useRequest(
         async () => {
-            if (!historyKey) return;
-            const [err, resp] = await awaitWrap(entityAPI.getHistory({ entity_id: historyKey }));
+            if (!historyId) return;
+            const { page, pageSize } = paginationModel;
+            const [err, resp] = await awaitWrap(
+                entityAPI.getHistory({
+                    entity_id: historyId,
+                    page_size: pageSize,
+                    page_number: page + 1,
+                }),
+            );
 
             if (err || !isRequestSuccess(resp)) return;
             const data = getResponseData(resp);
+            const list: HistoryItem[] =
+                data?.content.map(item => {
+                    return {
+                        ...item,
+                        ...(safeJsonParse(item.value) as LogDetailType),
+                    };
+                }) || [];
 
-            console.log({ data, resp });
-            return [
-                {
-                    id: '123',
-                    modelName: 'Test Model 1',
-                    originalImageUrl:
-                        'http://192.168.43.48:9000/beaver-iot-resource/beaver-iot-public/abc856a0-5d17-46e3-bdd3-26b3aa7ec343-20200108-213609-uqZwL.jpg',
-                    resultImageUrl:
-                        'http://192.168.43.48:9000/beaver-iot-resource/beaver-iot-public/abc856a0-5d17-46e3-bdd3-26b3aa7ec343-20200108-213609-uqZwL.jpg',
-                    inferenceResult: '1231',
-                    status: 'normal',
-                    createdAt: Date.now(),
-                    inferenceAt: Date.now(),
-                },
-            ];
+            // console.log({ data, list, resp });
+            return {
+                total: data?.total,
+                content: list,
+            };
         },
         {
             debounceWait: 300,
-            refreshDeps: [historyKey],
+            refreshDeps: [historyId, paginationModel],
         },
     );
 
@@ -139,10 +162,11 @@ const LogModal: React.FC<Props> = ({ device, ...props }) => {
             <TablePro<TableRowDataType>
                 loading={loading}
                 columns={columns}
-                rows={logList || []}
-                rowCount={logList?.length || 0}
+                rows={logData?.content || []}
+                rowCount={logData?.total}
                 paginationModel={paginationModel}
                 onPaginationModelChange={setPaginationModel}
+                onRefreshButtonClick={getHistory}
             />
         </Modal>
     );

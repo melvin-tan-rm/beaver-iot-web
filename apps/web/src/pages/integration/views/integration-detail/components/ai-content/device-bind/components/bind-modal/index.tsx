@@ -11,10 +11,21 @@ import {
     type ModalProps,
 } from '@milesight/shared/src/components';
 import { ImageAnnotation, ToggleRadio, Tooltip } from '@/components';
-import { aiApi, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
+import {
+    aiApi,
+    awaitWrap,
+    isRequestSuccess,
+    getResponseData,
+    type AiAPISchema,
+} from '@/services/http';
 import ResultSetting from '../result-setting';
 import useFormItems, { type FormDataProps } from './useFormItems';
 import './style.less';
+
+interface Props extends ModalProps {
+    /** Target device detail */
+    device?: AiAPISchema['getBoundDevices']['response']['content'][0] | null;
+}
 
 /**
  * @param single Single-image inference
@@ -39,8 +50,26 @@ const inferModeSettingOptions: {
     },
 ];
 
-const BindModal: React.FC<ModalProps> = ({ onCancel, ...props }) => {
+const BindModal: React.FC<Props> = ({ device, onCancel, ...props }) => {
     const { getIntlText } = useI18n();
+    const readonly = !!device?.device_id;
+
+    // ---------- Get binding details ----------
+    const { run: getBindingDetails, data: bindingDetail } = useRequest(
+        async () => {
+            if (!device?.device_id) return;
+            const [err, resp] = await awaitWrap(aiApi.getBindingDetail({ id: device.device_id }));
+
+            if (err || !isRequestSuccess(resp)) return;
+            const data = getResponseData(resp);
+
+            console.log({ data, resp });
+            return data;
+        },
+        {
+            refreshDeps: [device?.device_id],
+        },
+    );
 
     // ---------- Render Form Items ----------
     const { deviceFormItems } = useFormItems();

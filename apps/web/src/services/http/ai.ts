@@ -98,7 +98,8 @@ export interface AiAPISchema extends APISchema {
                 uplink_at: number;
                 infer_at: number;
                 create_at: number;
-                infer_history_key: string;
+                infer_history_entity_id: ApiKey;
+                infer_history_entity_key: string;
             }[];
         };
     };

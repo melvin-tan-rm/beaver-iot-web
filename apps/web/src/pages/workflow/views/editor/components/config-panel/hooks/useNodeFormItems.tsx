@@ -82,7 +82,7 @@ const useNodeFormItems = ({ nodeId, nodeType, readonly }: Props) => {
     const formConfigs = useMemo(() => {
         if (!Object.keys(nodeConfigs).length) return {};
 
-        // console.log({ nodeConfigs });
+        console.log({ nodeConfigs });
         const result: Partial<Record<WorkflowNodeType, NodeFormGroupType[]>> = {};
         Object.entries(nodeConfigs).forEach(([_, nodeConfig]) => {
             const nodeType = nodeConfig.type;

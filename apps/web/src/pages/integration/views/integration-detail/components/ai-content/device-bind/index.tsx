@@ -34,6 +34,7 @@ const DeviceBind: React.FC<IProps> = ({ entities }) => {
     const [selectedIds, setSelectedIds] = useState<readonly ApiKey[]>([]);
     const [openBind, setOpenBind] = useState(false);
     const [logDevice, setLogDevice] = useState<TableRowDataType | null>(null);
+    const [detailDevice, setDetailDevice] = useState<TableRowDataType | null>(null);
     const toolbarRender = useMemo(() => {
         return (
             <Stack className="ms-operations-btns" direction="row" spacing="12px">
@@ -63,6 +64,11 @@ const DeviceBind: React.FC<IProps> = ({ entities }) => {
     const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useCallback(
         (type, record) => {
             switch (type) {
+                case 'detail': {
+                    setOpenBind(true);
+                    setDetailDevice(record);
+                    break;
+                }
                 case 'log': {
                     setLogDevice(record);
                     break;
@@ -131,7 +137,14 @@ const DeviceBind: React.FC<IProps> = ({ entities }) => {
                 visible={!!logDevice}
                 onCancel={() => setLogDevice(null)}
             />
-            <BindModal visible={openBind} onCancel={() => setOpenBind(false)} />
+            <BindModal
+                visible={openBind}
+                device={detailDevice}
+                onCancel={() => {
+                    setOpenBind(false);
+                    setDetailDevice(null);
+                }}
+            />
         </div>
     );
 };

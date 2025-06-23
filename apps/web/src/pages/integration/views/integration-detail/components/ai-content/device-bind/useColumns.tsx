@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Stack, IconButton } from '@mui/material';
+import { safeJsonParse } from '@milesight/shared/src/utils/tools';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import { ListAltIcon, DeleteOutlineIcon, EventNoteIcon } from '@milesight/shared/src/components';
 import { Tooltip, type ColumnType } from '@/components';
@@ -68,7 +69,8 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 cellClassName: 'd-flex align-items-center',
                 renderCell({ id, value }) {
                     if (!value) return '-';
-                    return <CodePreview key={id} content={value} />;
+                    const content = JSON.stringify(safeJsonParse(value), null, 2);
+                    return <CodePreview key={id} content={content} />;
                 },
             },
             {
