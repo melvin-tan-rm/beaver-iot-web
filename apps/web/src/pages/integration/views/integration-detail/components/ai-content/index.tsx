@@ -64,7 +64,13 @@ const AiContent: React.FC<IProps> = ({
             {
                 key: 'device',
                 label: getIntlText('setting.integration.device_bind'),
-                component: <DeviceBind entities={entities} onUpdateSuccess={onUpdateSuccess} />,
+                component: (
+                    <DeviceBind
+                        entities={entities}
+                        excludeKeys={excludeServiceKeys}
+                        onUpdateSuccess={onUpdateSuccess}
+                    />
+                ),
             },
         ];
     }, [getIntlText, entities, onUpdateSuccess, loading, excludeServiceKeys]);

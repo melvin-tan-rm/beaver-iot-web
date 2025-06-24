@@ -5,8 +5,8 @@ import { ChevronRightIcon, toast } from '@milesight/shared/src/components';
 import { useConfirm, Tooltip } from '@/components';
 import { aiApi, entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import { InteEntityType } from '../../../hooks';
-import { entitiesCompose } from '../helper';
-import { TEST_SERVICE_KEYWORD, REFRESH_SERVICE_KEYWORD } from '../constants';
+import { entitiesCompose, getModelId } from '../helper';
+import { AI_SERVICE_KEYWORD, REFRESH_SERVICE_KEYWORD } from '../constants';
 import TestModal from './test-modal';
 
 type InteServiceType = InteEntityType & {
@@ -62,11 +62,8 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
         }
 
         // Get AI model config and open test modal
-        if (`${service.key}`.includes(TEST_SERVICE_KEYWORD)) {
-            const modelId = `${service.key}`
-                .split('.')
-                .pop()
-                ?.replace(`${TEST_SERVICE_KEYWORD}`, '');
+        if (`${service.key}`.includes(AI_SERVICE_KEYWORD)) {
+            const modelId = getModelId(service.key);
             const [error, resp] = await awaitWrap(
                 aiApi.syncModelDetail({
                     model_id: modelId || '',

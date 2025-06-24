@@ -1,6 +1,22 @@
 import { client, attachAPI, API_PREFIX } from './client';
 
 export interface SyncModelDetailType {
+    input_entities: {
+        integration_id: ApiKey;
+        name: string;
+        identifier: ApiKey;
+        access_mod: EntityAccessMode;
+        value_type: EntityValueDataType;
+        type: EntityType;
+        attributes: Partial<EntityValueAttributeType>;
+        parent_identifier: ApiKey;
+        children: SyncModelDetailType['input_entities'][];
+        visible: boolean;
+        description: string;
+        key: ApiKey;
+        parent_key: ApiKey;
+        full_identifier: ApiKey;
+    }[];
     output: {
         name: string;
         type: string;

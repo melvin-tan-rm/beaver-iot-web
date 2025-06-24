@@ -112,6 +112,11 @@
                 justify-content: center;
                 height: 424px;
                 border-bottom: 1px solid var(--border-color-base);
+
+                > img {
+                    max-width: calc(100% - 40px);
+                    max-height: calc(100% - 40px);
+                }
             }
         }
 
@@ -133,9 +138,17 @@
             }
 
             &-body {
+                position: relative;
                 flex: 1;
                 padding: 0 @padding-md @padding-md;
                 overflow: auto;
+
+                .@{prefix}-empty {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                }
             }
         }
     }

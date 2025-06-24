@@ -3,6 +3,7 @@ export {
     default as useEntityFormItems,
     IMAGE_ENTITY_KEYWORD,
     type EntityFormDataProps,
+    type Props as UseEntityFormItemsProps,
 } from './useEntityFormItems';
 export { default as useUserPermissions } from './useUserPermissions';
 export { default as usePermissionsError } from './usePermissionsError';

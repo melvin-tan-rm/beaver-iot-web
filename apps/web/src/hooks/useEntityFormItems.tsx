@@ -30,7 +30,7 @@ import ImageInput from '@/components/image-input';
 import Tooltip from '@/components/tooltip';
 import { type IntegrationAPISchema } from '@/services/http';
 
-interface Props {
+export interface Props {
     entities?: ObjectToCamelCase<
         IntegrationAPISchema['getDetail']['response']['integration_entities']
     >;
@@ -360,6 +360,11 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
 
     return {
         formItems,
+
+        /**
+         * Encoded entity keys
+         */
+        encodedEntityKeys,
 
         /**
          * Decode the entity key

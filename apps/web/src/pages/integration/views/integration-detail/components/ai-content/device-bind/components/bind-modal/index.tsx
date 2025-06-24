@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useRequest } from 'ahooks';
 import { Button } from '@mui/material';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
@@ -8,9 +8,10 @@ import {
     ArrowBackIcon,
     AddIcon,
     InfoOutlinedIcon,
+    toast,
     type ModalProps,
 } from '@milesight/shared/src/components';
-import { ImageAnnotation, ToggleRadio, Tooltip } from '@/components';
+import { ImageAnnotation, ToggleRadio, Tooltip, Empty } from '@/components';
 import {
     aiApi,
     awaitWrap,
@@ -18,13 +19,30 @@ import {
     getResponseData,
     type AiAPISchema,
 } from '@/services/http';
-import ResultSetting from '../result-setting';
-import useFormItems, { type FormDataProps } from './useFormItems';
+import { type InteEntityType } from '../../../../../hooks';
+import ResultSetting, {
+    type Props as ResultSettingProps,
+    ResultSettingItem,
+} from '../result-setting';
+import { type ValueType as DeviceSelectValueType } from '../device-select';
+import { type ValueType as ImageEntitySelectValueType } from '../image-entity-select';
+import useFormItems, {
+    DEVICE_KEY,
+    IMAGE_ENTITY_KEY,
+    AI_MODEL_KEY,
+    type FormDataProps,
+} from './useFormItems';
 import './style.less';
 
 interface Props extends ModalProps {
     /** Target device detail */
     device?: AiAPISchema['getBoundDevices']['response']['content'][0] | null;
+
+    /** Entity list of current integration */
+    entities?: InteEntityType[];
+
+    /** Bind device success callback */
+    onSuccess?: () => void;
 }
 
 /**
@@ -50,7 +68,35 @@ const inferModeSettingOptions: {
     },
 ];
 
-const BindModal: React.FC<Props> = ({ device, onCancel, ...props }) => {
+const DEFAULT_RESULT_SETTINGS: ResultSettingItem[] = [
+    {
+        name: 'result_image',
+        entityName: 'result_image',
+        entityId: '',
+        entityValueType: 'STRING',
+    },
+    {
+        name: 'text',
+        entityName: 'text',
+        entityId: '',
+        entityValueType: 'STRING',
+    },
+    {
+        name: 'data',
+        entityName: 'data',
+        entityId: '',
+        entityValueType: 'STRING',
+    },
+];
+
+const BindModal: React.FC<Props> = ({
+    visible,
+    device,
+    entities,
+    onCancel,
+    onSuccess,
+    ...props
+}) => {
     const { getIntlText } = useI18n();
     const readonly = !!device?.device_id;
 
@@ -72,24 +118,86 @@ const BindModal: React.FC<Props> = ({ device, onCancel, ...props }) => {
     );
 
     // ---------- Render Form Items ----------
-    const { deviceFormItems } = useFormItems();
-    const { control, formState, handleSubmit, reset } = useForm<FormDataProps>();
+    const { control, handleSubmit, watch, reset } = useForm<FormDataProps>();
+    const selectedModelId = watch(AI_MODEL_KEY) as ApiKey | undefined | null;
+    const selectedDevice = watch(DEVICE_KEY) as DeviceSelectValueType | undefined | null;
+    const selectedImageEntity = watch(IMAGE_ENTITY_KEY) as
+        | ImageEntitySelectValueType
+        | undefined
+        | null;
+    const { aiFormItems, aiDynamicFormItems, deviceFormItems, decodeFormParams } = useFormItems({
+        entities,
+        modelId: selectedModelId,
+        device: selectedDevice,
+    });
+
+    const onSubmit: SubmitHandler<FormDataProps> = async params => {
+        const formParams = decodeFormParams(params);
+
+        if (
+            !formParams ||
+            !resultSetting?.length ||
+            resultSetting.some(item => item.params.some(it => !it.entityName))
+        ) {
+            console.warn(`params is empty, the origin params is ${JSON.stringify(params)}`);
+            return;
+        }
+        const inferOutputs = resultSetting[0].params.map(item => ({
+            field_name: item.name,
+            entity_name: item.entityName!,
+        }));
+
+        // console.log({ params, formParams, inferOutputs });
+        const [error, resp] = await awaitWrap(
+            aiApi.bindDevice({
+                ...formParams,
+                infer_outputs: inferOutputs,
+            } as AiAPISchema['bindDevice']['request']),
+        );
+
+        if (error || !isRequestSuccess(resp)) return;
+
+        onSuccess?.();
+        toast.success({ content: getIntlText('common.message.operation_success') });
+    };
 
     // ---------- Inference Mode ----------
-    const [inferMode, setInferMode] = useState<InferMode>('single');
-    const inferModeOptions = useMemo(() => {
-        return inferModeSettingOptions.map(item => ({
-            label: (
-                <>
-                    {getIntlText(item.labelIntlKey)}
-                    <Tooltip title={getIntlText(item.descIntlKey)}>
-                        <InfoOutlinedIcon />
-                    </Tooltip>
-                </>
-            ),
-            value: item.value,
+    // const [inferMode, setInferMode] = useState<InferMode>('single');
+    // const inferModeOptions = useMemo(() => {
+    //     return inferModeSettingOptions.map(item => ({
+    //         label: (
+    //             <>
+    //                 {getIntlText(item.labelIntlKey)}
+    //                 <Tooltip title={getIntlText(item.descIntlKey)}>
+    //                     <InfoOutlinedIcon />
+    //                 </Tooltip>
+    //             </>
+    //         ),
+    //         value: item.value,
+    //     }));
+    // }, [getIntlText]);
+
+    // ---------- Result Settings ----------
+    const [resultSetting, setResultSetting] = useState<ResultSettingProps['data'] | null>();
+
+    useEffect(() => {
+        if (!selectedModelId || !selectedDevice?.id || !selectedImageEntity?.id) {
+            setResultSetting(null);
+            return;
+        }
+        const params = DEFAULT_RESULT_SETTINGS.map(item => ({
+            ...item,
+            entityId: `${selectedDevice.integration_id}.device.${selectedDevice.id}.model_${selectedModelId}.${item.name}`,
         }));
-    }, [getIntlText]);
+
+        setResultSetting([{ params }]);
+    }, [selectedModelId, selectedDevice, selectedImageEntity]);
+
+    // ---------- Reset form data ----------
+    useEffect(() => {
+        if (visible) return;
+        reset();
+    }, [visible, reset]);
 
     return (
         <Modal
@@ -99,6 +207,7 @@ const BindModal: React.FC<Props> = ({ device, onCancel, ...props }) => {
             size="full"
             className="ms-com-device-bind-modal"
             title={getIntlText('setting.integration.ai_bind_device')}
+            visible={visible}
             onCancel={onCancel}
         >
             <div className="modal-header">
@@ -111,7 +220,9 @@ const BindModal: React.FC<Props> = ({ device, onCancel, ...props }) => {
                     </div>
                 </div>
                 <div className="modal-header-right">
-                    <Button variant="contained">{getIntlText('common.button.save')}</Button>
+                    <Button variant="contained" onClick={handleSubmit(onSubmit)}>
+                        {getIntlText('common.button.save')}
+                    </Button>
                 </div>
             </div>
             <div className="modal-content">
@@ -135,7 +246,20 @@ const BindModal: React.FC<Props> = ({ device, onCancel, ...props }) => {
                             {getIntlText('setting.integration.ai_bind_device_ai_settings')}
                         </span>
                         <div className="ai-form-root">
-                            {/* AI Setting form items should be rendered here */}
+                            {aiFormItems.map(props => (
+                                <Controller<FormDataProps>
+                                    {...props}
+                                    key={props.name}
+                                    control={control}
+                                />
+                            ))}
+                            {aiDynamicFormItems.map(props => (
+                                <Controller<FormDataProps>
+                                    {...props}
+                                    key={props.name}
+                                    control={control}
+                                />
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -145,7 +269,7 @@ const BindModal: React.FC<Props> = ({ device, onCancel, ...props }) => {
                             <span className="title">
                                 {getIntlText('setting.integration.ai_infer_mode_setting')}
                             </span>
-                            <ToggleRadio
+                            {/* <ToggleRadio
                                 size="small"
                                 value={inferMode}
                                 options={inferModeOptions}
@@ -157,15 +281,25 @@ const BindModal: React.FC<Props> = ({ device, onCancel, ...props }) => {
                                         {getIntlText('setting.integration.ai_infer_mode_add_area')}
                                     </Button>
                                 )}
-                            </div>
+                            </div> */}
                         </div>
                         <div className="modal-infer-mode-setting-body">
-                            <ImageAnnotation
-                                imgSrc="http://192.168.43.48:9000/beaver-iot-resource/beaver-iot-public/abc856a0-5d17-46e3-bdd3-26b3aa7ec343-20200108-213609-uqZwL.jpg"
+                            {!selectedImageEntity?.value ? (
+                                <Empty />
+                            ) : (
+                                <img
+                                    className="entity-image"
+                                    src={selectedImageEntity.value}
+                                    alt={selectedImageEntity.name}
+                                />
+                            )}
+                            {/* <ImageAnnotation
+                                // imgSrc="http://192.168.43.48:9000/beaver-iot-resource/beaver-iot-public/abc856a0-5d17-46e3-bdd3-26b3aa7ec343-20200108-213609-uqZwL.jpg"
+                                imgSrc={selectedImageEntity?.value}
                                 points={[]}
                                 containerWidth={800 - 32}
                                 containerHeight={424 - 32}
-                            />
+                            /> */}
                         </div>
                     </div>
                     <div className="modal-infer-result-setting">
@@ -175,34 +309,11 @@ const BindModal: React.FC<Props> = ({ device, onCancel, ...props }) => {
                             </span>
                         </div>
                         <div className="modal-infer-result-setting-body">
-                            <ResultSetting
-                                data={[
-                                    {
-                                        title: 'box1',
-                                        params: [
-                                            {
-                                                name: 'result_image',
-                                                entityName: 'result_image',
-                                                entityId: 'xxxxxxxxxx1',
-                                                entityValueType: 'STRING',
-                                            },
-                                            {
-                                                name: 'text',
-                                                entityName: 'text',
-                                                entityId: 'xxxxxxxxxx2',
-                                                entityValueType: 'STRING',
-                                            },
-                                            {
-                                                name: 'data',
-                                                entityName: 'data',
-                                                entityId: 'xxxxxxxxxx3',
-                                                entityValueType: 'STRING',
-                                            },
-                                        ],
-                                    },
-                                ]}
-                                onChange={() => {}}
-                            />
+                            {!resultSetting ? (
+                                <Empty />
+                            ) : (
+                                <ResultSetting data={resultSetting} onChange={setResultSetting} />
+                            )}
                         </div>
                     </div>
                 </div>

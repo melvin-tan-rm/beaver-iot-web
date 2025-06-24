@@ -1,12 +1,13 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Button, Stack } from '@mui/material';
 import { useRequest } from 'ahooks';
-import { useNavigate } from 'react-router-dom';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { AddIcon, DeleteOutlineIcon, toast, CodeIcon } from '@milesight/shared/src/components';
+import { AddIcon, DeleteOutlineIcon, toast } from '@milesight/shared/src/components';
 import { TablePro, useConfirm } from '@/components';
 import { aiApi, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import { InteEntityType } from '../../../hooks';
+import { entitiesCompose } from '../helper';
+import { AI_SERVICE_KEYWORD } from '../constants';
 import { LogModal, BindModal } from './components';
 import useColumns, { type UseColumnsProps, type TableRowDataType } from './useColumns';
 
@@ -16,6 +17,9 @@ interface IProps {
     /** Entity list */
     entities?: InteEntityType[];
 
+    /** Service Entity Key that the page does not render */
+    excludeKeys?: ApiKey[];
+
     /** Edit successful callback */
     onUpdateSuccess?: () => void;
 }
@@ -23,69 +27,12 @@ interface IProps {
 /**
  * device binding component
  */
-const DeviceBind: React.FC<IProps> = ({ entities }) => {
+const DeviceBind: React.FC<IProps> = ({ entities, excludeKeys }) => {
     const { getIntlText } = useI18n();
-    const navigate = useNavigate();
-    const confirm = useConfirm();
-
-    // ---------- Render table and handle actions ----------
-    const [keyword, setKeyword] = useState<string>();
-    const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
-    const [selectedIds, setSelectedIds] = useState<readonly ApiKey[]>([]);
-    const [openBind, setOpenBind] = useState(false);
-    const [logDevice, setLogDevice] = useState<TableRowDataType | null>(null);
-    const [detailDevice, setDetailDevice] = useState<TableRowDataType | null>(null);
-    const toolbarRender = useMemo(() => {
-        return (
-            <Stack className="ms-operations-btns" direction="row" spacing="12px">
-                <Button
-                    variant="contained"
-                    className="md:d-none"
-                    sx={{ height: 36, textTransform: 'none' }}
-                    startIcon={<AddIcon />}
-                    onClick={() => setOpenBind(true)}
-                >
-                    {getIntlText('setting.integration.ai_bind_device')}
-                </Button>
-                <Button
-                    variant="outlined"
-                    className="md:d-none"
-                    disabled={!selectedIds.length}
-                    sx={{ height: 36, textTransform: 'none' }}
-                    startIcon={<DeleteOutlineIcon />}
-                    // onClick={() => handleDeleteConfirm()}
-                >
-                    {getIntlText('common.label.delete')}
-                </Button>
-            </Stack>
-        );
-    }, [getIntlText, selectedIds]);
-
-    const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useCallback(
-        (type, record) => {
-            switch (type) {
-                case 'detail': {
-                    setOpenBind(true);
-                    setDetailDevice(record);
-                    break;
-                }
-                case 'log': {
-                    setLogDevice(record);
-                    break;
-                }
-                case 'delete': {
-                    break;
-                }
-                default: {
-                    break;
-                }
-            }
-        },
-        [],
-    );
-    const columns = useColumns<TableRowDataType>({ onButtonClick: handleTableBtnClick });
 
     // ---------- Get device list ----------
+    const [keyword, setKeyword] = useState<string>();
+    const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const {
         loading,
         run: getBoundDevices,
@@ -108,6 +55,100 @@ const DeviceBind: React.FC<IProps> = ({ entities }) => {
             refreshDeps: [keyword, paginationModel],
         },
     );
+
+    // ---------- Delete related ----------
+    const confirm = useConfirm();
+    const handleDeleteConfirm = useCallback(
+        (ids: ApiKey[] | readonly ApiKey[]) => {
+            confirm({
+                type: 'warning',
+                title: getIntlText('common.label.delete'),
+                description: getIntlText('device.message.delete_tip'),
+                confirmButtonText: getIntlText('common.label.delete'),
+                onConfirm: async () => {
+                    const [error, resp] = await awaitWrap(
+                        aiApi.unbindDevices({ device_ids: [...ids] }),
+                    );
+
+                    // console.log({ error, resp });
+                    if (error || !isRequestSuccess(resp)) return;
+
+                    getBoundDevices();
+                    setSelectedIds([]);
+                    toast.success(getIntlText('common.message.delete_success'));
+                },
+            });
+        },
+        [confirm, getIntlText, getBoundDevices],
+    );
+
+    // ---------- Render table and handle actions ----------
+    const [selectedIds, setSelectedIds] = useState<readonly ApiKey[]>([]);
+    const [openBind, setOpenBind] = useState(false);
+    const [logDevice, setLogDevice] = useState<TableRowDataType | null>(null);
+    const [detailDevice, setDetailDevice] = useState<TableRowDataType | null>(null);
+    const toolbarRender = useMemo(() => {
+        return (
+            <Stack className="ms-operations-btns" direction="row" spacing="12px">
+                <Button
+                    variant="contained"
+                    className="md:d-none"
+                    sx={{ height: 36, textTransform: 'none' }}
+                    startIcon={<AddIcon />}
+                    onClick={() => setOpenBind(true)}
+                >
+                    {getIntlText('setting.integration.ai_bind_device')}
+                </Button>
+                <Button
+                    variant="outlined"
+                    className="md:d-none"
+                    disabled={!selectedIds.length}
+                    sx={{ height: 36, textTransform: 'none' }}
+                    startIcon={<DeleteOutlineIcon />}
+                    onClick={() => {
+                        if (!selectedIds.length) return;
+                        handleDeleteConfirm(selectedIds);
+                    }}
+                >
+                    {getIntlText('common.label.delete')}
+                </Button>
+            </Stack>
+        );
+    }, [selectedIds, getIntlText, handleDeleteConfirm]);
+
+    const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useCallback(
+        (type, record) => {
+            switch (type) {
+                case 'detail': {
+                    setOpenBind(true);
+                    setDetailDevice(record);
+                    break;
+                }
+                case 'log': {
+                    setLogDevice(record);
+                    break;
+                }
+                case 'delete': {
+                    handleDeleteConfirm([record.device_id]);
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        },
+        [handleDeleteConfirm],
+    );
+    const columns = useColumns<TableRowDataType>({ onButtonClick: handleTableBtnClick });
+
+    // ---------- Compose AI Model list ----------
+    const aiModelEntities = useMemo(() => {
+        const result = entitiesCompose(entities, excludeKeys).filter(item =>
+            `${item.key}`.includes(AI_SERVICE_KEYWORD),
+        );
+
+        return result;
+    }, [entities, excludeKeys]);
 
     return (
         <div className="ms-view-ai-device-bind">
@@ -140,9 +181,14 @@ const DeviceBind: React.FC<IProps> = ({ entities }) => {
             <BindModal
                 visible={openBind}
                 device={detailDevice}
+                entities={aiModelEntities}
                 onCancel={() => {
                     setOpenBind(false);
                     setDetailDevice(null);
+                }}
+                onSuccess={() => {
+                    getBoundDevices();
+                    setOpenBind(false);
                 }}
             />
         </div>

@@ -5,4 +5,4 @@ export const REFRESH_SERVICE_KEYWORD = 'refresh_model';
 /**
  * This keyword indicates that this service is used to call AI models
  */
-export const TEST_SERVICE_KEYWORD = 'model_';
+export const AI_SERVICE_KEYWORD = 'model_';

@@ -1,5 +1,6 @@
 import { cloneDeep } from 'lodash-es';
 import { InteEntityType } from '../../hooks';
+import { AI_SERVICE_KEYWORD } from './constants';
 
 type InteServiceType = InteEntityType & {
     children?: InteServiceType[];
@@ -41,4 +42,11 @@ export const entitiesCompose = (entities?: InteEntityType[], excludeKeys?: ApiKe
     });
 
     return result.filter(item => !item.parent);
+};
+
+/**
+ * Get AI model ID form service entity key
+ */
+export const getModelId = (key: ApiKey) => {
+    return `${key}`.split('.').pop()?.replace(`${AI_SERVICE_KEYWORD}`, '');
 };

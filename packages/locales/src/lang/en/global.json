@@ -237,5 +237,6 @@
     "common.label.upload": "Upload",
     "common.placeholder.input_image_url": "Please enter image URL",
     "common.label.result": "Result",
-    "common.label.param_name": "Param Name"
+    "common.label.param_name": "Param Name",
+    "common.label.ai_model": "Model"
 }
