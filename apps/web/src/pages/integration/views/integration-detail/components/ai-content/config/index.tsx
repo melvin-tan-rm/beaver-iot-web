@@ -24,6 +24,7 @@ interface Props {
 const Config: React.FC<Props> = ({ entities, onUpdateSuccess }) => {
     const { getIntlText } = useI18n();
     const { getEntityKey, getEntityValues } = useEntity({ entities });
+
     // ---------- form related processing logic ----------
     const formItems = useFormItems();
     const { control, formState, handleSubmit, setValue } = useForm<FormDataProps>();

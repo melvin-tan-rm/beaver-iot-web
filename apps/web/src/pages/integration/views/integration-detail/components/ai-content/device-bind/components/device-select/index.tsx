@@ -30,6 +30,9 @@ type DeviceSelectProps<
     label?: string;
     required?: boolean;
     popperWidth?: number;
+    /** Whether the options is bound devices */
+    isBound?: boolean;
+    onReadyStateChange?: (isReady: boolean, options?: Value[]) => void;
 };
 
 /**
@@ -50,20 +53,33 @@ const DeviceSelect = <
     label,
     required,
     popperWidth = 500,
+    isBound,
     value,
     onChange,
+    onReadyStateChange,
     ...props
 }: DeviceSelectProps<Value, Multiple, DisableClearable, FreeSolo, ChipComponent>) => {
     const { getIntlText } = useI18n();
 
     // ---------- Get Device list ----------
-    const { devices, getDevices, refreshDevices } = useDeviceSelectStore(
-        useStoreShallow(['devices', 'getDevices', 'refreshDevices']),
+    const { devices, isDataReady, getDevices, refreshDevices } = useDeviceSelectStore(
+        useStoreShallow(['devices', 'isDataReady', 'getDevices', 'refreshDevices']),
     );
+
+    // Execute the onReadyStateChange callback when the data is ready
+    useEffect(() => {
+        if (!isDataReady) return;
+        // Execution on next tick
+        setTimeout(() => {
+            onReadyStateChange?.(true, devices as Value[]);
+        }, 0);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [devices, isDataReady]);
 
     // Only refresh when component mounted
     useEffect(() => {
-        refreshDevices();
+        onReadyStateChange?.(false);
+        refreshDevices(true);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -76,7 +92,7 @@ const DeviceSelect = <
                 return;
             }
 
-            const result = await getDevices({ name: keyword });
+            const result = await getDevices({ name: keyword, is_bound: false });
             setSearchDevices(result);
         },
         {
@@ -249,6 +265,7 @@ const DeviceSelect = <
                 multiple,
                 devices,
                 searchDevices,
+                isBound,
                 value,
                 onSelectedChange: handleChange,
                 component: List,
@@ -259,7 +276,7 @@ const DeviceSelect = <
                 style: { width: popperWidth },
             },
         }),
-        [value, multiple, popperWidth, devices, searchDevices, handleChange],
+        [value, multiple, popperWidth, isBound, devices, searchDevices, handleChange],
     );
 
     return (

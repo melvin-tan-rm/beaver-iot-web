@@ -1,6 +1,6 @@
 import React, { forwardRef, useMemo, useState, useEffect } from 'react';
 import cls from 'classnames';
-import { isUndefined } from 'lodash-es';
+import { isUndefined, isBoolean } from 'lodash-es';
 import { useDebounceFn } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { ArrowForwardIosIcon, CheckIcon } from '@milesight/shared/src/components';
@@ -14,6 +14,8 @@ interface Props {
     className?: string;
     /** All devices */
     devices?: ValueType[];
+    /** Whether filter the bound device */
+    isBound?: boolean;
     /** The devices that filtered by search keyword */
     searchDevices?: ValueType[];
     /** The value of the component */
@@ -29,7 +31,10 @@ type NormalDataType = {
 };
 
 const List = forwardRef<HTMLDivElement, Props>(
-    ({ multiple, className, devices, searchDevices, value, onSelectedChange, ...props }, ref) => {
+    (
+        { multiple, className, devices, isBound, searchDevices, value, onSelectedChange, ...props },
+        ref,
+    ) => {
         // console.log({ value, devices, searchDevices });
         const { getIntlText } = useI18n();
         const dataList = useMemo(() => {
@@ -38,6 +43,9 @@ const List = forwardRef<HTMLDivElement, Props>(
 
             devices?.forEach(item => {
                 const integrationId = item.integration_id!;
+                if (isBoolean(isBound) && isBoolean(item.bound) && item.bound !== isBound) {
+                    return;
+                }
                 if (!map.has(integrationId)) {
                     map.set(integrationId, []);
                 }
@@ -54,7 +62,7 @@ const List = forwardRef<HTMLDivElement, Props>(
             });
 
             return result;
-        }, [devices]);
+        }, [devices, isBound]);
 
         // ---------- Interactions ----------
         const [targetRecord, setTargetRecord] = useState<NormalDataType>();

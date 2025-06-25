@@ -81,8 +81,6 @@
     "setting.integration.webhook_url": "Webhook URL",
     "setting.integration.service_manage": "Service Management",
     "setting.integration.device_bind": "Device Bind",
-    "setting.integration.connected": "Connected",
-    "setting.integration.not_connected": "Not Connected",
     "setting.integration.ai_server_url": "Service IP address",
     "setting.integration.token": "Token",
     "setting.integration.ai_update_model": "Update Model Service",
@@ -144,5 +142,6 @@
     "setting.integration.ai_bind_label_infer_result": "Inference Result",
     "setting.integration.ai_bind_label_infer_status": "Inference Status",
     "setting.integration.ai_bind_label_device_uplink_time": "Device Uplink Time",
-    "setting.integration.ai_bind_label_infer_time": "Inference Time"
+    "setting.integration.ai_bind_label_infer_time": "Inference Time",
+    "setting.integration.ai_bind_detail": "Bind Detail"
 }

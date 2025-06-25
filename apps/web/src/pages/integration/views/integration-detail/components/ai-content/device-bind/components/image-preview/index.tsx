@@ -5,7 +5,8 @@ import './style.less';
 
 interface Props {
     /** Popover ID */
-    key: ApiKey;
+    id: ApiKey;
+
     /** Image URL */
     src: string;
 
@@ -30,14 +31,14 @@ const DEFAULT_PREVIEW_HEIGHT = 240;
  */
 const ImagePreview: React.FC<Props> = memo(
     ({
-        key,
+        id,
         src,
         width = DEFAULT_NORMAL_WIDTH,
         height = DEFAULT_NORMAL_HEIGHT,
         previewWidth = DEFAULT_PREVIEW_WIDTH,
         previewHeight = DEFAULT_PREVIEW_HEIGHT,
     }) => {
-        const popupState = usePopupState({ variant: 'popover', popupId: `${key}` });
+        const popupState = usePopupState({ variant: 'popover', popupId: `${id}` });
         const normalStyle = useMemo<React.CSSProperties>(
             () => ({
                 width,

@@ -9,16 +9,21 @@ import {
 } from '@/services/http';
 
 interface UseDeviceSelectStore {
+    /** Is init data ready */
+    isDataReady?: boolean;
+
     /**
      * Global devices
      */
     devices?: AiAPISchema['getDevices']['response']['content'] | null;
+
     /**
      * Get devices
      */
     getDevices: (
         params?: AiAPISchema['getDevices']['request'],
     ) => Promise<UseDeviceSelectStore['devices']>;
+
     /**
      * Refresh devices
      */
@@ -33,7 +38,9 @@ const useDeviceSelectStore = create<UseDeviceSelectStore>((set, get) => ({
         if (err || !isRequestSuccess(resp)) return null;
         const data = getResponseData(resp)?.content;
 
-        if (!isSearch) set({ devices: data });
+        if (!isSearch) {
+            set({ isDataReady: true, devices: data });
+        }
         return data;
     },
 

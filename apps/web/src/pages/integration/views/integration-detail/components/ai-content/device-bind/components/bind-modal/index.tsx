@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import cls from 'classnames';
 import { useRequest } from 'ahooks';
 import { Button } from '@mui/material';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
@@ -11,7 +12,7 @@ import {
     toast,
     type ModalProps,
 } from '@milesight/shared/src/components';
-import { ImageAnnotation, ToggleRadio, Tooltip, Empty } from '@/components';
+import { ImageAnnotation, ToggleRadio, Tooltip, Empty, useConfirm } from '@/components';
 import {
     aiApi,
     awaitWrap,
@@ -68,7 +69,7 @@ const inferModeSettingOptions: {
     },
 ];
 
-const DEFAULT_RESULT_SETTINGS: ResultSettingItem[] = [
+const DEFAULT_RESULT_SETTINGS_CONFIG: ResultSettingItem[] = [
     {
         name: 'result_image',
         entityName: 'result_image',
@@ -89,6 +90,20 @@ const DEFAULT_RESULT_SETTINGS: ResultSettingItem[] = [
     },
 ];
 
+const generateEntityId = ({
+    integrationId,
+    deviceId,
+    modelId,
+    name,
+}: {
+    integrationId: ApiKey;
+    deviceId: ApiKey;
+    modelId: ApiKey;
+    name: string;
+}) => {
+    return `${integrationId}.device.${deviceId}.model_${modelId}.${name}`;
+};
+
 const BindModal: React.FC<Props> = ({
     visible,
     device,
@@ -99,37 +114,52 @@ const BindModal: React.FC<Props> = ({
 }) => {
     const { getIntlText } = useI18n();
     const readonly = !!device?.device_id;
-
-    // ---------- Get binding details ----------
-    const { run: getBindingDetails, data: bindingDetail } = useRequest(
-        async () => {
-            if (!device?.device_id) return;
-            const [err, resp] = await awaitWrap(aiApi.getBindingDetail({ id: device.device_id }));
-
-            if (err || !isRequestSuccess(resp)) return;
-            const data = getResponseData(resp);
-
-            console.log({ data, resp });
-            return data;
-        },
-        {
-            refreshDeps: [device?.device_id],
-        },
-    );
+    const modalTitle = useMemo(() => {
+        if (!visible) return '';
+        if (readonly) {
+            return getIntlText('setting.integration.ai_bind_detail');
+        }
+        return getIntlText('setting.integration.ai_bind_device');
+    }, [visible, readonly, getIntlText]);
 
     // ---------- Render Form Items ----------
-    const { control, handleSubmit, watch, reset } = useForm<FormDataProps>();
+    const {
+        control,
+        formState: { isDirty },
+        handleSubmit,
+        watch,
+        reset,
+        setValue,
+    } = useForm<FormDataProps>();
     const selectedModelId = watch(AI_MODEL_KEY) as ApiKey | undefined | null;
     const selectedDevice = watch(DEVICE_KEY) as DeviceSelectValueType | undefined | null;
     const selectedImageEntity = watch(IMAGE_ENTITY_KEY) as
         | ImageEntitySelectValueType
         | undefined
         | null;
-    const { aiFormItems, aiDynamicFormItems, deviceFormItems, decodeFormParams } = useFormItems({
+    const {
+        aiFormItems,
+        aiDynamicFormItems,
+        isAiDynamicFormReady,
+        deviceFormItems,
+        isDeviceOptionsReady,
+        isImageOptionsReady,
+        dynamicEntityKeyMap,
+        decodeFormParams,
+    } = useFormItems({
+        visible,
+        readonly,
         entities,
         modelId: selectedModelId,
         device: selectedDevice,
     });
+    const resetForm = useCallback(() => {
+        reset({
+            [DEVICE_KEY]: null,
+            [IMAGE_ENTITY_KEY]: null,
+            [AI_MODEL_KEY]: '',
+        });
+    }, [reset]);
 
     const onSubmit: SubmitHandler<FormDataProps> = async params => {
         const formParams = decodeFormParams(params);
@@ -157,9 +187,35 @@ const BindModal: React.FC<Props> = ({
 
         if (error || !isRequestSuccess(resp)) return;
 
+        resetForm();
         onSuccess?.();
         toast.success({ content: getIntlText('common.message.operation_success') });
     };
+
+    // ---------- Prevent Leave ----------
+    const confirm = useConfirm();
+    const [isPreventLeave, setIsPreventLeave] = useState(false);
+    // Prevent leave if form is dirty
+    const handleBack = () => {
+        if (readonly || !isPreventLeave) {
+            onCancel?.();
+            return;
+        }
+
+        confirm({
+            type: 'info',
+            title: getIntlText('common.modal.title_leave_current_page'),
+            description: getIntlText('common.modal.desc_leave_current_page'),
+            confirmButtonText: getIntlText('common.button.confirm'),
+            onConfirm: () => {
+                onCancel?.();
+            },
+        });
+    };
+
+    useEffect(() => {
+        setIsPreventLeave(!!visible && isDirty);
+    }, [visible, isDirty]);
 
     // ---------- Inference Mode ----------
     // const [inferMode, setInferMode] = useState<InferMode>('single');
@@ -181,24 +237,113 @@ const BindModal: React.FC<Props> = ({
     const [resultSetting, setResultSetting] = useState<ResultSettingProps['data'] | null>();
 
     useEffect(() => {
-        if (!selectedModelId || !selectedDevice?.id || !selectedImageEntity?.id) {
+        if (readonly) return;
+        if (!selectedModelId || !selectedDevice?.id) {
             setResultSetting(null);
             return;
         }
-        const params = DEFAULT_RESULT_SETTINGS.map(item => ({
+        const params = DEFAULT_RESULT_SETTINGS_CONFIG.map(item => ({
             ...item,
-            entityId: `${selectedDevice.integration_id}.device.${selectedDevice.id}.model_${selectedModelId}.${item.name}`,
+            entityId: generateEntityId({
+                integrationId: selectedDevice.integration_id!,
+                deviceId: selectedDevice.id,
+                modelId: selectedModelId,
+                name: item.name,
+            }),
         }));
 
         setResultSetting([{ params }]);
-    }, [selectedModelId, selectedDevice, selectedImageEntity]);
+    }, [readonly, selectedModelId, selectedDevice]);
 
-    // ---------- Reset form data ----------
+    // ---------- Reset component data ----------
     useEffect(() => {
         if (visible) return;
-        reset();
-    }, [visible, reset]);
+        resetForm();
+        setIsPreventLeave(false);
+    }, [visible, resetForm]);
 
+    // ---------- Render binding details ----------
+    const { data: bindingDetail } = useRequest(
+        async () => {
+            if (!device?.device_id) return;
+            const [err, resp] = await awaitWrap(aiApi.getBindingDetail({ id: device.device_id }));
+
+            if (err || !isRequestSuccess(resp)) return;
+            const data = getResponseData(resp);
+
+            return data;
+        },
+        {
+            refreshDeps: [device?.device_id],
+        },
+    );
+
+    // Backfill the device and ai-model value
+    useEffect(() => {
+        const { model_id: modelId, integration_id: integrationId } = bindingDetail || {};
+        if (!device || !readonly || !bindingDetail || !isDeviceOptionsReady) return;
+
+        setValue(DEVICE_KEY, {
+            id: device.device_id,
+            integration_id: integrationId,
+        });
+        setValue(AI_MODEL_KEY, modelId);
+    }, [device, readonly, isDeviceOptionsReady, bindingDetail, setValue]);
+
+    // Backfill the image entity value
+    useEffect(() => {
+        const { image_entity_key: imageEntityKey, image_entity_value: imageEntityValue } =
+            bindingDetail || {};
+        if (!readonly || !isImageOptionsReady || !bindingDetail) return;
+
+        setValue(IMAGE_ENTITY_KEY, { key: imageEntityKey, value: imageEntityValue });
+    }, [readonly, isImageOptionsReady, bindingDetail, setValue]);
+
+    // Backfill the dynamic AI form data
+    useEffect(() => {
+        const inferInputs = bindingDetail?.infer_inputs;
+        if (!readonly || !isAiDynamicFormReady || !inferInputs) return;
+
+        Object.entries(inferInputs).forEach(([key, value]) => {
+            const fieldKey = dynamicEntityKeyMap[key] || key;
+            setValue(fieldKey, value);
+        });
+    }, [
+        readonly,
+        isAiDynamicFormReady,
+        dynamicEntityKeyMap,
+        bindingDetail?.infer_inputs,
+        setValue,
+    ]);
+
+    // Backfill the inference result setting
+    useEffect(() => {
+        if (!device || !readonly || !bindingDetail) return;
+        const {
+            model_id: modelId,
+            integration_id: integrationId,
+            infer_outputs: inferOutputs,
+        } = bindingDetail || {};
+        const params: ResultSettingItem[] = inferOutputs.map(item => {
+            const config = DEFAULT_RESULT_SETTINGS_CONFIG.find(v => v.name === item.field_name);
+            return {
+                entityValueType: 'STRING',
+                ...config,
+                name: item.field_name,
+                entityName: item.entity_name,
+                entityId: generateEntityId({
+                    modelId,
+                    deviceId: device.device_id,
+                    integrationId,
+                    name: item.field_name,
+                }),
+            };
+        });
+
+        setResultSetting([{ params }]);
+    }, [device, readonly, bindingDetail, setValue]);
+
+    console.log({ readonly }, getIntlText('setting.integration.ai_bind_detail'));
     return (
         <Modal
             {...props}
@@ -206,26 +351,26 @@ const BindModal: React.FC<Props> = ({
             disableEscapeKeyDown
             size="full"
             className="ms-com-device-bind-modal"
-            title={getIntlText('setting.integration.ai_bind_device')}
+            title={modalTitle}
             visible={visible}
             onCancel={onCancel}
         >
             <div className="modal-header">
                 <div className="modal-header-left">
-                    <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={onCancel}>
+                    <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={handleBack}>
                         {getIntlText('common.label.back')}
                     </Button>
-                    <div className="modal-header-title">
-                        {getIntlText('setting.integration.ai_bind_device')}
-                    </div>
+                    <div className="modal-header-title">{modalTitle}</div>
                 </div>
                 <div className="modal-header-right">
-                    <Button variant="contained" onClick={handleSubmit(onSubmit)}>
-                        {getIntlText('common.button.save')}
-                    </Button>
+                    {visible && !readonly && (
+                        <Button variant="contained" onClick={handleSubmit(onSubmit)}>
+                            {getIntlText('common.button.save')}
+                        </Button>
+                    )}
                 </div>
             </div>
-            <div className="modal-content">
+            <div className={cls('modal-content', { readonly })}>
                 <div className="modal-infer-form">
                     <div className="modal-infer-form-device">
                         <span className="title">
@@ -312,7 +457,13 @@ const BindModal: React.FC<Props> = ({
                             {!resultSetting ? (
                                 <Empty />
                             ) : (
-                                <ResultSetting data={resultSetting} onChange={setResultSetting} />
+                                <ResultSetting
+                                    data={resultSetting}
+                                    onChange={data => {
+                                        setResultSetting(data);
+                                        setIsPreventLeave(true);
+                                    }}
+                                />
                             )}
                         </div>
                     </div>

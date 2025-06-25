@@ -23,7 +23,7 @@ import ImagePreview from '../image-preview';
 import './style.less';
 
 export type ValueType = Partial<AiAPISchema['getDeviceImageEntities']['response']['content'][0]> & {
-    id: ApiKey;
+    key: string;
 };
 
 type ImageEntitySelectProps<
@@ -39,6 +39,7 @@ type ImageEntitySelectProps<
     label?: string;
     required?: boolean;
     deviceId?: ApiKey | null;
+    onReadyStateChange?: (isReady: boolean, options?: Value[]) => void;
 };
 
 /**
@@ -61,6 +62,7 @@ const ImageEntitySelect = <
     required,
     value,
     onChange,
+    onReadyStateChange,
     ...props
 }: ImageEntitySelectProps<Value, Multiple, DisableClearable, FreeSolo, ChipComponent>) => {
     const { getIntlText } = useI18n();
@@ -68,11 +70,20 @@ const ImageEntitySelect = <
     // ---------- Get image entities ----------
     const { loading, data: imageEntities } = useRequest(
         async () => {
-            if (!deviceId) return;
+            if (!deviceId) {
+                onReadyStateChange?.(false);
+                return;
+            }
             const [err, resp] = await awaitWrap(aiApi.getDeviceImageEntities({ id: deviceId }));
 
             if (err || !isRequestSuccess(resp)) return;
-            return getResponseData(resp)?.content;
+            const data = getResponseData(resp)?.content;
+
+            // Execute the onReadyStateChange callback on next tick
+            setTimeout(() => {
+                onReadyStateChange?.(true, data as Value[]);
+            }, 100);
+            return data;
         },
         {
             debounceWait: 300,
@@ -84,7 +95,7 @@ const ImageEntitySelect = <
     useEffect(() => {
         if (!value || typeof value === 'string') return;
         if (!Array.isArray(value)) {
-            const hasItem = !!imageEntities?.find(item => item.id === value?.id);
+            const hasItem = !!imageEntities?.find(item => item.key === value?.key);
             !hasItem &&
                 onChange?.(
                     {} as React.SyntheticEvent,
@@ -96,7 +107,7 @@ const ImageEntitySelect = <
 
         const everyIn = value.every(item => {
             if (typeof item === 'string') return true;
-            return !!imageEntities?.find(i => i.id === item.id);
+            return !!imageEntities?.find(i => i.key === item.key);
         });
 
         !everyIn &&
@@ -180,7 +191,7 @@ const ImageEntitySelect = <
                     {!option.value ? (
                         <BrokenImageIcon />
                     ) : (
-                        <ImagePreview key={option.id} src={option.value!} width="24" height="20" />
+                        <ImagePreview id={option.key} src={option.value!} width="24" height="20" />
                     )}
                 </div>
                 <div className="name">{option.name}</div>
@@ -204,7 +215,7 @@ const ImageEntitySelect = <
     >(
         option => {
             if (typeof option === 'string') return option;
-            const item = imageEntities?.find(entity => entity.id === option.id);
+            const item = imageEntities?.find(entity => entity.key === option.key);
             return item?.name || option.name || '';
         },
         [imageEntities],
@@ -224,7 +235,7 @@ const ImageEntitySelect = <
         if (typeof option === 'string' && typeof value === 'string') {
             return option === value;
         }
-        return option.id === value.id;
+        return option.key === value.key;
     }, []);
 
     /**

@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState, useEffect } from 'react';
 import { type ControllerProps } from 'react-hook-form';
 import { useRequest } from 'ahooks';
 import { FormControl, FormHelperText } from '@mui/material';
@@ -24,6 +24,12 @@ export type FormDataProps = Record<string, any>;
 type AiModelEntityType = InteEntityType & { children?: InteEntityType[] };
 
 type Props = {
+    /** Modal visible */
+    visible?: boolean;
+
+    /** Whether the form is read-only */
+    readonly?: boolean;
+
     entities?: AiModelEntityType[];
 
     device?: DeviceSelectValueType | null;
@@ -36,10 +42,13 @@ export const IMAGE_ENTITY_KEY = '$image_entity';
 export const AI_MODEL_KEY = 'model_id';
 export const AI_INFER_INPUTS_KEY = 'infer_inputs';
 
-const useFormItems = ({ entities, device, modelId }: Props) => {
+const useFormItems = ({ visible, readonly, entities, device, modelId }: Props) => {
     const { getIntlText } = useI18n();
 
+    // ---------- Generate device form items ----------
     const deviceId = device?.id;
+    const [isDeviceOptionsReady, setIsDeviceOptionsReady] = useState(false);
+    const [isImageOptionsReady, setIsImageOptionsReady] = useState(false);
     const deviceFormItems = useMemo(() => {
         const result: ControllerProps<FormDataProps>[] = [
             {
@@ -59,10 +68,12 @@ const useFormItems = ({ entities, device, modelId }: Props) => {
                         <FormControl fullWidth size="small" disabled={disabled} sx={{ mb: 1.5 }}>
                             <DeviceSelect
                                 required
+                                disabled={disabled}
                                 label={getIntlText('common.label.device')}
                                 value={innerValue}
                                 onChange={(_, val) => onChange(val)}
-                                disabled={disabled}
+                                isBound={!!readonly}
+                                onReadyStateChange={() => setIsDeviceOptionsReady(true)}
                             />
                             {error && (
                                 <FormHelperText error sx={{ mt: 0.5 }}>
@@ -85,7 +96,7 @@ const useFormItems = ({ entities, device, modelId }: Props) => {
                         ? null
                         : typeof value !== 'string'
                           ? value
-                          : { id: value };
+                          : { key: value };
 
                     return (
                         <FormControl fullWidth size="small" disabled={disabled} sx={{ mb: 1.5 }}>
@@ -95,6 +106,7 @@ const useFormItems = ({ entities, device, modelId }: Props) => {
                                 deviceId={deviceId}
                                 value={innerValue}
                                 onChange={(_, val) => onChange(val)}
+                                onReadyStateChange={isReady => setIsImageOptionsReady(isReady)}
                             />
                             {error && (
                                 <FormHelperText error sx={{ mt: 0.5 }}>
@@ -108,8 +120,9 @@ const useFormItems = ({ entities, device, modelId }: Props) => {
         ];
 
         return result;
-    }, [deviceId, getIntlText]);
+    }, [readonly, deviceId, getIntlText]);
 
+    // ---------- Generate common ai model form items ----------
     const aiFormItems = useMemo(() => {
         const result: ControllerProps<FormDataProps>[] = [
             {
@@ -133,7 +146,7 @@ const useFormItems = ({ entities, device, modelId }: Props) => {
                             error={error}
                             disabled={disabled}
                             options={options}
-                            value={value || null}
+                            value={value || ''}
                             onChange={e => {
                                 const { value } = e.target;
                                 onChange(value);
@@ -147,6 +160,8 @@ const useFormItems = ({ entities, device, modelId }: Props) => {
         return result;
     }, [entities, getIntlText]);
 
+    // ---------- Generate dynamic ai model form items ----------
+    const [isAiDynamicFormReady, setIsAiDynamicFormReady] = useState(false);
     const { data: dynamicFormEntities } = useRequest(
         async () => {
             if (!modelId) return;
@@ -154,7 +169,7 @@ const useFormItems = ({ entities, device, modelId }: Props) => {
 
             if (error || !isRequestSuccess(resp)) return;
             const data = getResponseData(resp);
-            const entities: UseEntityFormItemsProps['entities'] = data?.input_entities
+            const result: UseEntityFormItemsProps['entities'] = data?.input_entities
                 .map(item => ({
                     ...item,
                     id: item.identifier,
@@ -163,7 +178,8 @@ const useFormItems = ({ entities, device, modelId }: Props) => {
                 }))
                 .filter(v => !v.valueAttribute.format?.includes(IMAGE_ENTITY_KEYWORD));
 
-            return entities;
+            setIsAiDynamicFormReady(true);
+            return result;
         },
         {
             debounceWait: 300,
@@ -171,17 +187,28 @@ const useFormItems = ({ entities, device, modelId }: Props) => {
         },
     );
     const { formItems: aiDynamicFormItems, encodedEntityKeys } = useEntityFormItems({
+        isAllReadOnly: readonly,
         entities: dynamicFormEntities,
     });
+
+    // ---------- Decode form params ----------
+    const dynamicEntityKeyMap = useMemo(() => {
+        const map: Record<string, string> = {};
+        Object.keys(encodedEntityKeys).forEach(key => {
+            const fieldKey = key.split('.').pop() as string;
+            map[fieldKey] = encodedEntityKeys[key];
+        });
+        return map;
+    }, [encodedEntityKeys]);
 
     const decodeFormParams = useCallback(
         (data: FormDataProps) => {
             const result: Record<string, any> = {};
-            const entityMapList = Object.entries(encodedEntityKeys);
+            const entityMapList = Object.entries(dynamicEntityKeyMap);
 
             Object.keys(data).forEach(key => {
-                const index = entityMapList.findIndex(v => v[1] === key);
-                if (index < 0) {
+                const entityKeyPair = entityMapList.find(v => v[1] === key);
+                if (!entityKeyPair) {
                     switch (key) {
                         case DEVICE_KEY: {
                             result.id = data[key]?.id;
@@ -197,8 +224,7 @@ const useFormItems = ({ entities, device, modelId }: Props) => {
                         }
                     }
                 } else {
-                    const originKey = entityMapList[index][0];
-                    const fieldKey = originKey.split('.').pop() as string;
+                    const fieldKey = entityKeyPair[0];
 
                     if (!result[AI_INFER_INPUTS_KEY]) {
                         result[AI_INFER_INPUTS_KEY] = {};
@@ -209,10 +235,26 @@ const useFormItems = ({ entities, device, modelId }: Props) => {
 
             return result;
         },
-        [encodedEntityKeys],
+        [dynamicEntityKeyMap],
     );
 
-    return { aiFormItems, aiDynamicFormItems, deviceFormItems, decodeFormParams };
+    // Clear the state when modal close
+    useEffect(() => {
+        if (visible) return;
+        setIsImageOptionsReady(false);
+        setIsAiDynamicFormReady(false);
+    }, [visible]);
+
+    return {
+        aiFormItems,
+        aiDynamicFormItems,
+        isAiDynamicFormReady,
+        deviceFormItems,
+        isDeviceOptionsReady,
+        isImageOptionsReady,
+        dynamicEntityKeyMap,
+        decodeFormParams,
+    };
 };
 
 export default useFormItems;

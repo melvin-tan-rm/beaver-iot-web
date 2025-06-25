@@ -29,7 +29,7 @@ export {
     type CredentialType,
     type CredentialAPISchema,
 } from './credentials';
-export { default as aiApi, type AiAPISchema } from './ai';
+export { default as aiApi, type AiAPISchema, type InferStatus } from './ai';
 export {
     default as mqttApi,
     type TemplateType,

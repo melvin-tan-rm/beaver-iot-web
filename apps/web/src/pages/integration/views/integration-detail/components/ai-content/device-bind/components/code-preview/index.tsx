@@ -8,7 +8,7 @@ import './style.less';
 
 interface Props {
     /** Popover ID */
-    key: ApiKey;
+    id: ApiKey;
     /** Code content */
     content: string;
 }
@@ -16,9 +16,9 @@ interface Props {
 /**
  *  Code preview component
  */
-const CodePreview: React.FC<Props> = memo(({ key, content }) => {
+const CodePreview: React.FC<Props> = memo(({ id, content }) => {
     const { getIntlText } = useI18n();
-    const popupState = usePopupState({ variant: 'popover', popupId: `${key}` });
+    const popupState = usePopupState({ variant: 'popover', popupId: `${id}` });
 
     return (
         <>

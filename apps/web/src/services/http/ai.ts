@@ -25,6 +25,8 @@ export interface SyncModelDetailType {
     }[];
 }
 
+export type InferStatus = 'Ok' | 'Failed';
+
 /**
  * ai integration interface definition
  */
@@ -42,6 +44,9 @@ export interface AiAPISchema extends APISchema {
         request: void | {
             /** Search keyword */
             name?: string;
+
+            /** Whether to search for bound devices */
+            is_bound?: boolean;
         };
         response: {
             content: {
@@ -49,6 +54,7 @@ export interface AiAPISchema extends APISchema {
                 name: string;
                 integration_id: ApiKey;
                 integration_name: string;
+                bound: boolean;
             }[];
         };
     };
@@ -110,7 +116,7 @@ export interface AiAPISchema extends APISchema {
                 result_image: string;
                 /** JSON string */
                 infer_outputs_data: string;
-                infer_status: 'OK' | 'Failed';
+                infer_status: InferStatus;
                 uplink_at: number;
                 infer_at: number;
                 create_at: number;
@@ -125,7 +131,10 @@ export interface AiAPISchema extends APISchema {
         request: {
             id: ApiKey;
         };
-        response: Omit<AiAPISchema['bindDevice']['request'], 'id'>;
+        response: Omit<AiAPISchema['bindDevice']['request'], 'id'> & {
+            integration_id: ApiKey;
+            image_entity_value: string;
+        };
     };
 
     /** Unbind device */

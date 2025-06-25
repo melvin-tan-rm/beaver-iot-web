@@ -8,6 +8,9 @@ import Upload, { type FileValueType } from '../upload';
 import './style.less';
 
 interface Props {
+    /** is read only */
+    readOnly?: boolean;
+
     /** Text value */
     value?: string;
 
@@ -23,7 +26,7 @@ type DataType = 'file' | 'url';
  * @example
  * <ImageInput value={value} onChange={setValue} />
  */
-const ImageInput: React.FC<Props> = props => {
+const ImageInput: React.FC<Props> = ({ readOnly, ...props }) => {
     const { getIntlText } = useI18n();
     const [value, setValue] = useControllableValue(props);
     const [file, setFile] = useState<FileValueType | null>();
@@ -61,6 +64,11 @@ const ImageInput: React.FC<Props> = props => {
                         fullWidth
                         type="text"
                         autoComplete="off"
+                        slotProps={{
+                            input: {
+                                readOnly: !!readOnly,
+                            },
+                        }}
                         placeholder={getIntlText('common.placeholder.input_image_url')}
                         value={inputValue}
                         onChange={e => {
@@ -72,6 +80,7 @@ const ImageInput: React.FC<Props> = props => {
                 </div>
                 <div className={cls('ms-image-input-upload', { 'd-none': dataType !== 'file' })}>
                     <Upload
+                        disabled={!!readOnly}
                         value={file}
                         onChange={data => {
                             if (!data) {

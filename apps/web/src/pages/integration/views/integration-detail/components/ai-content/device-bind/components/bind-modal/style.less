@@ -63,6 +63,25 @@
                 background-color: var(--component-background-gray);
                 border-left: 1px solid var(--border-color-base);
             }
+
+            &.readonly {
+                .modal-infer-form,
+                .modal-infer-setting-root {
+                    .@{mui-prefix}FormLabel-root,
+                    .@{mui-prefix}FormControl-root {
+                        pointer-events: none;
+
+                        .@{prefix}-tooltip {
+                            pointer-events: auto;
+                        }
+
+                        .@{mui-prefix}OutlinedInput-notchedOutline {
+                            border-color: var(--border-color-base);
+                            box-shadow: none;
+                        }
+                    }
+                }
+            }
         }
 
         .modal-infer-mode-setting {

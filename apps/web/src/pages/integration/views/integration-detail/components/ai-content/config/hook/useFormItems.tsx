@@ -20,8 +20,8 @@ export enum AI_KEYS {
 type AiStatusType = 'true' | 'false';
 
 type AiStatusItemType = {
-    /** intl key */
-    intlKey: string;
+    /** label */
+    label: string;
     /** color */
     color: string;
 };
@@ -37,11 +37,11 @@ const useFormItems = () => {
     const aiStatusMap = useMemo<Record<AiStatusType, AiStatusItemType>>(
         () => ({
             true: {
-                intlKey: getIntlText('setting.integration.connected'),
+                label: getIntlText('common.label.connected'),
                 color: green[600],
             },
             false: {
-                intlKey: getIntlText('setting.integration.not_connected'),
+                label: getIntlText('common.label.not_connected'),
                 color: grey[600],
             },
         }),
@@ -88,7 +88,7 @@ const useFormItems = () => {
                                                     fontSize: 14,
                                                 }}
                                             >
-                                                {getIntlText(status.intlKey)}
+                                                {status.label}
                                             </Box>
                                         </InputAdornment>
                                     ),

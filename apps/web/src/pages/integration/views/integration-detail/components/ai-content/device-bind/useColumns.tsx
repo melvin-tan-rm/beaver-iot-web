@@ -5,7 +5,7 @@ import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import { ListAltIcon, DeleteOutlineIcon, EventNoteIcon } from '@milesight/shared/src/components';
 import { Tooltip, type ColumnType } from '@/components';
 import { type AiAPISchema } from '@/services/http';
-import { ImagePreview, CodePreview } from './components';
+import { ImagePreview, CodePreview, StatusTag } from './components';
 
 type OperationType = 'detail' | 'log' | 'delete';
 
@@ -49,7 +49,7 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 cellClassName: 'd-flex align-items-center',
                 renderCell({ id, value }) {
                     if (!value) return '-';
-                    return <ImagePreview key={id} src={value} />;
+                    return <ImagePreview id={id} src={value} />;
                 },
             },
             {
@@ -59,7 +59,7 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 cellClassName: 'd-flex align-items-center',
                 renderCell({ id, value }) {
                     if (!value) return '-';
-                    return <ImagePreview key={id} src={value} />;
+                    return <ImagePreview id={id} src={value} />;
                 },
             },
             {
@@ -70,14 +70,17 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 renderCell({ id, value }) {
                     if (!value) return '-';
                     const content = JSON.stringify(safeJsonParse(value), null, 2);
-                    return <CodePreview key={id} content={content} />;
+                    return <CodePreview id={id} content={content} />;
                 },
             },
             {
                 field: 'infer_status',
                 headerName: getIntlText('setting.integration.ai_bind_label_infer_status'),
                 minWidth: 160,
-                ellipsis: true,
+                renderCell({ row: { infer_status: status } }) {
+                    if (!status) return '-';
+                    return <StatusTag status={status} />;
+                },
             },
             {
                 field: 'uplink_at',

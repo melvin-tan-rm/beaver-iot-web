@@ -1,11 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useRequest } from 'ahooks';
 import { safeJsonParse } from '@milesight/shared/src/utils/tools';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import { Modal, type ModalProps } from '@milesight/shared/src/components';
 import { TablePro, type ColumnType } from '@/components';
 import {
-    aiApi,
     entityAPI,
     awaitWrap,
     isRequestSuccess,
@@ -13,6 +12,7 @@ import {
     type AiAPISchema,
     type EntityAPISchema,
 } from '@/services/http';
+import StatusTag from '../status-tag';
 import CodePreview from '../code-preview';
 import ImagePreview from '../image-preview';
 import './style.less';
@@ -37,7 +37,7 @@ type TableRowDataType = LogDetailType;
 
 type HistoryItem = EntityAPISchema['getHistory']['response']['content'][0] & LogDetailType;
 
-const LogModal: React.FC<Props> = ({ device, ...props }) => {
+const LogModal: React.FC<Props> = ({ visible, device, ...props }) => {
     const { getIntlText } = useI18n();
     const { getTimeFormat } = useTime();
 
@@ -53,7 +53,7 @@ const LogModal: React.FC<Props> = ({ device, ...props }) => {
                 cellClassName: 'd-flex align-items-center',
                 renderCell({ id, value }) {
                     if (!value) return '-';
-                    return <ImagePreview key={id} src={value} />;
+                    return <ImagePreview id={id} src={value} />;
                 },
             },
             {
@@ -89,7 +89,7 @@ const LogModal: React.FC<Props> = ({ device, ...props }) => {
                 cellClassName: 'd-flex align-items-center',
                 renderCell({ id, value }) {
                     if (!value) return '-';
-                    return <ImagePreview key={id} src={value} />;
+                    return <ImagePreview id={id} src={value} />;
                 },
             },
             {
@@ -100,14 +100,19 @@ const LogModal: React.FC<Props> = ({ device, ...props }) => {
                 renderCell({ id, value }) {
                     if (!value) return '-';
                     const content = JSON.stringify(safeJsonParse(value), null, 2);
-                    return <CodePreview key={id} content={content} />;
+                    return <CodePreview id={id} content={content} />;
                 },
             },
             {
                 field: 'infer_status',
                 headerName: getIntlText('setting.integration.ai_bind_label_infer_status'),
                 minWidth: 160,
-                ellipsis: true,
+                align: 'left',
+                headerAlign: 'left',
+                renderCell({ row: { infer_status: status } }) {
+                    if (!status) return '-';
+                    return <StatusTag status={status} />;
+                },
             },
         ],
         [getIntlText, getTimeFormat],
@@ -151,12 +156,22 @@ const LogModal: React.FC<Props> = ({ device, ...props }) => {
         },
     );
 
+    // Reset pagination model when modal close
+    useEffect(() => {
+        if (visible) return;
+        setPaginationModel({
+            page: 0,
+            pageSize: 10,
+        });
+    }, [visible]);
+
     return (
         <Modal
             {...props}
             showCloseIcon
             width="1200px"
             className="ms-com-log-modal"
+            visible={visible}
             title={getIntlText('common.label.log')}
         >
             <TablePro<TableRowDataType>

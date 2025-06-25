@@ -40,6 +40,11 @@ export interface Props {
      * @deprecated
      */
     isAllRequired?: boolean;
+
+    /**
+     * Whether all is read-only
+     */
+    isAllReadOnly?: boolean;
 }
 
 /**
@@ -120,7 +125,7 @@ const getValidators = (entity: NonNullable<Props['entities']>[0], required = fal
 /**
  * Entity dynamic form entry
  */
-const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
+const useEntityFormItems = ({ entities, isAllReadOnly, isAllRequired = false }: Props) => {
     /**
      * Entity Key & Form Key mapping table
      * { [entityKey]: [formKey] }
@@ -210,6 +215,11 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                     fullWidth
                                     type="text"
                                     sx={{ my: 1.5 }}
+                                    slotProps={{
+                                        input: {
+                                            readOnly: !!isAllReadOnly,
+                                        },
+                                    }}
                                     required={!attr.optional}
                                     disabled={disabled}
                                     label={renderLabel(entity.name, entity.description)}
@@ -256,6 +266,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                                 InputProps={{
                                                     ...params.InputProps,
                                                     size: 'medium',
+                                                    readOnly: !!isAllReadOnly,
                                                 }}
                                             />
                                         )}
@@ -280,7 +291,11 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                 <InputLabel>
                                     {renderLabel(entity.name, entity.description)}
                                 </InputLabel>
-                                <ImageInput value={value} onChange={onChange} />
+                                <ImageInput
+                                    readOnly={!!isAllReadOnly}
+                                    value={value}
+                                    onChange={onChange}
+                                />
                                 {error && (
                                     <FormHelperText error sx={{ mt: 1 }}>
                                         {error.message}
@@ -312,7 +327,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                         required={!attr.optional}
                                         checked={!!value}
                                         onChange={onChange}
-                                        control={<Switch size="small" />}
+                                        control={<Switch size="small" readOnly={!!isAllReadOnly} />}
                                         sx={{ fontSize: '12px' }}
                                     />
                                     {!!error && (
@@ -336,6 +351,11 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
                                     multiline
                                     type="text"
                                     rows={4}
+                                    slotProps={{
+                                        input: {
+                                            readOnly: !!isAllReadOnly,
+                                        },
+                                    }}
                                     required={!attr.optional}
                                     disabled={disabled}
                                     label={renderLabel(entity.name, entity.description)}
@@ -356,7 +376,7 @@ const useEntityFormItems = ({ entities, isAllRequired = false }: Props) => {
         });
 
         return result;
-    }, [entities, encodedEntityKeys]);
+    }, [entities, isAllReadOnly, encodedEntityKeys]);
 
     return {
         formItems,
