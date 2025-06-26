@@ -8,6 +8,7 @@ import {
     EntityFilledIcon,
     WorkflowIcon,
     SettingsIcon,
+    SellIcon,
 } from '@milesight/shared/src/components';
 import { PERMISSIONS } from '@/constants';
 import ErrorBoundaryComponent from './error-boundary';
@@ -197,6 +198,20 @@ const routes: RouteObjectType[] = [
                 ErrorBoundary,
             },
         ],
+    },
+    {
+        path: '/tag',
+        handle: {
+            get title() {
+                return intl.get('tag.title.tag_management');
+            },
+            icon: <SellIcon fontSize="small" />,
+        },
+        async lazy() {
+            const { default: Component } = await import('@/pages/tag-management');
+            return { Component };
+        },
+        ErrorBoundary,
     },
     {
         path: '/user-role',

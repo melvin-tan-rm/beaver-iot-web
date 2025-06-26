@@ -139,6 +139,7 @@ export {
     // ImageOutlined as ImageOutlinedIcon,
     StarOutline as StarOutlinedIcon,
     Star as StarIcon,
+    Sell as SellIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';
