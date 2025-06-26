@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { useControllableValue } from 'ahooks';
 import Konva from 'konva';
 import { Tag, Text, Label } from 'react-konva';
 import { Html } from 'react-konva-utils';
 import type { Vector2d } from 'konva/lib/types';
-import { useControllableValue } from 'ahooks';
+import type { ShapeConfig } from 'konva/lib/Shape';
 import { yellow, white, black } from '@milesight/shared/src/services/theme';
 
 interface Props {
@@ -29,7 +30,7 @@ interface Props {
     fontSize?: number;
 
     /** Background */
-    backgroundColor?: string;
+    backgroundColor?: ShapeConfig['stroke'];
 
     /** Content change Callback */
     onChange?: (content: string) => void;

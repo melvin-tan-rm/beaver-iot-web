@@ -5,7 +5,7 @@ import { ChevronRightIcon, toast } from '@milesight/shared/src/components';
 import { useConfirm, Tooltip } from '@/components';
 import { aiApi, entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import { InteEntityType } from '../../../hooks';
-import { entitiesCompose, getModelId } from '../helper';
+import { entitiesCompose, getModelId, transModelInputs2Entities } from '../helper';
 import { AI_SERVICE_KEYWORD, REFRESH_SERVICE_KEYWORD } from '../constants';
 import TestModal from './test-modal';
 
@@ -71,15 +71,15 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
             );
             const data = getResponseData(resp);
 
-            // console.log({ service, data });
             if (error || !data || !isRequestSuccess(resp)) return;
+            const formEntities = transModelInputs2Entities(data.input_entities);
+            const record = {
+                ...service,
+                children: formEntities.length ? formEntities : service.children,
+            };
 
-            onUpdateSuccess?.((list, excludeKeys) => {
-                const services = entitiesCompose(list, excludeKeys);
-                const latestService = services?.find(it => it.key === service.key);
-
-                setTargetService(latestService || service);
-            });
+            // onUpdateSuccess?.();
+            setTargetService(record);
             return;
         }
 

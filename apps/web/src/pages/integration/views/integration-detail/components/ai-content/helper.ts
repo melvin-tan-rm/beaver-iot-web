@@ -1,11 +1,16 @@
 import { cloneDeep } from 'lodash-es';
-import { InteEntityType } from '../../hooks';
+import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
+import { type AiAPISchema } from '@/services/http';
+import { type InteEntityType } from '../../hooks';
 import { AI_SERVICE_KEYWORD } from './constants';
 
 type InteServiceType = InteEntityType & {
     children?: InteServiceType[];
 };
 
+/**
+ * Parent child entity nesting processing
+ */
 export const entitiesCompose = (entities?: InteEntityType[], excludeKeys?: ApiKey[]) => {
     const services = entities?.filter(item => {
         return (
@@ -49,4 +54,35 @@ export const entitiesCompose = (entities?: InteEntityType[], excludeKeys?: ApiKe
  */
 export const getModelId = (key: ApiKey) => {
     return `${key}`.split('.').pop()?.replace(`${AI_SERVICE_KEYWORD}`, '');
+};
+
+/**
+ * Transform AI model inputs to entity form items
+ */
+export const transModelInputs2Entities = (
+    inputs?: AiAPISchema['syncModelDetail']['response']['input_entities'],
+) => {
+    const result: InteEntityType[] = [];
+
+    inputs?.forEach(item => {
+        const valueAttribute = objectToCamelCase(item.attributes);
+
+        if (item.attributes?.enum) {
+            valueAttribute.enum = item.attributes.enum;
+        }
+
+        result.push({
+            id: item.full_identifier,
+            key: item.key,
+            parent: item.parent_key,
+            name: item.name,
+            description: item.description,
+            type: item.type,
+            valueType: item.value_type,
+            accessMod: item.access_mod,
+            valueAttribute,
+        });
+    });
+
+    return result;
 };

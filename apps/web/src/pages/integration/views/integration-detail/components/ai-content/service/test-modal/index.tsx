@@ -16,6 +16,7 @@ import {
     ToggleRadio,
     ImageAnnotation,
     CodeEditor,
+    type Vector2d,
     type PointType,
 } from '@/components';
 import { useEntityFormItems, IMAGE_ENTITY_KEYWORD, type EntityFormDataProps } from '@/hooks';
@@ -33,40 +34,35 @@ interface Props extends Omit<ModalProps, 'onOk'> {
 
 type ResultType = 'image' | 'json';
 
-type BoxCoordinate = [number, number, number, number];
+type InferCoordinate = [number, number, number, number];
 
 type InferenceResponse = {
     outputs: {
         data: {
             /* Image file name */
             file_name: string;
-            /**
-             * The rectangular result obtained by inference
-             */
-            box: {
+            detections: {
+                /** Identify label */
+                cls: string;
+                /** Confidence level */
+                conf: number;
                 /**
-                 * Absolute coordinates [x_min, y_min, x_max, y_max]
+                 * Rectangle coordinate [x_min, y_min, width, height]
                  */
-                xyxy: BoxCoordinate;
+                box?: InferCoordinate;
                 /**
-                 * Absolute coordinates [x_min, y_min, width, height]
+                 * Polygon coordinate [x, y][]
                  */
-                xywh: BoxCoordinate;
+                masks?: [number, number][];
                 /**
-                 * Normalized coordinates [x_min, y_min, x_max, y_max]
+                 * Points of skeleton [x, y, pointId, conf][]
                  */
-                xyxyn: BoxCoordinate;
+                points?: InferCoordinate[];
                 /**
-                 * Normalized coordinates [x_min, y_min, width, height]
+                 * Skeleton structure [startPointId, endPointId][]
                  */
-                xywhn: BoxCoordinate;
-            };
-            /** Identify label */
-            cls: string;
-            /** Confidence level */
-            conf: number;
-            /** Split Mask List */
-            seg?: number[][];
+                skeleton?: [number, number][];
+            }[];
         }[];
     };
 };
@@ -162,20 +158,60 @@ const TestModal: React.FC<Props> = ({ modelName, entities, visible, onCancel, ..
         }
         const result: PointType[] = [];
 
-        output.forEach(({ box, cls }) => {
-            const [xMin, yMin, width, height] = box.xywh;
+        output.forEach(({ detections }) => {
+            detections.forEach(({ cls, conf, box, masks, points, skeleton }) => {
+                const data: PointType = {
+                    label: cls,
+                    confidence: conf,
+                    value: [],
+                };
 
-            result.push({
-                label: cls,
-                value: [
-                    { x: xMin, y: yMin },
-                    { x: xMin + width, y: yMin },
-                    { x: xMin + width, y: yMin + height },
-                    { x: xMin, y: yMin + height },
-                ],
+                if (masks?.length) {
+                    const polygon = masks.map(([x, y]) => ({ x, y }));
+                    data.polygon = polygon;
+                }
+
+                if (points?.length && skeleton?.length) {
+                    const pointsMap = points.reduce(
+                        (acc, [x, y, id]) => {
+                            acc[id] = { x, y };
+                            return acc;
+                        },
+                        {} as Record<string, Vector2d>,
+                    );
+                    const lines = skeleton.reduce((acc, [startId, endId]) => {
+                        const item = acc.find(it => it[it.length - 1] === startId);
+
+                        if (item) {
+                            item.push(endId);
+                        } else {
+                            acc.push([startId, endId]);
+                        }
+                        return acc;
+                    }, [] as number[][]);
+
+                    data.skeleton = lines.map(line => {
+                        return line.map(id => pointsMap[id]);
+                    });
+                }
+
+                if (box?.length) {
+                    const [xMin, yMin, width, height] = box;
+                    const points = [
+                        { x: xMin, y: yMin },
+                        { x: xMin + width, y: yMin },
+                        { x: xMin + width, y: yMin + height },
+                        { x: xMin, y: yMin + height },
+                    ];
+                    data.rect = points;
+                    data.value = points;
+                }
+
+                result.push(data);
             });
         });
 
+        // console.log({ result });
         setPoints(result);
     }, [output]);
 
@@ -187,6 +223,7 @@ const TestModal: React.FC<Props> = ({ modelName, entities, visible, onCancel, ..
         setResultType(DEFAULT_RESULT_TYPE);
     }, [visible]);
 
+    // http://192.168.43.48:9000/beaver-iot-resource/beaver-iot-public/9e52c430-dfc9-4c78-8b5a-71cd83f5fe8f-somebody.jpeg
     // http://192.168.43.48:9000/beaver-iot-resource/beaver-iot-public/abc856a0-5d17-46e3-bdd3-26b3aa7ec343-20200108-213609-uqZwL.jpg
     return (
         <Modal

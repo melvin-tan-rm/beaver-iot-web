@@ -1,18 +1,52 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useMemoizedFn } from 'ahooks';
-import { isNil, cloneDeep } from 'lodash-es';
-import { Stage, Layer, Image, Line, Transformer } from 'react-konva';
+import { isNil, cloneDeep, flatten, uniqWith, isEqual } from 'lodash-es';
+import { Stage, Layer, Image, Line, Circle, Group, Transformer } from 'react-konva';
 import { yellow, white, black } from '@milesight/shared/src/services/theme';
 import type { Vector2d } from 'konva/lib/types';
+import type { ShapeConfig } from 'konva/lib/Shape';
 import EditableText from './editable-text';
+import {
+    defaultRectConfig,
+    defaultPolygonConfig,
+    defaultSkeletonAnchorConfig,
+    defaultSkeletonLineConfig,
+} from './config';
 import './style.less';
+
+type ShapeType = 'rect' | 'polygon' | 'line' | 'circle' | 'text';
 
 /**
  * Points data type
  */
 export type PointType = {
+    /**
+     * Label
+     */
     label?: string;
-    value: Vector2d[];
+    /**
+     * Confidence Level
+     */
+    confidence?: number;
+    /**
+     * Points value
+     * @deprecated
+     */
+    value?: Vector2d[];
+    /**
+     * Rectangle
+     *
+     * Attention: Currently only rectangles are editable
+     */
+    rect?: Vector2d[];
+    /**
+     * Polygon
+     */
+    polygon?: Vector2d[];
+    /**
+     * Skeleton
+     */
+    skeleton?: Vector2d[][];
 };
 
 type ImageSize = {
@@ -35,14 +69,33 @@ interface PolygonAnnotationProps {
     containerWidth?: number;
     /** Container height */
     containerHeight?: number;
+
+    /**
+     * Rectangle config
+     */
+    rectConfig?: Partial<ShapeConfig>;
+    /**
+     * Polygon config
+     */
+    polygonConfig?: Partial<ShapeConfig>;
+    /**
+     * Skeleton config
+     */
+    skeletonConfig?: {
+        line?: Partial<ShapeConfig>;
+        circle?: Partial<ShapeConfig>;
+    };
+
     /** Image loaded callback */
     onImageLoaded?: (imgSize: ImageSize) => void;
     /** Points change callback */
     onPointsChange?: (newPoints: PointType[]) => void;
 }
 
-const POLYGON_NAME_PREFIX = 'ms-polygon';
-const getPolygonId = (index: number) => `${POLYGON_NAME_PREFIX}-${index}`;
+const SHAPE_NAME_PREFIX = 'ms-shape';
+const getPolygonId = (type: ShapeType | 'shape', index: number) => {
+    return `${SHAPE_NAME_PREFIX}-${type}-${index}`;
+};
 
 /**
  * Image Annotation
@@ -50,6 +103,9 @@ const getPolygonId = (index: number) => `${POLYGON_NAME_PREFIX}-${index}`;
 const ImageAnnotation = ({
     imgSrc,
     points = [],
+    rectConfig,
+    polygonConfig,
+    skeletonConfig,
     strokeColor = yellow[600],
     anchorFillColor = white,
     containerWidth,
@@ -116,7 +172,9 @@ const ImageAnnotation = ({
     useEffect(() => {
         if (selectedId === null || !transformerRef.current) return;
 
-        const node = transformerRef.current?.getStage()?.findOne(`.${getPolygonId(selectedId)}`);
+        const node = transformerRef.current
+            ?.getStage()
+            ?.findOne(`.${getPolygonId('rect', selectedId)}`);
         if (node) {
             transformerRef.current.nodes([node]);
             transformerRef.current.getLayer().batchDraw();
@@ -124,15 +182,23 @@ const ImageAnnotation = ({
     }, [selectedId]);
 
     // Calculate the coordinates of the top left corner of the polygon
-    const getPolygonTopLeft = (polygonPoints: Vector2d[]) => {
-        return polygonPoints.reduce(
-            (acc, point) => ({
-                x: Math.min(acc.x, point.x),
-                y: Math.min(acc.y, point.y),
-            }),
-            { x: Infinity, y: Infinity },
-        );
-    };
+    const getPolygonTopLeft = useCallback(
+        (points: Vector2d[]) => {
+            const point = points.reduce(
+                (acc, point) => ({
+                    x: Math.min(acc.x, point.x),
+                    y: Math.min(acc.y, point.y),
+                }),
+                { x: Infinity, y: Infinity },
+            );
+
+            return {
+                x: point.x - 1 / scale,
+                y: point.y - 16 / scale - 7 / scale,
+            };
+        },
+        [scale],
+    );
 
     // Update position
     const handlePositionChange = useMemoizedFn((index: number, newPoints: Vector2d[]) => {
@@ -140,7 +206,7 @@ const ImageAnnotation = ({
 
         result.splice(index, 1, {
             label: result[index].label,
-            value: newPoints,
+            rect: newPoints,
         });
         onPointsChange?.(result);
     });
@@ -154,76 +220,147 @@ const ImageAnnotation = ({
             onClick={e => {
                 const name = e.target.name();
 
-                if (name?.includes(POLYGON_NAME_PREFIX)) return;
+                if (name?.includes(SHAPE_NAME_PREFIX)) return;
                 setSelectedId(null);
             }}
         >
             <Layer scaleX={scale} scaleY={scale}>
                 <Image image={image} width={imgSize.naturalWidth} height={imgSize.naturalHeight} />
 
-                {points.map(({ label, value: polygonPoints }, index) => {
-                    const topLeft = getPolygonTopLeft(polygonPoints);
-                    const innerLabel = label || (!editable ? '' : `#${index + 1}`);
+                {points.map(({ label, confidence, rect, polygon, skeleton }, index) => {
+                    const innerLabel = !editable
+                        ? `${label}${confidence ? ` (${confidence.toFixed(2)})` : ''}`
+                        : label || `#${index + 1}}`;
+                    const anchorPoints = !skeleton?.length
+                        ? []
+                        : uniqWith(flatten(skeleton), isEqual);
 
                     return (
-                        <React.Fragment key={getPolygonId(index)}>
-                            <Line
-                                closed
-                                name={getPolygonId(index)}
-                                points={polygonPoints.flatMap(p => [p.x, p.y])}
-                                stroke={colors[index]}
-                                strokeWidth={2}
-                                strokeScaleEnabled={false}
-                                draggable={editable}
-                                onDragMove={() => setEditingId(index)}
-                                onDragEnd={e => {
-                                    const absPos = e.target.getAbsolutePosition();
-                                    const newPoints = polygonPoints.map(p => ({
-                                        x: p.x + absPos.x / scale,
-                                        y: p.y + absPos.y / scale,
-                                    }));
+                        <React.Fragment key={getPolygonId('shape', index)}>
+                            {rect?.length && (
+                                <Group>
+                                    <Line
+                                        {...defaultRectConfig}
+                                        {...rectConfig}
+                                        closed
+                                        name={getPolygonId('rect', index)}
+                                        points={rect.flatMap(p => [p.x, p.y])}
+                                        strokeScaleEnabled={false}
+                                        draggable={editable}
+                                        onDragMove={() => setEditingId(index)}
+                                        onDragEnd={e => {
+                                            const absPos = e.target.getAbsolutePosition();
+                                            const newPoints = rect.map(p => ({
+                                                x: p.x + absPos.x / scale,
+                                                y: p.y + absPos.y / scale,
+                                            }));
 
-                                    setEditingId(null);
-                                    handlePositionChange(index, newPoints);
-                                    e.target.position({ x: 0, y: 0 });
-                                }}
-                                onTransformStart={() => setEditingId(index)}
-                                onTransformEnd={e => {
-                                    const node = e.target;
-                                    const newPoints = polygonPoints.map((p, i) => ({
-                                        x: p.x * node.scaleX() + node.x(),
-                                        y: p.y * node.scaleY() + node.y(),
-                                    }));
+                                            setEditingId(null);
+                                            handlePositionChange(index, newPoints);
+                                            e.target.position({ x: 0, y: 0 });
+                                        }}
+                                        onTransformStart={() => setEditingId(index)}
+                                        onTransformEnd={e => {
+                                            const node = e.target;
+                                            const newPoints = rect.map((p, i) => ({
+                                                x: p.x * node.scaleX() + node.x(),
+                                                y: p.y * node.scaleY() + node.y(),
+                                            }));
 
-                                    // console.log({
-                                    //     e,
-                                    //     x: node.x(),
-                                    //     y: node.y(),
-                                    //     scaleX: node.scaleX(),
-                                    //     scaleY: node.scaleY(),
-                                    //     newPoints,
-                                    // });
-                                    setEditingId(null);
-                                    handlePositionChange(index, newPoints);
-                                    node.scaleX(1);
-                                    node.scaleY(1);
-                                    node.position({ x: 0, y: 0 });
-                                }}
-                                onClick={() => setSelectedId(index)}
-                            />
+                                            // console.log({
+                                            //     e,
+                                            //     x: node.x(),
+                                            //     y: node.y(),
+                                            //     scaleX: node.scaleX(),
+                                            //     scaleY: node.scaleY(),
+                                            //     newPoints,
+                                            // });
+                                            setEditingId(null);
+                                            handlePositionChange(index, newPoints);
+                                            node.scaleX(1);
+                                            node.scaleY(1);
+                                            node.position({ x: 0, y: 0 });
+                                        }}
+                                        onClick={() => setSelectedId(index)}
+                                    />
 
-                            <EditableText
-                                visible={editingId !== index}
-                                value={innerLabel}
-                                position={{
-                                    x: topLeft.x - 1 / scale,
-                                    y: topLeft.y - 16 / scale - 7 / scale,
-                                }}
-                                scale={scale}
-                                color={black}
-                                backgroundColor={colors[index]}
-                                padding={4 / scale}
-                            />
+                                    <EditableText
+                                        visible={editingId !== index}
+                                        value={innerLabel}
+                                        position={getPolygonTopLeft(rect)}
+                                        scale={scale}
+                                        color={black}
+                                        backgroundColor={
+                                            rectConfig?.stroke || defaultRectConfig.stroke
+                                        }
+                                        padding={4 / scale}
+                                    />
+                                </Group>
+                            )}
+
+                            {!!polygon?.length && (
+                                <Group>
+                                    <Line
+                                        {...defaultPolygonConfig}
+                                        {...polygonConfig}
+                                        closed
+                                        name={getPolygonId('polygon', index)}
+                                        points={polygon.flatMap(p => [p.x, p.y])}
+                                        stroke={colors[index]}
+                                        strokeWidth={1}
+                                        strokeScaleEnabled={false}
+                                    />
+
+                                    <EditableText
+                                        visible={editingId !== index}
+                                        value={innerLabel}
+                                        position={getPolygonTopLeft(polygon)}
+                                        scale={scale}
+                                        color={black}
+                                        backgroundColor={
+                                            polygonConfig?.stroke || defaultPolygonConfig.stroke
+                                        }
+                                        padding={4 / scale}
+                                    />
+                                </Group>
+                            )}
+
+                            {!!skeleton?.length && (
+                                <Group>
+                                    {skeleton.map((points, idx) => (
+                                        <Line
+                                            {...defaultSkeletonLineConfig}
+                                            {...skeletonConfig?.line}
+                                            key={getPolygonId('line', idx)}
+                                            name={getPolygonId('line', idx)}
+                                            points={points.flatMap(p => [p.x, p.y])}
+                                            strokeScaleEnabled={false}
+                                        />
+                                    ))}
+                                    {anchorPoints.map((point, idx) => {
+                                        const {
+                                            width = defaultSkeletonAnchorConfig.width,
+                                            height = defaultSkeletonAnchorConfig.height,
+                                            radius = defaultSkeletonAnchorConfig.radius,
+                                        } = skeletonConfig?.circle || {};
+
+                                        return (
+                                            <Circle
+                                                {...defaultSkeletonAnchorConfig}
+                                                {...skeletonConfig?.circle}
+                                                key={getPolygonId('circle', idx)}
+                                                name={getPolygonId('circle', idx)}
+                                                x={point.x}
+                                                y={point.y}
+                                                width={width! / scale}
+                                                height={height! / scale}
+                                                radius={radius! / scale}
+                                                strokeScaleEnabled={false}
+                                            />
+                                        );
+                                    })}
+                                </Group>
+                            )}
                         </React.Fragment>
                     );
                 })}
@@ -231,6 +368,7 @@ const ImageAnnotation = ({
                 {editable && !isNil(selectedId) && (
                     <Transformer
                         ref={transformerRef}
+                        ignoreStroke
                         anchorSize={8}
                         anchorStroke={colors[selectedId ?? 0]}
                         anchorFill={anchorFillColor}

@@ -15,7 +15,7 @@ import {
 } from '@/services/http';
 import { useEntityFormItems, IMAGE_ENTITY_KEYWORD, type UseEntityFormItemsProps } from '@/hooks';
 import { type InteEntityType } from '../../../../../hooks';
-import { getModelId } from '../../../helper';
+import { getModelId, transModelInputs2Entities } from '../../../helper';
 import DeviceSelect, { type ValueType as DeviceSelectValueType } from '../device-select';
 import ImageEntitySelect from '../image-entity-select';
 
@@ -169,14 +169,9 @@ const useFormItems = ({ visible, readonly, entities, device, modelId }: Props) =
 
             if (error || !isRequestSuccess(resp)) return;
             const data = getResponseData(resp);
-            const result: UseEntityFormItemsProps['entities'] = data?.input_entities
-                .map(item => ({
-                    ...item,
-                    id: item.identifier,
-                    valueType: item.value_type,
-                    valueAttribute: objectToCamelCase(item.attributes),
-                }))
-                .filter(v => !v.valueAttribute.format?.includes(IMAGE_ENTITY_KEYWORD));
+            const result: UseEntityFormItemsProps['entities'] = transModelInputs2Entities(
+                data?.input_entities,
+            ).filter(v => !v.valueAttribute.format?.includes(IMAGE_ENTITY_KEYWORD));
 
             setIsAiDynamicFormReady(true);
             return result;
