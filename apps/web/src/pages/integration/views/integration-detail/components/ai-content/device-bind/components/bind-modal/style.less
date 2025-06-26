@@ -33,26 +33,44 @@
             height: 0;
 
             .modal-infer-form {
+                display: flex;
+                flex-direction: column;
                 width: 30vw;
                 padding: @padding-lg 0;
                 overflow: auto;
                 background-color: var(--component-background);
 
-                .title {
-                    display: block;
-                    margin-bottom: @margin-md;
-                    font-weight: @font-weight-medium;
-                    .text-size(@font-size-base);
-                }
-
                 &-device {
                     padding: 0 @padding-md @padding-md;
                     border-bottom: 1px solid var(--border-color-base);
+
+                    .title {
+                        display: block;
+                        margin-bottom: @margin-md;
+                        font-weight: @font-weight-medium;
+                        .text-size(@font-size-base);
+                    }
                 }
 
                 &-ai {
-                    padding: 0 @padding-md @padding-md;
+                    display: flex;
+                    flex: 1;
+                    flex-direction: column;
+                    height: 0;
                     margin-top: @margin-lg;
+
+                    .title {
+                        display: block;
+                        padding: 0 @padding-md @padding-md;
+                        font-weight: @font-weight-medium;
+                        .text-size(@font-size-base);
+                    }
+
+                    .ai-form-root {
+                        flex: 1;
+                        padding: 0 @padding-md @padding-md;
+                        overflow: auto;
+                    }
                 }
             }
 

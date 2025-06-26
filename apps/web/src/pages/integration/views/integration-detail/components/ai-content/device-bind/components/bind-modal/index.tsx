@@ -343,7 +343,6 @@ const BindModal: React.FC<Props> = ({
         setResultSetting([{ params }]);
     }, [device, readonly, bindingDetail, setValue]);
 
-    console.log({ readonly }, getIntlText('setting.integration.ai_bind_detail'));
     return (
         <Modal
             {...props}

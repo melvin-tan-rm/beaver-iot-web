@@ -127,7 +127,17 @@ const List = forwardRef<HTMLDivElement, Props>(
                         </div>
                     )}
                 </div>
-                <div className={cls('data-list-normal', { 'd-none': !isUndefined(searchDevices) })}>
+                <div
+                    className={cls('data-list-normal', {
+                        empty: !dataList?.length,
+                        'd-none': !isUndefined(searchDevices),
+                    })}
+                >
+                    {!dataList.length && (
+                        <div className="ms-device-select__empty">
+                            {getIntlText('common.label.no_options')}
+                        </div>
+                    )}
                     <div className="inte-list">
                         {dataList.map(item => (
                             <div

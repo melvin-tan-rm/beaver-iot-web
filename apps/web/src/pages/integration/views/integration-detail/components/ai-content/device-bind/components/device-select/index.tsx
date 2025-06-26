@@ -92,7 +92,7 @@ const DeviceSelect = <
                 return;
             }
 
-            const result = await getDevices({ name: keyword, is_bound: false });
+            const result = await getDevices({ name: keyword, is_bound: isBound });
             setSearchDevices(result);
         },
         {

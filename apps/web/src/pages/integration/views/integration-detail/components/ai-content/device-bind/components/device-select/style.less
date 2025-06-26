@@ -17,6 +17,17 @@
         display: flex;
         height: 240px;
 
+        &.empty {
+            align-items: center;
+            justify-content: center;
+            height: 92px;
+
+            .inte-list,
+            .device-list {
+                display: none;
+            }
+        }
+
         .inte-list {
             width: 50%;
             height: 100%;

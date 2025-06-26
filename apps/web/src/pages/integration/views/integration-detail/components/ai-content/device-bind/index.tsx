@@ -164,9 +164,10 @@ const DeviceBind: React.FC<IProps> = ({ entities, excludeKeys }) => {
                 toolbarRender={toolbarRender}
                 onPaginationModelChange={setPaginationModel}
                 onRowSelectionModelChange={setSelectedIds}
-                // onRowDoubleClick={({ row }) => {
-                //     navigate(`/device/detail/${row.id}`, { state: row });
-                // }}
+                onRowDoubleClick={({ row }) => {
+                    setOpenBind(true);
+                    setDetailDevice(row);
+                }}
                 onSearch={value => {
                     setKeyword(value);
                     setPaginationModel(model => ({ ...model, page: 0 }));
