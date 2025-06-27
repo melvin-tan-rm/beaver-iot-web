@@ -20,7 +20,7 @@ export const {
     PHRASE_WX_WORK_KEY,
     PHRASE_JOB_REVIEWERS,
     PHRASE_JOB_TRANSLATORS,
-    PHRASE_WX_WORK_MENTIONED_MOBILES,
+    PHRASE_WX_WORK_MENTIONED_USERS,
 } = parseEnvVariables([
     path.join(projectRoot, '.env'),
     path.join(projectRoot, '.env.local'),

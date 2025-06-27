@@ -3,7 +3,7 @@ import * as path from 'path';
 import inquirer from 'inquirer';
 import { Command } from 'commander';
 import { isFileExists } from '@milesight/scripts/src/utils';
-import { pkgRoot, msgTemplate } from '../config';
+import { pkgRoot, msgTemplate, PHRASE_WX_WORK_MENTIONED_USERS } from '../config';
 import { logger, parseTemplate, awaitWrap } from '../utils/index';
 import {
     phraseClient,
@@ -29,10 +29,33 @@ const execJobCommand = async (name?: string, options?: ConfigType['phrase']) => 
             message: 'Please enter the version of current iteration:',
         },
         {
+            type: 'checkbox',
+            name: 'translators',
+            message: 'Please select translators:',
+            validate(value) {
+                if (!value.length) {
+                    return 'You must choose at least one translator';
+                }
+                return true;
+            },
+            choices() {
+                const translators = PHRASE_WX_WORK_MENTIONED_USERS?.split(',').map(id => id.trim());
+                const options = translators.map(translator => ({
+                    name: translator,
+                    value: translator,
+                }));
+
+                return options || [];
+            },
+        },
+        {
             type: 'input',
             name: 'name',
             default(ans) {
-                return name || `New i18n texts - ${ans.version}`;
+                const dateString = new Date().toLocaleDateString();
+                const names = ans.translators.map(item => item.split(':')[0]).join(',');
+                const defaultName = `${dateString} - ${names}`;
+                return name || defaultName;
             },
             message: 'Please enter the name of the new Phrase job:',
         },
@@ -141,6 +164,7 @@ const execJobCommand = async (name?: string, options?: ConfigType['phrase']) => 
             jobName: jobDetail.name,
             jobLink: `https://app.phrase.com/accounts/${project.account.slug}/projects/${project.slug}/jobs/${jobDetail.id}`,
         }),
+        mentionedMobiles: answers.translators.map(item => item.split(':')[1]),
     });
 
     logger.log(`⏱️ Execution time: ${((Date.now() - startTime) / 1000).toFixed(2)}s`);
