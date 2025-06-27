@@ -1,3 +1,7 @@
 {
-    "tag.title.tag_management": "Tag Management"
+    "tag.title.tag_management": "Tag Management",
+    "tag.title.tag_name": "Tag Name",
+    "tag.title.tag_entities": "Tag Entities",
+    "tag.title.add_tag": "Add Tag",
+    "tag.title.edit_tag": "Edit Tag"
 }
