@@ -54,7 +54,7 @@ const execJobCommand = async (name?: string, options?: ConfigType['phrase']) => 
             default(ans) {
                 const dateString = new Date().toLocaleDateString();
                 const names = ans.translators.map(item => item.split(':')[0]).join(',');
-                const defaultName = `${dateString} - ${names}`;
+                const defaultName = `${ans.version} - ${dateString} - ${names}`;
                 return name || defaultName;
             },
             message: 'Please enter the name of the new Phrase job:',
