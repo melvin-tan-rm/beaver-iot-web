@@ -223,7 +223,7 @@ const TestModal: React.FC<Props> = ({ modelName, entities, visible, onCancel, ..
         setResultType(DEFAULT_RESULT_TYPE);
     }, [visible]);
 
-    // http://192.168.43.48:9000/beaver-iot-resource/beaver-iot-public/9e52c430-dfc9-4c78-8b5a-71cd83f5fe8f-somebody.jpeg
+    // http://192.168.43.48:9000/beaver-iot-resource/beaver-iot-public/36794826-1faa-48a6-b170-dba2f9820118-somebody.jpeg
     // http://192.168.43.48:9000/beaver-iot-resource/beaver-iot-public/abc856a0-5d17-46e3-bdd3-26b3aa7ec343-20200108-213609-uqZwL.jpg
     return (
         <Modal
