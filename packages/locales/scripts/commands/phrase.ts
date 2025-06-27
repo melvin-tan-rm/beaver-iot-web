@@ -229,7 +229,7 @@ const execImportCommand = async (target?: string, options?: ConfigType['phrase']
     // ---------- Write the newest texts to files ----------
     locales.forEach((locale, index) => {
         const texts = localesTexts[index];
-        const fileName = `${locale.code}.json`;
+        const fileName = `${locale.name}.json`;
 
         fse.outputJSONSync(path.join(targetDir, fileName), texts, {
             encoding: 'utf-8',

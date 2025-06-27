@@ -32,8 +32,8 @@ export const {
  * The WxWork message template
  */
 export const msgTemplate = [
-    '📣 Transition Notice',
-    'There are new translation tasks, please handle them promptly',
+    '📣 I18N Notice',
+    'You have a new translation task, please handle it promptly',
     '--------------------',
     '✦ Project: {{projectName}}',
     '✦ Deadline: {{deadline}}',
