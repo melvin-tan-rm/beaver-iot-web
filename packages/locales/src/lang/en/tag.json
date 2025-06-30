@@ -3,5 +3,7 @@
     "tag.title.tag_name": "Tag Name",
     "tag.title.tag_entities": "Tag Entities",
     "tag.title.add_tag": "Add Tag",
-    "tag.title.edit_tag": "Edit Tag"
+    "tag.title.edit_tag": "Edit Tag",
+    "tag.tip.single_delete_tag": "删除后所有使用了该标签的实体，都将不再展示该标签。确认删除标签: {1} 吗？",
+    "tag.tip.bulk_delete_tag": "删除后所有使用了这些标签的实体，都将不再展示该标签。确认删除这 {1} 个标签吗？"
 }

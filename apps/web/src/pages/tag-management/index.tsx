@@ -10,7 +10,13 @@ import { TablePro, Breadcrumbs } from '@/components';
 import { tagAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import { OperateTagModal } from './components';
 
-import { useColumns, type UseColumnsProps, type TableRowDataType, useTagModal } from './hooks';
+import {
+    useColumns,
+    type UseColumnsProps,
+    type TableRowDataType,
+    useTagModal,
+    useTag,
+} from './hooks';
 
 import './style.less';
 
@@ -52,8 +58,16 @@ const TagManagement: React.FC = () => {
                         id: 1,
                         name: 'Tag Name',
                         color: '#7B4EFA',
-                        description: 'This is description of tag',
+                        description: 'This is #7B4EFA',
                         tagEntities: 16,
+                        createdAt: Date.now(),
+                    },
+                    {
+                        id: 2,
+                        name: 'Tag Name 2',
+                        color: '#F7BA1E',
+                        description: 'This is #F7BA1E',
+                        tagEntities: 27,
                         createdAt: Date.now(),
                     },
                 ],
@@ -77,6 +91,8 @@ const TagManagement: React.FC = () => {
         currentTag,
     } = useTagModal(getAllTags);
 
+    const { handleDeleteTag } = useTag(getAllTags);
+
     // ---------- Table render bar ----------
     const toolbarRender = useMemo(() => {
         return (
@@ -97,25 +113,28 @@ const TagManagement: React.FC = () => {
                     sx={{ height: 36, textTransform: 'none' }}
                     startIcon={<RemoveCircleOutlineIcon />}
                     onClick={() => {
-                        console.log('delete tag');
+                        handleDeleteTag(
+                            (allTags?.content || []).filter(t =>
+                                Boolean(selectedIds?.includes(t.id)),
+                            ),
+                        );
                     }}
                 >
                     {getIntlText('common.label.delete')}
                 </Button>
             </Stack>
         );
-    }, [getIntlText, selectedIds, openAddTag]);
+    }, [getIntlText, selectedIds, openAddTag, handleDeleteTag, allTags]);
 
     const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useMemoizedFn(
         (type, record) => {
             switch (type) {
                 case 'edit': {
-                    console.log('edit', record);
                     openEditTag(record);
                     break;
                 }
                 case 'delete': {
-                    console.log('delete', record);
+                    handleDeleteTag([record]);
                     break;
                 }
                 default: {
