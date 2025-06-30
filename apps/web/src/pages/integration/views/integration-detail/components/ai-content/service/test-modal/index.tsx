@@ -1,13 +1,15 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, useRef } from 'react';
 import { Button, IconButton, CircularProgress } from '@mui/material';
-import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
+import { useForm, useWatch, Controller, type SubmitHandler } from 'react-hook-form';
+import { isEqual } from 'lodash-es';
 import { useI18n, useCopy } from '@milesight/shared/src/hooks';
-import { xhrDownload } from '@milesight/shared/src/utils/tools';
+import { linkDownload } from '@milesight/shared/src/utils/tools';
 import {
     Modal,
     SaveAltIcon,
     ContentCopyIcon,
     AutoAwesomeIcon,
+    toast,
     type ModalProps,
 } from '@milesight/shared/src/components';
 import {
@@ -18,6 +20,7 @@ import {
     CodeEditor,
     type Vector2d,
     type PointType,
+    type ImageAnnotationInstance,
 } from '@/components';
 import { useEntityFormItems, IMAGE_ENTITY_KEYWORD, type EntityFormDataProps } from '@/hooks';
 import { entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
@@ -83,6 +86,8 @@ const TestModal: React.FC<Props> = ({ modelName, entities, visible, onCancel, ..
     const { control, formState, handleSubmit, reset } = useForm<EntityFormDataProps>();
     const { formItems, decodeFormParams } = useEntityFormItems({ entities });
     const isLoading = formState.isSubmitting;
+    const formValues = useWatch({ control });
+    const previousValues = useRef<Record<string, any>>();
 
     const onSubmit: SubmitHandler<EntityFormDataProps> = async params => {
         const finalParams = decodeFormParams(params);
@@ -108,8 +113,17 @@ const TestModal: React.FC<Props> = ({ modelName, entities, visible, onCancel, ..
         setResultType(DEFAULT_RESULT_TYPE);
     };
 
+    // Reset the result when the form values change
+    useEffect(() => {
+        if (isEqual(formValues, previousValues)) return;
+
+        previousValues.current = formValues;
+        setOutput(null);
+    }, [formValues]);
+
     // ---------- Handle actions in header ----------
     const { handleCopy } = useCopy();
+    const stageRef = useRef<ImageAnnotationInstance>(null);
     const resultOptions = useMemo(
         () =>
             resultOptionConfigs.map(config => ({
@@ -218,10 +232,11 @@ const TestModal: React.FC<Props> = ({ modelName, entities, visible, onCancel, ..
     // Clear data when modal close
     useEffect(() => {
         if (visible) return;
+        reset();
         setOutput(null);
         setOriginalImageUrl(null);
         setResultType(DEFAULT_RESULT_TYPE);
-    }, [visible]);
+    }, [visible, reset]);
 
     // http://192.168.43.48:9000/beaver-iot-resource/beaver-iot-public/36794826-1faa-48a6-b170-dba2f9820118-somebody.jpeg
     // http://192.168.43.48:9000/beaver-iot-resource/beaver-iot-public/abc856a0-5d17-46e3-bdd3-26b3aa7ec343-20200108-213609-uqZwL.jpg
@@ -279,10 +294,18 @@ const TestModal: React.FC<Props> = ({ modelName, entities, visible, onCancel, ..
                                         <IconButton
                                             onClick={() => {
                                                 if (!originalImageUrl) return;
-                                                xhrDownload({
-                                                    assets: originalImageUrl,
-                                                    fileName: 'ai-inference-image',
-                                                });
+                                                const fileName = `${modelName}-inference-image`;
+                                                const dataUri = stageRef.current?.toDataURL();
+
+                                                if (!dataUri) {
+                                                    toast.error({
+                                                        content: getIntlText(
+                                                            'setting.integration.ai_infer_canvas_unable_to_download',
+                                                        ),
+                                                    });
+                                                    return;
+                                                }
+                                                linkDownload(dataUri, fileName);
                                             }}
                                         >
                                             <SaveAltIcon />
@@ -304,6 +327,7 @@ const TestModal: React.FC<Props> = ({ modelName, entities, visible, onCancel, ..
                             {resultType === 'image' && (
                                 <div className="result-main-content result-main-image">
                                     <ImageAnnotation
+                                        ref={stageRef}
                                         imgSrc={originalImageUrl}
                                         points={points}
                                         containerWidth={800 - 40}
