@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import cls from 'classnames';
 import { useRequest } from 'ahooks';
 import { Button } from '@mui/material';
-import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
+import { useForm, useWatch, Controller, type SubmitHandler } from 'react-hook-form';
 import { useI18n } from '@milesight/shared/src/hooks';
 import {
     Modal,
@@ -12,15 +12,25 @@ import {
     toast,
     type ModalProps,
 } from '@milesight/shared/src/components';
-import { ImageAnnotation, ToggleRadio, Tooltip, Empty, useConfirm } from '@/components';
+import {
+    ImageAnnotation,
+    ToggleRadio,
+    Tooltip,
+    Empty,
+    useConfirm,
+    type PointType,
+} from '@/components';
 import {
     aiApi,
+    entityAPI,
     awaitWrap,
     isRequestSuccess,
     getResponseData,
     type AiAPISchema,
 } from '@/services/http';
 import { type InteEntityType } from '../../../../../hooks';
+import { convertPointsData } from '../../../helper';
+import type { InferenceResponse } from '../../../typings';
 import ResultSetting, {
     type Props as ResultSettingProps,
     ResultSettingItem,
@@ -127,13 +137,19 @@ const BindModal: React.FC<Props> = ({
         control,
         formState: { isDirty },
         handleSubmit,
-        watch,
         reset,
         setValue,
+        getValues,
     } = useForm<FormDataProps>();
-    const selectedModelId = watch(AI_MODEL_KEY) as ApiKey | undefined | null;
-    const selectedDevice = watch(DEVICE_KEY) as DeviceSelectValueType | undefined | null;
-    const selectedImageEntity = watch(IMAGE_ENTITY_KEY) as
+    const selectedModelId = useWatch<FormDataProps>({ control, name: AI_MODEL_KEY }) as
+        | ApiKey
+        | null
+        | undefined;
+    const selectedDevice = useWatch<FormDataProps>({ control, name: DEVICE_KEY }) as
+        | DeviceSelectValueType
+        | undefined
+        | null;
+    const selectedImageEntity = useWatch<FormDataProps>({ control, name: IMAGE_ENTITY_KEY }) as
         | ImageEntitySelectValueType
         | undefined
         | null;
@@ -146,6 +162,7 @@ const BindModal: React.FC<Props> = ({
         isImageOptionsReady,
         dynamicEntityKeyMap,
         decodeFormParams,
+        decodeAiFormParams,
     } = useFormItems({
         visible,
         readonly,
@@ -191,6 +208,39 @@ const BindModal: React.FC<Props> = ({
         onSuccess?.();
         toast.success({ content: getIntlText('common.message.operation_success') });
     };
+
+    // ---------- Render Inference Result ----------
+    const formValues = useWatch<FormDataProps>({ control });
+    const [points, setPoints] = useState<PointType[]>([]);
+    const { run: getInferResult } = useRequest(
+        async (params: Record<string, any>) => {
+            const [error, resp] = await awaitWrap(entityAPI.callService({ exchange: params }));
+
+            if (error || !isRequestSuccess(resp)) return;
+            const data = getResponseData(resp) as InferenceResponse;
+            const result = convertPointsData(data.outputs.data);
+
+            setPoints(result);
+            return result;
+        },
+        {
+            manual: true,
+            debounceWait: 300,
+        },
+    );
+
+    useEffect(() => {
+        if (!isAiDynamicFormReady) return;
+        const formParams = decodeAiFormParams(getValues());
+
+        if (!formParams || Object.values(formParams).some(it => !it)) {
+            setPoints([]);
+            return;
+        }
+
+        // console.log({ formParams });
+        getInferResult(formParams);
+    }, [formValues, isAiDynamicFormReady, getValues, decodeAiFormParams, getInferResult]);
 
     // ---------- Prevent Leave ----------
     const confirm = useConfirm();
@@ -431,19 +481,14 @@ const BindModal: React.FC<Props> = ({
                             {!selectedImageEntity?.value ? (
                                 <Empty />
                             ) : (
-                                <img
-                                    className="entity-image"
-                                    src={selectedImageEntity.value}
-                                    alt={selectedImageEntity.name}
+                                <ImageAnnotation
+                                    // imgSrc="http://192.168.43.48:9000/beaver-iot-resource/beaver-iot-public/abc856a0-5d17-46e3-bdd3-26b3aa7ec343-20200108-213609-uqZwL.jpg"
+                                    imgSrc={selectedImageEntity?.value}
+                                    points={points}
+                                    containerWidth={800 - 32}
+                                    containerHeight={424 - 32}
                                 />
                             )}
-                            {/* <ImageAnnotation
-                                // imgSrc="http://192.168.43.48:9000/beaver-iot-resource/beaver-iot-public/abc856a0-5d17-46e3-bdd3-26b3aa7ec343-20200108-213609-uqZwL.jpg"
-                                imgSrc={selectedImageEntity?.value}
-                                points={[]}
-                                containerWidth={800 - 32}
-                                containerHeight={424 - 32}
-                            /> */}
                         </div>
                     </div>
                     <div className="modal-infer-result-setting">

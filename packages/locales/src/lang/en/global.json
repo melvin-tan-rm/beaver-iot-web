@@ -242,5 +242,6 @@
     "common.label.connected": "Connected",
     "common.label.not_connected": "Not Connected",
     "common.label.normal": "Normal",
-    "common.label.abnormal": "Abnormal"
+    "common.label.abnormal": "Abnormal",
+    "common.label.download": "Download"
 }

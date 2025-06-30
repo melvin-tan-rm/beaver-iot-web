@@ -25,6 +25,8 @@ import {
 import { useEntityFormItems, IMAGE_ENTITY_KEYWORD, type EntityFormDataProps } from '@/hooks';
 import { entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import { type InteEntityType } from '../../../../hooks';
+import { convertPointsData } from '../../helper';
+import type { InferenceResponse } from '../../typings';
 import './style.less';
 
 interface Props extends Omit<ModalProps, 'onOk'> {
@@ -36,39 +38,6 @@ interface Props extends Omit<ModalProps, 'onOk'> {
 }
 
 type ResultType = 'image' | 'json';
-
-type InferCoordinate = [number, number, number, number];
-
-type InferenceResponse = {
-    outputs: {
-        data: {
-            /* Image file name */
-            file_name: string;
-            detections: {
-                /** Identify label */
-                cls: string;
-                /** Confidence level */
-                conf: number;
-                /**
-                 * Rectangle coordinate [x_min, y_min, width, height]
-                 */
-                box?: InferCoordinate;
-                /**
-                 * Polygon coordinate [x, y][]
-                 */
-                masks?: [number, number][];
-                /**
-                 * Points of skeleton [x, y, pointId, conf][]
-                 */
-                points?: InferCoordinate[];
-                /**
-                 * Skeleton structure [startPointId, endPointId][]
-                 */
-                skeleton?: [number, number][];
-            }[];
-        }[];
-    };
-};
 
 const DEFAULT_RESULT_TYPE: ResultType = 'image';
 const resultOptionConfigs: {
@@ -170,60 +139,7 @@ const TestModal: React.FC<Props> = ({ modelName, entities, visible, onCancel, ..
             setPoints([]);
             return;
         }
-        const result: PointType[] = [];
-
-        output.forEach(({ detections }) => {
-            detections.forEach(({ cls, conf, box, masks, points, skeleton }) => {
-                const data: PointType = {
-                    label: cls,
-                    confidence: conf,
-                    value: [],
-                };
-
-                if (masks?.length) {
-                    const polygon = masks.map(([x, y]) => ({ x, y }));
-                    data.polygon = polygon;
-                }
-
-                if (points?.length && skeleton?.length) {
-                    const pointsMap = points.reduce(
-                        (acc, [x, y, id]) => {
-                            acc[id] = { x, y };
-                            return acc;
-                        },
-                        {} as Record<string, Vector2d>,
-                    );
-                    const lines = skeleton.reduce((acc, [startId, endId]) => {
-                        const item = acc.find(it => it[it.length - 1] === startId);
-
-                        if (item) {
-                            item.push(endId);
-                        } else {
-                            acc.push([startId, endId]);
-                        }
-                        return acc;
-                    }, [] as number[][]);
-
-                    data.skeleton = lines.map(line => {
-                        return line.map(id => pointsMap[id]);
-                    });
-                }
-
-                if (box?.length) {
-                    const [xMin, yMin, width, height] = box;
-                    const points = [
-                        { x: xMin, y: yMin },
-                        { x: xMin + width, y: yMin },
-                        { x: xMin + width, y: yMin + height },
-                        { x: xMin, y: yMin + height },
-                    ];
-                    data.rect = points;
-                    data.value = points;
-                }
-
-                result.push(data);
-            });
-        });
+        const result = convertPointsData(output);
 
         // console.log({ result });
         setPoints(result);
@@ -291,25 +207,32 @@ const TestModal: React.FC<Props> = ({ modelName, entities, visible, onCancel, ..
                                 />
                                 <div className="result-main-header-action">
                                     {resultType === 'image' && (
-                                        <IconButton
-                                            onClick={() => {
-                                                if (!originalImageUrl) return;
-                                                const fileName = `${modelName}-inference-image`;
-                                                const dataUri = stageRef.current?.toDataURL();
-
-                                                if (!dataUri) {
-                                                    toast.error({
-                                                        content: getIntlText(
-                                                            'setting.integration.ai_infer_canvas_unable_to_download',
-                                                        ),
-                                                    });
-                                                    return;
-                                                }
-                                                linkDownload(dataUri, fileName);
-                                            }}
+                                        <Tooltip
+                                            title={mergeIntlText([
+                                                'common.label.download',
+                                                'common.label.image',
+                                            ])}
                                         >
-                                            <SaveAltIcon />
-                                        </IconButton>
+                                            <IconButton
+                                                onClick={() => {
+                                                    if (!originalImageUrl) return;
+                                                    const fileName = `${modelName}-inference-image`;
+                                                    const dataUri = stageRef.current?.toDataURL();
+
+                                                    if (!dataUri) {
+                                                        toast.error({
+                                                            content: getIntlText(
+                                                                'setting.integration.ai_infer_canvas_unable_to_download',
+                                                            ),
+                                                        });
+                                                        return;
+                                                    }
+                                                    linkDownload(dataUri, fileName);
+                                                }}
+                                            >
+                                                <SaveAltIcon />
+                                            </IconButton>
+                                        </Tooltip>
                                     )}
                                     <Tooltip title={copyTip}>
                                         <IconButton

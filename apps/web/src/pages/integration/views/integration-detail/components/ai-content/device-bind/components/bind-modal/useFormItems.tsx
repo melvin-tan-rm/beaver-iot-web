@@ -4,7 +4,6 @@ import { useRequest } from 'ahooks';
 import { FormControl, FormHelperText } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Select } from '@milesight/shared/src/components';
-import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
 import { checkRequired } from '@milesight/shared/src/utils/validators';
 import {
     aiApi,
@@ -162,7 +161,7 @@ const useFormItems = ({ visible, readonly, entities, device, modelId }: Props) =
 
     // ---------- Generate dynamic ai model form items ----------
     const [isAiDynamicFormReady, setIsAiDynamicFormReady] = useState(false);
-    const { data: dynamicFormEntities } = useRequest(
+    const { data: [dynamicFormEntities, wholeDynamicFormEntities] = [] } = useRequest(
         async () => {
             if (!modelId) return;
             const [error, resp] = await awaitWrap(aiApi.syncModelDetail({ model_id: modelId }));
@@ -171,17 +170,24 @@ const useFormItems = ({ visible, readonly, entities, device, modelId }: Props) =
             const data = getResponseData(resp);
             const result: UseEntityFormItemsProps['entities'] = transModelInputs2Entities(
                 data?.input_entities,
-            ).filter(v => !v.valueAttribute.format?.includes(IMAGE_ENTITY_KEYWORD));
+            );
 
             setIsAiDynamicFormReady(true);
-            return result;
+            return [
+                result?.filter(v => !v.valueAttribute.format?.includes(IMAGE_ENTITY_KEYWORD)),
+                result,
+            ];
         },
         {
             debounceWait: 300,
             refreshDeps: [modelId],
         },
     );
-    const { formItems: aiDynamicFormItems, encodedEntityKeys } = useEntityFormItems({
+    const {
+        formItems: aiDynamicFormItems,
+        encodedEntityKeys,
+        decodeFormParams: decodeEntityParams,
+    } = useEntityFormItems({
         isAllReadOnly: readonly,
         entities: dynamicFormEntities,
     });
@@ -233,6 +239,21 @@ const useFormItems = ({ visible, readonly, entities, device, modelId }: Props) =
         [dynamicEntityKeyMap],
     );
 
+    const decodeAiFormParams = useCallback(
+        (data: Record<string, any>) => {
+            const result = decodeEntityParams(data);
+            const imageEntity = wholeDynamicFormEntities?.find(item =>
+                item.valueAttribute.format?.includes(IMAGE_ENTITY_KEYWORD),
+            );
+
+            if (!imageEntity) return;
+            result[imageEntity.key] = !data[IMAGE_ENTITY_KEY] ? '' : data[IMAGE_ENTITY_KEY].value;
+
+            return result;
+        },
+        [wholeDynamicFormEntities, decodeEntityParams],
+    );
+
     // Clear the state when modal close
     useEffect(() => {
         if (visible) return;
@@ -249,6 +270,7 @@ const useFormItems = ({ visible, readonly, entities, device, modelId }: Props) =
         isImageOptionsReady,
         dynamicEntityKeyMap,
         decodeFormParams,
+        decodeAiFormParams,
     };
 };
 

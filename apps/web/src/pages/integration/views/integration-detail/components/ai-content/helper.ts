@@ -1,8 +1,10 @@
 import { cloneDeep } from 'lodash-es';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
+import { type PointType, type Vector2d } from '@/components';
 import { type AiAPISchema } from '@/services/http';
 import { type InteEntityType } from '../../hooks';
 import { AI_SERVICE_KEYWORD } from './constants';
+import type { InferenceResponse } from './typings';
 
 type InteServiceType = InteEntityType & {
     children?: InteServiceType[];
@@ -81,6 +83,70 @@ export const transModelInputs2Entities = (
             valueType: item.value_type,
             accessMod: item.access_mod,
             valueAttribute,
+        });
+    });
+
+    return result;
+};
+
+/**
+ * Convert inference response to points data of ImageAnnotation component
+ */
+export const convertPointsData = (data?: InferenceResponse['outputs']['data']) => {
+    const result: PointType[] = [];
+
+    if (!data) return result;
+
+    data.forEach(({ detections }) => {
+        detections.forEach(({ cls, conf, box, masks, points, skeleton }) => {
+            const data: PointType = {
+                label: cls,
+                confidence: conf,
+                value: [],
+            };
+
+            if (masks?.length) {
+                const polygon = masks.map(([x, y]) => ({ x, y }));
+                data.polygon = polygon;
+            }
+
+            if (points?.length && skeleton?.length) {
+                const pointsMap = points.reduce(
+                    (acc, [x, y, id]) => {
+                        acc[id] = { x, y };
+                        return acc;
+                    },
+                    {} as Record<string, Vector2d>,
+                );
+                const lines = skeleton.reduce((acc, [startId, endId]) => {
+                    const item = acc.find(it => it[it.length - 1] === startId);
+
+                    if (item) {
+                        item.push(endId);
+                    } else {
+                        acc.push([startId, endId]);
+                    }
+                    return acc;
+                }, [] as number[][]);
+
+                data.skeleton = lines.map(line => {
+                    return line.map(id => pointsMap[id]);
+                });
+            }
+
+            if (box?.length) {
+                const [xMin, yMin, width, height] = box;
+                const points = [
+                    { x: xMin, y: yMin },
+                    { x: xMin + width, y: yMin },
+                    { x: xMin + width, y: yMin + height },
+                    { x: xMin, y: yMin + height },
+                ];
+                data.rect = points;
+                // data.value = points;
+            }
+
+            result.push(data);
         });
     });
 

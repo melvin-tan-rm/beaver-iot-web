@@ -82,14 +82,11 @@
                     &-action {
                         display: flex;
                         flex: 1;
+                        gap: @margin-md;
                         justify-content: flex-end;
 
                         .@{mui-prefix}ButtonBase-root {
                             padding: 0;
-
-                            &:not(&:last-child) {
-                                margin-right: @margin-md;
-                            }
                         }
                     }
                 }
