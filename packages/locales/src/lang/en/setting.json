@@ -143,5 +143,6 @@
     "setting.integration.ai_bind_label_infer_status": "Inference Status",
     "setting.integration.ai_bind_label_device_uplink_time": "Device Uplink Time",
     "setting.integration.ai_bind_label_infer_time": "Inference Time",
-    "setting.integration.ai_bind_detail": "Bind Detail"
+    "setting.integration.ai_bind_detail": "Bind Detail",
+    "setting.integration.ai_bind_delete_tip": "Do you want to delete the model bound to the device? After deletion, subsequent device data updates will no longer request model services, and historical data will remain unaffected"
 }

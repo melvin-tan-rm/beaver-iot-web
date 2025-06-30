@@ -63,7 +63,7 @@ const DeviceBind: React.FC<IProps> = ({ entities, excludeKeys }) => {
             confirm({
                 type: 'warning',
                 title: getIntlText('common.label.delete'),
-                description: getIntlText('device.message.delete_tip'),
+                description: getIntlText('setting.integration.ai_bind_delete_tip'),
                 confirmButtonText: getIntlText('common.label.delete'),
                 onConfirm: async () => {
                     const [error, resp] = await awaitWrap(
