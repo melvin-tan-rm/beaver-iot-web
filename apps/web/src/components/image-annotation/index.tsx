@@ -96,7 +96,7 @@ export interface ImageAnnotationProps {
 export type ImageAnnotationInstance = StageInstance;
 
 const SHAPE_NAME_PREFIX = 'ms-shape';
-const getPolygonId = (type: ShapeType | 'shape', index: number) => {
+const getPolygonId = (type: ShapeType | 'group', index: number) => {
     return `${SHAPE_NAME_PREFIX}-${type}-${index}`;
 };
 
@@ -191,7 +191,9 @@ const ImageAnnotation = forwardRef<ImageAnnotationInstance, ImageAnnotationProps
 
         // Calculate the coordinates of the top left corner of the polygon
         const getPolygonTopLeft = useCallback(
-            (points: Vector2d[]) => {
+            (points?: Vector2d[]) => {
+                if (!points) return { x: 0, y: 0 };
+
                 const point = points.reduce(
                     (acc, point) => ({
                         x: Math.min(acc.x, point.x),
@@ -260,101 +262,21 @@ const ImageAnnotation = forwardRef<ImageAnnotationInstance, ImageAnnotationProps
                             : uniqWith(flatten(skeleton), isEqual);
 
                         return (
-                            <React.Fragment key={getPolygonId('shape', index)}>
-                                {rect?.length && (
-                                    <Group>
-                                        <Line
-                                            {...defaultRectConfig}
-                                            {...rectConfig}
-                                            closed
-                                            name={getPolygonId('rect', index)}
-                                            points={rect.flatMap(p => [p.x, p.y])}
-                                            strokeScaleEnabled={false}
-                                            draggable={editable}
-                                            onDragMove={() => setEditingId(index)}
-                                            onDragEnd={e => {
-                                                const absPos = e.target.getAbsolutePosition();
-                                                const newPoints = rect.map(p => ({
-                                                    x: p.x + absPos.x / scale,
-                                                    y: p.y + absPos.y / scale,
-                                                }));
-
-                                                setEditingId(null);
-                                                handlePositionChange(index, newPoints);
-                                                e.target.position({ x: 0, y: 0 });
-                                            }}
-                                            onTransformStart={() => setEditingId(index)}
-                                            onTransformEnd={e => {
-                                                const node = e.target;
-                                                const newPoints = rect.map((p, i) => ({
-                                                    x: p.x * node.scaleX() + node.x(),
-                                                    y: p.y * node.scaleY() + node.y(),
-                                                }));
-
-                                                // console.log({
-                                                //     e,
-                                                //     x: node.x(),
-                                                //     y: node.y(),
-                                                //     scaleX: node.scaleX(),
-                                                //     scaleY: node.scaleY(),
-                                                //     newPoints,
-                                                // });
-                                                setEditingId(null);
-                                                handlePositionChange(index, newPoints);
-                                                node.scaleX(1);
-                                                node.scaleY(1);
-                                                node.position({ x: 0, y: 0 });
-                                            }}
-                                            onClick={() => setSelectedId(index)}
-                                        />
-
-                                        <EditableText
-                                            visible={editingId !== index}
-                                            value={innerLabel}
-                                            position={getPolygonTopLeft(rect)}
-                                            scale={scale}
-                                            color={black}
-                                            backgroundColor={
-                                                rectConfig?.stroke || defaultRectConfig.stroke
-                                            }
-                                            padding={4 / scale}
-                                            onChange={
-                                                !editable
-                                                    ? undefined
-                                                    : val => handleLabelChange(index, val)
-                                            }
-                                        />
-                                    </Group>
-                                )}
-
+                            <Group key={getPolygonId('group', index)}>
                                 {!!polygon?.length && (
-                                    <Group>
-                                        <Line
-                                            {...defaultPolygonConfig}
-                                            {...polygonConfig}
-                                            closed
-                                            name={getPolygonId('polygon', index)}
-                                            points={polygon.flatMap(p => [p.x, p.y])}
-                                            strokeWidth={1}
-                                            strokeScaleEnabled={false}
-                                        />
-
-                                        <EditableText
-                                            visible={editingId !== index}
-                                            value={innerLabel}
-                                            position={getPolygonTopLeft(polygon)}
-                                            scale={scale}
-                                            color={black}
-                                            backgroundColor={
-                                                polygonConfig?.stroke || defaultPolygonConfig.stroke
-                                            }
-                                            padding={4 / scale}
-                                        />
-                                    </Group>
+                                    <Line
+                                        {...defaultPolygonConfig}
+                                        {...polygonConfig}
+                                        closed
+                                        name={getPolygonId('polygon', index)}
+                                        points={polygon.flatMap(p => [p.x, p.y])}
+                                        strokeWidth={1}
+                                        strokeScaleEnabled={false}
+                                    />
                                 )}
 
                                 {!!skeleton?.length && (
-                                    <Group>
+                                    <>
                                         {skeleton.map((points, idx) => (
                                             <Line
                                                 {...defaultSkeletonLineConfig}
@@ -387,9 +309,69 @@ const ImageAnnotation = forwardRef<ImageAnnotationInstance, ImageAnnotationProps
                                                 />
                                             );
                                         })}
-                                    </Group>
+                                    </>
                                 )}
-                            </React.Fragment>
+
+                                {!!rect?.length && (
+                                    <Line
+                                        {...defaultRectConfig}
+                                        {...rectConfig}
+                                        closed
+                                        name={getPolygonId('rect', index)}
+                                        points={rect.flatMap(p => [p.x, p.y])}
+                                        strokeScaleEnabled={false}
+                                        draggable={editable}
+                                        onDragMove={() => setEditingId(index)}
+                                        onDragEnd={e => {
+                                            const absPos = e.target.getAbsolutePosition();
+                                            const newPoints = rect.map(p => ({
+                                                x: p.x + absPos.x / scale,
+                                                y: p.y + absPos.y / scale,
+                                            }));
+
+                                            setEditingId(null);
+                                            handlePositionChange(index, newPoints);
+                                            e.target.position({ x: 0, y: 0 });
+                                        }}
+                                        onTransformStart={() => setEditingId(index)}
+                                        onTransformEnd={e => {
+                                            const node = e.target;
+                                            const newPoints = rect.map((p, i) => ({
+                                                x: p.x * node.scaleX() + node.x(),
+                                                y: p.y * node.scaleY() + node.y(),
+                                            }));
+
+                                            // console.log({
+                                            //     e,
+                                            //     x: node.x(),
+                                            //     y: node.y(),
+                                            //     scaleX: node.scaleX(),
+                                            //     scaleY: node.scaleY(),
+                                            //     newPoints,
+                                            // });
+                                            setEditingId(null);
+                                            handlePositionChange(index, newPoints);
+                                            node.scaleX(1);
+                                            node.scaleY(1);
+                                            node.position({ x: 0, y: 0 });
+                                        }}
+                                        onClick={() => setSelectedId(index)}
+                                    />
+                                )}
+
+                                <EditableText
+                                    visible={editingId !== index}
+                                    value={innerLabel}
+                                    position={getPolygonTopLeft((rect || []).concat(polygon || []))}
+                                    scale={scale}
+                                    color={black}
+                                    backgroundColor={rectConfig?.stroke || defaultRectConfig.stroke}
+                                    padding={4 / scale}
+                                    onChange={
+                                        !editable ? undefined : val => handleLabelChange(index, val)
+                                    }
+                                />
+                            </Group>
                         );
                     })}
 
