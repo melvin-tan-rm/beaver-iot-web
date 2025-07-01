@@ -146,14 +146,9 @@ const BindModal: React.FC<Props> = ({
     }, [visible, readonly, getIntlText]);
 
     // ---------- Render Form Items ----------
-    const {
-        control,
-        formState: { isDirty },
-        handleSubmit,
-        reset,
-        setValue,
-        getValues,
-    } = useForm<FormDataProps>({ shouldUnregister: true });
+    const { control, handleSubmit, reset, setValue, getValues } = useForm<FormDataProps>({
+        shouldUnregister: true,
+    });
     const selectedModelId = useWatch<FormDataProps>({ control, name: AI_MODEL_KEY }) as
         | ApiKey
         | null
@@ -195,14 +190,14 @@ const BindModal: React.FC<Props> = ({
                             result[key] = null;
                             break;
                         default:
-                            result[key] = '';
+                            result[key] = undefined;
                             break;
                     }
                 });
 
                 return result;
             },
-            { keepDefaultValues: true },
+            { keepDirty: false, keepDefaultValues: true },
         );
         setPoints([]);
     }, [reset]);
@@ -271,6 +266,7 @@ const BindModal: React.FC<Props> = ({
         { manual: true },
     );
 
+    // Get inference result dynamically
     useDebounceEffect(
         () => {
             if (!isImageOptionsReady || !isAiDynamicFormReady) return;
@@ -291,6 +287,7 @@ const BindModal: React.FC<Props> = ({
 
     // ---------- Prevent Leave ----------
     const confirm = useConfirm();
+    const [isFormDirty, setIsFormDirty] = useState(false);
     const [isPreventLeave, setIsPreventLeave] = useState(false);
     // Prevent leave if form is dirty
     const handleBack = () => {
@@ -312,9 +309,21 @@ const BindModal: React.FC<Props> = ({
         });
     };
 
+    // Check whether the form is dirty
     useEffect(() => {
-        setIsPreventLeave(!!visible && isDirty);
-    }, [visible, isDirty]);
+        if (!visible) {
+            setIsFormDirty(false);
+            return;
+        }
+
+        if (Object.values(formValues).some(Boolean)) {
+            setIsFormDirty(true);
+        }
+    }, [visible, formValues]);
+
+    useEffect(() => {
+        setIsPreventLeave(!!visible && isFormDirty);
+    }, [visible, isFormDirty]);
 
     // ---------- Inference Mode ----------
     // const [inferMode, setInferMode] = useState<InferMode>('single');
