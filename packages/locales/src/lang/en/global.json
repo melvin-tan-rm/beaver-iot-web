@@ -234,5 +234,7 @@
     "valid.input.version": "The version number does not comply with the specification.",
     "valid.resp.at_least_one": "Please select at least one {1}.",
     "common.label.description": "Description",
-    "common.label.color": "Color"
+    "common.label.color": "Color",
+    "common.label.expand": "Expand",
+    "common.label.collapse": "Collapse"
 }

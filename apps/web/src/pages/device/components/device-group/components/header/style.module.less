@@ -1,0 +1,32 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: @margin-lg;
+
+    .left {
+        font-weight: @font-weight-medium;
+        .text-size(@font-size-3);
+    }
+
+    .right {
+        display: flex;
+        align-items: center;
+
+        :global {
+            .@{prefix}-tooltip {
+                display: flex;
+                padding-left: @padding-sm;
+            }
+
+            svg {
+                color: var(--text-color-secondary);
+                cursor: pointer;
+
+                &:hover {
+                    color: var(--primary-color-base);
+                }
+            }
+        }
+    }
+}

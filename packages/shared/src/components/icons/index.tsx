@@ -140,6 +140,7 @@ export {
     StarOutline as StarOutlinedIcon,
     Star as StarIcon,
     Sell as SellIcon,
+    ArrowBackIos as ArrowBackIosIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';

@@ -8,5 +8,6 @@
     "device.label.param_external_id": "External Device ID",
     "device.label.param_founder": "Founder",
     "device.label.param_source": "Source",
-    "device.message.delete_tip": "Are you sure to delete?"
+    "device.message.delete_tip": "Are you sure to delete?",
+    "device.label.device_group": "设备组"
 }

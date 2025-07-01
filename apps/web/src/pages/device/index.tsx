@@ -9,8 +9,8 @@ import { Breadcrumbs, TablePro, useConfirm, PermissionControlHidden } from '@/co
 import { PERMISSIONS } from '@/constants';
 import { useUserPermissions } from '@/hooks';
 import { deviceAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
-import { useColumns, type UseColumnsProps, type TableRowDataType } from './hooks';
-import { AddModal } from './components';
+import { useColumns, type UseColumnsProps, type TableRowDataType, useDevice } from './hooks';
+import { AddModal, DeviceGroup, Shrink } from './components';
 import './style.less';
 
 export default () => {
@@ -48,6 +48,8 @@ export default () => {
             refreshDeps: [keyword, paginationModel],
         },
     );
+
+    const { isShrink, toggleShrink } = useDevice();
 
     // ---------- Device added related ----------
     const [modalOpen, setModalOpen] = useState(false);
@@ -137,27 +139,33 @@ export default () => {
             <Breadcrumbs />
             <div className="ms-view ms-view-device">
                 <div className="ms-view__inner">
-                    <TablePro<TableRowDataType>
-                        checkboxSelection={hasPermission(PERMISSIONS.DEVICE_DELETE)}
-                        loading={loading}
-                        columns={columns}
-                        rows={deviceData?.content}
-                        rowCount={deviceData?.total || 0}
-                        paginationModel={paginationModel}
-                        rowSelectionModel={selectedIds}
-                        isRowSelectable={({ row }) => row.deletable}
-                        toolbarRender={toolbarRender}
-                        onPaginationModelChange={setPaginationModel}
-                        onRowSelectionModelChange={setSelectedIds}
-                        onRowDoubleClick={({ row }) => {
-                            navigate(`/device/detail/${row.id}`, { state: row });
-                        }}
-                        onSearch={value => {
-                            setKeyword(value);
-                            setPaginationModel(model => ({ ...model, page: 0 }));
-                        }}
-                        onRefreshButtonClick={getDeviceList}
-                    />
+                    <DeviceGroup isShrink={isShrink} />
+
+                    <div className="device-right">
+                        <div className="device-right__title">全部设备</div>
+                        <TablePro<TableRowDataType>
+                            checkboxSelection={hasPermission(PERMISSIONS.DEVICE_DELETE)}
+                            loading={loading}
+                            columns={columns}
+                            rows={deviceData?.content}
+                            rowCount={deviceData?.total || 0}
+                            paginationModel={paginationModel}
+                            rowSelectionModel={selectedIds}
+                            isRowSelectable={({ row }) => row.deletable}
+                            toolbarRender={toolbarRender}
+                            onPaginationModelChange={setPaginationModel}
+                            onRowSelectionModelChange={setSelectedIds}
+                            onRowDoubleClick={({ row }) => {
+                                navigate(`/device/detail/${row.id}`, { state: row });
+                            }}
+                            onSearch={value => {
+                                setKeyword(value);
+                                setPaginationModel(model => ({ ...model, page: 0 }));
+                            }}
+                            onRefreshButtonClick={getDeviceList}
+                        />
+                        <Shrink isShrink={isShrink} toggleShrink={toggleShrink} />
+                    </div>
                 </div>
             </div>
             <AddModal
