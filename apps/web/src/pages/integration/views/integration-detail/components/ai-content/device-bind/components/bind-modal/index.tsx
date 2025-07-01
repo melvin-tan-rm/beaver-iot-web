@@ -511,7 +511,7 @@ const BindModal: React.FC<Props> = ({
                     <div className="modal-infer-mode-setting">
                         <div className="modal-infer-mode-setting-header">
                             <span className="title">
-                                {getIntlText('setting.integration.ai_infer_mode_setting')}
+                                {getIntlText('setting.integration.ai_infer_result_preview')}
                             </span>
                             {/* <ToggleRadio
                                 size="small"

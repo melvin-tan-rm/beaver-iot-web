@@ -1,4 +1,4 @@
-import { yellow, purple, red, white, black } from '@milesight/shared/src/services/theme';
+import { yellow, purple, red } from '@milesight/shared/src/services/theme';
 import type { ShapeConfig } from 'konva/lib/Shape';
 
 /**
