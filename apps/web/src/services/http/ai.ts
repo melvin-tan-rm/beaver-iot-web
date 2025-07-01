@@ -51,6 +51,7 @@ export interface AiAPISchema extends APISchema {
         response: {
             content: {
                 id: ApiKey;
+                identifier: string;
                 name: string;
                 integration_id: ApiKey;
                 integration_name: string;
@@ -134,6 +135,7 @@ export interface AiAPISchema extends APISchema {
         response: Omit<AiAPISchema['bindDevice']['request'], 'id'> & {
             integration_id: ApiKey;
             image_entity_value: string;
+            device_identifier: string;
         };
     };
 

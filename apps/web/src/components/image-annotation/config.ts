@@ -1,4 +1,4 @@
-import { yellow, white, black } from '@milesight/shared/src/services/theme';
+import { yellow, purple, red, white, black } from '@milesight/shared/src/services/theme';
 import type { ShapeConfig } from 'konva/lib/Shape';
 
 /**
@@ -13,6 +13,7 @@ export const defaultRectConfig: ShapeConfig = {
  * Default polygon config
  */
 export const defaultPolygonConfig: ShapeConfig = {
+    fill: `${purple[700]}50`,
     stroke: yellow[600],
     strokeWidth: 1,
 };
@@ -32,7 +33,7 @@ export const defaultSkeletonAnchorConfig: ShapeConfig = {
     width: 3,
     height: 3,
     radius: 3,
-    fill: 'red',
+    fill: red[700],
     // stroke: 'black',
     // strokeWidth: 1,
 };

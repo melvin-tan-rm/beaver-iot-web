@@ -18,7 +18,6 @@ import {
     ToggleRadio,
     ImageAnnotation,
     CodeEditor,
-    type Vector2d,
     type PointType,
     type ImageAnnotationInstance,
 } from '@/components';

@@ -208,13 +208,24 @@ const ImageAnnotation = forwardRef<ImageAnnotationInstance, ImageAnnotationProps
             [scale],
         );
 
-        // Update position
+        // Update Position
         const handlePositionChange = useMemoizedFn((index: number, newPoints: Vector2d[]) => {
             const result = cloneDeep(points);
 
             result.splice(index, 1, {
                 label: result[index].label,
                 rect: newPoints,
+            });
+            onPointsChange?.(result);
+        });
+
+        // Update Label
+        const handleLabelChange = useMemoizedFn((index: number, newLabel: string) => {
+            const result = cloneDeep(points);
+
+            result.splice(index, 1, {
+                ...result[index],
+                label: newLabel,
             });
             onPointsChange?.(result);
         });
@@ -307,6 +318,11 @@ const ImageAnnotation = forwardRef<ImageAnnotationInstance, ImageAnnotationProps
                                                 rectConfig?.stroke || defaultRectConfig.stroke
                                             }
                                             padding={4 / scale}
+                                            onChange={
+                                                !editable
+                                                    ? undefined
+                                                    : val => handleLabelChange(index, val)
+                                            }
                                         />
                                     </Group>
                                 )}
@@ -319,7 +335,6 @@ const ImageAnnotation = forwardRef<ImageAnnotationInstance, ImageAnnotationProps
                                             closed
                                             name={getPolygonId('polygon', index)}
                                             points={polygon.flatMap(p => [p.x, p.y])}
-                                            stroke={colors[index]}
                                             strokeWidth={1}
                                             strokeScaleEnabled={false}
                                         />

@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import cls from 'classnames';
-import { useRequest } from 'ahooks';
+import { useRequest, useSize, useDebounceEffect } from 'ahooks';
 import { Button } from '@mui/material';
 import { useForm, useWatch, Controller, type SubmitHandler } from 'react-hook-form';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -62,6 +62,9 @@ interface Props extends ModalProps {
  */
 type InferMode = 'single' | 'multiple';
 
+/**
+ * Infer Mode Setting
+ */
 const inferModeSettingOptions: {
     labelIntlKey: string;
     descIntlKey: string;
@@ -114,6 +117,16 @@ const generateEntityId = ({
     return `${integrationId}.device.${deviceId}.model_${modelId}.${name}`;
 };
 
+/** Default result container width */
+const DEFAULT_RESULT_CONTAINER_WIDTH = 800;
+/** Default result container height */
+const DEFAULT_RESULT_CONTAINER_HEIGHT = 424;
+/** Default result container gap */
+const DEFAULT_RESULT_CONTAINER_GAP = 16;
+
+/**
+ * Device Bind Modal
+ */
 const BindModal: React.FC<Props> = ({
     visible,
     device,
@@ -140,7 +153,7 @@ const BindModal: React.FC<Props> = ({
         reset,
         setValue,
         getValues,
-    } = useForm<FormDataProps>();
+    } = useForm<FormDataProps>({ shouldUnregister: true });
     const selectedModelId = useWatch<FormDataProps>({ control, name: AI_MODEL_KEY }) as
         | ApiKey
         | null
@@ -170,12 +183,28 @@ const BindModal: React.FC<Props> = ({
         modelId: selectedModelId,
         device: selectedDevice,
     });
-    const resetForm = useCallback(() => {
-        reset({
-            [DEVICE_KEY]: null,
-            [IMAGE_ENTITY_KEY]: null,
-            [AI_MODEL_KEY]: '',
-        });
+    const handleReset = useCallback(() => {
+        reset(
+            formValues => {
+                const result = { ...formValues };
+
+                Object.keys(result).forEach(key => {
+                    switch (key) {
+                        case DEVICE_KEY:
+                        case IMAGE_ENTITY_KEY:
+                            result[key] = null;
+                            break;
+                        default:
+                            result[key] = '';
+                            break;
+                    }
+                });
+
+                return result;
+            },
+            { keepDefaultValues: true },
+        );
+        setPoints([]);
     }, [reset]);
 
     const onSubmit: SubmitHandler<FormDataProps> = async params => {
@@ -204,16 +233,32 @@ const BindModal: React.FC<Props> = ({
 
         if (error || !isRequestSuccess(resp)) return;
 
-        resetForm();
+        handleReset();
         onSuccess?.();
         toast.success({ content: getIntlText('common.message.operation_success') });
     };
 
     // ---------- Render Inference Result ----------
+    const inferResultRef = useRef<HTMLDivElement>(null);
+    const inferResultSize = useSize(inferResultRef);
+    const imageSize = useMemo(() => {
+        const width = inferResultSize?.width || DEFAULT_RESULT_CONTAINER_WIDTH;
+        const height = inferResultSize?.height || DEFAULT_RESULT_CONTAINER_HEIGHT;
+
+        return {
+            width: width - 2 * DEFAULT_RESULT_CONTAINER_GAP,
+            height: height - 2 * DEFAULT_RESULT_CONTAINER_GAP,
+        };
+    }, [inferResultSize]);
     const formValues = useWatch<FormDataProps>({ control });
     const [points, setPoints] = useState<PointType[]>([]);
     const { run: getInferResult } = useRequest(
-        async (params: Record<string, any>) => {
+        async (params?: Record<string, any>) => {
+            if (!params || Object.values(params).some(it => !it)) {
+                setPoints([]);
+                return;
+            }
+
             const [error, resp] = await awaitWrap(entityAPI.callService({ exchange: params }));
 
             if (error || !isRequestSuccess(resp)) return;
@@ -223,24 +268,26 @@ const BindModal: React.FC<Props> = ({
             setPoints(result);
             return result;
         },
-        {
-            manual: true,
-            debounceWait: 300,
-        },
+        { manual: true },
     );
 
-    useEffect(() => {
-        if (!isAiDynamicFormReady) return;
-        const formParams = decodeAiFormParams(getValues());
+    useDebounceEffect(
+        () => {
+            if (!isImageOptionsReady || !isAiDynamicFormReady) return;
+            const formParams = decodeAiFormParams(getValues());
 
-        if (!formParams || Object.values(formParams).some(it => !it)) {
-            setPoints([]);
-            return;
-        }
-
-        // console.log({ formParams });
-        getInferResult(formParams);
-    }, [formValues, isAiDynamicFormReady, getValues, decodeAiFormParams, getInferResult]);
+            getInferResult(formParams);
+        },
+        [
+            formValues,
+            isImageOptionsReady,
+            isAiDynamicFormReady,
+            getValues,
+            decodeAiFormParams,
+            getInferResult,
+        ],
+        { wait: 500 },
+    );
 
     // ---------- Prevent Leave ----------
     const confirm = useConfirm();
@@ -248,6 +295,7 @@ const BindModal: React.FC<Props> = ({
     // Prevent leave if form is dirty
     const handleBack = () => {
         if (readonly || !isPreventLeave) {
+            handleReset();
             onCancel?.();
             return;
         }
@@ -258,6 +306,7 @@ const BindModal: React.FC<Props> = ({
             description: getIntlText('common.modal.desc_leave_current_page'),
             confirmButtonText: getIntlText('common.button.confirm'),
             onConfirm: () => {
+                handleReset();
                 onCancel?.();
             },
         });
@@ -296,7 +345,7 @@ const BindModal: React.FC<Props> = ({
             ...item,
             entityId: generateEntityId({
                 integrationId: selectedDevice.integration_id!,
-                deviceId: selectedDevice.id,
+                deviceId: selectedDevice.identifier!,
                 modelId: selectedModelId,
                 name: item.name,
             }),
@@ -308,9 +357,9 @@ const BindModal: React.FC<Props> = ({
     // ---------- Reset component data ----------
     useEffect(() => {
         if (visible) return;
-        resetForm();
+        handleReset();
         setIsPreventLeave(false);
-    }, [visible, resetForm]);
+    }, [visible, handleReset]);
 
     // ---------- Render binding details ----------
     const { data: bindingDetail } = useRequest(
@@ -371,6 +420,7 @@ const BindModal: React.FC<Props> = ({
         if (!device || !readonly || !bindingDetail) return;
         const {
             model_id: modelId,
+            device_identifier: deviceIdentifier,
             integration_id: integrationId,
             infer_outputs: inferOutputs,
         } = bindingDetail || {};
@@ -383,7 +433,7 @@ const BindModal: React.FC<Props> = ({
                 entityName: item.entity_name,
                 entityId: generateEntityId({
                     modelId,
-                    deviceId: device.device_id,
+                    deviceId: deviceIdentifier,
                     integrationId,
                     name: item.field_name,
                 }),
@@ -477,7 +527,7 @@ const BindModal: React.FC<Props> = ({
                                 )}
                             </div> */}
                         </div>
-                        <div className="modal-infer-mode-setting-body">
+                        <div className="modal-infer-mode-setting-body" ref={inferResultRef}>
                             {!selectedImageEntity?.value ? (
                                 <Empty />
                             ) : (
@@ -485,8 +535,8 @@ const BindModal: React.FC<Props> = ({
                                     // imgSrc="http://192.168.43.48:9000/beaver-iot-resource/beaver-iot-public/abc856a0-5d17-46e3-bdd3-26b3aa7ec343-20200108-213609-uqZwL.jpg"
                                     imgSrc={selectedImageEntity?.value}
                                     points={points}
-                                    containerWidth={800 - 32}
-                                    containerHeight={424 - 32}
+                                    containerWidth={imageSize.width}
+                                    containerHeight={imageSize.height}
                                 />
                             )}
                         </div>

@@ -68,13 +68,20 @@ const EditableText: React.FC<Props> = ({
     const isEditable = !!onChange;
 
     const handleDoubleClick = useCallback(() => {
-        // if (!isEditable) return;
+        if (!isEditable) return;
         setIsEditing(true);
     }, [isEditable]);
 
     // ---------- Render input ----------
     const [inputText, setInputText] = useState(text);
     const inputRef = useRef<HTMLInputElement>(null);
+    const innerPosition = useMemo(
+        () => ({
+            x: !position?.x || position.x < 0 ? 0 : position.x,
+            y: !position?.y || position.y < 0 ? 0 : position.y,
+        }),
+        [position],
+    );
     const inputStyle = useMemo(() => {
         const labelNode = labelRef.current;
         const result: React.CSSProperties = { display: 'none' };
@@ -82,8 +89,8 @@ const EditableText: React.FC<Props> = ({
         if (!isEditing || !labelNode) return result;
         result.display = 'block';
         result.position = 'absolute';
-        result.top = `${position?.y || 0}px`;
-        result.left = `${position?.x || 0}px`;
+        result.top = `${innerPosition.y}px`;
+        result.left = `${innerPosition.x}px`;
         result.width = `${labelNode.width()}px`;
         result.minWidth = `${MIN_INPUT_WIDTH / scale}px`;
         result.maxWidth = `${MAX_INPUT_WIDTH / scale}px`;
@@ -105,7 +112,7 @@ const EditableText: React.FC<Props> = ({
         result.transform = transform;
 
         return result;
-    }, [backgroundColor, color, fontSize, padding, position?.x, position?.y, scale, isEditing]);
+    }, [backgroundColor, color, fontSize, padding, innerPosition, scale, isEditing]);
 
     const handleInputKeyDown = (e: any) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -134,8 +141,8 @@ const EditableText: React.FC<Props> = ({
         <>
             <Label
                 ref={labelRef}
-                x={position?.x}
-                y={position?.y}
+                x={innerPosition.x}
+                y={innerPosition.y}
                 visible={visible && !isEditing}
                 onDblClick={handleDoubleClick}
                 onDblTap={handleDoubleClick}
