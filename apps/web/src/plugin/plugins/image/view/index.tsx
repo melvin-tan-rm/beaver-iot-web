@@ -70,8 +70,12 @@ const View = (props: ViewProps) => {
                 return;
             }
 
-            const entityStatus = getResponseData(res);
-            setImageSrc(!entityStatus?.value ? '' : `${entityStatus.value}`);
+            let value = getResponseData(res)?.value || '';
+
+            if (value && !value.startsWith('http') && !value.startsWith('data:image/')) {
+                value = `data:image/png;base64,${value}`;
+            }
+            setImageSrc(value);
         },
         {
             manual: true,
