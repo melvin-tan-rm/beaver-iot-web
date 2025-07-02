@@ -9,5 +9,6 @@
     "device.label.param_founder": "Founder",
     "device.label.param_source": "Source",
     "device.message.delete_tip": "Are you sure to delete?",
-    "device.label.device_group": "设备组"
+    "device.label.device_group": "设备组",
+    "device.label.add_device_group": "新建设备组"
 }

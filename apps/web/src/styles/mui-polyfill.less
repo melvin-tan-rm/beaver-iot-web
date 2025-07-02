@@ -90,12 +90,11 @@
 }
 
 // ---------- Date Picker ----------
-.@{mui-prefix}PickersLayout-root  {
+.@{mui-prefix}PickersLayout-root {
     .@{mui-prefix}PickersYear-yearButton.@{mui-prefix}-selected,
     .@{mui-prefix}PickersMonth-monthButton.@{mui-prefix}-selected,
     .@{mui-prefix}PickersWeek-weekButton.@{mui-prefix}-selected,
-    .@{mui-prefix}DateCalendar-root
-        .@{mui-prefix}ButtonBase-root.@{mui-prefix}-selected,
+    .@{mui-prefix}DateCalendar-root .@{mui-prefix}ButtonBase-root.@{mui-prefix}-selected,
     .@{mui-prefix}MultiSectionDigitalClockSection-root
         .@{mui-prefix}MenuItem-root.@{mui-prefix}-selected {
         background-color: var(--primary-color-7);
@@ -158,7 +157,7 @@ input.@{mui-prefix}InputBase-input {
     &.@{mui-prefix}-focused {
         .@{mui-prefix}OutlinedInput-notchedOutline {
             border-width: 1px;
-            box-shadow: 0 0 0 2px #7b4efa3d;
+            box-shadow: 0 0 0 2px var(--primary-color-1);
         }
 
         &:hover {

@@ -1,7 +1,9 @@
 .header {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding-top: @padding-xxs;
     margin-bottom: @margin-lg;
 
     .left {
@@ -16,7 +18,6 @@
         :global {
             .@{prefix}-tooltip {
                 display: flex;
-                padding-left: @padding-sm;
             }
 
             svg {
@@ -28,5 +29,11 @@
                 }
             }
         }
+    }
+
+    .search {
+        position: absolute;
+        top: 0;
+        right: 25px;
     }
 }
