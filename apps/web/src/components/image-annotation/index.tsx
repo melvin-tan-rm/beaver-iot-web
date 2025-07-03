@@ -253,7 +253,7 @@ const ImageAnnotation = forwardRef<ImageAnnotationInstance, ImageAnnotationProps
                         height={imgSize.naturalHeight}
                     />
 
-                    {points.map(({ label, confidence, rect, polygon, skeleton }, index) => {
+                    {points.map(({ label = '', confidence, rect, polygon, skeleton }, index) => {
                         const innerLabel = !editable
                             ? `${label}${confidence ? ` (${confidence.toFixed(2)})` : ''}`
                             : label || `#${index + 1}}`;
