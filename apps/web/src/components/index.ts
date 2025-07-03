@@ -3,7 +3,7 @@ export { default as Breadcrumbs } from './breadcrumbs';
 export {
     default as TablePro,
     type ColumnType,
-    type Props as TableProProps,
+    type TableProProps,
     type FilterValue,
     type FilterKey,
     type FilterDropdownProps,
@@ -46,3 +46,4 @@ export { default as ToggleRadio } from './toggle-radio';
 export { default as ActionInput } from './action-input';
 export { default as GradientBgContainer } from './gradient-bg-container';
 export { default as ImageAnnotation, type Vector2d } from './image-annotation';
+export { DragContainer, DragCard } from './drag';

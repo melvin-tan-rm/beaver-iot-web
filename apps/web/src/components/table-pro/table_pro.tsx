@@ -1,54 +1,28 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { isArray, isUndefined } from 'lodash-es';
-import { OutlinedInput, InputAdornment, Popover, Button } from '@mui/material';
-import {
-    DataGrid,
-    type DataGridProps,
-    type GridValidRowModel,
-    type GridColDef,
-    ElementSize,
-    MuiEvent,
-    GridCallbackDetails,
-    GridColumnResizeParams,
-    useGridApiRef,
-} from '@mui/x-data-grid';
-import { useI18n } from '@milesight/shared/src/hooks';
+import { OutlinedInput, InputAdornment } from '@mui/material';
+import { DataGrid, type GridValidRowModel, useGridApiRef } from '@mui/x-data-grid';
+import { useI18n, useTheme } from '@milesight/shared/src/hooks';
 import { SearchIcon } from '@milesight/shared/src/components';
 import Tooltip from '../tooltip';
-import { Footer, NoDataOverlay, NoResultsOverlay } from './components';
-import { ColumnType, FilterValue } from './interface';
 import {
     useFilterProps,
     useHeader,
     usePinnedColumn,
-    useTablePro,
+    useColumnsCacheKey,
+    useTable,
     DEFAULT_PAGINATION_MODEL,
 } from './hook';
+import { TableProProps } from './types';
+import {
+    ColumnSettingProps,
+    ColumnsSetting,
+    Footer,
+    NoDataOverlay,
+    NoResultsOverlay,
+} from './components';
 
 import './style.less';
-
-export interface Props<T extends GridValidRowModel> extends DataGridProps<T> {
-    /** table column */
-    columns: ColumnType<T>[];
-
-    /**
-     * Toolbar slot (Custom render Node on the left)
-     */
-    toolbarRender?: React.ReactNode;
-
-    /** Search box input callback */
-    onSearch?: (value: string) => void;
-
-    /** Refresh button click callback */
-    onRefreshButtonClick?: () => void;
-    /**  filter info change */
-    onFilterInfoChange?: (filters: Record<string, FilterValue | null>) => void;
-
-    /**
-     * toolbar sort
-     */
-    toolbarSort?: React.ReactNode;
-}
 
 /**
  * Data form element
@@ -64,42 +38,52 @@ const TablePro = <DataType extends GridValidRowModel>({
     onRefreshButtonClick,
     onFilterInfoChange,
     paginationMode = 'server',
+    tableName,
+    columnSetting = false,
+    settingShowOpeColumn = false,
     ...props
-}: Props<DataType>) => {
+}: TableProProps<DataType>) => {
     const { getIntlText } = useI18n();
+    const { matchMobile } = useTheme();
+
     const apiRef = useGridApiRef();
+    const { getCacheKey } = useColumnsCacheKey(tableName);
+    const columnsDisplayCacheKey = getCacheKey('display');
+    const columnsWidthCacheKey = getCacheKey('width');
+
     const { getColumnFilterProps } = useFilterProps();
     const { renderHeader } = useHeader({
         onFilterInfoChange,
         columns,
     });
+    const { pageSizeOptions } = useTable({
+        apiRef,
+        props,
+    });
 
-    const { pageSizeOptions } = useTablePro(props);
-
-    const [resizeColumns, setResizeColumns] = useState<ColumnType[]>(columns);
+    const [resultColumns, setResultColumns] = useState<ColumnSettingProps<DataType>[]>(columns);
     const { pinnedColumnPos, sxFieldClass, sortGroupByFixed } = usePinnedColumn({
         apiRef,
-        columns,
+        columns: resultColumns,
         restProps: props,
     });
 
-    useEffect(() => {
-        setResizeColumns(columns);
-    }, [columns]);
+    const columnSettingEnable = useMemo(() => {
+        return !matchMobile && columnSetting;
+    }, [matchMobile, columnSetting]);
 
-    const handleColumnResize = (col: GridColumnResizeParams) => {
-        setResizeColumns(
-            columns.map(column => {
-                if (col.colDef.field === column.field) {
-                    return { ...column, width: col.width, flex: col.colDef.flex };
-                }
-                return { ...column };
-            }),
-        );
+    /**
+     * Column display or width or fixed change event
+     */
+    const handleColumnSettingChange = (newColumns: ColumnSettingProps<DataType>[]) => {
+        console.log(11, newColumns);
+        setResultColumns(newColumns);
     };
 
     const memoColumns = useMemo(() => {
-        const result = resizeColumns.map((column, index) => {
+        const result = (
+            columnSettingEnable ? resultColumns.filter(col => col.checked) : resultColumns
+        ).map((column, index) => {
             const filterDropdown = column.filterSearchType
                 ? getColumnFilterProps(column.filterSearchType)
                 : {};
@@ -134,14 +118,6 @@ const TablePro = <DataType extends GridValidRowModel>({
                     return (
                         <Tooltip
                             autoEllipsis
-                            PopperProps={{
-                                sx: {
-                                    '&[data-popper-reference-hidden]': {
-                                        display: 'none',
-                                        'pointer-events': 'none',
-                                    },
-                                },
-                            }}
                             title={title || '-'}
                             slotProps={{
                                 popper: {
@@ -157,11 +133,11 @@ const TablePro = <DataType extends GridValidRowModel>({
         });
 
         return sortGroupByFixed(result);
-    }, [resizeColumns, pinnedColumnPos]);
+    }, [resultColumns, pinnedColumnPos]);
 
     return (
         <div className="ms-table-pro">
-            {!!(toolbarRender || onSearch || toolbarSort) && (
+            {!!(toolbarRender || onSearch || toolbarSort || columnSettingEnable) && (
                 <div className="ms-table-pro__header">
                     <div className="ms-table-pro__topbar-operations">{toolbarRender}</div>
                     {!!onSearch && (
@@ -177,6 +153,16 @@ const TablePro = <DataType extends GridValidRowModel>({
                                 }
                             />
                         </div>
+                    )}
+                    {columnSettingEnable && (
+                        <ColumnsSetting<DataType>
+                            apiRef={apiRef}
+                            columns={columns}
+                            columnsDisplayCacheKey={columnsDisplayCacheKey}
+                            columnsWidthCacheKey={columnsWidthCacheKey}
+                            onChange={handleColumnSettingChange}
+                            settingShowOpeColumn={settingShowOpeColumn}
+                        />
                     )}
                     {!!toolbarSort && (
                         <div className="ms-table-pro__topbar-sort">{toolbarSort}</div>
@@ -226,14 +212,6 @@ const TablePro = <DataType extends GridValidRowModel>({
                         ...slotProps,
                     }}
                     {...props}
-                    onColumnWidthChange={(
-                        col: GridColumnResizeParams,
-                        event: MuiEvent,
-                        details: GridCallbackDetails,
-                    ) => {
-                        handleColumnResize(col);
-                        props?.onColumnWidthChange?.(col, event, details);
-                    }}
                 />
             </div>
         </div>

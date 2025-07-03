@@ -1,22 +1,57 @@
 import React from 'react';
-import { type GridValidRowModel, type GridColDef } from '@mui/x-data-grid';
+import { type GridValidRowModel, type GridColDef, DataGridProps } from '@mui/x-data-grid';
 import { DateRangePickerValueType } from '../date-range-picker';
 
 export type Key = React.Key;
 export type SafeKey = Exclude<Key, bigint>;
 /**
- * filterInfo key
+ * FilterInfo key
  */
 export type FilterValue = (Key | boolean)[];
 export type FilterKey = Key[] | null;
 
 /**
- * filter component type
+ * Filter component type
  */
 export type FilterSearchType = 'search' | 'datePicker';
 
+export interface TableProProps<T extends GridValidRowModel> extends DataGridProps<T> {
+    /** Table column */
+    columns: ColumnType<T>[];
+
+    /**
+     * Toolbar slot (Custom render Node on the left)
+     */
+    toolbarRender?: React.ReactNode;
+
+    /** Search box input callback */
+    onSearch?: (value: string) => void;
+
+    /** Refresh button click callback */
+    onRefreshButtonClick?: () => void;
+    /**  filter info change */
+    onFilterInfoChange?: (filters: Record<string, FilterValue | null>) => void;
+
+    /**
+     * Toolbar sort
+     */
+    toolbarSort?: React.ReactNode;
+    /**
+     * Unique identifier, used for storing data such as column width and column display to local storage
+     */
+    tableName?: string;
+    /**
+     * Whether or not enable the column setting function
+     */
+    columnSetting?: boolean;
+    /**
+     * Whether to default to a show operation column in setting
+     */
+    settingShowOpeColumn?: boolean;
+}
+
 /**
- * table column type
+ * Table column type
  */
 export type ColumnType<R extends GridValidRowModel = any, V = any, F = V> = GridColDef<R, V, F> & {
     /**
@@ -24,47 +59,51 @@ export type ColumnType<R extends GridValidRowModel = any, V = any, F = V> = Grid
      */
     ellipsis?: boolean;
     /**
-     * filter icon
+     * Column header filter icon
      */
     filterIcon?: React.ReactNode | ((filtered: boolean) => React.ReactNode);
     /**
-     * filter dropdown container
+     * Column header filter dropdown container
      */
     filterDropdown?:
         | React.ReactNode
         | ((FilterDropdownProps: FilterDropdownProps) => React.ReactNode);
     /**
-     * filtered value
+     * Column header filtered value
      */
     filteredValue?: string;
     /**
-     * search type
+     * Column header filter search type
      */
     filterSearchType?: FilterSearchType;
     /**
-     * filter array
+     * Column header filter array
      */
     filters?: {
         text: string;
         value: string | number;
     }[];
     /**
-     * dropdown component visible event
+     * Column header dropdown component visible event
      */
     onFilterDropdownOpenChange?: (visible: boolean) => void;
     /**
-     * column fixed direction，need width field and field cannot include special characters(eg: $/)
+     * Column fixed direction，It will take effect only when width or min width is configured
      */
     fixed?: 'left' | 'right';
+    /**
+     * Is hide column, It can be enabled through column setting
+     */
+    hidden?: boolean;
 };
 
 /**
- * search keys type
+ * Search keys type
  */
 export type SelectKeysType = React.Key | DateRangePickerValueType;
 
 /**
- * filter dropdown props
+ * Column header Filter dropdown props
  */
 export interface FilterDropdownProps {
     setSelectedKeys: (selectedKeys: SelectKeysType[]) => void;
@@ -75,7 +114,7 @@ export interface FilterDropdownProps {
 }
 
 /**
- * FilterState type
+ * Column header Filter state type
  */
 export interface FilterState {
     column: ColumnType;
@@ -84,19 +123,19 @@ export interface FilterState {
 }
 
 /**
- * filter value type
+ * Column header Filter value type
  */
 export type FiltersRecordType = Record<string, FilterValue | null>;
 
 /**
- * filter etc info change event
+ * Column header Filter etc info change event
  */
 export interface ChangeEventInfo {
     filters: FiltersRecordType;
 }
 
 /**
- * column filters type
+ * Column header Column filters type
  */
 export interface ColumnFilterItem {
     text: React.ReactNode;

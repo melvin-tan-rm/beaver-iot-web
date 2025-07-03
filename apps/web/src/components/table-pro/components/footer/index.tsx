@@ -147,11 +147,11 @@ const CustomFooter: React.FC<CustomFooterProps> = ({
                 </IconButton>
                 <Box sx={{ ml: 1, display: 'flex', alignItems: 'center' }}>
                     {!!selectedCount && (
-                        <Typography variant="subtitle2" sx={{ ml: 1 }}>
+                        <Typography variant="body2" sx={{ ml: 1 }}>
                             {getIntlText('common.label.selected_count')}: {selectedCount} ,
                         </Typography>
                     )}
-                    <Typography variant="subtitle2" sx={{ ml: 1 }}>
+                    <Typography variant="body2" sx={{ ml: 1 }}>
                         {getIntlText('common.label.total_count')}: {totalCount}
                     </Typography>
                 </Box>

@@ -1,9 +1,9 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { last, orderBy } from 'lodash-es';
+import { useEffect, useMemo, useState } from 'react';
+import { orderBy } from 'lodash-es';
 import { DataGridProps, GridColDef, GridValidRowModel } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { useTheme } from '@milesight/shared/src/hooks';
-import { ColumnType } from '../interface';
+import { ColumnType } from '../types';
 
 export interface PinnedColumnType<T extends GridValidRowModel> {
     /**
@@ -28,6 +28,11 @@ type PinnedColumn = ColumnType & {
     posClassName?: string;
 };
 
+// Replace css class name characters that are not legal
+const sanitizeClassName = (className: string) => {
+    return className.replace(/[^a-zA-Z0-9\-_]/g, '');
+};
+
 const CHECKBOX_SIZE = 50;
 const HEADER_FIXED_LEFT_CLASS = 'ms-table-header-fix-left';
 const HEADER_FIXED_RIGHT_CLASS = 'ms-table-header-fix-right';
@@ -41,7 +46,7 @@ const ROW_CHECKBOX_CLASS = [
 ];
 
 /**
- * pinning column
+ * Pinned column hooks
  */
 const usePinnedColumn = <T extends GridValidRowModel>(props: PinnedColumnType<T>) => {
     const { matchMobile } = useTheme();
@@ -57,7 +62,7 @@ const usePinnedColumn = <T extends GridValidRowModel>(props: PinnedColumnType<T>
     ): PinnedColumn => {
         const headerClassNameList = [
             column.headerClassName as string,
-            `${POS_PREFIX}${column.field}`,
+            `${POS_PREFIX}${sanitizeClassName(column.field)}`,
             column.fixed === 'left' ? HEADER_FIXED_LEFT_CLASS : HEADER_FIXED_RIGHT_CLASS,
             pinnedLeftLast?.field === column.field ? `${CELL_FIXED_LEFT_CLASS}-last` : '',
             pinnedRightFirst?.field === column.field ? `${CELL_FIXED_RIGHT_CLASS}-first` : '',
@@ -65,7 +70,7 @@ const usePinnedColumn = <T extends GridValidRowModel>(props: PinnedColumnType<T>
 
         const cellClassNameList = [
             column.cellClassName as string,
-            `${POS_PREFIX}${column.field}`,
+            `${POS_PREFIX}${sanitizeClassName(column.field)}`,
             column.fixed === 'left' ? CELL_FIXED_LEFT_CLASS : CELL_FIXED_RIGHT_CLASS,
             pinnedLeftLast?.field === column.field ? `${CELL_FIXED_LEFT_CLASS}-last` : '',
             pinnedRightFirst?.field === column.field ? `${CELL_FIXED_RIGHT_CLASS}-first` : '',
@@ -75,24 +80,25 @@ const usePinnedColumn = <T extends GridValidRowModel>(props: PinnedColumnType<T>
             ...column,
             headerClassName: headerClassNameList.join(' '),
             cellClassName: cellClassNameList.join(' '),
-            posClassName: `.${POS_PREFIX}${column.field}`,
+            posClassName: `.${POS_PREFIX}${sanitizeClassName(column.field)}`,
         };
     };
 
-    // Calculate the absolute positions of the columns that need to be fixed
+    /**
+     *  Calculate the absolute positions of the columns that need to be fixed
+     */
     const pinnedColumnPos: Record<ColumnType['field'], PinnedColumn> = useMemo(() => {
         if (matchMobile) return {};
         const pinnedColumns = columns
-            .filter(
-                (column: ColumnType) =>
-                    !!column.width || (column.minWidth && column.minWidth === column.maxWidth),
-            )
+            .filter((column: ColumnType) => !!column.width || !!column.minWidth)
             .reduce((groupAcc: any, column: ColumnType) => {
                 const { fixed = '' } = column;
                 if (!groupAcc[fixed]) {
                     groupAcc[fixed] = [];
                 }
-                if (column.minWidth && column.minWidth === column.maxWidth) {
+                // When fixing through column Settings, some columns do not have a clear width,
+                // but they can also be fixed. Modify the width to calculate the absolute position
+                if (!column.width && column.minWidth) {
                     column.width = column.minWidth;
                 }
                 groupAcc[fixed].push(column);
@@ -142,7 +148,9 @@ const usePinnedColumn = <T extends GridValidRowModel>(props: PinnedColumnType<T>
             }, {});
     }, [columns, scrollYSize]);
 
-    // init table sx
+    /**
+     *  Generate styles that require fixed columns
+     */
     const sxFieldClass = useMemo(() => {
         const sxProperty = Object.entries(pinnedColumnPos).reduce(
             (acc, [key, value]) => {
@@ -173,17 +181,20 @@ const usePinnedColumn = <T extends GridValidRowModel>(props: PinnedColumnType<T>
         if (!columns.some(column => !!column.fixed)) {
             return;
         }
+        // Cancel the column virtuality; otherwise, the fixation will fail when scrolling
         apiRef.current?.unstable_setColumnVirtualization(false);
         apiRef.current.subscribeEvent('stateChange', state => {
             setScrollYSize(state.dimensions.hasScrollY ? state.dimensions.scrollbarSize : 0);
         });
     }, [apiRef.current, columns]);
 
-    // Grouping based on the fixed value enables the aggregation of the same type
-    const sortGroupByFixed = (memoColumns: ColumnType<T>[]) => {
-        return memoColumns.some(v => !!v.fixed)
+    /**
+     * Grouping based on the fixed value enables the aggregation of the same type
+     */
+    const sortGroupByFixed = (resultColumns: ColumnType<T>[]) => {
+        return resultColumns.some(v => !!v.fixed)
             ? orderBy(
-                  memoColumns,
+                  resultColumns,
                   [
                       item => {
                           return (
@@ -193,15 +204,15 @@ const usePinnedColumn = <T extends GridValidRowModel>(props: PinnedColumnType<T>
                   ],
                   ['asc'],
               )
-            : (memoColumns as readonly GridColDef<T>[]);
+            : (resultColumns as readonly GridColDef<T>[]);
     };
 
     return {
-        /** fixed column */
+        /** Fixed column info */
         pinnedColumnPos,
-        /** column field class sx */
+        /** Column field class sx */
         sxFieldClass,
-        /** sort group by fixed */
+        /** Sort group by fixed value */
         sortGroupByFixed,
     };
 };

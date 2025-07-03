@@ -22,6 +22,7 @@ import {
 import { entityAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import { ENTITY_TYPE, PERMISSIONS } from '@/constants';
 import { useUserPermissions } from '@/hooks';
+import { useMatches } from 'react-router';
 import { useColumns, type UseColumnsProps, type TableRowDataType } from '../../hooks';
 import AddModal from '../add-modal';
 import AddFromWorkflow from '../add-from-workflow';
@@ -98,7 +99,7 @@ export default () => {
                     if (error || !isRequestSuccess(resp)) return;
 
                     getList();
-                    setSelectedIds([]);
+                    // setSelectedIds([]);
                     toast.success(getIntlText('common.message.delete_success'));
                 },
             });

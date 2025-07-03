@@ -235,5 +235,9 @@
     "valid.resp.at_least_one": "Please select at least one {1}.",
     "common.label.page": "page",
     "common.label.selected_count": "Selected",
-    "common.label.total_count": "Total"
+    "common.label.total_count": "Total",
+    "common.label.columns_setting": "Column settings",
+    "common.label.column_setting_fixed_left": "Left (fixed)",
+    "common.label.column_setting_fixed_right": "Right (fixed)",
+    "common.label.column_setting_non_fixed_column": "Adaptive columns"
 }
