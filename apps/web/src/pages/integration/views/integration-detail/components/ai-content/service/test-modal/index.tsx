@@ -2,6 +2,7 @@ import React, { useMemo, useEffect, useState, useRef } from 'react';
 import { Button, IconButton, CircularProgress } from '@mui/material';
 import { useForm, useWatch, Controller, type SubmitHandler } from 'react-hook-form';
 import { isEqual } from 'lodash-es';
+import { useSize } from 'ahooks';
 import { useI18n, useCopy } from '@milesight/shared/src/hooks';
 import { linkDownload } from '@milesight/shared/src/utils/tools';
 import {
@@ -46,6 +47,15 @@ const resultOptionConfigs: {
     { labelIntlKey: 'common.label.image', value: 'image' },
     { labelIntlKey: 'common.label.json', value: 'json' },
 ];
+
+/** Default result container width */
+const DEFAULT_RESULT_CONTAINER_WIDTH = 800;
+/** Default result container height */
+const DEFAULT_RESULT_CONTAINER_HEIGHT = 643;
+/** Default result container header height */
+const DEFAULT_RESULT_CONTAINER_HEADER_HEIGHT = 45;
+/** Default result container gap */
+const DEFAULT_RESULT_CONTAINER_GAP = 16;
 
 const TestModal: React.FC<Props> = ({ modelName, entities, visible, onCancel, ...props }) => {
     const { getIntlText, getIntlHtml, mergeIntlText } = useI18n();
@@ -132,6 +142,18 @@ const TestModal: React.FC<Props> = ({ modelName, entities, visible, onCancel, ..
     };
 
     // ---------- Render Result ----------
+    const inferResultRef = useRef<HTMLDivElement>(null);
+    const inferResultSize = useSize(inferResultRef);
+    const imageSize = useMemo(() => {
+        const width = inferResultSize?.width || DEFAULT_RESULT_CONTAINER_WIDTH;
+        const height = inferResultSize?.height || DEFAULT_RESULT_CONTAINER_HEIGHT;
+
+        return {
+            width: width - 2 * DEFAULT_RESULT_CONTAINER_GAP,
+            height:
+                height - DEFAULT_RESULT_CONTAINER_HEADER_HEIGHT - 2 * DEFAULT_RESULT_CONTAINER_GAP,
+        };
+    }, [inferResultSize]);
     const [originalImageUrl, setOriginalImageUrl] = useState<string | null>();
     const [output, setOutput] = useState<InferenceResponse['outputs']['data'] | null>();
     const [points, setPoints] = useState<PointType[]>([]);
@@ -196,7 +218,7 @@ const TestModal: React.FC<Props> = ({ modelName, entities, visible, onCancel, ..
                     {!output || !originalImageUrl ? (
                         <Empty text={getIntlHtml('setting.integration.ai_model_param_input_tip')} />
                     ) : (
-                        <div className="result-main">
+                        <div className="result-main" ref={inferResultRef}>
                             <div className="result-main-header">
                                 <div className="result-main-header-title">
                                     {getIntlText('common.label.result')}
@@ -255,8 +277,8 @@ const TestModal: React.FC<Props> = ({ modelName, entities, visible, onCancel, ..
                                         ref={stageRef}
                                         imgSrc={originalImageUrl}
                                         points={points}
-                                        containerWidth={800 - 40}
-                                        containerHeight={643 - 40}
+                                        containerWidth={imageSize.width}
+                                        containerHeight={imageSize.height}
                                         // onPointsChange={setPoints}
                                     />
                                 </div>
