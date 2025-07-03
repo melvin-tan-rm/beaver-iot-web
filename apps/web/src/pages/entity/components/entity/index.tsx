@@ -240,6 +240,7 @@ export default () => {
     return (
         <div className="ms-main">
             <TablePro<TableRowDataType>
+                keepNonExistentRowsSelected
                 filterCondition={[keyword]}
                 checkboxSelection={hasPermission(PERMISSIONS.ENTITY_DATA_EXPORT)}
                 loading={loading}

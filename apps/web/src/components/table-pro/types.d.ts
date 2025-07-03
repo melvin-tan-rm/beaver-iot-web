@@ -46,6 +46,7 @@ export interface TableProProps<T extends GridValidRowModel> extends DataGridProp
     tableName?: string;
     /**
      * Whether or not enable the column setting function
+     * Note：It is essential to configure the tableName when enable
      */
     columnSetting?: boolean;
     /**

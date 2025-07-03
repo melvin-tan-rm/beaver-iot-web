@@ -137,6 +137,7 @@ export default () => {
             <div className="ms-view ms-view-device">
                 <div className="ms-view__inner">
                     <TablePro<TableRowDataType>
+                        keepNonExistentRowsSelected
                         filterCondition={[keyword]}
                         checkboxSelection={hasPermission(PERMISSIONS.DEVICE_DELETE)}
                         loading={loading}
@@ -145,7 +146,6 @@ export default () => {
                         rowCount={deviceData?.total || 0}
                         paginationModel={paginationModel}
                         rowSelectionModel={selectedIds}
-                        isRowSelectable={({ row }) => row.deletable}
                         toolbarRender={toolbarRender}
                         onPaginationModelChange={setPaginationModel}
                         onRowSelectionModelChange={setSelectedIds}
