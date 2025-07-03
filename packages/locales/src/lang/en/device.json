@@ -10,5 +10,9 @@
     "device.label.param_source": "Source",
     "device.message.delete_tip": "Are you sure to delete?",
     "device.label.device_group": "设备组",
-    "device.label.add_device_group": "新建设备组"
+    "device.label.add_device_group": "新建设备组",
+    "device.label.all_devices": "所有设备",
+    "device.label.ungrouped_devices": "未分组",
+    "device.label.edit_device_group": "编辑设备组",
+    "device.tip.delete_device_group": "删除设备分组会将该分组下的所有设备的归属组置空。确认要删除该设备分组吗？"
 }

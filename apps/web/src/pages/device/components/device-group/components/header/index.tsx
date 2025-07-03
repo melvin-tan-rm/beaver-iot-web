@@ -13,10 +13,12 @@ import styles from './style.module.less';
 export interface HeaderProps {
     /** Handle the search input value keyword change */
     onSearch?: (keyword: string) => void;
+    /** add new group */
+    onAdd?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = props => {
-    const { onSearch } = props;
+    const { onSearch, onAdd } = props;
 
     const { getIntlText } = useI18n();
 
@@ -49,7 +51,12 @@ const Header: React.FC<HeaderProps> = props => {
     return (
         <div className={styles.header}>
             <div className={styles.left}>{getIntlText('device.label.device_group')}</div>
-            <div className={styles.right}>
+            <div
+                className={styles.right}
+                onClick={() => {
+                    onAdd?.();
+                }}
+            >
                 <Tooltip title={getIntlText('device.label.add_device_group')}>
                     <AddIcon />
                 </Tooltip>

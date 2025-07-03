@@ -1,0 +1,62 @@
+import React from 'react';
+import classNames from 'classnames';
+import { useMemoizedFn } from 'ahooks';
+import { Typography } from '@mui/material';
+
+import MoreDropdown, { MORE_OPERATION } from '../more-dropdown';
+import { useBody, type DeviceGroupItemType } from './hooks/useBody';
+
+import styles from './style.module.less';
+
+export interface BodyProps {
+    deviceGroups?: DeviceGroupItemType[];
+    onOperation?: (operation: MORE_OPERATION, record: DeviceGroupItemType) => void;
+}
+
+/**
+ * device group content
+ */
+const Body: React.FC<BodyProps> = props => {
+    const { deviceGroups, onOperation } = props;
+    const { data, activeGroup, handleGroupClick, hiddenMore, groupItemIcon } =
+        useBody(deviceGroups);
+
+    const groupItemCls = useMemoizedFn((currentItem: DeviceGroupItemType) => {
+        return classNames(styles.item, {
+            [styles.active]: currentItem.id === activeGroup?.id,
+        });
+    });
+
+    const renderGroupItem = (item: DeviceGroupItemType) => {
+        return (
+            <div
+                key={item.id}
+                className={groupItemCls(item)}
+                onClick={() => handleGroupClick(item)}
+            >
+                <div className={styles['name-wrapper']}>
+                    <div className={styles.icon}>{groupItemIcon(item.id)}</div>
+
+                    <Typography variant="inherit" noWrap title={item.name}>
+                        {item.name}
+                    </Typography>
+                </div>
+
+                {!hiddenMore(item.id) && (
+                    <MoreDropdown
+                        isActive={item.id === activeGroup?.id}
+                        onOperation={operation => onOperation?.(operation, item)}
+                    />
+                )}
+            </div>
+        );
+    };
+
+    return (
+        <div className={`${styles.body} ms-perfect-scrollbar`}>
+            {data.map(d => renderGroupItem(d))}
+        </div>
+    );
+};
+
+export default Body;
