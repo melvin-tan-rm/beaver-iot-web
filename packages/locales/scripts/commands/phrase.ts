@@ -21,6 +21,35 @@ import { sendMessage } from '../services/wx-work';
 const execJobCommand = async (name?: string, options?: ConfigType['phrase']) => {
     if (!phraseClient) return;
 
+    // ---------- Get Project & Locales Info ----------
+    const [projectErrors, [project, locales] = []] = await awaitWrap(
+        Promise.all([getProjectDetail(), getProjectLocales()]),
+    );
+
+    if (projectErrors) {
+        logger.error(`\n💥 Failed to get project locales, please check and try again.`);
+        return;
+    }
+
+    const defaultLocale = locales.find(
+        locale => locale.default || locale.code === options.defaultLocale,
+    );
+
+    if (!defaultLocale) {
+        logger.error(
+            `\n💥 The default locale ${options.defaultLocale} does not exist in the project, please check and try again.`,
+        );
+        return;
+    }
+
+    logger.info(`
+ℹ️ Phrase Project Info:
+- Name: ${project.name}
+- Locales: ${locales.map(locale => locale.name).join(', ')}
+- Default Locale: ${defaultLocale.code} (Update Time: ${new Date(defaultLocale.updated_at).toLocaleString()})
+    `);
+
+    // ---------- Prompt to get answers ----------
     const answers = await inquirer.prompt([
         {
             type: 'input',
@@ -83,27 +112,6 @@ const execJobCommand = async (name?: string, options?: ConfigType['phrase']) => 
 
     logger.info('\n✳️ Starting to create a new Phrase job...');
     const startTime = Date.now();
-
-    // ---------- Get Project Locales ----------
-    const [projectErrors, [project, locales] = []] = await awaitWrap(
-        Promise.all([getProjectDetail(), getProjectLocales()]),
-    );
-
-    if (projectErrors) {
-        logger.error(`\n💥 Failed to get project locales, please check and try again.`);
-        return;
-    }
-
-    const defaultLocale = locales.find(
-        locale => locale.default || locale.code === options.defaultLocale,
-    );
-
-    if (!defaultLocale) {
-        logger.error(
-            `\n💥 The default locale ${options.defaultLocale} does not exist in the project, please check and try again.`,
-        );
-        return;
-    }
 
     // ---------- Upload New Locale Texts ----------
     const contents = await fse.readFile(targetPath, 'utf-8');
