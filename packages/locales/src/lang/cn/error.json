@@ -29,5 +29,6 @@
     "error.http.topic_exists": "Topic 已存在",
     "error.http.device_id_not_found": "键 device_id 找不到",
     "error.http.json_validate_error": "Json 校验错误",
-    "error.http.device_entity_value_validate_error": "设备实体值校验错误"
+    "error.http.device_entity_value_validate_error": "设备实体值校验错误",
+    "error.http.template_name_exists": "设备模板名称已存在"
 }

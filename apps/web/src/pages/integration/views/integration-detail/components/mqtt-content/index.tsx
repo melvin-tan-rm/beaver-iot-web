@@ -50,6 +50,9 @@ const MqttContent: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
         if (error || !data || !isRequestSuccess(resp)) {
             return;
         }
+        if (!data.server) {
+            data.server = location.hostname;
+        }
         setBrokerInfo(data);
     };
 

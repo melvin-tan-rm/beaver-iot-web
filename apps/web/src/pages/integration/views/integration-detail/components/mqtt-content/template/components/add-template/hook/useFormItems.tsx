@@ -51,11 +51,6 @@ const useFormItems = ({ prefixTopic }: { prefixTopic: string }) => {
                         checkRequired: checkRequired(),
                         checkMaxLength: checkMaxLength({ max: 64 }),
                         checkLettersAndNum: checkLettersAndNum(),
-                        checkRepeat: value => {
-                            return new Set(value as string).size === (value as string).length
-                                ? true
-                                : getIntlText('setting.integration.valid_repeat_char');
-                        },
                     },
                 },
                 render({ field: { onChange, value }, fieldState: { error } }) {

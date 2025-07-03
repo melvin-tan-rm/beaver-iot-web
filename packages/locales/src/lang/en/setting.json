@@ -99,7 +99,6 @@
     "setting.integration.ai_infer_result_setting": "Inference result settings",
     "setting.integration.device_template": "Device template management",
     "setting.integration.mqtt_broker": "MQTT Broker",
-    "setting.integration.valid_repeat_char": "No repeated characters",
     "setting.integration.mqtt_server_url": "MQTT server address",
     "setting.integration.mqtt_broker_port": "MQTT Broker Port",
     "setting.integration.mqtt_broker_helper_text": "MQTT Broker Helper Text",

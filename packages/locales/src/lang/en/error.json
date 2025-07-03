@@ -29,8 +29,8 @@
     "error.http.topic_exists": "Topic already exists",
     "error.http.device_id_not_found": "Key device_id not found",
     "error.http.json_validate_error": "Json validation error",
+    "error.http.template_name_exists": "The device template name already exists",
     "error.http.device_entity_value_validate_error": "Device entity value validation error",
     "error.http.server_internal_server_error": "Internal server error",
     "error.http.server_other_error": "Other server error"
-
 }
