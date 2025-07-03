@@ -110,13 +110,15 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
                                     <ChevronRightIcon />
                                 </IconButton>
                             </div>
-                            <div className="desc">
-                                <Tooltip
-                                    autoEllipsis
-                                    className="title"
-                                    title={service?.description || ''}
-                                />
-                            </div>
+                            {!!service?.description && (
+                                <div className="desc">
+                                    <Tooltip
+                                        autoEllipsis
+                                        className="title"
+                                        title={service.description}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </Grid2>
                 ))}
