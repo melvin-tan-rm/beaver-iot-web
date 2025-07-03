@@ -1,7 +1,11 @@
 import { useState, useMemo, useCallback } from 'react';
 import { type ControllerProps } from 'react-hook-form';
 import { TextField, InputAdornment, type TextFieldProps, Box } from '@mui/material';
-import { checkRequired, checkStartWithHttpOrHttps } from '@milesight/shared/src/utils/validators';
+import {
+    checkRequired,
+    checkMaxLength,
+    checkStartWithHttpOrHttps,
+} from '@milesight/shared/src/utils/validators';
 import { useI18n, useTheme } from '@milesight/shared/src/hooks';
 import { PasswordInput } from '@/components';
 
@@ -104,6 +108,7 @@ const useFormItems = () => {
                     validate: {
                         checkRequired: checkRequired(),
                         checkStartWithHttpOrHttps: checkStartWithHttpOrHttps(),
+                        checkMaxLength: checkMaxLength({ max: 256 }),
                     },
                 },
                 render({ field: { onChange, value, disabled }, fieldState: { error } }) {
@@ -125,7 +130,10 @@ const useFormItems = () => {
             {
                 name: AI_KEYS.SECRET,
                 rules: {
-                    validate: { checkRequired: checkRequired() },
+                    validate: {
+                        checkRequired: checkRequired(),
+                        checkMaxLength: checkMaxLength({ max: 100 }),
+                    },
                 },
                 render({ field: { onChange, value, disabled }, fieldState: { error } }) {
                     return (
