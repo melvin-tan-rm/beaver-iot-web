@@ -21,12 +21,12 @@ import {
     type PointType,
 } from '@/components';
 import {
-    aiApi,
+    camthinkApi,
     entityAPI,
     awaitWrap,
     isRequestSuccess,
     getResponseData,
-    type AiAPISchema,
+    type CamthinkAPISchema,
 } from '@/services/http';
 import { type InteEntityType } from '../../../../../hooks';
 import { convertPointsData } from '../../../helper';
@@ -47,7 +47,7 @@ import './style.less';
 
 interface Props extends ModalProps {
     /** Target device detail */
-    device?: AiAPISchema['getBoundDevices']['response']['content'][0] | null;
+    device?: CamthinkAPISchema['getBoundDevices']['response']['content'][0] | null;
 
     /** Entity list of current integration */
     entities?: InteEntityType[];
@@ -220,10 +220,10 @@ const BindModal: React.FC<Props> = ({
 
         // console.log({ params, formParams, inferOutputs });
         const [error, resp] = await awaitWrap(
-            aiApi.bindDevice({
+            camthinkApi.bindDevice({
                 ...formParams,
                 infer_outputs: inferOutputs,
-            } as AiAPISchema['bindDevice']['request']),
+            } as CamthinkAPISchema['bindDevice']['request']),
         );
 
         if (error || !isRequestSuccess(resp)) return;
@@ -374,7 +374,9 @@ const BindModal: React.FC<Props> = ({
     const { data: bindingDetail } = useRequest(
         async () => {
             if (!device?.device_id) return;
-            const [err, resp] = await awaitWrap(aiApi.getBindingDetail({ id: device.device_id }));
+            const [err, resp] = await awaitWrap(
+                camthinkApi.getBindingDetail({ id: device.device_id }),
+            );
 
             if (err || !isRequestSuccess(resp)) return;
             const data = getResponseData(resp);

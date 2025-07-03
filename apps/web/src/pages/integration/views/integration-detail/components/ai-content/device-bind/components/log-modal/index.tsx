@@ -9,7 +9,7 @@ import {
     awaitWrap,
     isRequestSuccess,
     getResponseData,
-    type AiAPISchema,
+    type CamthinkAPISchema,
     type EntityAPISchema,
 } from '@/services/http';
 import StatusTag from '../status-tag';
@@ -19,11 +19,11 @@ import './style.less';
 
 interface Props extends ModalProps {
     /** Target device detail */
-    device?: AiAPISchema['getBoundDevices']['response']['content'][0] | null;
+    device?: CamthinkAPISchema['getBoundDevices']['response']['content'][0] | null;
 }
 
 type LogDetailType = Pick<
-    AiAPISchema['getBoundDevices']['response']['content'][0],
+    CamthinkAPISchema['getBoundDevices']['response']['content'][0],
     | 'model_name'
     | 'origin_image'
     | 'result_image'

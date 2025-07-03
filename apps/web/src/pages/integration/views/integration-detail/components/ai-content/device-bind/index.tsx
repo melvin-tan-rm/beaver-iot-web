@@ -4,7 +4,7 @@ import { useRequest } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { AddIcon, DeleteOutlineIcon, toast } from '@milesight/shared/src/components';
 import { TablePro, useConfirm } from '@/components';
-import { aiApi, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
+import { camthinkApi, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import { InteEntityType } from '../../../hooks';
 import { entitiesCompose } from '../helper';
 import { AI_SERVICE_KEYWORD } from '../constants';
@@ -41,7 +41,7 @@ const DeviceBind: React.FC<IProps> = ({ entities, excludeKeys }) => {
         async () => {
             const { pageSize, page } = paginationModel;
             const [err, resp] = await awaitWrap(
-                aiApi.getBoundDevices({
+                camthinkApi.getBoundDevices({
                     name: keyword,
                     page_size: pageSize,
                     page_number: page + 1,
@@ -67,7 +67,7 @@ const DeviceBind: React.FC<IProps> = ({ entities, excludeKeys }) => {
                 confirmButtonText: getIntlText('common.label.delete'),
                 onConfirm: async () => {
                     const [error, resp] = await awaitWrap(
-                        aiApi.unbindDevices({ device_ids: [...ids] }),
+                        camthinkApi.unbindDevices({ device_ids: [...ids] }),
                     );
 
                     // console.log({ error, resp });

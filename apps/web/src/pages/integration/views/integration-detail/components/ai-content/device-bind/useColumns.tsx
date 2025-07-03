@@ -4,12 +4,12 @@ import { safeJsonParse } from '@milesight/shared/src/utils/tools';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import { ListAltIcon, DeleteOutlineIcon, EventNoteIcon } from '@milesight/shared/src/components';
 import { Tooltip, type ColumnType } from '@/components';
-import { type AiAPISchema } from '@/services/http';
+import { type CamthinkAPISchema } from '@/services/http';
 import { ImagePreview, CodePreview, StatusTag } from './components';
 
 type OperationType = 'detail' | 'log' | 'delete';
 
-export type TableRowDataType = AiAPISchema['getBoundDevices']['response']['content'][0];
+export type TableRowDataType = CamthinkAPISchema['getBoundDevices']['response']['content'][0];
 
 export interface UseColumnsProps<T> {
     /**

@@ -1,5 +1,5 @@
-import { type AiAPISchema } from '@/services/http';
+import { type CamthinkAPISchema } from '@/services/http';
 
-export type ValueType = Partial<AiAPISchema['getDevices']['response']['content'][0]> & {
+export type ValueType = Partial<CamthinkAPISchema['getDevices']['response']['content'][0]> & {
     id: ApiKey;
 };

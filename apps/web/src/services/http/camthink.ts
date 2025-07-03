@@ -30,7 +30,7 @@ export type InferStatus = 'Ok' | 'Failed';
 /**
  * ai integration interface definition
  */
-export interface AiAPISchema extends APISchema {
+export interface CamthinkAPISchema extends APISchema {
     /** Sync model detail */
     syncModelDetail: {
         request: {
@@ -132,7 +132,7 @@ export interface AiAPISchema extends APISchema {
         request: {
             id: ApiKey;
         };
-        response: Omit<AiAPISchema['bindDevice']['request'], 'id'> & {
+        response: Omit<CamthinkAPISchema['bindDevice']['request'], 'id'> & {
             integration_id: ApiKey;
             image_entity_value: string;
             device_identifier: string;
@@ -151,7 +151,7 @@ export interface AiAPISchema extends APISchema {
 /**
  * ai integration API services
  */
-export default attachAPI<AiAPISchema>(client, {
+export default attachAPI<CamthinkAPISchema>(client, {
     apis: {
         syncModelDetail: `POST ${API_PREFIX}/camthink-ai-inference/model/:model_id/sync-detail`,
         getDevices: `POST ${API_PREFIX}/camthink-ai-inference/device/search`,

@@ -13,16 +13,18 @@ import { useRequest } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { KeyboardArrowDownIcon, BrokenImageIcon } from '@milesight/shared/src/components';
 import {
-    aiApi,
+    camthinkApi,
     awaitWrap,
     getResponseData,
     isRequestSuccess,
-    type AiAPISchema,
+    type CamthinkAPISchema,
 } from '@/services/http';
 import ImagePreview from '../image-preview';
 import './style.less';
 
-export type ValueType = Partial<AiAPISchema['getDeviceImageEntities']['response']['content'][0]> & {
+export type ValueType = Partial<
+    CamthinkAPISchema['getDeviceImageEntities']['response']['content'][0]
+> & {
     key: string;
 };
 
@@ -74,7 +76,9 @@ const ImageEntitySelect = <
                 onReadyStateChange?.(false);
                 return;
             }
-            const [err, resp] = await awaitWrap(aiApi.getDeviceImageEntities({ id: deviceId }));
+            const [err, resp] = await awaitWrap(
+                camthinkApi.getDeviceImageEntities({ id: deviceId }),
+            );
 
             if (err || !isRequestSuccess(resp)) return;
             const data = getResponseData(resp)?.content;

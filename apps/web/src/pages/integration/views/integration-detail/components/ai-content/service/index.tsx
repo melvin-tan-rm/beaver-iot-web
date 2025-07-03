@@ -3,7 +3,13 @@ import { Grid2, IconButton } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { ChevronRightIcon, toast } from '@milesight/shared/src/components';
 import { useConfirm, Tooltip } from '@/components';
-import { aiApi, entityAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
+import {
+    camthinkApi,
+    entityAPI,
+    awaitWrap,
+    isRequestSuccess,
+    getResponseData,
+} from '@/services/http';
 import { InteEntityType } from '../../../hooks';
 import { entitiesCompose, getModelId, transModelInputs2Entities } from '../helper';
 import { AI_SERVICE_KEYWORD, REFRESH_SERVICE_KEYWORD } from '../constants';
@@ -65,7 +71,7 @@ const Service: React.FC<Props> = ({ loading, entities, excludeKeys, onUpdateSucc
         if (`${service.key}`.includes(AI_SERVICE_KEYWORD)) {
             const modelId = getModelId(service.key);
             const [error, resp] = await awaitWrap(
-                aiApi.syncModelDetail({
+                camthinkApi.syncModelDetail({
                     model_id: modelId || '',
                 }),
             );

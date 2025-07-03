@@ -29,7 +29,7 @@ export {
     type CredentialType,
     type CredentialAPISchema,
 } from './credentials';
-export { default as aiApi, type AiAPISchema, type InferStatus } from './ai';
+export { default as camthinkApi, type CamthinkAPISchema, type InferStatus } from './camthink';
 export {
     default as mqttApi,
     type TemplateType,

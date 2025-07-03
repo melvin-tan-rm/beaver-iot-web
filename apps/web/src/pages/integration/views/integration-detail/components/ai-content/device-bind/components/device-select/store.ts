@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 import { debounce } from 'lodash-es';
 import {
-    aiApi,
+    camthinkApi,
     awaitWrap,
     getResponseData,
     isRequestSuccess,
-    type AiAPISchema,
+    type CamthinkAPISchema,
 } from '@/services/http';
 
 interface UseDeviceSelectStore {
@@ -15,13 +15,13 @@ interface UseDeviceSelectStore {
     /**
      * Global devices
      */
-    devices?: AiAPISchema['getDevices']['response']['content'] | null;
+    devices?: CamthinkAPISchema['getDevices']['response']['content'] | null;
 
     /**
      * Get devices
      */
     getDevices: (
-        params?: AiAPISchema['getDevices']['request'],
+        params?: CamthinkAPISchema['getDevices']['request'],
     ) => Promise<UseDeviceSelectStore['devices']>;
 
     /**
@@ -33,7 +33,7 @@ interface UseDeviceSelectStore {
 const useDeviceSelectStore = create<UseDeviceSelectStore>((set, get) => ({
     getDevices: async params => {
         const isSearch = !!params?.name;
-        const [err, resp] = await awaitWrap(aiApi.getDevices(params));
+        const [err, resp] = await awaitWrap(camthinkApi.getDevices(params));
 
         if (err || !isRequestSuccess(resp)) return null;
         const data = getResponseData(resp)?.content;

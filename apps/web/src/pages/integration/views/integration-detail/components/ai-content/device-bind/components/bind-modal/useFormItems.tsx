@@ -5,13 +5,7 @@ import { FormControl, FormHelperText } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { Select } from '@milesight/shared/src/components';
 import { checkRequired } from '@milesight/shared/src/utils/validators';
-import {
-    aiApi,
-    awaitWrap,
-    getResponseData,
-    isRequestSuccess,
-    // type AiAPISchema,
-} from '@/services/http';
+import { camthinkApi, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import { useEntityFormItems, IMAGE_ENTITY_KEYWORD, type UseEntityFormItemsProps } from '@/hooks';
 import { type InteEntityType } from '../../../../../hooks';
 import { getModelId, transModelInputs2Entities } from '../../../helper';
@@ -164,7 +158,9 @@ const useFormItems = ({ visible, readonly, entities, device, modelId }: Props) =
     const { data: [dynamicFormEntities, wholeDynamicFormEntities] = [] } = useRequest(
         async () => {
             if (!modelId) return;
-            const [error, resp] = await awaitWrap(aiApi.syncModelDetail({ model_id: modelId }));
+            const [error, resp] = await awaitWrap(
+                camthinkApi.syncModelDetail({ model_id: modelId }),
+            );
 
             if (error || !isRequestSuccess(resp)) return;
             const data = getResponseData(resp);

@@ -1,7 +1,7 @@
 import { cloneDeep } from 'lodash-es';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
 import { type PointType, type Vector2d } from '@/components';
-import { type AiAPISchema } from '@/services/http';
+import { type CamthinkAPISchema } from '@/services/http';
 import { type InteEntityType } from '../../hooks';
 import { AI_SERVICE_KEYWORD } from './constants';
 import type { InferenceResponse } from './typings';
@@ -62,7 +62,7 @@ export const getModelId = (key: ApiKey) => {
  * Transform AI model inputs to entity form items
  */
 export const transModelInputs2Entities = (
-    inputs?: AiAPISchema['syncModelDetail']['response']['input_entities'],
+    inputs?: CamthinkAPISchema['syncModelDetail']['response']['input_entities'],
 ) => {
     const result: InteEntityType[] = [];
 
