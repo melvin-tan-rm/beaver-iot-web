@@ -73,7 +73,7 @@ const IntegrationDetail = () => {
             case 'milesight-gateway': {
                 return <NSContent entities={entityList} onUpdateSuccess={refreshInteDetail} />;
             }
-            case 'ai-inference': {
+            case 'camthink-ai-inference': {
                 return (
                     <AiContent
                         entities={entityList}

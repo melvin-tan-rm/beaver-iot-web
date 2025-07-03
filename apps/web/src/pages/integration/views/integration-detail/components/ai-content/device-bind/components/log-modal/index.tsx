@@ -178,7 +178,7 @@ const LogModal: React.FC<Props> = ({ visible, device, ...props }) => {
                 loading={loading}
                 columns={columns}
                 rows={logData?.content || []}
-                rowCount={logData?.total}
+                rowCount={logData?.total || 0}
                 paginationModel={paginationModel}
                 onPaginationModelChange={setPaginationModel}
                 onRefreshButtonClick={getHistory}

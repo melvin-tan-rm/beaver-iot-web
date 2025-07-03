@@ -153,12 +153,12 @@ export interface AiAPISchema extends APISchema {
  */
 export default attachAPI<AiAPISchema>(client, {
     apis: {
-        syncModelDetail: `POST ${API_PREFIX}/ai-inference/model/:model_id/sync-detail`,
-        getDevices: `POST ${API_PREFIX}/ai-inference/device/search`,
-        getDeviceImageEntities: `GET ${API_PREFIX}/ai-inference/device/:id/image-entities`,
-        bindDevice: `POST ${API_PREFIX}/ai-inference/device/:id/bind`,
-        getBoundDevices: `POST ${API_PREFIX}/ai-inference/bound-device/search`,
-        getBindingDetail: `GET ${API_PREFIX}/ai-inference/device/:id/binding-detail`,
-        unbindDevices: `POST ${API_PREFIX}/ai-inference/device/unbind`,
+        syncModelDetail: `POST ${API_PREFIX}/camthink-ai-inference/model/:model_id/sync-detail`,
+        getDevices: `POST ${API_PREFIX}/camthink-ai-inference/device/search`,
+        getDeviceImageEntities: `GET ${API_PREFIX}/camthink-ai-inference/device/:id/image-entities`,
+        bindDevice: `POST ${API_PREFIX}/camthink-ai-inference/device/:id/bind`,
+        getBoundDevices: `POST ${API_PREFIX}/camthink-ai-inference/bound-device/search`,
+        getBindingDetail: `GET ${API_PREFIX}/camthink-ai-inference/device/:id/binding-detail`,
+        unbindDevices: `POST ${API_PREFIX}/camthink-ai-inference/device/unbind`,
     },
 });
