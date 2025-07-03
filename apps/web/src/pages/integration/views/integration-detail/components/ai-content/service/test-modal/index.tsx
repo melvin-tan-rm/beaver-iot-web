@@ -114,16 +114,20 @@ const TestModal: React.FC<Props> = ({ modelName, entities, visible, onCancel, ..
 
     const handleInnerCopy = (container?: HTMLElement | null) => {
         switch (resultType) {
-            case 'image':
-                if (!originalImageUrl) return;
-                handleCopy(originalImageUrl, container);
+            case 'image': {
+                const dataUri = stageRef.current?.toDataURL();
+                if (!dataUri) return;
+                handleCopy(dataUri, container);
                 break;
-            case 'json':
+            }
+            case 'json': {
                 if (!output?.length) return;
                 handleCopy(JSON.stringify(output, null, 2), container);
                 break;
-            default:
+            }
+            default: {
                 break;
+            }
         }
     };
 
