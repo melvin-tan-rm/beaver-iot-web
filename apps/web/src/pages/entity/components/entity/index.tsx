@@ -137,7 +137,6 @@ export default () => {
         })
             .then(() => {
                 getList();
-                setSelectedIds([]);
                 handleCloseExport();
                 toast.success(getIntlText('common.message.operation_success'));
             })
@@ -241,6 +240,7 @@ export default () => {
     return (
         <div className="ms-main">
             <TablePro<TableRowDataType>
+                filterCondition={[keyword]}
                 checkboxSelection={hasPermission(PERMISSIONS.ENTITY_DATA_EXPORT)}
                 loading={loading}
                 columns={columns}

@@ -2,19 +2,19 @@ import React from 'react';
 import { type GridValidRowModel, type GridColDef, DataGridProps } from '@mui/x-data-grid';
 import { DateRangePickerValueType } from '../date-range-picker';
 
-export type Key = React.Key;
-export type SafeKey = Exclude<Key, bigint>;
+export type SafeKey = Exclude<React.Key, bigint>;
 /**
  * FilterInfo key
  */
-export type FilterValue = (Key | boolean)[];
-export type FilterKey = Key[] | null;
+export type FilterValue = (React.Key | boolean)[];
+export type FilterKey = React.Key[] | null;
 
 /**
  * Filter component type
  */
 export type FilterSearchType = 'search' | 'datePicker';
 
+/** Table component props */
 export interface TableProProps<T extends GridValidRowModel> extends DataGridProps<T> {
     /** Table column */
     columns: ColumnType<T>[];
@@ -37,6 +37,10 @@ export interface TableProProps<T extends GridValidRowModel> extends DataGridProp
      */
     toolbarSort?: React.ReactNode;
     /**
+     * Table filter value by advanced filter or column header filter or general filter)
+     */
+    filterCondition?: string | Record<string, Key | boolean>;
+    /**
      * Unique identifier, used for storing data such as column width and column display to local storage
      */
     tableName?: string;
@@ -48,6 +52,10 @@ export interface TableProProps<T extends GridValidRowModel> extends DataGridProp
      * Whether to default to a show operation column in setting
      */
     settingShowOpeColumn?: boolean;
+    /**
+     * Whether the selected and total numbers are displayed in the lower left corner
+     */
+    showSelectedAndTotal?: boolean;
 }
 
 /**
@@ -118,7 +126,7 @@ export interface FilterDropdownProps {
  */
 export interface FilterState {
     column: ColumnType;
-    key: Key;
+    key: React.Key;
     filteredKeys?: FilterKey;
 }
 

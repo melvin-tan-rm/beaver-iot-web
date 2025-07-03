@@ -72,7 +72,6 @@ export default () => {
                     if (error || !isRequestSuccess(resp)) return;
 
                     getDeviceList();
-                    setSelectedIds([]);
                     toast.success(getIntlText('common.message.delete_success'));
                 },
             });
@@ -138,6 +137,7 @@ export default () => {
             <div className="ms-view ms-view-device">
                 <div className="ms-view__inner">
                     <TablePro<TableRowDataType>
+                        filterCondition={[keyword]}
                         checkboxSelection={hasPermission(PERMISSIONS.DEVICE_DELETE)}
                         loading={loading}
                         columns={columns}

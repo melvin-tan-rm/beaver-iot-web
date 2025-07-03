@@ -95,7 +95,6 @@ const Config: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
                     if (error || !isRequestSuccess(resp)) return;
 
                     getGatewayList();
-                    setSelectedIds([]);
                     onUpdateSuccess?.();
                     toast.success(getIntlText('common.message.delete_success'));
                 },
@@ -181,6 +180,7 @@ const Config: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
         <div className="ms-view ms-view-ns">
             <div className="ms-view-inner">
                 <TablePro<TableRowDataType>
+                    filterCondition={[keyword]}
                     checkboxSelection
                     getRowId={(row: TableRowDataType) => row.eui}
                     loading={loading}

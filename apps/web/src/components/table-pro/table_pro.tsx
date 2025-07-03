@@ -13,7 +13,6 @@ import {
     useTable,
     DEFAULT_PAGINATION_MODEL,
 } from './hook';
-import { TableProProps } from './types';
 import {
     ColumnSettingProps,
     ColumnsSetting,
@@ -21,6 +20,7 @@ import {
     NoDataOverlay,
     NoResultsOverlay,
 } from './components';
+import type { TableProProps } from './types';
 
 import './style.less';
 
@@ -41,6 +41,7 @@ const TablePro = <DataType extends GridValidRowModel>({
     tableName,
     columnSetting = false,
     settingShowOpeColumn = false,
+    showSelectedAndTotal = true,
     ...props
 }: TableProProps<DataType>) => {
     const { getIntlText } = useI18n();
@@ -76,7 +77,6 @@ const TablePro = <DataType extends GridValidRowModel>({
      * Column display or width or fixed change event
      */
     const handleColumnSettingChange = (newColumns: ColumnSettingProps<DataType>[]) => {
-        console.log(11, newColumns);
         setResultColumns(newColumns);
     };
 
@@ -198,6 +198,7 @@ const TablePro = <DataType extends GridValidRowModel>({
                         footer: {
                             // @ts-ignore
                             onRefreshButtonClick,
+                            showSelectedAndTotal,
                             selectedCount: isArray(props.rowSelectionModel)
                                 ? props.rowSelectionModel?.length
                                 : 0,

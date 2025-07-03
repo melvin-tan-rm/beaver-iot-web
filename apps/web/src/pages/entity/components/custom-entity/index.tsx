@@ -99,7 +99,6 @@ export default () => {
                     if (error || !isRequestSuccess(resp)) return;
 
                     getList();
-                    // setSelectedIds([]);
                     toast.success(getIntlText('common.message.delete_success'));
                 },
             });
@@ -198,6 +197,7 @@ export default () => {
     return (
         <div className="ms-main">
             <TablePro<TableRowDataType>
+                filterCondition={[keyword, filteredInfo]}
                 checkboxSelection={hasPermission(PERMISSIONS.ENTITY_CUSTOM_DELETE)}
                 loading={loading}
                 columns={columns}

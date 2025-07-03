@@ -115,6 +115,10 @@ type CustomFooterProps = PropsFromSlot<GridSlots['footer']> & {
     /** Refresh button click callback */
     onRefreshButtonClick?: React.MouseEventHandler<HTMLButtonElement>;
     /**
+     * Whether the selected and total numbers are displayed in the lower left corner
+     */
+    showSelectedAndTotal: boolean;
+    /**
      * The total number of rows currently selected
      */
     selectedCount: number;
@@ -129,6 +133,7 @@ type CustomFooterProps = PropsFromSlot<GridSlots['footer']> & {
  */
 const CustomFooter: React.FC<CustomFooterProps> = ({
     onRefreshButtonClick,
+    showSelectedAndTotal,
     selectedCount,
     totalCount,
     className,
@@ -145,16 +150,18 @@ const CustomFooter: React.FC<CustomFooterProps> = ({
                 >
                     <RefreshIcon sx={{ width: 20, height: 20 }} />
                 </IconButton>
-                <Box sx={{ ml: 1, display: 'flex', alignItems: 'center' }}>
-                    {!!selectedCount && (
+                {showSelectedAndTotal && (
+                    <Box sx={{ ml: 1, display: 'flex', alignItems: 'center' }}>
+                        {!!selectedCount && (
+                            <Typography variant="body2" sx={{ ml: 1 }}>
+                                {getIntlText('common.label.selected_count')}: {selectedCount} ,
+                            </Typography>
+                        )}
                         <Typography variant="body2" sx={{ ml: 1 }}>
-                            {getIntlText('common.label.selected_count')}: {selectedCount} ,
+                            {getIntlText('common.label.total_count')}: {totalCount}
                         </Typography>
-                    )}
-                    <Typography variant="body2" sx={{ ml: 1 }}>
-                        {getIntlText('common.label.total_count')}: {totalCount}
-                    </Typography>
-                </Box>
+                    </Box>
+                )}
             </Box>
             <CustomPagination />
         </GridFooterContainer>
