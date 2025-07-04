@@ -1,12 +1,16 @@
 import { useMemo } from 'react';
 import { Stack, IconButton } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
-import { ListAltIcon, DeleteOutlineIcon } from '@milesight/shared/src/components';
+import {
+    ListAltIcon,
+    DeleteOutlineIcon,
+    DriveFileMoveOutlinedIcon,
+} from '@milesight/shared/src/components';
 import { Tooltip, type ColumnType, PermissionControlHidden } from '@/components';
 import { type DeviceAPISchema } from '@/services/http';
 import { PERMISSIONS } from '@/constants';
 
-type OperationType = 'detail' | 'delete';
+type OperationType = 'detail' | 'delete' | 'changeGroup';
 
 export type TableRowDataType = ObjectToCamelCase<
     DeviceAPISchema['getList']['response']['content'][0]
@@ -70,6 +74,15 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                                     onClick={() => onButtonClick('detail', row)}
                                 >
                                     <ListAltIcon sx={{ width: 20, height: 20 }} />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title={getIntlText('device.label.change_device_group')}>
+                                <IconButton
+                                    sx={{ width: 30, height: 30 }}
+                                    onDoubleClick={e => e.stopPropagation()}
+                                    onClick={() => onButtonClick('changeGroup', row)}
+                                >
+                                    <DriveFileMoveOutlinedIcon sx={{ width: 20, height: 20 }} />
                                 </IconButton>
                             </Tooltip>
                             <PermissionControlHidden permissions={PERMISSIONS.DEVICE_DELETE}>

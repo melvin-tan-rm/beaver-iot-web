@@ -15,7 +15,7 @@ export interface OperateGroupProps {
 interface Props extends Omit<ModalProps, 'onOk'> {
     data?: string;
     /** on form submit */
-    onFormSubmit: (name: OperateGroupProps, callback: () => void) => Promise<void>;
+    onFormSubmit: (params: OperateGroupProps, callback: () => void) => Promise<void>;
 }
 
 /**

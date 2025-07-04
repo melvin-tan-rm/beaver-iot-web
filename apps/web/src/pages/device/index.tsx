@@ -4,13 +4,25 @@ import { Button, Stack } from '@mui/material';
 import { useRequest } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
-import { AddIcon, DeleteOutlineIcon, toast, ErrorIcon } from '@milesight/shared/src/components';
+import {
+    AddIcon,
+    DeleteOutlineIcon,
+    toast,
+    ErrorIcon,
+    DriveFileMoveOutlinedIcon,
+} from '@milesight/shared/src/components';
 import { Breadcrumbs, TablePro, useConfirm, PermissionControlHidden } from '@/components';
 import { PERMISSIONS } from '@/constants';
 import { useUserPermissions } from '@/hooks';
 import { deviceAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
-import { useColumns, type UseColumnsProps, type TableRowDataType, useDevice } from './hooks';
-import { AddModal, DeviceGroup, Shrink } from './components';
+import {
+    useColumns,
+    type UseColumnsProps,
+    type TableRowDataType,
+    useDevice,
+    useChangeGroup,
+} from './hooks';
+import { AddModal, DeviceGroup, Shrink, ChangeGroupModal } from './components';
 import './style.less';
 
 export default () => {
@@ -50,6 +62,13 @@ export default () => {
     );
 
     const { isShrink, toggleShrink, activeGroupName } = useDevice();
+    const {
+        groupModalVisible,
+        hiddenGroupModal,
+        onFormSubmit,
+        singleChangeGroupModal,
+        batchChangeGroupModal,
+    } = useChangeGroup(getDeviceList);
 
     // ---------- Device added related ----------
     const [modalOpen, setModalOpen] = useState(false);
@@ -97,6 +116,31 @@ export default () => {
                         {getIntlText('common.label.add')}
                     </Button>
                 </PermissionControlHidden>
+                <Button
+                    variant="outlined"
+                    className="md:d-none"
+                    sx={{ height: 36, textTransform: 'none' }}
+                    startIcon={<AddIcon />}
+                    onClick={() => {
+                        console.log('batch add');
+                    }}
+                >
+                    {getIntlText('common.label.batch_add')}
+                </Button>
+                <Button
+                    variant="outlined"
+                    className="md:d-none"
+                    disabled={!selectedIds.length}
+                    sx={{ height: 36, textTransform: 'none' }}
+                    startIcon={<DriveFileMoveOutlinedIcon />}
+                    onClick={() =>
+                        batchChangeGroupModal(
+                            (deviceData?.content || []).filter(d => selectedIds.includes(d.id)),
+                        )
+                    }
+                >
+                    {getIntlText('device.label.change_device_group')}
+                </Button>
                 <PermissionControlHidden permissions={PERMISSIONS.DEVICE_DELETE}>
                     <Button
                         variant="outlined"
@@ -111,7 +155,7 @@ export default () => {
                 </PermissionControlHidden>
             </Stack>
         );
-    }, [getIntlText, handleDeleteConfirm, selectedIds]);
+    }, [getIntlText, handleDeleteConfirm, selectedIds, deviceData, batchChangeGroupModal]);
 
     const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useCallback(
         (type, record) => {
@@ -119,6 +163,10 @@ export default () => {
             switch (type) {
                 case 'detail': {
                     navigate(`/device/detail/${record.id}`, { state: record });
+                    break;
+                }
+                case 'changeGroup': {
+                    singleChangeGroupModal(record);
                     break;
                 }
                 case 'delete': {
@@ -130,7 +178,7 @@ export default () => {
                 }
             }
         },
-        [navigate, handleDeleteConfirm],
+        [navigate, handleDeleteConfirm, singleChangeGroupModal],
     );
     const columns = useColumns<TableRowDataType>({ onButtonClick: handleTableBtnClick });
 
@@ -175,6 +223,11 @@ export default () => {
                     getDeviceList();
                     setModalOpen(false);
                 }}
+            />
+            <ChangeGroupModal
+                visible={groupModalVisible}
+                onCancel={hiddenGroupModal}
+                onFormSubmit={onFormSubmit}
             />
         </div>
     );

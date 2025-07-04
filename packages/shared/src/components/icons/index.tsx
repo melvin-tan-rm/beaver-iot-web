@@ -144,6 +144,7 @@ export {
     FolderOpenOutlined as FolderOpenOutlinedIcon,
     Dashboard as DashboardIcon,
     HelpOutlined as HelpOutlinedIcon,
+    DriveFileMoveOutlined as DriveFileMoveOutlinedIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';
