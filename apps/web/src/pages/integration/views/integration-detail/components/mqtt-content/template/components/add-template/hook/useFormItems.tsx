@@ -9,11 +9,7 @@ import {
     Link,
 } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
-import {
-    checkLettersAndNum,
-    checkMaxLength,
-    checkRequired,
-} from '@milesight/shared/src/utils/validators';
+import { checkMaxLength, checkRequired } from '@milesight/shared/src/utils/validators';
 import { OpenInNewIcon } from '@milesight/shared/src/components';
 import CodeEditor from '../../code-editor';
 
@@ -50,7 +46,14 @@ const useFormItems = ({ prefixTopic }: { prefixTopic: string }) => {
                     validate: {
                         checkRequired: checkRequired(),
                         checkMaxLength: checkMaxLength({ max: 64 }),
-                        checkLettersAndNum: checkLettersAndNum(),
+                        checkValidChar: value => {
+                            if (!/^[a-zA-Z0-9_@#$\\/[\]-]+$/.test(value.toString())) {
+                                return getIntlText('common.valid.input_letter_num_special_char', {
+                                    1: '_@#$-/[]',
+                                });
+                            }
+                            return true;
+                        },
                     },
                 },
                 render({ field: { onChange, value }, fieldState: { error } }) {
@@ -64,8 +67,7 @@ const useFormItems = ({ prefixTopic }: { prefixTopic: string }) => {
                             value={value}
                             onChange={onChange}
                             onBlur={event => {
-                                const newValue = event?.target?.value;
-                                onChange(typeof newValue === 'string' ? newValue.trim() : newValue);
+                                onChange(event?.target?.value?.trim());
                             }}
                         />
                     );
@@ -76,7 +78,15 @@ const useFormItems = ({ prefixTopic }: { prefixTopic: string }) => {
                 rules: {
                     validate: {
                         checkRequired: checkRequired(),
-                        checkMaxLength: checkMaxLength({ max: 64 }),
+                        checkMaxLength: checkMaxLength({ max: 100 }),
+                        checkValidChar: value => {
+                            if (!/^[A-Za-z0-9${}_/@-]+$/.test(value.toString())) {
+                                return getIntlText('common.valid.input_letter_num_special_char', {
+                                    1: '${}-_/@',
+                                });
+                            }
+                            return true;
+                        },
                     },
                 },
                 render({ field: { onChange, value }, fieldState: { error } }) {
@@ -99,10 +109,6 @@ const useFormItems = ({ prefixTopic }: { prefixTopic: string }) => {
                                         </InputAdornment>
                                     ),
                                 },
-                            }}
-                            onBlur={event => {
-                                const newValue = event?.target?.value;
-                                onChange(typeof newValue === 'string' ? newValue.trim() : newValue);
                             }}
                         />
                     );

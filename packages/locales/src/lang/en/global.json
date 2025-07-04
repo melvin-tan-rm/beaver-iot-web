@@ -243,5 +243,6 @@
     "common.label.not_connected": "Not Connected",
     "common.label.normal": "Normal",
     "common.label.abnormal": "Abnormal",
-    "common.label.download": "Download"
+    "common.label.download": "Download",
+    "common.valid.input_letter_num_special_char": "Only uppercase and lowercase letters, numbers, and {1} are allowed."
 }
