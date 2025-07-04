@@ -18,6 +18,9 @@ export type ResultSettingItem = {
 };
 
 export interface Props {
+    /** Whether to disable the all form items */
+    disabled?: boolean;
+
     data: null | { title?: string; params: ResultSettingItem[] }[];
 
     onChange?: (data: Props['data']) => void;
@@ -25,7 +28,7 @@ export interface Props {
 
 const validators = [checkRequired(), checkMaxLength({ max: 64 })];
 
-const ResultSetting: React.FC<Props> = ({ data, onChange }) => {
+const ResultSetting: React.FC<Props> = ({ data, disabled, onChange }) => {
     const { getIntlText } = useI18n();
     const handleChange = (index: number, entityId: ApiKey, newData: Partial<ResultSettingItem>) => {
         if (!data?.[index]) return;
@@ -83,11 +86,12 @@ const ResultSetting: React.FC<Props> = ({ data, onChange }) => {
                                     <TextField
                                         fullWidth
                                         autoComplete="off"
-                                        error={typeof error === 'string'}
+                                        disabled={disabled}
+                                        error={!!error}
                                         value={param.entityName}
                                         label={getIntlText('device.label.param_entity_name')}
                                         slotProps={{ input: { size: 'small' } }}
-                                        helperText={typeof error === 'string' ? error : ''}
+                                        helperText={error}
                                         onChange={e =>
                                             handleChange(index, param.entityId, {
                                                 entityName: e.target.value,

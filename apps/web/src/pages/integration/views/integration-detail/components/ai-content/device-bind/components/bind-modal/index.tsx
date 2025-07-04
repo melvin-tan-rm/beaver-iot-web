@@ -147,6 +147,7 @@ const BindModal: React.FC<Props> = ({
 
     // ---------- Render Form Items ----------
     const { control, handleSubmit, reset, setValue, getValues } = useForm<FormDataProps>({
+        disabled: readonly,
         shouldUnregister: true,
     });
     const selectedModelId = useWatch<FormDataProps>({ control, name: AI_MODEL_KEY }) as
@@ -563,6 +564,7 @@ const BindModal: React.FC<Props> = ({
                                 <Empty />
                             ) : (
                                 <ResultSetting
+                                    disabled={readonly}
                                     data={resultSetting}
                                     onChange={data => {
                                         setResultSetting(data);

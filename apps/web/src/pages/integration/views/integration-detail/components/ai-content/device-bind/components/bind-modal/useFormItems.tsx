@@ -95,6 +95,7 @@ const useFormItems = ({ visible, readonly, entities, device, modelId }: Props) =
                         <FormControl fullWidth size="small" disabled={disabled} sx={{ mb: 1.5 }}>
                             <ImageEntitySelect
                                 required
+                                disabled={disabled}
                                 label={getIntlText('common.label.entity')}
                                 deviceId={deviceId}
                                 value={innerValue}
