@@ -24,6 +24,7 @@ import {
     checkRangeLength,
     checkRegexp,
     checkHexNumber,
+    checkStartWithHttpOrHttps,
 } from '@milesight/shared/src/utils/validators';
 import { HelpOutlineIcon } from '@milesight/shared/src/components';
 import ImageInput, { type Props as ImageInputProps } from '@/components/image-input';
@@ -105,17 +106,20 @@ const getValidators = (entity: NonNullable<Props['entities']>[0], required = fal
         }
     }
 
-    // Check format (HEX/REGEX)
+    // Check format
     if (attr.format) {
-        const [type, pattern] = attr.format.split(':');
+        if (attr.format.startsWith('REGEX:')) {
+            const [, pattern] = attr.format.split(':');
+            result.checkRegexp = checkRegexp({ regexp: new RegExp(pattern || '') });
+        }
 
-        switch (type) {
+        switch (attr.format) {
             case 'HEX': {
                 result.checkHexNumber = checkHexNumber();
                 break;
             }
-            case 'REGEX': {
-                result.checkRegexp = checkRegexp({ regexp: new RegExp(pattern || '') });
+            case 'IMAGE:URL': {
+                result.checkStartWithHttpOrHttps = checkStartWithHttpOrHttps();
                 break;
             }
             default: {
