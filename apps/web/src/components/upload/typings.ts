@@ -31,7 +31,9 @@ export interface UseDropzoneProps {
     /**
      * Set accepted file types
      *
-     * @see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#unique_file_type_specifiers
+     * @see
+     * - https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types/Common_types
+     * - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#unique_file_type_specifiers
      * @example
      * {
      *  'image/*': ['.jpg', '.jpeg', './png'],
