@@ -250,7 +250,9 @@ const TestModal: React.FC<Props> = ({ modelName, entities, visible, onCancel, ..
                                                 onClick={() => {
                                                     if (!originalImageUrl) return;
                                                     const fileName = `${modelName}-inference-image`;
-                                                    const dataUri = stageRef.current?.toDataURL();
+                                                    const dataUri = stageRef.current?.toDataURL({
+                                                        pixelRatio: 2,
+                                                    });
 
                                                     if (!dataUri) {
                                                         toast.error({
