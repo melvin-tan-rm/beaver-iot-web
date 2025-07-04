@@ -71,7 +71,6 @@ const ResultSetting: React.FC<Props> = ({ data, onChange }) => {
                                 result => typeof result === 'string',
                             );
 
-                            console.log({ validateResults, error });
                             return (
                                 <div className="params-item" key={param.entityId}>
                                     <TextField
