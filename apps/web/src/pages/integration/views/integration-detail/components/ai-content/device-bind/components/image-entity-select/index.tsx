@@ -188,9 +188,9 @@ const ImageEntitySelect = <
                 ChipComponent
             >['renderOption']
         >
-    >(({ className, ...props }, option) => {
+    >(({ key, className, ...props }, option) => {
         return (
-            <li {...props} className={cls('ms-image-entity-select-option', className)}>
+            <li {...props} key={key} className={cls('ms-image-entity-select-option', className)}>
                 <div className="img-preview">
                     {!option.value ? (
                         <BrokenImageIcon />

@@ -121,7 +121,7 @@ const useFormItems = () => {
                             placeholder={getIntlText('common.placeholder.input')}
                             error={!!error}
                             helperText={error ? error.message : null}
-                            value={value}
+                            value={value || ''}
                             onChange={onChange}
                         />
                     );
@@ -145,7 +145,7 @@ const useFormItems = () => {
                             placeholder={getIntlText('common.placeholder.input')}
                             error={!!error}
                             helperText={error ? error.message : null}
-                            value={value}
+                            value={value || ''}
                             onChange={onChange}
                         />
                     );

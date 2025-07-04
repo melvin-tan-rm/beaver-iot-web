@@ -66,7 +66,9 @@ const IntegrationDetail = () => {
 
     // render content
     const renderContent = () => {
-        switch (basicInfo?.id) {
+        if (!basicInfo) return null;
+
+        switch (basicInfo.id) {
             case 'msc-integration': {
                 return <MscContent entities={entityList} onUpdateSuccess={refreshInteDetail} />;
             }
