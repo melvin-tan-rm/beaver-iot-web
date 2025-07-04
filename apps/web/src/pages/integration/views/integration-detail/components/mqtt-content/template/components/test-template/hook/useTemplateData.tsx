@@ -13,6 +13,7 @@ import {
     randomInLengthRange,
     randomLessLength,
     randomLessValue,
+    randomOneByArray,
     randomStringByReg,
     randomValueInRange,
 } from '../utils';
@@ -132,17 +133,12 @@ const useTemplateData = () => {
                     if (Object.keys(enums || {})?.length) {
                         return Object.keys(enums)[randomLessValue(Object.keys(enums).length - 1)];
                     }
-                    if (lengthRange) {
-                        const lens = lengthRange
-                            .split(',')
-                            .map((n: string) => +n)
-                            .filter((n: number) => !isNaN(n));
-                        if (lens.length) {
-                            return randomValueInRange(lens[0], lens[0]);
-                        }
-                    }
                     if (type === 'HEX') {
-                        return randomHexString(isValidNumber(pattern) ? +pattern : 12);
+                        const lens: number[] = (lengthRange || '')
+                            .split(',')
+                            .map((n: string) => (isValidNumber(n) ? +n : undefined))
+                            .filter((n: number) => !isNaN(n));
+                        return randomHexString(randomOneByArray(lens) || 12);
                     }
                     if (type === 'REGEX') {
                         return randomStringByReg(pattern);
@@ -167,6 +163,11 @@ const useTemplateData = () => {
                     }
                     if (isValidNumber(max)) {
                         return randomLessValue(+max);
+                    }
+                    if (Object.keys(enums || {})?.length) {
+                        const randomKey =
+                            Object.keys(enums)[randomLessValue(Object.keys(enums).length - 1)];
+                        return isValidNumber(randomKey) ? Number(randomKey) : randomKey;
                     }
                     return randomValueInRange(10, 60);
                 }

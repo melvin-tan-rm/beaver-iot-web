@@ -177,6 +177,18 @@ export const randomStringByReg = (reg: string): string => {
     return '';
 };
 
+/**
+ * Randomly generate an item in the given array based on it
+ * @param list {ApiKey[]}
+ * @returns ApiKey | undefined
+ */
+export const randomOneByArray = <T extends ApiKey>(list: T[]): T | undefined => {
+    if (!list.length) {
+        return undefined;
+    }
+    return list[randomValueInRange(0, list.length - 1)];
+};
+
 /** ======== validator ============================= */
 
 /**
