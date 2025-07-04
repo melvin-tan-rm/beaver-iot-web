@@ -57,12 +57,21 @@ const DEFAULT_RESULT_CONTAINER_HEADER_HEIGHT = 45;
 /** Default result container gap */
 const DEFAULT_RESULT_CONTAINER_GAP = 16;
 
+/** The AI model supported image accept */
+const imageAccept = {
+    'image/jpeg': ['.jpg', '.jpeg'],
+    'image/png': ['.png'],
+};
+
 const TestModal: React.FC<Props> = ({ modelName, entities, visible, onCancel, ...props }) => {
     const { getIntlText, getIntlHtml, mergeIntlText } = useI18n();
 
     // ---------- Render dynamic form items ----------
     const { control, formState, handleSubmit, reset } = useForm<EntityFormDataProps>();
-    const { formItems, decodeFormParams } = useEntityFormItems({ entities });
+    const { formItems, decodeFormParams } = useEntityFormItems({
+        entities,
+        imageUploadProps: { accept: imageAccept },
+    });
     const isLoading = formState.isSubmitting;
     const formValues = useWatch({ control });
     const previousValues = useRef<Record<string, any>>();

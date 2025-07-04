@@ -3,11 +3,16 @@ import { useControllableValue } from 'ahooks';
 import cls from 'classnames';
 import { TextField, Divider } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { UploadFileIcon, AddLinkIcon } from '@milesight/shared/src/components';
-import Upload, { type FileValueType } from '../upload';
+import { UploadFileIcon, AddLinkIcon, toast } from '@milesight/shared/src/components';
+import Upload, { type FileValueType, type Props as UploadProps } from '../upload';
 import './style.less';
 
-interface Props {
+export interface Props {
+    /**
+     * Accepted file types
+     */
+    accept?: UploadProps['accept'];
+
     /** is read only */
     readOnly?: boolean;
 
@@ -26,7 +31,7 @@ type DataType = 'file' | 'url';
  * @example
  * <ImageInput value={value} onChange={setValue} />
  */
-const ImageInput: React.FC<Props> = ({ readOnly, ...props }) => {
+const ImageInput: React.FC<Props> = ({ accept, readOnly, ...props }) => {
     const { getIntlText } = useI18n();
     const [value, setValue] = useControllableValue(props);
     const [file, setFile] = useState<FileValueType | null>();
@@ -80,6 +85,7 @@ const ImageInput: React.FC<Props> = ({ readOnly, ...props }) => {
                 </div>
                 <div className={cls('ms-image-input-upload', { 'd-none': dataType !== 'file' })}>
                     <Upload
+                        accept={accept}
                         disabled={!!readOnly}
                         value={file}
                         onChange={data => {
@@ -91,6 +97,10 @@ const ImageInput: React.FC<Props> = ({ readOnly, ...props }) => {
 
                             setFile(result);
                             if (result?.url) setValue(result.url);
+                        }}
+                        onDropRejected={rejections => {
+                            const content = rejections[0]?.errors[0]?.message;
+                            content && toast.error({ content });
                         }}
                     />
                 </div>

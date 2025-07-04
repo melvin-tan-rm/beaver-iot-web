@@ -2,6 +2,7 @@ import React from 'react';
 import { cloneDeep } from 'lodash-es';
 import { TextField, IconButton } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
+import { checkRequired, checkMaxLength } from '@milesight/shared/src/utils/validators';
 import { DeleteOutlineIcon } from '@milesight/shared/src/components';
 import './style.less';
 
@@ -21,6 +22,8 @@ export interface Props {
 
     onChange?: (data: Props['data']) => void;
 }
+
+const validators = [checkRequired(), checkMaxLength({ max: 64 })];
 
 const ResultSetting: React.FC<Props> = ({ data, onChange }) => {
     const { getIntlText } = useI18n();
@@ -59,47 +62,56 @@ const ResultSetting: React.FC<Props> = ({ data, onChange }) => {
                         </div>
                     )}
                     <div className="result-setting-item-body">
-                        {params.map(param => (
-                            <div className="params-item" key={param.entityId}>
-                                <TextField
-                                    disabled
-                                    fullWidth
-                                    value={param.name}
-                                    label={getIntlText('common.label.param_name')}
-                                    slotProps={{ input: { size: 'small' } }}
-                                />
-                                <TextField
-                                    fullWidth
-                                    autoComplete="off"
-                                    error={!param.entityName}
-                                    value={param.entityName}
-                                    label={getIntlText('device.label.param_entity_name')}
-                                    slotProps={{ input: { size: 'small' } }}
-                                    helperText={
-                                        param.entityName ? '' : getIntlText('valid.input.required')
-                                    }
-                                    onChange={e =>
-                                        handleChange(index, param.entityId, {
-                                            entityName: e.target.value,
-                                        })
-                                    }
-                                />
-                                <TextField
-                                    disabled
-                                    fullWidth
-                                    value={param.entityId}
-                                    label={getIntlText('device.label.param_entity_id')}
-                                    slotProps={{ input: { size: 'small' } }}
-                                />
-                                <TextField
-                                    disabled
-                                    fullWidth
-                                    value={param.entityValueType}
-                                    label={getIntlText('common.label.entity_type')}
-                                    slotProps={{ input: { size: 'small' } }}
-                                />
-                            </div>
-                        ))}
+                        {params.map(param => {
+                            const validateResults = validators.map(validator => {
+                                const result = validator(param.entityName);
+                                return result;
+                            });
+                            const error = validateResults.find(
+                                result => typeof result === 'string',
+                            );
+
+                            console.log({ validateResults, error });
+                            return (
+                                <div className="params-item" key={param.entityId}>
+                                    <TextField
+                                        disabled
+                                        fullWidth
+                                        value={param.name}
+                                        label={getIntlText('common.label.param_name')}
+                                        slotProps={{ input: { size: 'small' } }}
+                                    />
+                                    <TextField
+                                        fullWidth
+                                        autoComplete="off"
+                                        error={typeof error === 'string'}
+                                        value={param.entityName}
+                                        label={getIntlText('device.label.param_entity_name')}
+                                        slotProps={{ input: { size: 'small' } }}
+                                        helperText={typeof error === 'string' ? error : ''}
+                                        onChange={e =>
+                                            handleChange(index, param.entityId, {
+                                                entityName: e.target.value,
+                                            })
+                                        }
+                                    />
+                                    <TextField
+                                        disabled
+                                        fullWidth
+                                        value={param.entityId}
+                                        label={getIntlText('device.label.param_entity_id')}
+                                        slotProps={{ input: { size: 'small' } }}
+                                    />
+                                    <TextField
+                                        disabled
+                                        fullWidth
+                                        value={param.entityValueType}
+                                        label={getIntlText('common.label.entity_type')}
+                                        slotProps={{ input: { size: 'small' } }}
+                                    />
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             ))}

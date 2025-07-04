@@ -26,7 +26,7 @@ import {
     checkHexNumber,
 } from '@milesight/shared/src/utils/validators';
 import { HelpOutlineIcon } from '@milesight/shared/src/components';
-import ImageInput from '@/components/image-input';
+import ImageInput, { type Props as ImageInputProps } from '@/components/image-input';
 import Tooltip from '@/components/tooltip';
 import { type IntegrationAPISchema } from '@/services/http';
 
@@ -45,6 +45,11 @@ export interface Props {
      * Whether all is read-only
      */
     isAllReadOnly?: boolean;
+
+    /**
+     * The props of image input component
+     */
+    imageUploadProps?: Omit<ImageInputProps, 'value' | 'onChange'>;
 }
 
 /**
@@ -125,7 +130,7 @@ const getValidators = (entity: NonNullable<Props['entities']>[0], required = fal
 /**
  * Entity dynamic form entry
  */
-const useEntityFormItems = ({ entities, isAllReadOnly, isAllRequired = false }: Props) => {
+const useEntityFormItems = ({ entities, isAllReadOnly, imageUploadProps }: Props) => {
     /**
      * Entity Key & Form Key mapping table
      * { [entityKey]: [formKey] }
@@ -287,12 +292,18 @@ const useEntityFormItems = ({ entities, isAllReadOnly, isAllRequired = false }: 
                             field: { onChange, value, disabled },
                             fieldState: { error },
                         }) => (
-                            <FormControl required disabled fullWidth>
+                            <FormControl
+                                required
+                                disabled
+                                fullWidth
+                                className={error ? 'Mui-error' : ''}
+                            >
                                 <InputLabel>
                                     {renderLabel(entity.name, entity.description)}
                                 </InputLabel>
                                 <ImageInput
-                                    readOnly={!!isAllReadOnly}
+                                    readOnly={disabled || !!isAllReadOnly}
+                                    {...imageUploadProps}
                                     value={value}
                                     onChange={onChange}
                                 />
@@ -376,7 +387,7 @@ const useEntityFormItems = ({ entities, isAllReadOnly, isAllRequired = false }: 
         });
 
         return result;
-    }, [entities, isAllReadOnly, encodedEntityKeys]);
+    }, [entities, isAllReadOnly, imageUploadProps, encodedEntityKeys]);
 
     return {
         formItems,

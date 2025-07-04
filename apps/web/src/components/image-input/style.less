@@ -3,9 +3,20 @@
     border: 1px dashed var(--border-color-base);
     border-radius: @border-radius-base;
 
-    .@{prefix}-upload-cont-default {
-        background-color: transparent;
-        border: none;
+    .@{prefix}-upload {
+        &-cont-default {
+            background-color: transparent;
+            border: none;
+        }
+
+        &-cont-uploading {
+            padding-top: 17px;
+            padding-bottom: 17px;
+        }
+
+        .helper-text {
+            display: none;
+        }
     }
 
     .@{prefix}-image-input-text {
