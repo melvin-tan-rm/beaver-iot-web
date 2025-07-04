@@ -1,19 +1,14 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useMemoizedFn } from 'ahooks';
 
-import { useI18n } from '@milesight/shared/src/hooks';
 import {
     FolderOpenOutlinedIcon,
     DashboardIcon,
     HelpOutlinedIcon,
 } from '@milesight/shared/src/components';
 
-export enum FixedGroupEnum {
-    /** All device */
-    ALL = 'ALL',
-    /** Ungrouped device */
-    UNGROUPED = 'UNGROUPED',
-}
+import { FIXED_GROUP, FixedGroupEnum } from '@/pages/device/constants';
+import useDeviceStore from '@/pages/device/store';
 
 export type DeviceGroupItemType = ObjectToCamelCase<{
     id: ApiKey;
@@ -21,31 +16,15 @@ export type DeviceGroupItemType = ObjectToCamelCase<{
 }>;
 
 export function useBody(deviceGroups?: DeviceGroupItemType[]) {
-    const { getIntlText } = useI18n();
-
-    const FIXED_GROUP = useMemo(
-        () => [
-            {
-                id: FixedGroupEnum.ALL,
-                name: getIntlText('device.label.all_devices'),
-            },
-            {
-                id: FixedGroupEnum.UNGROUPED,
-                name: getIntlText('device.label.ungrouped_devices'),
-            },
-        ],
-        [getIntlText],
-    );
+    const { activeGroup, updateActiveGroup } = useDeviceStore();
 
     const data: DeviceGroupItemType[] = useMemo(
         () => [...FIXED_GROUP, ...(deviceGroups || [])],
-        [FIXED_GROUP, deviceGroups],
+        [deviceGroups],
     );
 
-    const [activeGroup, setActiveGroup] = useState<DeviceGroupItemType>(data[0]);
-
     const handleGroupClick = useMemoizedFn((item: DeviceGroupItemType) => {
-        setActiveGroup(item);
+        updateActiveGroup(item);
     });
 
     const hiddenMore = useMemoizedFn((id: ApiKey) => {

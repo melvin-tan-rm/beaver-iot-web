@@ -49,7 +49,7 @@ export default () => {
         },
     );
 
-    const { isShrink, toggleShrink } = useDevice();
+    const { isShrink, toggleShrink, activeGroupName } = useDevice();
 
     // ---------- Device added related ----------
     const [modalOpen, setModalOpen] = useState(false);
@@ -142,7 +142,7 @@ export default () => {
                     <DeviceGroup isShrink={isShrink} />
 
                     <div className="device-right">
-                        <div className="device-right__title">全部设备</div>
+                        <div className="device-right__title">{activeGroupName}</div>
                         <TablePro<TableRowDataType>
                             checkboxSelection={hasPermission(PERMISSIONS.DEVICE_DELETE)}
                             loading={loading}

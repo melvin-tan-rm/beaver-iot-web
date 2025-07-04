@@ -3,6 +3,8 @@ import classNames from 'classnames';
 import { useMemoizedFn } from 'ahooks';
 import { Typography } from '@mui/material';
 
+import { PerfectScrollbar } from '@milesight/shared/src/components';
+
 import MoreDropdown, { MORE_OPERATION } from '../more-dropdown';
 import { useBody, type DeviceGroupItemType } from './hooks/useBody';
 
@@ -53,9 +55,9 @@ const Body: React.FC<BodyProps> = props => {
     };
 
     return (
-        <div className={`${styles.body} ms-perfect-scrollbar`}>
+        <PerfectScrollbar className={styles.body}>
             {data.map(d => renderGroupItem(d))}
-        </div>
+        </PerfectScrollbar>
     );
 };
 
