@@ -59,3 +59,4 @@ export {
 } from './image-annotation';
 export { default as ImageInput } from './image-input';
 export { default as CopyTextField } from './copy-text';
+export { default as TypingEffectText } from './typing-effect-text';
