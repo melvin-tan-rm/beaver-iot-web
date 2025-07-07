@@ -145,6 +145,7 @@ export {
     Dashboard as DashboardIcon,
     HelpOutlined as HelpOutlinedIcon,
     DriveFileMoveOutlined as DriveFileMoveOutlinedIcon,
+    FileDownloadOutlined as FileDownloadOutlinedIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';

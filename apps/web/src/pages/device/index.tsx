@@ -70,8 +70,13 @@ export default () => {
         singleChangeGroupModal,
         batchChangeGroupModal,
     } = useChangeGroup(getDeviceList);
-    const { batchAddModalVisible, hiddenBatchGroupModal, batchAddFormSubmit, openBatchGroupModal } =
-        useBatchAddModal(getDeviceList);
+    const {
+        batchAddModalVisible,
+        hiddenBatchGroupModal,
+        batchAddFormSubmit,
+        openBatchGroupModal,
+        batchAddStatus,
+    } = useBatchAddModal(getDeviceList);
 
     // ---------- Device added related ----------
     const [modalOpen, setModalOpen] = useState(false);
@@ -242,6 +247,7 @@ export default () => {
             {batchAddModalVisible && (
                 <BatchAddModal
                     visible={batchAddModalVisible}
+                    status={batchAddStatus}
                     onCancel={hiddenBatchGroupModal}
                     onFormSubmit={batchAddFormSubmit}
                 />
