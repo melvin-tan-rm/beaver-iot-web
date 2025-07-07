@@ -4,6 +4,10 @@
     border-radius: @border-radius-base;
 
     .@{prefix}-upload {
+        &-cont {
+            min-height: 136px;
+        }
+
         &-cont-default {
             background-color: transparent;
             border: none;
@@ -12,6 +16,11 @@
         &-cont-uploading {
             padding-top: 17px;
             padding-bottom: 17px;
+        }
+
+        &-cont-uploaded {
+            padding-top: @padding-lg;
+            padding-bottom: @padding-lg;
         }
 
         .helper-text {
