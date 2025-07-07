@@ -35,26 +35,28 @@ export default function useGroupModal(getDevices?: () => void) {
         setSelectedDevices(devices);
     });
 
-    const onFormSubmit = useMemoizedFn(async (data: ChangeGroupProps, callback: () => void) => {
-        console.log('onFormSubmit data ? ', data, selectedDevices);
+    const changeGroupFormSubmit = useMemoizedFn(
+        async (data: ChangeGroupProps, callback: () => void) => {
+            console.log('changeGroupFormSubmit data ? ', data, selectedDevices);
 
-        await new Promise(resolve => {
-            setTimeout(() => {
-                resolve(null);
-            }, 1000);
-        });
+            await new Promise(resolve => {
+                setTimeout(() => {
+                    resolve(null);
+                }, 1000);
+            });
 
-        getDevices?.();
-        callback?.();
-        setGroupModalVisible(false);
-        toast.success(getIntlText('common.message.operation_success'));
-    });
+            getDevices?.();
+            callback?.();
+            setGroupModalVisible(false);
+            toast.success(getIntlText('common.message.operation_success'));
+        },
+    );
 
     return {
         groupModalVisible,
         singleChangeGroupModal,
         batchChangeGroupModal,
         hiddenGroupModal,
-        onFormSubmit,
+        changeGroupFormSubmit,
     };
 }

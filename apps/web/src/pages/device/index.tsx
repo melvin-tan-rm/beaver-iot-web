@@ -21,8 +21,9 @@ import {
     type TableRowDataType,
     useDevice,
     useChangeGroup,
+    useBatchAddModal,
 } from './hooks';
-import { AddModal, DeviceGroup, Shrink, ChangeGroupModal } from './components';
+import { AddModal, DeviceGroup, Shrink, ChangeGroupModal, BatchAddModal } from './components';
 import './style.less';
 
 export default () => {
@@ -65,10 +66,12 @@ export default () => {
     const {
         groupModalVisible,
         hiddenGroupModal,
-        onFormSubmit,
+        changeGroupFormSubmit,
         singleChangeGroupModal,
         batchChangeGroupModal,
     } = useChangeGroup(getDeviceList);
+    const { batchAddModalVisible, hiddenBatchGroupModal, batchAddFormSubmit, openBatchGroupModal } =
+        useBatchAddModal(getDeviceList);
 
     // ---------- Device added related ----------
     const [modalOpen, setModalOpen] = useState(false);
@@ -121,9 +124,7 @@ export default () => {
                     className="md:d-none"
                     sx={{ height: 36, textTransform: 'none' }}
                     startIcon={<AddIcon />}
-                    onClick={() => {
-                        console.log('batch add');
-                    }}
+                    onClick={openBatchGroupModal}
                 >
                     {getIntlText('common.label.batch_add')}
                 </Button>
@@ -155,7 +156,14 @@ export default () => {
                 </PermissionControlHidden>
             </Stack>
         );
-    }, [getIntlText, handleDeleteConfirm, selectedIds, deviceData, batchChangeGroupModal]);
+    }, [
+        getIntlText,
+        handleDeleteConfirm,
+        selectedIds,
+        deviceData,
+        batchChangeGroupModal,
+        openBatchGroupModal,
+    ]);
 
     const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useCallback(
         (type, record) => {
@@ -224,11 +232,20 @@ export default () => {
                     setModalOpen(false);
                 }}
             />
-            <ChangeGroupModal
-                visible={groupModalVisible}
-                onCancel={hiddenGroupModal}
-                onFormSubmit={onFormSubmit}
-            />
+            {groupModalVisible && (
+                <ChangeGroupModal
+                    visible={groupModalVisible}
+                    onCancel={hiddenGroupModal}
+                    onFormSubmit={changeGroupFormSubmit}
+                />
+            )}
+            {batchAddModalVisible && (
+                <BatchAddModal
+                    visible={batchAddModalVisible}
+                    onCancel={hiddenBatchGroupModal}
+                    onFormSubmit={batchAddFormSubmit}
+                />
+            )}
         </div>
     );
 };
