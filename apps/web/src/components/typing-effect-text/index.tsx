@@ -25,14 +25,16 @@ interface Props {
     displayTextRenderer?: (text: string, index: number) => React.ReactNode;
 }
 
+const DEFAULT_TYPING_STATE = { index: 0, displayText: '' };
+
 /**
  * Typing Effect Text Component
  */
 const TypingEffectText: React.FC<Props> = memo(
     ({
-        speed = 150,
-        eraseSpeed = 150,
-        typingDelay = 1500,
+        speed = 50,
+        eraseSpeed = 50,
+        typingDelay = 1000,
         eraseDelay,
         staticText,
         content = '',
@@ -40,7 +42,7 @@ const TypingEffectText: React.FC<Props> = memo(
         cursorClassName,
         displayTextRenderer,
     }) => {
-        const [state, setState] = useState({ index: 0, displayText: '' });
+        const [state, setState] = useState(DEFAULT_TYPING_STATE);
         const timerRef = useRef<number>(0);
 
         const rawText = useMemo(() => {
@@ -49,6 +51,7 @@ const TypingEffectText: React.FC<Props> = memo(
         }, [content]);
 
         const startTyping = useMemoizedFn(() => {
+            setState(DEFAULT_TYPING_STATE);
             window.clearTimeout(timerRef.current);
             timerRef.current = window.setTimeout(() => {
                 type();
@@ -104,11 +107,12 @@ const TypingEffectText: React.FC<Props> = memo(
         }, [speed, eraseDelay, rawText, erase]);
 
         useEffect(() => {
+            if (!rawText.length) return;
             startTyping();
             return () => {
                 window.clearTimeout(timerRef.current);
             };
-        }, [startTyping]);
+        }, [rawText, startTyping]);
 
         return (
             <span className="ms-com-typing-text-root">
