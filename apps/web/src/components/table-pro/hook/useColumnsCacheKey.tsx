@@ -14,14 +14,14 @@ const useColumnsCacheKey = (tableName: TableProProps<GridValidRowModel>['tableNa
     const { userInfo } = useUserStore();
     const getCacheKey = useCallback(
         (type: 'display' | 'width') => {
-            if (!userInfo?.user_id) {
+            if (!userInfo?.user_id || !tableName) {
                 return '';
             }
             return `${COLUMNS_CACHE_KEY}.${type}${tableName && `.${tableName}`}${
                 userInfo?.user_id && `.${USER_CACHE_PREFIX}.${userInfo?.user_id}`
             }`;
         },
-        [tableName],
+        [userInfo, tableName],
     );
 
     return { getCacheKey };

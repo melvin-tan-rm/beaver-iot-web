@@ -57,6 +57,11 @@ export interface TableProProps<T extends GridValidRowModel> extends DataGridProp
      * Whether the selected and total numbers are displayed in the lower left corner
      */
     showSelectedAndTotal?: boolean;
+    /**
+     * Customize filter functions that are not displayed in the settings panel and table.
+     * It is used for scenarios where columns within a table need to be dynamically displayed
+     */
+    filterSettingColumns?: (settingColumns: ColumnSettingProps<T>[]) => ColumnSettingProps<T>[];
 }
 
 /**
@@ -154,6 +159,18 @@ export type FilterOperatorType =
     | 'IS_EMPTY'
     | 'IS_NOT_EMPTY'
     | 'ANY_OF';
+
+// ====================== Column setting about ======================//
+
+/**
+ * Column setting type
+ */
+export type ColumnSettingProps<T extends GridValidRowModel> = ColumnType<T> & {
+    /**
+     * Is column visible
+     */
+    checked?: boolean;
+};
 
 // ====================== Column header filter about ======================//
 

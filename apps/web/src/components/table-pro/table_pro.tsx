@@ -13,14 +13,8 @@ import {
     useTable,
     DEFAULT_PAGINATION_MODEL,
 } from './hook';
-import {
-    ColumnSettingProps,
-    ColumnsSetting,
-    Footer,
-    NoDataOverlay,
-    NoResultsOverlay,
-} from './components';
-import type { TableProProps } from './types';
+import { ColumnsSetting, Footer, NoDataOverlay, NoResultsOverlay } from './components';
+import type { TableProProps, ColumnSettingProps } from './types';
 
 import './style.less';
 
@@ -42,6 +36,7 @@ const TablePro = <DataType extends GridValidRowModel>({
     columnSetting = false,
     settingShowOpeColumn = false,
     showSelectedAndTotal = true,
+    filterSettingColumns,
     ...props
 }: TableProProps<DataType>) => {
     const { getIntlText } = useI18n();
@@ -162,6 +157,7 @@ const TablePro = <DataType extends GridValidRowModel>({
                             columnsWidthCacheKey={columnsWidthCacheKey}
                             onChange={handleColumnSettingChange}
                             settingShowOpeColumn={settingShowOpeColumn}
+                            filterSettingColumns={filterSettingColumns}
                         />
                     )}
                     {!!toolbarSort && (

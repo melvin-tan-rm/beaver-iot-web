@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { groupBy, isNumber, keyBy, reject } from 'lodash-es';
+import { debounce, groupBy, isNumber, keyBy, reject, xorBy } from 'lodash-es';
 import update from 'immutability-helper';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -11,7 +11,7 @@ import { useI18n } from '@milesight/shared/src/hooks';
 import { iotLocalStorage } from '@milesight/shared/src/utils/storage';
 import { ColumnSettingIcon, DragIndicatorIcon } from '@milesight/shared/src/components';
 import { DragCard, DragContainer } from '@/components/drag';
-import { ColumnType } from '../../types';
+import { ColumnType, ColumnSettingProps } from '../../types';
 import { isOperationColumn } from '../../utils';
 
 import './style.less';
@@ -33,13 +33,6 @@ interface CacheWidthType {
     width?: number;
     flex?: number;
 }
-
-export type ColumnSettingProps<T extends GridValidRowModel> = ColumnType<T> & {
-    /**
-     * Is column visible
-     */
-    checked?: boolean;
-};
 
 /**
  * Drag the block data type
@@ -76,6 +69,10 @@ interface IProps<T extends GridValidRowModel> {
      * Columns change eg: resize, fixed change
      */
     onChange?: (columns: ColumnSettingProps<T>[]) => void;
+    /**
+     * Customize filter functions that are not displayed in the settings panel and table
+     */
+    filterSettingColumns?: (settingColumns: ColumnSettingProps<T>[]) => ColumnSettingProps<T>[];
 }
 
 // Render custom column content
@@ -123,6 +120,7 @@ const ColumnsSetting = <T extends GridValidRowModel>({
     columnsWidthCacheKey,
     settingShowOpeColumn,
     onChange: onColumnsChange,
+    filterSettingColumns,
 }: IProps<T>) => {
     const { getIntlText } = useI18n();
 
@@ -131,14 +129,16 @@ const ColumnsSetting = <T extends GridValidRowModel>({
         popupId: 'columnsSettingPopover',
     });
 
-    const columnsRef = useRef<SettingItemType<T>[]>([]);
+    const columnsListRef = useRef<SettingItemType<T>[]>([]);
     const [columnsList, setColumnsList] = useState<SettingItemType<T>[]>([]);
 
     // Filter the selection columns and create new columns, and whether storage is needed
     const updateColumns = (columnsList: SettingItemType<T>[], isStorage = true) => {
-        const columnsCopy = [...columnsList];
-        const newArr = columnsCopy.map(i => i.children).flat();
-        const newColumns = newArr.filter(item => item?.checked);
+        setColumnsList(columnsList);
+        const newArr = columnsList.map(i => i.children).flat();
+        const resultColumns = (filterSettingColumns ? filterSettingColumns(newArr) : newArr).filter(
+            item => item?.checked,
+        );
 
         // storage
         if (isStorage && !!columnsDisplayCacheKey) {
@@ -146,7 +146,7 @@ const ColumnsSetting = <T extends GridValidRowModel>({
                 columnsDisplayCacheKey,
                 newArr.map((column: ColumnSettingProps<T>) => {
                     return {
-                        field: column?.field,
+                        field: column.field,
                         fixed: column?.fixed,
                         checked: column?.checked,
                     };
@@ -159,7 +159,7 @@ const ColumnsSetting = <T extends GridValidRowModel>({
                 columnsWidthCacheKey,
                 newArr.map((column: ColumnSettingProps<T>) => {
                     return {
-                        field: column?.field,
+                        field: column.field,
                         width: column?.width,
                         // flex will affect the width. If it is 0, the modified width will be maintained
                         flex: column?.flex,
@@ -167,36 +167,42 @@ const ColumnsSetting = <T extends GridValidRowModel>({
                 }),
             );
         }
-        onColumnsChange && onColumnsChange(newColumns);
+        onColumnsChange && onColumnsChange(resultColumns);
     };
 
     // Column checked change
     const onChange = ({ target }: { target: any }, item: ColumnSettingProps<T>) => {
         const { checked } = target;
         item.checked = !!checked;
-        setColumnsList([...columnsList]);
-        updateColumns(columnsList);
+        updateColumns([...columnsList]);
     };
 
     // Column width change
-    const onColumnWidthChange = (column: GridColumnResizeParams) => {
-        const resizeColumn = reject(columnsList, 'fixed')[0]?.children.find(
-            (col: ColumnSettingProps<T>) => col.field === column.colDef.field,
-        );
+    const debounceColumnWidthChange = useRef(
+        debounce((column: GridColumnResizeParams) => {
+            const resizeColumn = reject(columnsListRef.current, 'fixed')[0]?.children.find(
+                (col: ColumnSettingProps<T>) => col.field === column.colDef.field,
+            );
+            if (resizeColumn) {
+                resizeColumn.width = Math.floor(column.width);
+                resizeColumn.flex = column.colDef.flex;
+                updateColumns([...columnsListRef.current]);
+            }
+        }, 300),
+    );
 
-        if (resizeColumn) {
-            resizeColumn.width = Math.floor(column.width);
-            resizeColumn.flex = column.colDef.flex;
-            setColumnsList([...columnsList]);
-            updateColumns(columnsList);
-        }
-    };
+    useEffect(() => {
+        columnsListRef.current = columnsList;
+    }, [columnsList]);
 
     // ColumnResize change event
     useEffect(() => {
         apiRef.current?.subscribeEvent('columnResize', (column: GridColumnResizeParams) => {
-            onColumnWidthChange(column);
+            debounceColumnWidthChange.current(column);
         });
+        return () => {
+            debounceColumnWidthChange.current.cancel();
+        };
     }, [apiRef.current]);
 
     // Group by fixed
@@ -227,45 +233,33 @@ const ColumnsSetting = <T extends GridValidRowModel>({
             (columnsWidthCacheKey &&
                 iotLocalStorage.getItem<CacheWidthType[]>(columnsWidthCacheKey)) ||
             [];
-        // If the columns are different, the cache is unavailable
-        const displayCacheUnable =
-            !columnsDisplayStorage.length ||
-            columnsCopy.some(col => {
-                return !columnsDisplayStorage.find(cl => cl.field === col.field);
-            });
 
         // If the columns are different, the cache is unavailable
-        const widthCacheUnable =
-            !columnsWidthStorage.length ||
-            columnsCopy.some(col => {
-                return !columnsWidthStorage.find(cl => cl.field === col.field);
-            });
-
-        const columnsWidthObj: Record<string, CacheWidthType> = widthCacheUnable
-            ? {}
-            : keyBy(columnsWidthStorage, 'field');
-
+        const displayCacheUnable = xorBy(columnsCopy, columnsDisplayStorage, 'field').length > 0;
         const hasHiddenColumn = columnsCopy.some(col => col.hidden);
-
-        if (widthCacheUnable) {
-            iotLocalStorage.removeItem(columnsWidthCacheKey);
-        }
 
         // Cache is unavailable. use by default
         if (displayCacheUnable) {
             iotLocalStorage.removeItem(columnsDisplayCacheKey);
+            iotLocalStorage.removeItem(columnsWidthCacheKey);
+
             columnsCopy = columnsCopy.map((item: ColumnSettingProps<T>) => {
                 item.checked = !item.hidden;
-                item.width = columnsWidthObj[item.field]?.width || item.width;
-                item.flex = columnsWidthObj[item.field]?.flex || item.flex;
                 return item;
             });
         } else {
             const data: ColumnSettingProps<T>[] = [];
+            const columnsCopyObj: Record<string, ColumnSettingProps<T>> = keyBy(
+                columnsCopy,
+                'field',
+            );
+            const columnsWidthObj: Record<string, CacheWidthType> = keyBy(
+                columnsWidthStorage,
+                'field',
+            );
+
             columnsDisplayStorage.forEach(item => {
-                const column = columnsCopy.find(
-                    (col: ColumnSettingProps<T>) => col?.field === item?.field,
-                );
+                const column = columnsCopyObj[item.field];
                 if (column) {
                     column.checked = !!item?.checked;
                     column.fixed = item?.fixed;
@@ -286,17 +280,17 @@ const ColumnsSetting = <T extends GridValidRowModel>({
         });
 
         const sortData = transformColumns(columnsCopy);
-        setColumnsList(sortData);
         updateColumns(sortData, hasHiddenColumn);
     }, [columnsDisplayCacheKey, columnsWidthCacheKey, columns]);
 
     /**
-     * Whether or not Filter operation column
+     * Filter operation column, including operating columns, customizing columns not to display, etc
      */
-    const filterColumn = (columns: ColumnSettingProps<T>[]) => {
-        return settingShowOpeColumn
+    const filterColumns = (columns: ColumnSettingProps<T>[]) => {
+        const resultColumns = settingShowOpeColumn
             ? columns
             : columns.filter(col => !isOperationColumn(col.field));
+        return filterSettingColumns ? filterSettingColumns(resultColumns) : resultColumns;
     };
 
     // Drag event
@@ -327,16 +321,16 @@ const ColumnsSetting = <T extends GridValidRowModel>({
                     children: { $splice: [[hoverIndex, 0, dragItem]] },
                 },
             });
-            columnsRef.current = dropData;
+            columnsListRef.current = dropData;
             return dropData;
         });
     }, []);
 
     const onDragEnd = () => {
-        if (columnsRef.current.length === 0) {
+        if (columnsListRef.current.length === 0) {
             return;
         }
-        updateColumns(columnsRef.current);
+        updateColumns(columnsListRef.current);
     };
 
     return (
@@ -383,7 +377,7 @@ const ColumnsSetting = <T extends GridValidRowModel>({
                                             )}
                                     </div>
                                     <DragContainer className="ms-column-setting-list-area">
-                                        {filterColumn(column.children).map((col, index) => (
+                                        {filterColumns(column.children).map((col, index) => (
                                             <DragCard
                                                 key={col.field}
                                                 parentIndex={columnIndex}
@@ -398,7 +392,7 @@ const ColumnsSetting = <T extends GridValidRowModel>({
                                                 />
                                             </DragCard>
                                         ))}
-                                        {filterColumn(column.children).length === 0 && (
+                                        {filterColumns(column.children).length === 0 && (
                                             <DragCard
                                                 parentIndex={columnIndex}
                                                 index={0}

@@ -9,6 +9,7 @@ export {
     type FilterDropdownProps,
     type ColumnFilterItem,
     type FiltersRecordType,
+    type ColumnSettingProps,
     AdvancedFilter,
     FILTER_OPERATORS,
     getOperatorsByExclude,
