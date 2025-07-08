@@ -12,7 +12,7 @@ import { iotLocalStorage } from '@milesight/shared/src/utils/storage';
 import { ColumnSettingIcon, DragIndicatorIcon } from '@milesight/shared/src/components';
 import { DragCard, DragContainer } from '@/components/drag';
 import { ColumnType } from '../../types';
-import { isOperationColumn } from '../../utlis';
+import { isOperationColumn } from '../../utils';
 
 import './style.less';
 

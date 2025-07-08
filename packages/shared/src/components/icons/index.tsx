@@ -140,6 +140,8 @@ export {
     StarOutline as StarOutlinedIcon,
     Star as StarIcon,
     DragIndicator as DragIndicatorIcon,
+    SellOutlined as SellOutlinedIcon,
+    FilterListOutlined as FilterListOutlinedIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';

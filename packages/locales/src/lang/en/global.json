@@ -239,5 +239,7 @@
     "common.label.columns_setting": "Column settings",
     "common.label.column_setting_fixed_left": "Left (fixed)",
     "common.label.column_setting_fixed_right": "Right (fixed)",
-    "common.label.column_setting_non_fixed_column": "Adaptive columns"
+    "common.label.column_setting_non_fixed_column": "Adaptive columns",
+    "common.label.item_selected": "{1} item selected",
+    "common.label.condition_any_of": "Any of"
 }

@@ -104,7 +104,58 @@ export type ColumnType<R extends GridValidRowModel = any, V = any, F = V> = Grid
      * Is hide column, It can be enabled through column setting
      */
     hidden?: boolean;
+    /**
+     * Filter operators, use in advanced filter
+     */
+    operators?: FilterOperatorType[];
+    /**
+     * Filter optional values, use in advanced filter
+     */
+    operatorValues?: {
+        value: ApiKey;
+        label: string;
+    }[];
+    /**
+     * Filter value component type, use in advanced filter
+     */
+    operatorValueCompType?: ValueCompType;
 };
+
+// ====================== Advanced filter about ======================//
+
+/**
+ * Advanced filter value component type
+ * @example
+ * input： indicates the type of TextField
+ * select： indicates the Autocomplete type
+ * ''： indicates the type of TextField with disabled, such as being empty/not empty
+ */
+export type ValueCompType = 'input' | 'select' | '';
+
+/**
+ * Filter Operator used in the table advanced filter
+ * @param CONTAINS contains
+ * @param NOT_CONTAINS not contains
+ * @param START_WITH start witch
+ * @param END_WITH end witch
+ * @param EQ equal
+ * @param NE not equal
+ * @param IS_EMPTY is empty
+ * @param IS_NOT_EMPTY is not empty
+ * @param ANY_OF Any of them
+ */
+export type FilterOperatorType =
+    | 'CONTAINS'
+    | 'NOT_CONTAINS'
+    | 'START_WITH'
+    | 'END_WITH'
+    | 'EQ'
+    | 'NE'
+    | 'IS_EMPTY'
+    | 'IS_NOT_EMPTY'
+    | 'ANY_OF';
+
+// ====================== Column header filter about ======================//
 
 /**
  * Search keys type
