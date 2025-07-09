@@ -49,6 +49,7 @@
 <!--
   Details are important, and help maintainers processing your PR.
   Please be sure to fill out additional details, if applicable.
+  Note: Remove this section if there is no additional information.
 -->
 
 - This PR fixes or closes issue: fixes #
@@ -69,8 +70,7 @@
 
 If user exposed functionality or configuration variables are added/changed:
 
-- [ ] Documentation added/updated for [BeaverIoT](https://github.com/Milesight-IoT/beaver-iot-docs)
-
+- [ ] Documentation added/updated for [BeaverIoT](https://github.com/Milesight-IoT/beaver-iot-docs) (If needed)
 <!--
   Thank you for contributing ^_^
 -->
