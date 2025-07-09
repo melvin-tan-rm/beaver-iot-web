@@ -4,6 +4,6 @@ export type * from './types';
 
 export * from './constants';
 
-export { AdvancedFilter, type ConditionProps } from './components';
+export { AdvancedFilter, type AdvancedFilterHandler } from './components';
 
 export default TablePro;

@@ -2,10 +2,10 @@ import { IconButton } from '@mui/material';
 import { GridValidRowModel } from '@mui/x-data-grid';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { CancelIcon, Select } from '@milesight/shared/src/components';
-import { ColumnType, FilterOperatorType, ValueCompType } from '../../../../types';
+import { ColumnType, ValueCompType } from '../../../../types';
 import { FILTER_OPERATORS } from '../../../../constants';
 import { useRowCondition } from './hooks';
-import { DynamicValueComp, ValueComponentSlotProps } from '../value-comp';
+import { DynamicValueComp, ValueComponentSlotProps, FilterValueType } from '../value-comp';
 
 /**
  * Row conditions
@@ -13,7 +13,7 @@ import { DynamicValueComp, ValueComponentSlotProps } from '../value-comp';
 export interface ConditionProps {
     column: string;
     operator: FilterOperatorType;
-    value: ApiKey | ApiKey[];
+    value: FilterValueType;
     valueCompType: ValueCompType;
 }
 
@@ -53,7 +53,7 @@ const RowCondition = <T extends GridValidRowModel>(props: RowConditionProps<T>) 
 
     const { getIntlText } = useI18n();
 
-    const { columnInfo, optionsColumns, optionsOperators, optionsValues, getAutoFillRule } =
+    const { columnInfo, optionsColumns, optionsOperators, getFilterValueOptions, getAutoFillRule } =
         useRowCondition({
             currentColumn: item.column,
             columns,
@@ -103,7 +103,7 @@ const RowCondition = <T extends GridValidRowModel>(props: RowConditionProps<T>) 
                         value,
                     });
                 }}
-                options={optionsValues}
+                getFilterValueOptions={getFilterValueOptions}
                 valueCompType={item.valueCompType}
                 compSlotProps={valueCompSlotProps}
             />

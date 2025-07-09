@@ -114,12 +114,11 @@ export type ColumnType<R extends GridValidRowModel = any, V = any, F = V> = Grid
      */
     operators?: FilterOperatorType[];
     /**
-     * Filter optional values, use in advanced filter
+     * The optional list function for obtaining values
+     * @param keyword
+     * @returns
      */
-    operatorValues?: {
-        value: ApiKey;
-        label: string;
-    }[];
+    getFilterValueOptions?: FilterValueOptionsType;
     /**
      * Filter value component type, use in advanced filter
      */
@@ -127,6 +126,14 @@ export type ColumnType<R extends GridValidRowModel = any, V = any, F = V> = Grid
 };
 
 // ====================== Advanced filter about ======================//
+
+/** Operator option value */
+export type OperatorValueOptionType = {
+    label: string;
+    value: ApiKey;
+};
+
+export type FilterValueOptionsType = (keyword?: string) => Promise<OperatorValueOptionType[]>;
 
 /**
  * Advanced filter value component type
@@ -136,29 +143,6 @@ export type ColumnType<R extends GridValidRowModel = any, V = any, F = V> = Grid
  * ''： indicates the type of TextField with disabled, such as being empty/not empty
  */
 export type ValueCompType = 'input' | 'select' | '';
-
-/**
- * Filter Operator used in the table advanced filter
- * @param CONTAINS contains
- * @param NOT_CONTAINS not contains
- * @param START_WITH start witch
- * @param END_WITH end witch
- * @param EQ equal
- * @param NE not equal
- * @param IS_EMPTY is empty
- * @param IS_NOT_EMPTY is not empty
- * @param ANY_OF Any of them
- */
-export type FilterOperatorType =
-    | 'CONTAINS'
-    | 'NOT_CONTAINS'
-    | 'START_WITH'
-    | 'END_WITH'
-    | 'EQ'
-    | 'NE'
-    | 'IS_EMPTY'
-    | 'IS_NOT_EMPTY'
-    | 'ANY_OF';
 
 // ====================== Column setting about ======================//
 
@@ -219,3 +203,13 @@ export interface ColumnFilterItem {
     value: React.Key | boolean;
     children?: ColumnFilterItem[];
 }
+
+/**
+ * The conditions after advanced filtering transformation
+ */
+declare type AdvancedConditionsType<T> = Partial<{
+    [key in keyof T as Uppercase<key & string>]: {
+        operator: FilterOperatorType;
+        values: T[key][];
+    };
+}>;

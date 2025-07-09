@@ -1,6 +1,6 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Stack } from '@mui/material';
+import { Button, Divider, Stack } from '@mui/material';
 import { useRequest } from 'ahooks';
 import { pickBy } from 'lodash-es';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
@@ -14,6 +14,10 @@ import {
     PermissionControlHidden,
     FilterValue,
     TableProProps,
+    AdvancedFilter,
+    AdvancedFilterHandler,
+    FILTER_OPERATORS,
+    ToggleRadio,
 } from '@/components';
 import { DateRangePickerValueType } from '@/components/date-range-picker';
 import {
@@ -23,7 +27,7 @@ import {
     isRequestSuccess,
     API_PREFIX,
 } from '@/services/http';
-import { PERMISSIONS } from '@/constants';
+import { ENTITY_TYPE, PERMISSIONS } from '@/constants';
 import { useUserPermissions } from '@/hooks';
 import errorHandler from '@/services/http/client/error-handler';
 import useColumns, {
@@ -39,6 +43,12 @@ export default () => {
     const { getIntlText } = useI18n();
     const { getTimeFormat, dayjs } = useTime();
     const { hasPermission } = useUserPermissions();
+    // Advanced filter
+    const advancedFilterRef = useRef<AdvancedFilterHandler>(null);
+    const [entityType, setEntityType] = useState<ENTITY_TYPE>(ENTITY_TYPE.PROPERTY);
+    const [advancedConditions, setAdvancedConditions] = useState<
+        AdvancedConditionsType<TableRowDataType>
+    >({});
 
     const [keyword, setKeyword] = useState<string>();
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
@@ -56,25 +66,19 @@ export default () => {
     } = useRequest(
         async () => {
             const { page, pageSize } = paginationModel;
-            const searchParams = pickBy({
-                entity_names: filteredInfo?.entityName,
-                entity_keys: filteredInfo?.entityKey,
-                entity_type: filteredInfo?.entityType,
-                entity_value_type: filteredInfo?.entityValueType,
-                entity_source_name: filteredInfo.integrationName?.[0],
-            });
             const [error, resp] = await awaitWrap(
                 entityAPI.getList({
                     keyword,
                     page_size: pageSize,
                     page_number: page + 1,
+                    entity_type: [entityType],
                     sorts: [
                         {
                             direction: 'ASC',
                             property: 'key',
                         },
                     ],
-                    ...searchParams,
+                    entity_filter: advancedConditions,
                 }),
             );
             const data = getResponseData(resp);
@@ -85,7 +89,7 @@ export default () => {
         },
         {
             debounceWait: 300,
-            refreshDeps: [keyword, paginationModel, filteredInfo],
+            refreshDeps: [paginationModel, entityType, advancedConditions],
         },
     );
 
@@ -191,27 +195,18 @@ export default () => {
         toast.success(getIntlText('common.message.operation_success'));
     };
 
-    const toolbarRender = useMemo(() => {
-        return (
-            <Stack className="ms-operations-btns" direction="row" spacing="12px">
-                <PermissionControlHidden permissions={PERMISSIONS.ENTITY_DATA_EXPORT}>
-                    <Button
-                        variant="outlined"
-                        className="md:d-none"
-                        sx={{ height: 36, textTransform: 'none' }}
-                        startIcon={<IosShareIcon />}
-                        onClick={handleShowExport}
-                        disabled={!selectedIds.length}
-                    >
-                        {getIntlText('common.label.export')}
-                    </Button>
-                </PermissionControlHidden>
-            </Stack>
-        );
-    }, [getIntlText, handleExportConfirm, selectedIds]);
+    // Filter by click tag
+    const handleFilterByTag = (tag: any) => {
+        advancedFilterRef.current?.insertOrReplaceCondition({
+            column: 'entityTags',
+            operator: FILTER_OPERATORS.ANY_EQUALS,
+            value: tag.name,
+            valueCompType: 'select',
+        });
+    };
 
     const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useCallback(
-        (type, record) => {
+        (type, record, tag) => {
             switch (type) {
                 case 'detail': {
                     handleDetail(record);
@@ -219,6 +214,10 @@ export default () => {
                 }
                 case 'edit': {
                     showEdit(record);
+                    break;
+                }
+                case 'filter': {
+                    handleFilterByTag(tag);
                     break;
                 }
                 default: {
@@ -232,16 +231,83 @@ export default () => {
         onButtonClick: handleTableBtnClick,
         filteredInfo,
     });
+    const handleAdvancedSearch = useCallback(
+        (filters: AdvancedConditionsType<TableRowDataType>) => {
+            setAdvancedConditions(filters);
+            setPaginationModel(model => ({ ...model, page: 0 }));
+        },
+        [],
+    );
+
     const handleSearch = useCallback((value: string) => {
         setKeyword(value);
         setPaginationModel(model => ({ ...model, page: 0 }));
     }, []);
 
+    const toolbarRender = useMemo(() => {
+        return (
+            <Stack className="ms-operations-btns" direction="row" spacing="12px">
+                <ToggleRadio
+                    options={Object.entries(ENTITY_TYPE).map(([key]) => ({
+                        label: key,
+                        value: key,
+                    }))}
+                    value={entityType}
+                    onChange={val => {
+                        setEntityType(val as ENTITY_TYPE);
+                    }}
+                    sx={{ height: 36, width: 'auto' }}
+                />
+                <Divider
+                    orientation="vertical"
+                    flexItem
+                    className="md:d-none"
+                    sx={{
+                        width: '1px',
+                        backgroundColor: 'var(--gray-color-2)',
+                    }}
+                />
+                <PermissionControlHidden permissions={PERMISSIONS.ENTITY_DATA_EXPORT}>
+                    <Button
+                        variant="outlined"
+                        className="md:d-none"
+                        sx={{ textTransform: 'none' }}
+                        startIcon={<IosShareIcon />}
+                        onClick={handleShowExport}
+                        disabled={!selectedIds.length}
+                    >
+                        {getIntlText('common.label.export')}
+                    </Button>
+                </PermissionControlHidden>
+                <Divider
+                    orientation="vertical"
+                    flexItem
+                    className="md:d-none"
+                    sx={{
+                        width: '1px',
+                        backgroundColor: 'var(--gray-color-2)',
+                    }}
+                />
+                <AdvancedFilter<TableRowDataType>
+                    ref={advancedFilterRef}
+                    columns={columns}
+                    onChange={handleAdvancedSearch}
+                    variant="outlined"
+                    className="md:d-none"
+                >
+                    {getIntlText('entity.label.filter')}
+                </AdvancedFilter>
+            </Stack>
+        );
+    }, [getIntlText, handleExportConfirm, selectedIds]);
+
     return (
         <div className="ms-main">
             <TablePro<TableRowDataType>
                 keepNonExistentRowsSelected
-                filterCondition={[keyword]}
+                filterCondition={[advancedConditions]}
+                tableName="entity_data"
+                columnSetting
                 checkboxSelection={hasPermission(PERMISSIONS.ENTITY_DATA_EXPORT)}
                 loading={loading}
                 columns={columns}
@@ -254,7 +320,7 @@ export default () => {
                 toolbarRender={toolbarRender}
                 onPaginationModelChange={setPaginationModel}
                 onRowSelectionModelChange={setSelectedIds}
-                onSearch={handleSearch}
+                // onSearch={handleSearch}
                 onRefreshButtonClick={getList}
                 onFilterInfoChange={handleFilterChange}
             />

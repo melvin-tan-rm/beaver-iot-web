@@ -1,41 +1,38 @@
 import { AutocompleteProps, SelectProps, TextFieldProps } from '@mui/material';
+import { OperatorValueOptionType, FilterValueOptionsType } from '../../../../types';
 
-export type OperatorValuesType = {
-    label: string;
-    value: ApiKey;
-}[];
+export type SelectedValueType = OperatorValueOptionType | OperatorValueOptionType[];
+/** The type of filter value selected for each column */
+export type FilterValueType = ApiKey | SelectedValueType;
 
-export interface TextFieldPropsOverrides<T> extends Omit<TextFieldProps, 'onChange'> {
+export interface TextFieldPropsOverrides extends Omit<TextFieldProps, 'onChange'> {
     onChange: (value: T) => void;
 }
 
-export interface AutocompletePropsOverrides<T> extends Omit<AutocompleteProps, 'onChange'> {
-    onChange: (value: T) => void;
+export interface AutocompletePropsOverrides<T> extends Omit<AutocompleteProps<T>, 'onChange'> {
+    /**
+     * The optional list for selection
+     */
+    getFilterValueOptions?: FilterValueOptionsType;
 }
 
 /**
  * Value components base props
  */
-export interface ValueCompBaseProps<T extends ApiKey | ApiKey[]>
+export interface ValueCompBaseProps<T extends FilterValueType>
     extends Pick<TextFieldProps, 'label' | 'size' | 'sx' | 'disabled' | 'fullWidth'> {
     value: T;
     onChange: (value: T) => void;
     /**
      * The optional list for selection
      */
-    options?: OperatorValuesType;
+    getFilterValueOptions?: FilterValueOptionsType;
 }
 
 /**
  * All component types used for advanced filtering values
  */
-export type BaseComponentProps = AutocompletePropsOverrides<
-    Value,
-    Multiple,
-    DisableClearable,
-    false
-> &
-    TextFieldPropsOverrides;
+export type BaseComponentProps = AutocompletePropsOverrides & TextFieldPropsOverrides;
 
 /**
  * The advanced filtering value component props can be passed to the base component or using the column field
@@ -61,3 +58,9 @@ export type ValueComponentSlotProps =
           [K in keyof ValueComponentProps]: Partial<ValueComponentProps[K]>;
       }>
     | undefined;
+
+export interface OprVirtualSelectProps<T extends SelectedValueType = SelectedValueType>
+    extends AutocompletePropsOverrides<T> {
+    options: OperatorValueOptionType[];
+    onItemChange: (value: T) => void;
+}

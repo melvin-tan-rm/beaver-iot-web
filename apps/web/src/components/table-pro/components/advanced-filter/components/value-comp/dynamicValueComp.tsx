@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { ValueCompType } from '../../../../types';
-import { ValueComponentSlotProps, ValueCompBaseProps } from './types';
-import useValueComp from './useValueComp';
+import { ValueComponentSlotProps, ValueCompBaseProps, FilterValueType } from './types';
+import { useValueComp } from './hooks';
 
-export interface DynamicValueCompProps<T extends ApiKey | ApiKey[]> extends ValueCompBaseProps<T> {
+export interface DynamicValueCompProps<T extends FilterValueType> extends ValueCompBaseProps<T> {
     column: string;
     valueCompType: ValueCompType;
     /**
@@ -12,10 +12,18 @@ export interface DynamicValueCompProps<T extends ApiKey | ApiKey[]> extends Valu
     compSlotProps?: ValueComponentSlotProps;
 }
 
+const DEFAULT_COMP_PROPS = {
+    baseSelect: {
+        multiple: true,
+        clearOnEscape: false,
+        disableCloseOnSelect: true,
+    },
+};
+
 /**
  * Value selection component for advancedFilter
  */
-const DynamicValueComp = <T extends ApiKey | ApiKey[]>({
+const DynamicValueComp = <T extends FilterValueType>({
     column,
     valueCompType,
     compSlotProps,
@@ -23,13 +31,15 @@ const DynamicValueComp = <T extends ApiKey | ApiKey[]>({
 }: DynamicValueCompProps<T>) => {
     const { renderValueComponent } = useValueComp<T>();
 
-    const slotProps = useMemo(
-        () => ({
-            ...(compSlotProps?.[`base${valueCompType.replace(/^./, c => c.toUpperCase())}`] || {}),
+    const slotProps = useMemo(() => {
+        const componentType = `base${valueCompType.replace(/^./, c => c.toUpperCase())}`;
+        return {
+            ...(compSlotProps?.[componentType] ||
+                DEFAULT_COMP_PROPS[componentType as keyof ValueComponentSlotProps] ||
+                {}),
             ...(compSlotProps?.[column] || {}),
-        }),
-        [compSlotProps, valueCompType, column],
-    );
+        };
+    }, [compSlotProps, valueCompType, column]);
 
     return renderValueComponent(valueCompType, rest, slotProps);
 };

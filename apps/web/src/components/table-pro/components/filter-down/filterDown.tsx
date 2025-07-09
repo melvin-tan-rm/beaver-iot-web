@@ -173,6 +173,7 @@ const FilterDropdown = (props: FilterDropdownProps) => {
 
             return (
                 <FormControlLabel
+                    key={key}
                     label={item.text}
                     control={
                         <Checkbox

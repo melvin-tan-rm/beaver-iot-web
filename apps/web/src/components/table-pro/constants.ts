@@ -1,5 +1,3 @@
-import { FilterOperatorType } from './types';
-
 /**
  * The cache key configured in the column
  */
@@ -26,8 +24,8 @@ export const FILTER_OPERATOR: Record<FilterOperatorType, { intlKey: string }> = 
     NE: {
         intlKey: 'workflow.label.condition_operator_is_not',
     },
-    ANY_OF: {
-        intlKey: 'workflow.label.condition_any_of',
+    ANY_EQUALS: {
+        intlKey: 'common.label.condition_any_equal',
     },
     IS_EMPTY: {
         intlKey: 'workflow.label.condition_operator_is_empty',

@@ -140,6 +140,21 @@ declare interface EntityData {
     identifier: string;
     /** Entity Parent Name */
     entity_parent_name?: string;
+    /** Name of the affiliated device */
+    device_name?: string;
+    /** Latest value */
+    entity_latest_value?: ApiKey;
+    /** Entity tags */
+    entity_tags?: {
+        id: ApiKey;
+        name: string;
+        color: string;
+    }[];
+    /** Device group */
+    device_group?: {
+        id: ApiKey;
+        name: string;
+    };
 }
 
 /**

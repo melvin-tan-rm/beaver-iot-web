@@ -236,10 +236,10 @@
     "common.label.page": "page",
     "common.label.selected_count": "Selected",
     "common.label.total_count": "Total",
-    "common.label.columns_setting": "Column settings",
+    "common.label.columns_setting": "Column Settings",
     "common.label.column_setting_fixed_left": "Left (fixed)",
     "common.label.column_setting_fixed_right": "Right (fixed)",
     "common.label.column_setting_non_fixed_column": "Adaptive columns",
     "common.label.item_selected": "{1} item selected",
-    "common.label.condition_any_of": "Any of"
+    "common.label.condition_any_equal": "Any Equal"
 }

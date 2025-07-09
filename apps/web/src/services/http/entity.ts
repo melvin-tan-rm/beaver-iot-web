@@ -24,6 +24,8 @@ export interface EntityAPISchema extends APISchema {
             not_scan_key?: boolean;
             /** Whether it is a custom entity */
             customized?: boolean;
+            /** Advanced filter */
+            entity_filter?: AdvancedConditionsType<EntityData>;
         };
         response: SearchResponseType<EntityData[]>;
     };

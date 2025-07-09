@@ -7,30 +7,30 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { isArray } from 'lodash-es';
+import { isArray, isObject } from 'lodash-es';
 import classNames from 'classnames';
 import { Badge, Box, Button, ButtonProps, IconButton, Popover, Typography } from '@mui/material';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { GridValidRowModel } from '@mui/x-data-grid';
 import { useI18n } from '@milesight/shared/src/hooks';
+import { camelToSnake } from '@milesight/shared/src/utils/tools';
 import {
     AddIcon,
     CancelIcon,
     CloseIcon,
     FilterListOutlinedIcon,
 } from '@milesight/shared/src/components';
-import { ColumnType, FilterOperatorType } from '../../types';
+import { ColumnType } from '../../types';
 import {
     RowCondition,
     ConditionProps,
+    FilterValueType,
     ValueComponentSlotProps,
     isNullValueOperator,
 } from './components';
 import { useSyncDynamic } from './hooks';
 
 import './style.less';
-
-export type { ConditionProps };
 
 export interface AdvancedFilterHandler {
     // Insert one condition
@@ -41,9 +41,9 @@ export interface AdvancedFilterHandler {
     resetConditions: () => void;
 }
 
-export type AdvancedFilterProps<T extends GridValidRowModel> = ButtonProps & {
+export type AdvancedFilterProps<T extends GridValidRowModel> = Omit<ButtonProps, 'ref'> & {
     columns: ColumnType<T>[];
-    onSearch: (data: ConditionProps[]) => void;
+    onChange: (filters: AdvancedConditionsType<T>) => void;
     /**
      * The value component slot can pass the props of components
      * @example
@@ -77,7 +77,7 @@ const AdvancedFilter = <T extends GridValidRowModel>(
     props: AdvancedFilterProps<T>,
     ref: React.ForwardedRef<AdvancedFilterHandler>,
 ) => {
-    const { columns, onSearch, valueCompSlotProps, className, ...rest } = props;
+    const { columns, onChange, valueCompSlotProps, className, ...rest } = props;
     const { getIntlText } = useI18n();
 
     const popupState = usePopupState({ variant: 'popover', popupId: 'advancedFilter' });
@@ -120,7 +120,9 @@ const AdvancedFilter = <T extends GridValidRowModel>(
         conditionsRef.current = conditions;
     }, [conditions]);
 
-    // Display at least one default condition
+    /**
+     * Display one default condition
+     */
     const initDefaultCondition = () => {
         const firstCol = columns.find(c => !!c.operators?.length);
         if (firstCol) {
@@ -133,6 +135,9 @@ const AdvancedFilter = <T extends GridValidRowModel>(
         }
     };
 
+    /**
+     * Clear the values of all conditions
+     */
     const clearConditionsValue = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
         e.stopPropagation();
         const newConditions = conditions.map(c => {
@@ -158,6 +163,10 @@ const AdvancedFilter = <T extends GridValidRowModel>(
         initDefaultCondition();
     };
 
+    /**
+     * Filter out incomplete conditions
+     * @param conditions
+     */
     const filterTruthConditions = useCallback((conditions: ConditionProps[]) => {
         return conditions.filter(v => {
             if (isNullValueOperator(v.operator)) {
@@ -167,9 +176,35 @@ const AdvancedFilter = <T extends GridValidRowModel>(
         });
     }, []);
 
+    /**
+     * Convert the condition array to the condition object format
+     * @param conditions
+     */
     const handleFilterChange = (conditions: ConditionProps[]) => {
-        console.log(filterTruthConditions(conditions));
-        onSearch(filterTruthConditions(conditions));
+        const filters = Object.fromEntries(
+            filterTruthConditions(conditions).map(condition => [
+                camelToSnake(condition.column).toUpperCase(),
+                {
+                    operator: condition.operator,
+                    values: wrapInArray(condition.value),
+                },
+            ]),
+        ) as AdvancedConditionsType<T>;
+        onChange(filters);
+    };
+
+    /**
+     * Convert the incoming data into a form wrapped in []
+     * @param value {FilterValueType}
+     */
+    const wrapInArray = (value: FilterValueType) => {
+        if (isArray(value)) {
+            return value.map(v => v.value);
+        }
+        if (isObject(value)) {
+            return [value.value || ''];
+        }
+        return value ? [value] : [];
     };
 
     const conditionsCount = useMemo(() => {

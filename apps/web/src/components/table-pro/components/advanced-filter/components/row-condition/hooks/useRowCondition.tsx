@@ -1,11 +1,9 @@
 import { useMemo } from 'react';
-import { intersection } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { GridValidRowModel } from '@mui/x-data-grid';
 import { FILTER_OPERATOR } from '../../../../../constants';
 import { isOperationColumn } from '../../../../../utils';
-import { ColumnType, FilterOperatorType, ValueCompType } from '../../../../../types';
-import { OperatorValuesType } from '../../value-comp';
+import { ColumnType, ValueCompType, FilterValueOptionsType } from '../../../../../types';
 
 /**
  * Column filtering information objects
@@ -13,7 +11,7 @@ import { OperatorValuesType } from '../../value-comp';
 export interface OperatorColumnInfoType {
     column: ColumnType['field'];
     operators: FilterOperatorType[] | undefined;
-    operatorValues: OperatorValuesType | undefined;
+    getFilterValueOptions: FilterValueOptionsType | undefined;
     valueCompType: ValueCompType | undefined;
 }
 
@@ -50,7 +48,7 @@ const useRowCondition = <T extends GridValidRowModel>(props: useRowConditionProp
                 acc[column.field] = {
                     column: column.field,
                     operators: column.operators,
-                    operatorValues: column.operatorValues,
+                    getFilterValueOptions: column.getFilterValueOptions,
                     valueCompType: column.operatorValueCompType,
                 };
                 return acc;
@@ -79,8 +77,8 @@ const useRowCondition = <T extends GridValidRowModel>(props: useRowConditionProp
         });
     }, [currentColumn, columnInfo, getIntlText]);
 
-    const optionsValues = useMemo(() => {
-        return columnInfo[currentColumn]?.operatorValues || [];
+    const getFilterValueOptions = useMemo(() => {
+        return columnInfo[currentColumn]?.getFilterValueOptions;
     }, [currentColumn, columnInfo]);
 
     /**
@@ -110,7 +108,7 @@ const useRowCondition = <T extends GridValidRowModel>(props: useRowConditionProp
         columnInfo,
         optionsColumns,
         optionsOperators,
-        optionsValues,
+        getFilterValueOptions,
         getAutoFillRule,
     };
 };

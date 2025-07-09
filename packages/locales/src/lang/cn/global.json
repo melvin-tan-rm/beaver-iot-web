@@ -241,5 +241,5 @@
     "common.label.column_setting_fixed_right": "右（固定）",
     "common.label.column_setting_non_fixed_column": "自适应列",
     "common.label.item_selected": "{1} 项选中",
-    "common.label.condition_any_of": "其中任一"
+    "common.label.condition_any_equal": "其中任一"
 }

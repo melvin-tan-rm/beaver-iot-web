@@ -27,5 +27,6 @@
     "entity.label.device_group": "Device Group",
     "entity.label.entity_tags": "Entity Tags",
     "entity.label.latest_value": "Latest Value",
-    "entity.label.filter": "Filters"
+    "entity.label.filter": "Filters",
+    "entity.label.parent_entity": "Parent Entity"
 }
