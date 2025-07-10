@@ -53,6 +53,21 @@ const ErrorBoundary = () => <ErrorBoundaryComponent inline />;
 
 const routes: RouteObjectType[] = [
     {
+        path: '/osereport',
+        handle: {
+            get title() {
+                return intl.get('common.label.dashboard');
+            },
+            icon: <DashboardCustomizeIcon fontSize="small" />,
+            permissions: PERMISSIONS.DASHBOARD_MODULE,
+        },
+        async lazy() {
+            const { default: Component } = await import('@/pages/e3ms/osereport/generation');
+            return { Component };
+        },
+        ErrorBoundary,
+    },
+    {
         path: '/dashboard',
         handle: {
             get title() {
