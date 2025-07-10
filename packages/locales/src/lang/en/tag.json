@@ -1,7 +1,7 @@
 {
     "tag.title.tag_management": "Tag Management",
     "tag.title.tag_name": "Tag Name",
-    "tag.title.tag_entities": "Tag Entities",
+    "tag.title.tagged_entities": "Tag Entities",
     "tag.title.add_tag": "Add Tag",
     "tag.title.edit_tag": "Edit Tag",
     "tag.tip.single_delete_tag": "删除后所有使用了该标签的实体，都将不再展示该标签。确认删除标签: {1} 吗？",

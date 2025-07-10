@@ -1,16 +1,26 @@
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import { isEmpty } from 'lodash-es';
 
 import { useI18n } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 
 import { useConfirm } from '@/components';
-import { tagAPI, awaitWrap, isRequestSuccess } from '@/services/http';
+import { tagAPI, awaitWrap, isRequestSuccess, getResponseData } from '@/services/http';
 import { type TableRowDataType } from './useColumns';
 
 export default function useTag(getAllTags?: () => void) {
     const { getIntlText } = useI18n();
     const confirm = useConfirm();
+
+    const { data: addedTagNum, run: getAddedTag } = useRequest(async () => {
+        const [error, resp] = await awaitWrap(tagAPI.getTagNumberByUserAdded());
+        if (error || !isRequestSuccess(resp)) {
+            return;
+        }
+
+        const data = getResponseData(resp);
+        return data?.number || 0;
+    });
 
     const handleDeleteTag = useMemoizedFn((records: TableRowDataType[]) => {
         if (!Array.isArray(records) || isEmpty(records)) {
@@ -35,9 +45,19 @@ export default function useTag(getAllTags?: () => void) {
                 color: 'error',
             },
             onConfirm: async () => {
-                console.log('delete ? ', records);
+                const ids = records.map(r => r.id);
+
+                const [error, resp] = await awaitWrap(
+                    tagAPI.deleteTag({
+                        ids,
+                    }),
+                );
+                if (error || !isRequestSuccess(resp)) {
+                    return;
+                }
 
                 getAllTags?.();
+                getAddedTag();
                 toast.success(getIntlText('common.message.delete_success'));
             },
         });
@@ -48,5 +68,7 @@ export default function useTag(getAllTags?: () => void) {
          * To delete tag
          */
         handleDeleteTag,
+        getAddedTag,
+        addedTagCount: addedTagNum || 0,
     };
 }

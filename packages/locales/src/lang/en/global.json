@@ -239,5 +239,6 @@
     "common.label.collapse": "Collapse",
     "common.label.batch_add": "Batch Add",
     "common.label.download_template": "Download Template",
-    "common.label.upload_file": "Upload File"
+    "common.label.upload_file": "Upload File",
+    "common.tip.maximum_number_reached": "已达到最大数量"
 }

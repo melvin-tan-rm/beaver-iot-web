@@ -95,13 +95,10 @@ export function useFormItems() {
                 name: 'description',
                 rules: {
                     maxLength: {
-                        value: 25,
+                        value: 63,
                         message: getIntlText('valid.input.max_length', {
-                            1: 25,
+                            1: 63,
                         }),
-                    },
-                    validate: {
-                        checkRequired: checkRequired(),
                     },
                 },
                 wrapCol: 12,
@@ -109,7 +106,6 @@ export function useFormItems() {
                 render({ field: { onChange, value }, fieldState: { error } }) {
                     return (
                         <TextField
-                            required
                             fullWidth
                             type="text"
                             label={getIntlText('common.label.description')}

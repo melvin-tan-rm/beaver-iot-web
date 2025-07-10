@@ -3,18 +3,11 @@ import { Stack, IconButton } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import { DeleteOutlineIcon, EditIcon } from '@milesight/shared/src/components';
 import { Tooltip, type ColumnType, Tag } from '@/components';
-// import { type UserAPISchema } from '@/services/http';
+import { type TagItemProps } from '@/services/http';
 
 type OperationType = 'edit' | 'delete';
 
-export type TableRowDataType = {
-    id: ApiKey;
-    name: string;
-    color: string;
-    description: string;
-    tagEntities: number;
-    createdAt: number;
-};
+export type TableRowDataType = ObjectToCamelCase<TagItemProps>;
 
 export interface UseColumnsProps<T> {
     /**
@@ -47,8 +40,8 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 ellipsis: true,
             },
             {
-                field: 'tagEntities',
-                headerName: getIntlText('tag.title.tag_entities'),
+                field: 'taggedEntitiesCount',
+                headerName: getIntlText('tag.title.tagged_entities'),
                 flex: 1,
                 minWidth: 150,
                 ellipsis: true,

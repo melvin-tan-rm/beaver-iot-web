@@ -14,7 +14,7 @@ export type OperateModalType = 'add' | 'edit';
 export interface OperateTagProps {
     name: string;
     color: string;
-    description: string;
+    description?: string;
 }
 
 interface Props extends Omit<ModalProps, 'onOk'> {

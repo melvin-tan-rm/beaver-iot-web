@@ -1,12 +1,11 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useRequest, useMemoizedFn } from 'ahooks';
-import { pick } from 'lodash-es';
 
 import { Button, Stack } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
 import { AddIcon, RemoveCircleOutlineIcon } from '@milesight/shared/src/components';
-import { TablePro, Breadcrumbs } from '@/components';
+import { TablePro, Breadcrumbs, Tooltip } from '@/components';
 import { tagAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import { OperateTagModal } from './components';
 
@@ -19,6 +18,11 @@ import {
 } from './hooks';
 
 import './style.less';
+
+/**
+ * A user can create up to 300 tags.
+ */
+const USER_MAX_TAGS = 300;
 
 const TagManagement: React.FC = () => {
     const { getIntlText } = useI18n();
@@ -49,36 +53,17 @@ const TagManagement: React.FC = () => {
             );
             const respData = getResponseData(resp);
 
-            // if (error || !respData || !isRequestSuccess(resp)) return;
+            if (error || !respData || !isRequestSuccess(resp)) return;
 
-            // return objectToCamelCase(respData);
-            return {
-                content: [
-                    {
-                        id: 1,
-                        name: 'Tag Name',
-                        color: '#7B4EFA',
-                        description: 'This is #7B4EFA',
-                        tagEntities: 16,
-                        createdAt: Date.now(),
-                    },
-                    {
-                        id: 2,
-                        name: 'Tag Name 2',
-                        color: '#F7BA1E',
-                        description: 'This is #F7BA1E',
-                        tagEntities: 27,
-                        createdAt: Date.now(),
-                    },
-                ],
-                total: 1,
-            };
+            return objectToCamelCase(respData);
         },
         {
             debounceWait: 300,
             refreshDeps: [keyword, paginationModel],
         },
     );
+
+    const { handleDeleteTag, getAddedTag, addedTagCount } = useTag(getAllTags);
 
     const {
         tagModalVisible,
@@ -89,23 +74,29 @@ const TagManagement: React.FC = () => {
         operateType,
         modalTitle,
         currentTag,
-    } = useTagModal(getAllTags);
-
-    const { handleDeleteTag } = useTag(getAllTags);
+    } = useTagModal(getAllTags, getAddedTag);
 
     // ---------- Table render bar ----------
     const toolbarRender = useMemo(() => {
+        const isAddedExceed = addedTagCount >= USER_MAX_TAGS;
         return (
             <Stack className="ms-operations-btns" direction="row" spacing="12px">
-                <Button
-                    variant="contained"
-                    className="md:d-none"
-                    sx={{ height: 36, textTransform: 'none' }}
-                    startIcon={<AddIcon />}
-                    onClick={openAddTag}
+                <Tooltip
+                    title={isAddedExceed ? getIntlText('common.tip.maximum_number_reached') : null}
                 >
-                    {getIntlText('common.label.add')}
-                </Button>
+                    <div className="tag-add__wrapper">
+                        <Button
+                            disabled={isAddedExceed}
+                            variant="contained"
+                            className="md:d-none"
+                            sx={{ height: 36, textTransform: 'none' }}
+                            startIcon={<AddIcon />}
+                            onClick={openAddTag}
+                        >
+                            {getIntlText('common.label.add')}
+                        </Button>
+                    </div>
+                </Tooltip>
                 <Button
                     variant="outlined"
                     className="md:d-none"
@@ -124,7 +115,7 @@ const TagManagement: React.FC = () => {
                 </Button>
             </Stack>
         );
-    }, [getIntlText, selectedIds, openAddTag, handleDeleteTag, allTags]);
+    }, [getIntlText, selectedIds, openAddTag, handleDeleteTag, allTags, addedTagCount]);
 
     const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useMemoizedFn(
         (type, record) => {

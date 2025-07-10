@@ -1,20 +1,15 @@
 import { useState } from 'react';
 import { useMemoizedFn } from 'ahooks';
+import { pick } from 'lodash-es';
 
 import { useI18n } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 
-import {
-    tagAPI,
-    awaitWrap,
-    isRequestSuccess,
-    getResponseData,
-    type TagItemProps,
-} from '@/services/http';
+import { tagAPI, awaitWrap, isRequestSuccess } from '@/services/http';
 import { type OperateTagProps, type OperateModalType } from '../components/operate-tag-modal';
 import { type TableRowDataType } from './useColumns';
 
-export default function useTagModal(getAllTags?: () => void) {
+export default function useTagModal(getAllTags?: () => void, getAddedTag?: () => void) {
     const { getIntlText } = useI18n();
 
     const [tagModalVisible, setTagModalVisible] = useState(false);
@@ -40,28 +35,32 @@ export default function useTagModal(getAllTags?: () => void) {
     });
 
     const handleAddTag = useMemoizedFn(async (data: OperateTagProps, callback: () => void) => {
-        console.log('handleAddTag ? ', data);
+        if (!data) return;
 
-        await new Promise(resolve => {
-            setTimeout(() => {
-                resolve(true);
-            }, 1000);
-        });
+        const [error, resp] = await awaitWrap(tagAPI.addTag(data));
+        if (error || !isRequestSuccess(resp)) {
+            return;
+        }
 
         getAllTags?.();
+        getAddedTag?.();
         setTagModalVisible(false);
         toast.success(getIntlText('common.message.add_success'));
         callback?.();
     });
 
     const handleEditTag = useMemoizedFn(async (data: OperateTagProps, callback: () => void) => {
-        console.log('handleEditTag ? ', data);
+        if (!currentTag?.id || !data) return;
 
-        await new Promise(resolve => {
-            setTimeout(() => {
-                resolve(true);
-            }, 1000);
-        });
+        const [error, resp] = await awaitWrap(
+            tagAPI.updateTag({
+                tag_id: currentTag.id,
+                ...pick(data, ['name', 'color', 'description']),
+            }),
+        );
+        if (error || !isRequestSuccess(resp)) {
+            return;
+        }
 
         getAllTags?.();
         setTagModalVisible(false);
