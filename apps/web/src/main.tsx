@@ -5,6 +5,8 @@ import { i18n, theme } from '@milesight/shared/src/services';
 import '@milesight/shared/src/utils/lang-polyfill';
 import routes from '@/routes';
 import '@/styles/index.less';
+import 'bootstrap/dist/css/bootstrap.min.css'; 
+// import './assets/scss/style.scss'
 
 const router = createBrowserRouter(routes, { basename: '/' });
 const root = createRoot(document.getElementById('root')!);
