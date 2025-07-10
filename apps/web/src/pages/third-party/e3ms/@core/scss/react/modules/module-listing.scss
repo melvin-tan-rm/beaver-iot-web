@@ -1,0 +1,22 @@
+
+@import '../../base/pages/rm-module-list.scss';
+
+.list-dataTable {
+    svg:focus {
+        outline: 0;
+    }
+
+    header {
+        padding-left: 1.5rem;
+    }
+}
+
+@media (max-width: 482px) {
+    .list-dataTable {
+        header .actions-right {
+            select {
+                margin-top: 1rem;
+            }
+        }
+    }
+}

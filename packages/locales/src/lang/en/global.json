@@ -232,5 +232,9 @@
     "valid.input.username": "Minimum username length is 5.",
     "valid.input.value": "Input value: {0} only.",
     "valid.input.version": "The version number does not comply with the specification.",
-    "valid.resp.at_least_one": "Please select at least one {1}."
+    "valid.resp.at_least_one": "Please select at least one {1}.",
+    "third-party.label.e3ms.app": "E3MS App",
+    "third-party.label.e3ms.dashboard": "E3MS Dashboard",
+    "third-party.label.e3ms.dashboardtemp": "E3MS Dashboard Temp",
+    "third-party.label.e3ms.osereport": "E3MS OSE Report"
 }

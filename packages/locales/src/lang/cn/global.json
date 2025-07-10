@@ -232,5 +232,9 @@
     "valid.input.username": "用户名长度最小长度为5。",
     "valid.input.value": "输入值：仅{0}。",
     "valid.input.version": "版本号不符合规范。",
-    "valid.resp.at_least_one": "请至少选择一个{1}。"
+    "valid.resp.at_least_one": "请至少选择一个{1}。",
+    "third-party.label.e3ms.app": "E3MS 应用",
+    "third-party.label.e3ms.dashboard": "E3MS 仪表板",
+    "third-party.label.e3ms.dashboardtemp": "E3MS 临时仪表板",
+    "third-party.label.e3ms.osereport": "E3MS OSE 报告"
 }

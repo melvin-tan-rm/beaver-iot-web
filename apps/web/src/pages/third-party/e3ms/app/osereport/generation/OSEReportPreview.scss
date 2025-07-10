@@ -1,0 +1,473 @@
+#preview-title{
+  color: #000;
+}
+
+.ose-report-preview {
+  font-family: Arial, sans-serif;
+
+  .download-controls {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    z-index: 1000;
+    
+    @media print {
+      display: none;
+    }
+  }
+
+  .report-content {
+    max-width: 960px;
+    margin: 0 auto;
+    background: white;
+
+    // Print styles
+    @media print {
+      .page-container {
+        margin-bottom: 0;
+        break-after: page;
+      }
+
+      .report-page {
+        height: 100vh;
+        min-height: auto;
+        margin: 0;
+        border: none;
+        box-shadow: none;
+      }
+
+      .page-footer {
+        position: fixed;
+        bottom: 0;
+      }
+    }
+
+    // Responsive design
+    @media (width <= 768px) {
+      .report-title h1 {
+        font-size: 1.2rem;
+      }
+
+      .submitted-by {
+        position: relative;
+        right: auto;
+        bottom: auto;
+        margin-top: 2rem;
+      }
+
+      .building-image img {
+        max-width: 100% !important;
+      }
+    }
+
+    .page-container {
+      margin-bottom: 2rem;
+      page-break-after: always;
+
+      &:last-child {
+        page-break-after: auto;
+      }
+    }
+
+    // .report-page {
+    //   width: 1240px;
+    //   height: 1754px;
+    //   border: 1px solid #ccc;
+    //   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    //   @media print {
+    //     box-shadow: none;
+    //     border: none;
+    //     page-break-inside: avoid;
+    //   }
+
+    //   .card-body {
+    //     position: relative;
+    //     height: 100%;
+    //   }
+    // }
+
+    .report-title {
+      h1 {
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.4;
+        color: #333;
+      }
+
+      h2, h3, h4, h5 {
+        margin-bottom: 1rem;
+        font-weight: bold;
+        color: #333;
+      }
+    }
+
+    .building-image {
+      margin: 2rem 0;
+
+      img {
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    
+
+    .contents-table {
+      width: 100%;
+      margin: 2rem 0;
+
+      td {
+        padding: 8px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        border: none;
+      }
+
+      tr:hover {
+        background-color: #f8f9fa;
+      }
+    }
+
+    .text-primary {
+      color: #4f73ad !important;
+    }
+
+    // Chart containers
+    .highcharts-container {
+      margin: 1rem 0;
+    }
+
+    // Dynamic content visibility
+    .dataNotavailable {
+      display: none !important;
+    }
+  }
+
+  // Loading state
+  .spinner-border {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 1001;
+    transform: translate(-50%, -50%);
+  }
+
+  // Dynamic table styles (from original ASPX)
+  .dynamicTable {
+    width: 100%;
+    text-align: center;
+    border: 1px solid #ccc;
+    table-layout: fixed;
+    border-collapse: collapse;
+
+    th {
+      padding: 4px;
+      font-weight: bold;
+      text-align: center;
+      background-color: #f8f9fa;
+      border: 1px solid #ccc;
+    }
+
+    td {
+      padding: 8px;
+      text-align: center;
+      word-wrap: break-word;
+      border: 1px solid #ccc;
+    }
+  }
+
+  .bmsTable {
+    width: 100%;
+    text-align: left;
+    border: 1px solid #ccc;
+    table-layout: fixed;
+    border-collapse: collapse;
+    // margin-bottom: 20px;
+
+    .bmsTd {
+      display: flex;
+      padding: 8px 35px;
+      text-align: left;
+      border: 0;
+      
+      > div:first-child {
+        flex-shrink: 0;
+        min-width: 25px;
+      }
+      
+      > div:last-child {
+        flex: 1;
+        padding-left: 5px;
+      }
+    }
+
+    .bmsTh {
+      padding: 8px;
+      font-weight: bold;
+      background-color: #f8f9fa;
+      border: 1px solid #ccc;
+    }
+    
+    th {
+      border: 1px solid #ccc;
+    }
+
+    td {
+      vertical-align: top;
+      border: 1px solid #ccc;
+      
+      input[type="checkbox"] {
+        display: block;
+        margin: 10px auto;
+      }
+    }
+  }
+
+  // Text styles from original
+  .textUnderLine {
+    font-family: Arial;
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: underline;
+  }
+
+  .textHeader {
+    font-family: Arial;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .textHeader1 {
+    font-family: Arial;
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .textMainHeader {
+    font-family: Arial;
+    font-size: 18px;
+    font-weight: bold;
+    color: #4f73ad;
+  }
+
+  .text {
+    font-family: Arial;
+    font-size: 16px;
+  }
+
+  .textCenter {
+    padding: 5px;
+    text-align: center;
+  }
+
+  .textItalic {
+    font-family: Arial;
+    font-style: italic;
+  }
+
+  .page-subtitle {
+    margin-bottom: 15px;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  // Appendix table styling
+  .appendix {
+    width: 100%;
+    border-collapse: collapse;
+    
+    td {
+      padding: 8px;
+      border-bottom: 1px solid #eee;
+      
+      &:first-child {
+        font-weight: bold;
+      }
+      
+      &:last-child {
+        width: 50px;
+        text-align: right;
+      }
+    }
+  }
+
+  // Sub content styling
+  .subContent {
+    margin: 10px;
+    font-family: Arial;
+    font-size: 14px;
+    line-height: 1.5;
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      // margin-bottom: 20px;
+      
+      td {
+        padding: 5px 10px;
+        border-bottom: 1px solid #eee;
+        
+        &:first-child {
+          min-width: 200px;
+          font-weight: 500;
+        }
+        
+        &:nth-child(2) {
+          width: 20px;
+          text-align: center;
+        }
+      }
+    }
+    
+    p {
+      margin-bottom: 15px;
+      text-align: justify;
+    }
+    
+    h4 {
+      margin: 20px 0 10px;
+      font-weight: bold;
+    }
+    
+    ul, ol {
+      margin-bottom: 15px;
+      margin-left: 20px;
+      
+      li {
+        margin-bottom: 5px;
+      }
+    }
+  }
+
+     // Page Template Styles
+   .report-page {
+      position: relative;
+      height: 1024pt;
+      border: 1px solid #ccc;
+      
+      .page-content {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      .page-header {
+        flex-shrink: 0;
+        padding: 20px 20px 10px;
+        border-bottom: 1px solid #eee;
+        
+        h6 {
+          margin: 0;
+          font-weight: bold;
+          color: #333;
+        }
+      }
+
+      .page-body {
+        flex: 1;
+        padding: 20px;
+        
+        // Ensure content doesn't overflow into footer
+        padding-bottom: 60px;
+        overflow: hidden;
+      }
+
+      .page-footer {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 20px;
+        font-size: 0.8rem;
+        color: #666;
+        background: white;
+        border-top: 1px solid #ccc;
+        
+        .footer-left {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          
+          .footer-text {
+            margin-bottom: 2px;
+          }
+          
+          .footer-date {
+            font-size: 0.75rem;
+            color: #888;
+          }
+        }
+        
+        .footer-right {
+          .page-number {
+            font-weight: 500;
+          }
+        }
+      }
+   }
+
+   // Special styles for cover page
+   .cover-page {
+     .page-body {
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       justify-content: center;
+       text-align: center;
+      //  padding: 40px 40px 100px 40px;
+       
+       .submitted-by {
+         position: absolute;
+         right: 120px;
+         bottom: 120px;
+         text-align: left;
+         
+         p {
+           margin-bottom: 0.5rem;
+           font-size: 0.9rem;
+         }
+
+         strong {
+           font-weight: bold;
+         }
+       }
+     }
+   }
+   ol { counter-reset: item }
+   li { display: block }
+   li::before { content: counter(item) ") "; counter-increment: item }
+   // Special styles for content pages
+   .content-page {
+     .page-body {
+       padding: 80px;
+     }
+   }
+
+  .subGraphDivBorder {
+    border: 1px solid #ccc;
+  }
+
+  .tableborderall {
+    width: 98%;
+    height: 1390px;
+    border: 1px solid #000;
+    border-spacing: 0;
+    border-collapse: collapse;
+  }
+
+  .tdborderall {
+    border: 1px solid #000;
+    border-spacing: 0;
+    border-collapse: collapse;
+  }
+
+  .bottomBorderDotted {
+    border-bottom: 1px dashed #000;
+  }
+} 

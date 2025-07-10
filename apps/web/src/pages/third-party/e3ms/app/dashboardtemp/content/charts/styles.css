@@ -1,0 +1,7 @@
+.chart-container {
+  height: 72%;
+}
+
+.chart-container > div {
+  height: 100%;
+}

@@ -8,6 +8,9 @@ import {
     EntityFilledIcon,
     WorkflowIcon,
     SettingsIcon,
+    PieChartIcon,
+    PeopleIcon,
+    FlagIcon,
 } from '@milesight/shared/src/components';
 import { PERMISSIONS } from '@/constants';
 import ErrorBoundaryComponent from './error-boundary';
@@ -53,16 +56,61 @@ const ErrorBoundary = () => <ErrorBoundaryComponent inline />;
 
 const routes: RouteObjectType[] = [
     {
-        path: '/osereport',
+        path: '/e3ms',
         handle: {
             get title() {
-                return intl.get('common.label.dashboard');
+                return intl.get('third-party.label.e3ms.app');
             },
-            icon: <DashboardCustomizeIcon fontSize="small" />,
+            icon: <PieChartIcon fontSize="small" />,
             permissions: PERMISSIONS.DASHBOARD_MODULE,
         },
         async lazy() {
-            const { default: Component } = await import('@/pages/e3ms/osereport/generation');
+            const { default: Component } = await import('@/pages/third-party/e3ms/app');
+            return { Component };
+        },
+        ErrorBoundary,
+    },
+    {
+        path: '/e3ms/dashboard',
+        handle: {
+            get title() {
+                return intl.get('third-party.label.e3ms.dashboard');
+            },
+            icon: <PeopleIcon fontSize="small" />,
+            permissions: PERMISSIONS.DASHBOARD_MODULE,
+        },
+        async lazy() {
+            const { default: Component } = await import('@/pages/third-party/e3ms/app/dashboard');
+            return { Component };
+        },
+        ErrorBoundary,
+    },
+    {
+        path: '/e3ms/dashboardtemp',
+        handle: {
+            get title() {
+                return intl.get('third-party.label.e3ms.dashboardtemp');
+            },
+            icon: <PeopleIcon fontSize="small" />,
+            permissions: PERMISSIONS.DASHBOARD_MODULE,
+        },
+        async lazy() {
+            const { default: Component } = await import('@/pages/third-party/e3ms/app/dashboardtemp');
+            return { Component };
+        },
+        ErrorBoundary,
+    },
+    {
+        path: '/osereport',
+        handle: {
+            get title() {
+                return intl.get('third-party.label.e3ms.osereport');
+            },
+            icon: <FlagIcon fontSize="small" />,
+            permissions: PERMISSIONS.DASHBOARD_MODULE,
+        },
+        async lazy() {
+            const { default: Component } = await import('@/pages/third-party/e3ms/app/osereport/generation');
             return { Component };
         },
         ErrorBoundary,

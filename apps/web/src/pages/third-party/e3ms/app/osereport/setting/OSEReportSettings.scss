@@ -1,0 +1,322 @@
+.ose-report-settings {
+  .ose-settings-nav {
+    .nav-link {
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.25rem;
+      color: #fff;
+      border: 1px solid transparent;
+      border-radius: 0.375rem;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+      
+      &.active {
+        color: #4287f5;
+        background-color: #007bff;
+        border-color: rgba(255, 255, 255, 0.9);
+        
+        svg {
+          color: #4287f5;
+        }
+      }
+      
+      svg {
+        color: inherit;
+      }
+    }
+  }
+  
+  .tab-content {
+    padding-left: 1rem;
+    
+    .tab-pane {
+      animation: fade-in 0.3s ease-in-out;
+    }
+  }
+  
+  .setting-section {
+    margin-bottom: 2rem;
+    
+    .section-title {
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #495057;
+      border-bottom: 1px solid #dee2e6;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #495057;
+    }
+    
+    .form-text {
+      margin-top: 0.25rem;
+      font-size: 0.875rem;
+      color: #6c757d;
+    }
+  }
+  
+  .threshold-group {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 0.375rem;
+    
+    .threshold-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #e9ecef;
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      .threshold-label {
+        flex: 1;
+        font-weight: 500;
+        color: #495057;
+      }
+      
+      .threshold-input {
+        width: 120px;
+        text-align: right;
+      }
+      
+      .threshold-unit {
+        min-width: 60px;
+        margin-left: 0.5rem;
+        color: #6c757d;
+        text-align: left;
+      }
+    }
+  }
+  
+  .user-list {
+    .user-item {
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 0.375rem;
+      
+      .user-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        
+        .user-name {
+          font-weight: 600;
+          color: #495057;
+        }
+        
+        .user-role {
+          padding: 0.25rem 0.5rem;
+          font-size: 0.75rem;
+          color: white;
+          text-transform: uppercase;
+          background-color: #007bff;
+          border-radius: 0.25rem;
+        }
+      }
+      
+      .user-details {
+        font-size: 0.875rem;
+        color: #6c757d;
+        
+        .detail-item {
+          margin-bottom: 0.25rem;
+        }
+      }
+    }
+    
+    .add-user-btn {
+      width: 100%;
+      padding: 1rem;
+      color: #6c757d;
+      background-color: transparent;
+      border: 2px dashed #ced4da;
+      border-radius: 0.375rem;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        color: #007bff;
+        background-color: #f8f9fa;
+        border-color: #007bff;
+      }
+    }
+  }
+  
+  .import-export-section {
+    .action-card {
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 0.375rem;
+      
+      .action-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        margin-bottom: 1rem;
+        border-radius: 50%;
+        
+        &.import-icon {
+          color: white;
+          background-color: #28a745;
+        }
+        
+        &.export-icon {
+          color: white;
+          background-color: #007bff;
+        }
+        
+        &.backup-icon {
+          color: #212529;
+          background-color: #ffc107;
+        }
+      }
+      
+      .action-title {
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #495057;
+      }
+      
+      .action-description {
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+        color: #6c757d;
+      }
+    }
+  }
+  
+  .performance-indicator {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+    
+    .indicator-dot {
+      width: 12px;
+      height: 12px;
+      margin-right: 0.5rem;
+      border-radius: 50%;
+      
+      &.good {
+        background-color: #28a745;
+      }
+      
+      &.warning {
+        background-color: #ffc107;
+      }
+      
+      &.danger {
+        background-color: #dc3545;
+      }
+    }
+    
+    .indicator-label {
+      flex: 1;
+      font-weight: 500;
+    }
+    
+    .indicator-value {
+      font-weight: 600;
+      color: #495057;
+    }
+  }
+  
+  .alert {
+    border-radius: 0.375rem;
+    
+    &.alert-warning {
+      color: #856404;
+      background-color: #fff3cd;
+      border-color: #ffeaa7;
+    }
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Responsive design */
+@media (width <= 768px) {
+  .ose-report-settings {
+    .tab-content {
+      padding-left: 0;
+      margin-top: 1rem;
+    }
+    
+    .ose-settings-nav {
+      flex-direction: row;
+      padding-bottom: 0.5rem;
+      overflow-x: auto;
+      
+      .nav-item {
+        flex-shrink: 0;
+        margin-right: 0.5rem;
+        margin-bottom: 0;
+      }
+      
+      .nav-link {
+        margin-bottom: 0;
+        white-space: nowrap;
+      }
+    }
+    
+    .threshold-item {
+      flex-direction: column;
+      align-items: flex-start;
+      
+      .threshold-input {
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+      
+      .threshold-unit {
+        margin-top: 0.25rem;
+        margin-left: 0;
+      }
+    }
+  }
+} 
