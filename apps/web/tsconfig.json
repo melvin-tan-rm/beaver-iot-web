@@ -22,7 +22,8 @@
         "noFallthroughCasesInSwitch": true,
 
         "paths": {
-            "@/*": ["./src/*"]
+            "@/*": ["./src/*"],
+            "@coremodules/*": ["./src/pages/third-party/e3ms/core/*"]
         }
     },
     "include": ["src"],

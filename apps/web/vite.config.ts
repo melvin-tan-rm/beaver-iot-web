@@ -1,6 +1,6 @@
 import react from '@vitejs/plugin-react';
 import * as path from 'path';
-import { defineConfig } from 'vite';
+import { defineConfig, transformWithEsbuild } from 'vite';
 import vitePluginImport from 'vite-plugin-imp';
 import stylelint from 'vite-plugin-stylelint';
 // import progress from 'vite-plugin-progress';
@@ -81,12 +81,43 @@ export default defineConfig({
         chunkSplitPlugin({
             customChunk: customChunkSplit,
         }),
+        {
+            name: 'treat-js-files-as-jsx',
+            async transform(code, id) {
+                if (!id.match(/src\/.*\.js$/)) return null
+
+                // Use the exposed transform from vite, instead of directly
+                // transforming with esbuild
+                return transformWithEsbuild(code, id, {
+                    loader: 'jsx',
+                    jsx: 'automatic',
+                })
+            },
+        },
         react(),
         // progress(),
     ],
     resolve: {
         alias: {
             '@': path.resolve(__dirname, 'src'), // src path alias
+            "~": path.resolve(__dirname, "node_modules"),
+            "@src": path.resolve(__dirname, "src"),
+            "~bootstrap": path.resolve(__dirname, "node_modules/bootstrap"),
+            "@assets": path.resolve(__dirname, "src/@core/assets"),
+            "@components": path.resolve(__dirname, "src/@core/components"),
+            "@extensions": path.resolve(__dirname, "src/views/modules/extensions"),
+            "@rmmsmodules": path.resolve(__dirname, "src/views/modules/rmms"),
+            "@coremodules": path.resolve(__dirname, "src/pages/third-party/e3ms/core"),
+            "@e3msmodules": path.resolve(__dirname, "src/pages/third-party/e3ms"),
+            "@tenantmodules": path.resolve(__dirname, "src/views/modules/tenant"),
+            "@fddmodules": path.resolve(__dirname, "src/views/modules/fdd"),
+            "@hialertmodules": path.resolve(__dirname, "src/views/modules/hialert"),
+            "@layouts": path.resolve(__dirname, "src/@core/layouts"),
+            "@store": path.resolve(__dirname, "src/redux"),
+            "@styles": path.resolve(__dirname, "src/@core/scss"),
+            "@configs": path.resolve(__dirname, "src/configs"),
+            "@utils": path.resolve(__dirname, "src/utility/Utils"),
+            "@hooks": path.resolve(__dirname, "src/utility/hooks")
         },
     },
 
@@ -94,6 +125,14 @@ export default defineConfig({
     css: getViteCSSConfig(DEFAULT_LESS_INJECT_MODULES),
     build: getViteBuildConfig(),
     esbuild: getViteEsbuildConfig(),
+    optimizeDeps: {
+        force: true,
+        esbuildOptions: {
+            loader: {
+                '.js': 'jsx',
+            },
+        },
+    },
 
     server: {
         host: '0.0.0.0',
