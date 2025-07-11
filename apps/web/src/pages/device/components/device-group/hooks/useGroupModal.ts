@@ -4,8 +4,8 @@ import { useMemoizedFn } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 
+import { type DeviceGroupItemProps, deviceAPI, isRequestSuccess, awaitWrap } from '@/services/http';
 import { type OperateGroupProps } from '../components/operate-group-modal';
-import { type DeviceGroupItemType } from '../components/body/hooks/useBody';
 
 export type OperateModalType = 'add' | 'edit';
 
@@ -17,7 +17,7 @@ export function useGroupModal(getAllGroups?: () => void) {
         getIntlText('device.label.add_device_group'),
     );
     const [operateType, setOperateType] = useState<OperateModalType>('add');
-    const [currentGroup, setCurrentGroup] = useState<DeviceGroupItemType>();
+    const [currentGroup, setCurrentGroup] = useState<DeviceGroupItemProps>();
 
     const hiddenGroupModal = useMemoizedFn(() => {
         setGroupModalVisible(false);
@@ -30,7 +30,7 @@ export function useGroupModal(getAllGroups?: () => void) {
         setCurrentGroup(undefined);
     });
 
-    const editGroupModal = useMemoizedFn((record?: DeviceGroupItemType) => {
+    const editGroupModal = useMemoizedFn((record?: DeviceGroupItemProps) => {
         setGroupModalVisible(true);
         setGroupModalTitle(getIntlText('device.label.edit_device_group'));
         setOperateType('edit');
@@ -38,13 +38,10 @@ export function useGroupModal(getAllGroups?: () => void) {
     });
 
     const handleAddModel = useMemoizedFn(async (data: OperateGroupProps, callback: () => void) => {
-        console.log('handleAddModel ? ', data);
-
-        await new Promise(resolve => {
-            setTimeout(() => {
-                resolve(null);
-            }, 2000);
-        });
+        const [error, resp] = await awaitWrap(deviceAPI.addDeviceGroup(data));
+        if (error || !isRequestSuccess(resp)) {
+            return;
+        }
 
         getAllGroups?.();
         setGroupModalVisible(false);
@@ -53,13 +50,17 @@ export function useGroupModal(getAllGroups?: () => void) {
     });
 
     const handleEditModel = useMemoizedFn(async (data: OperateGroupProps, callback: () => void) => {
-        console.log('handleEditModel ? ', data, currentGroup);
+        if (!currentGroup?.id) return;
 
-        await new Promise(resolve => {
-            setTimeout(() => {
-                resolve(null);
-            }, 2000);
-        });
+        const [error, resp] = await awaitWrap(
+            deviceAPI.updateDeviceGroup({
+                id: currentGroup.id,
+                ...data,
+            }),
+        );
+        if (error || !isRequestSuccess(resp)) {
+            return;
+        }
 
         getAllGroups?.();
         setGroupModalVisible(false);

@@ -1,6 +1,11 @@
 export { isRequestSuccess, getResponseData, awaitWrap, pLimit, API_PREFIX } from './client';
 
-export { default as deviceAPI, type DeviceDetail, type DeviceAPISchema } from './device';
+export {
+    default as deviceAPI,
+    type DeviceDetail,
+    type DeviceAPISchema,
+    type DeviceGroupItemProps,
+} from './device';
 
 export { default as entityAPI, type EntityAPISchema } from './entity';
 export { default as integrationAPI, type IntegrationAPISchema } from './integration';

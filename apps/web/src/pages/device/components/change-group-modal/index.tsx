@@ -7,6 +7,8 @@ import { Modal, type ModalProps, Select } from '@milesight/shared/src/components
 import { checkRequired } from '@milesight/shared/src/utils/validators';
 import { useI18n } from '@milesight/shared/src/hooks';
 
+import useDeviceStore from '../../store';
+
 export interface ChangeGroupProps {
     group: ApiKey;
 }
@@ -24,6 +26,7 @@ const ChangeGroupModal: React.FC<Props> = props => {
 
     const { getIntlText } = useI18n();
     const { control, formState, handleSubmit, reset } = useForm<ChangeGroupProps>();
+    const { deviceGroups } = useDeviceStore();
 
     const formItems: ControllerProps<ChangeGroupProps>[] = useMemo(() => {
         return [
@@ -40,10 +43,10 @@ const ChangeGroupModal: React.FC<Props> = props => {
                         <Select
                             required
                             fullWidth
-                            options={[
-                                { label: 'SIM1-APN1', value: '1' },
-                                { label: 'WAN', value: '2' },
-                            ]}
+                            options={(deviceGroups || []).map(d => ({
+                                label: d.name,
+                                value: d.id,
+                            }))}
                             label={getIntlText('device.label.device_group')}
                             error={error}
                             value={value}
@@ -53,7 +56,7 @@ const ChangeGroupModal: React.FC<Props> = props => {
                 },
             },
         ];
-    }, [getIntlText]);
+    }, [getIntlText, deviceGroups]);
 
     const onSubmit: SubmitHandler<ChangeGroupProps> = async params => {
         await onFormSubmit(params, () => {

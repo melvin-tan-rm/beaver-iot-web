@@ -4,9 +4,9 @@ import { useMemoizedFn } from 'ahooks';
 
 import { LoadingWrapper } from '@milesight/shared/src/components';
 
+import { type DeviceGroupItemProps } from '@/services/http/device';
 import { Header, Body, OperateGroupModal } from './components';
 import { MORE_OPERATION } from './components/more-dropdown';
-import type { DeviceGroupItemType } from './components/body/hooks/useBody';
 import { useDeviceGroup, useGroupModal } from './hooks';
 
 import './style.less';
@@ -31,7 +31,7 @@ const DeviceGroup: React.FC<DeviceGroupProps> = props => {
     } = useGroupModal(getDeviceGroups);
 
     const handleGroupOperation = useMemoizedFn(
-        (type: MORE_OPERATION, record: DeviceGroupItemType) => {
+        (type: MORE_OPERATION, record: DeviceGroupItemProps) => {
             if (type === MORE_OPERATION.RENAME) {
                 editGroupModal?.(record);
             }

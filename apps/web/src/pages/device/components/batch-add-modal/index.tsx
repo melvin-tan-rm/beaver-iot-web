@@ -80,6 +80,9 @@ const BatchAddModal: React.FC<Props> = props => {
                 disabled: loadingIntegrations,
             }}
             onCancel={handleCancel}
+            // cancelButtonProps={{
+            //     style: { display: 'none' },
+            // }}
             {...restProps}
         >
             {renderBody()}

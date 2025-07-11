@@ -9,21 +9,17 @@ import {
 
 import { FIXED_GROUP, FixedGroupEnum } from '@/pages/device/constants';
 import useDeviceStore from '@/pages/device/store';
+import { type DeviceGroupItemProps } from '@/services/http/device';
 
-export type DeviceGroupItemType = ObjectToCamelCase<{
-    id: ApiKey;
-    name: string;
-}>;
-
-export function useBody(deviceGroups?: DeviceGroupItemType[]) {
+export function useBody(deviceGroups?: DeviceGroupItemProps[]) {
     const { activeGroup, updateActiveGroup } = useDeviceStore();
 
-    const data: DeviceGroupItemType[] = useMemo(
+    const data: DeviceGroupItemProps[] = useMemo(
         () => [...FIXED_GROUP, ...(deviceGroups || [])],
         [deviceGroups],
     );
 
-    const handleGroupClick = useMemoizedFn((item: DeviceGroupItemType) => {
+    const handleGroupClick = useMemoizedFn((item: DeviceGroupItemProps) => {
         updateActiveGroup(item);
     });
 

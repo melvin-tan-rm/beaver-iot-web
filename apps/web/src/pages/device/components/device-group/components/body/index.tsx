@@ -5,14 +5,15 @@ import { Typography } from '@mui/material';
 
 import { PerfectScrollbar } from '@milesight/shared/src/components';
 
+import { type DeviceGroupItemProps } from '@/services/http/device';
 import MoreDropdown, { MORE_OPERATION } from '../more-dropdown';
-import { useBody, type DeviceGroupItemType } from './hooks/useBody';
+import { useBody } from './hooks/useBody';
 
 import styles from './style.module.less';
 
 export interface BodyProps {
-    deviceGroups?: DeviceGroupItemType[];
-    onOperation?: (operation: MORE_OPERATION, record: DeviceGroupItemType) => void;
+    deviceGroups?: DeviceGroupItemProps[];
+    onOperation?: (operation: MORE_OPERATION, record: DeviceGroupItemProps) => void;
 }
 
 /**
@@ -23,13 +24,13 @@ const Body: React.FC<BodyProps> = props => {
     const { data, activeGroup, handleGroupClick, hiddenMore, groupItemIcon } =
         useBody(deviceGroups);
 
-    const groupItemCls = useMemoizedFn((currentItem: DeviceGroupItemType) => {
+    const groupItemCls = useMemoizedFn((currentItem: DeviceGroupItemProps) => {
         return classNames(styles.item, {
             [styles.active]: currentItem.id === activeGroup?.id,
         });
     });
 
-    const renderGroupItem = (item: DeviceGroupItemType) => {
+    const renderGroupItem = (item: DeviceGroupItemProps) => {
         return (
             <div
                 key={item.id}

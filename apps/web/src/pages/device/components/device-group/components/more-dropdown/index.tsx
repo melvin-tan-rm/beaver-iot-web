@@ -1,16 +1,17 @@
 import React, { useMemo } from 'react';
 import { useMemoizedFn } from 'ahooks';
-import { IconButton, Menu, MenuItem, ListItemIcon } from '@mui/material';
-import PopupState, { bindTrigger, bindMenu, type InjectedProps } from 'material-ui-popup-state';
+import { IconButton, MenuItem, ListItemIcon } from '@mui/material';
+import { type InjectedProps } from 'material-ui-popup-state';
+import { bindHover, bindMenu, usePopupState } from 'material-ui-popup-state/hooks';
+import HoverMenu from 'material-ui-popup-state/HoverMenu';
 
 import { MoreVertIcon, EditIcon, DeleteOutlineIcon } from '@milesight/shared/src/components';
-import { useI18n } from '@milesight/shared/src/hooks';
+import { useI18n, usePopoverCloseDelay } from '@milesight/shared/src/hooks';
 
 export enum MORE_OPERATION {
     RENAME = 'rename',
     DELETE = 'delete',
 }
-
 export interface MoreDropdownProps {
     isActive: boolean;
     onOperation?: (operation: MORE_OPERATION) => void;
@@ -23,6 +24,13 @@ const MoreDropdown: React.FC<MoreDropdownProps> = props => {
     const { isActive, onOperation } = props;
 
     const { getIntlText } = useI18n();
+    const popupState = usePopupState({
+        variant: 'popover',
+        popupId: 'device-group-more-dropdown-menu',
+    });
+    const { bindTriggerLeave, bindPopoverEnter } = usePopoverCloseDelay({
+        popupState,
+    });
 
     const options: {
         label: string;
@@ -51,43 +59,50 @@ const MoreDropdown: React.FC<MoreDropdownProps> = props => {
         ];
     }, [getIntlText]);
 
-    const handleMenuItemClick = useMemoizedFn((state: InjectedProps, operate: MORE_OPERATION) => {
-        state.close();
-        /**
-         * Trigger the corresponding event here
-         */
-        onOperation?.(operate);
-    });
+    const handleMenuItemClick = useMemoizedFn(
+        (props: {
+            e: React.MouseEvent<HTMLLIElement, MouseEvent>;
+            popupState: InjectedProps;
+            operate: MORE_OPERATION;
+        }) => {
+            const { e, popupState, operate } = props;
+            e?.preventDefault();
+            e?.stopPropagation();
+
+            popupState.close();
+            /**
+             * Trigger the corresponding event here
+             */
+            onOperation?.(operate);
+        },
+    );
 
     return (
-        <PopupState variant="popover" popupId="device-group-more-dropdown-menu">
-            {state => (
-                <div
-                    className="more-dropdown__wrapper"
-                    style={state.isOpen ? { visibility: 'visible' } : undefined}
-                >
-                    <IconButton
-                        id="more-button"
-                        color={isActive ? 'primary' : 'default'}
-                        sx={{ padding: '4px' }}
-                        {...bindTrigger(state)}
+        <div
+            className="more-dropdown__wrapper"
+            style={popupState.isOpen ? { visibility: 'visible' } : undefined}
+        >
+            <IconButton
+                id="more-button"
+                color={isActive ? 'primary' : 'default'}
+                sx={{ padding: '4px' }}
+                {...bindHover(popupState)}
+                {...bindTriggerLeave}
+            >
+                <MoreVertIcon />
+            </IconButton>
+            <HoverMenu id="dropdown-menu" {...bindMenu(popupState)} {...bindPopoverEnter}>
+                {options.map(option => (
+                    <MenuItem
+                        key={option.value}
+                        onClick={e => handleMenuItemClick({ e, popupState, operate: option.value })}
                     >
-                        <MoreVertIcon />
-                    </IconButton>
-                    <Menu id="dropdown-menu" {...bindMenu(state)}>
-                        {options.map(option => (
-                            <MenuItem
-                                key={option.value}
-                                onClick={() => handleMenuItemClick(state, option.value)}
-                            >
-                                {option.icon}
-                                {option.label}
-                            </MenuItem>
-                        ))}
-                    </Menu>
-                </div>
-            )}
-        </PopupState>
+                        {option.icon}
+                        {option.label}
+                    </MenuItem>
+                ))}
+            </HoverMenu>
+        </div>
     );
 };
 

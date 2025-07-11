@@ -28,6 +28,16 @@ export interface DeviceDetail {
     user_nickname: string;
     /** Additional data (usually used by the back end, the front end is not open for now) */
     // additional_data?: Record<string, any>;
+    /** device group name */
+    group_name?: string;
+}
+
+/**
+ * Device group Item
+ */
+export interface DeviceGroupItemProps {
+    id: ApiKey;
+    name: string;
 }
 
 /**
@@ -39,8 +49,14 @@ export interface DeviceAPISchema extends APISchema {
         request: SearchRequestType & {
             /** Name (Fuzzy search) */
             name?: string;
+            /** Search device by the group */
+            group_id?: ApiKey;
+            /** Get not grouped */
+            filter_not_grouped?: boolean;
+            /** External id of the device */
+            identifier?: string;
         };
-        response: SearchResponseType<Omit<DeviceDetail, 'identifier'>[]>;
+        response: SearchResponseType<DeviceDetail[]>;
     };
 
     /** Get Device Details */
@@ -69,6 +85,8 @@ export interface DeviceAPISchema extends APISchema {
             integration: ApiKey;
             /** Integrate additional information needed for new devices */
             param_entities: Record<string, any>;
+            /** device group name */
+            group_name?: string;
         };
         response: unknown;
     };
@@ -90,6 +108,71 @@ export interface DeviceAPISchema extends APISchema {
         };
         response: unknown;
     };
+
+    /** get device group search list */
+    getDeviceGroupList: {
+        request: SearchRequestType & {
+            /** Name (Fuzzy search) */
+            name?: string;
+        };
+        response: SearchResponseType<DeviceGroupItemProps[]>;
+    };
+    /** add device group */
+    addDeviceGroup: {
+        request: {
+            name: string;
+        };
+        response: void;
+    };
+    /** update device group */
+    updateDeviceGroup: {
+        request: {
+            id: ApiKey;
+            name: string;
+        };
+        response: void;
+    };
+    /** delete device group */
+    deleteDeviceGroup: {
+        request: {
+            id: ApiKey;
+        };
+        response: void;
+    };
+    /** device move to group */
+    moveDeviceToGroup: {
+        request: {
+            group_id: ApiKey;
+            device_id_list: ApiKey[];
+        };
+        response: void;
+    };
+    /** get device batch add template file */
+    getDeviceBatchTemplate: {
+        request: {
+            integration: string;
+        };
+        response: File;
+    };
+    /** parse device batch template file */
+    parseDeviceBatchTemplate: {
+        request: {
+            integration: string;
+            file: File;
+        };
+        response: {
+            create_device_requests: any[];
+        };
+    };
+    /** generate error file */
+    generateDeviceAddErrorFile: {
+        request: {
+            integration: string;
+            file: File;
+            errors: { id: ApiKey; msg: string }[];
+        };
+        response: File;
+    };
 }
 
 /**
@@ -102,5 +185,25 @@ export default attachAPI<DeviceAPISchema>(client, {
         addDevice: `POST ${API_PREFIX}/device`,
         deleteDevices: `POST ${API_PREFIX}/device/batch-delete`,
         updateDevice: `PUT ${API_PREFIX}/device/:id`,
+        getDeviceGroupList: `POST ${API_PREFIX}/device-group/search`,
+        addDeviceGroup: `POST ${API_PREFIX}/device-group`,
+        updateDeviceGroup: `PUT ${API_PREFIX}/device-group/:id`,
+        deleteDeviceGroup: `DELETE ${API_PREFIX}/device-group/:id`,
+        moveDeviceToGroup: `POST ${API_PREFIX}/device/move-to-group`,
+        getDeviceBatchTemplate: `POST ${API_PREFIX}/device-batch/template`,
+        parseDeviceBatchTemplate: {
+            method: 'POST',
+            path: `${API_PREFIX}/device-batch/parse`,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        },
+        generateDeviceAddErrorFile: {
+            method: 'POST',
+            path: `${API_PREFIX}/device-batch/fill-error`,
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        },
     },
 });

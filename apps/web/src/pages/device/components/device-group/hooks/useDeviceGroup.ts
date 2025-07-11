@@ -4,7 +4,15 @@ import { useI18n } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 
 import { useConfirm } from '@/components';
-import type { DeviceGroupItemType } from '../components/body/hooks/useBody';
+import {
+    type DeviceGroupItemProps,
+    awaitWrap,
+    deviceAPI,
+    isRequestSuccess,
+    getResponseData,
+} from '@/services/http';
+import useDeviceStore from '@/pages/device/store';
+import { FIXED_GROUP } from '@/pages/device/constants';
 
 /**
  * Handle device group many operation
@@ -12,6 +20,7 @@ import type { DeviceGroupItemType } from '../components/body/hooks/useBody';
 export function useDeviceGroup() {
     const { getIntlText } = useI18n();
     const confirm = useConfirm();
+    const { activeGroup, updateActiveGroup, updateDeviceGroups } = useDeviceStore();
 
     const {
         run: getDeviceGroups,
@@ -19,30 +28,35 @@ export function useDeviceGroup() {
         loading,
     } = useRequest(
         async (keyword?: string) => {
-            console.log('getDeviceGroups ? ', keyword);
+            const [error, resp] = await awaitWrap(
+                deviceAPI.getDeviceGroupList({
+                    page_number: 1,
+                    page_size: 100,
+                    name: keyword,
+                }),
+            );
+            if (error || !isRequestSuccess(resp)) {
+                return;
+            }
 
-            await new Promise(resolve => {
-                setTimeout(() => {
-                    resolve(null);
-                }, 1000);
-            });
+            const data = getResponseData(resp)?.content || [];
+            updateDeviceGroups(data);
 
-            return [
-                ...Array.from({ length: 100 }).map((_, index) => ({
-                    id: index + 1,
-                    name: `分组${index + 1}`,
-                })),
-            ] as DeviceGroupItemType[];
+            return data;
         },
         {
             debounceWait: 300,
         },
     );
 
-    const handleGroupDelete = useMemoizedFn((record: DeviceGroupItemType) => {
+    const handleGroupDelete = useMemoizedFn((record: DeviceGroupItemProps) => {
+        if (!record) return;
+
         confirm({
             title: getIntlText('common.label.delete'),
-            description: getIntlText('device.tip.delete_device_group'),
+            description: getIntlText('device.tip.delete_device_group', {
+                1: record.name,
+            }),
             confirmButtonText: getIntlText('common.label.delete'),
             confirmButtonProps: {
                 color: 'error',
@@ -50,7 +64,22 @@ export function useDeviceGroup() {
             onConfirm: async () => {
                 if (!record?.id) return;
 
-                console.log('handleGroupDelete ? ', record);
+                const [error, resp] = await awaitWrap(
+                    deviceAPI.deleteDeviceGroup({
+                        id: record.id,
+                    }),
+                );
+                if (error || !isRequestSuccess(resp)) {
+                    return;
+                }
+
+                /**
+                 * if the active group is deleted, the first group
+                 * will be selected by default
+                 */
+                if (record.id === activeGroup?.id) {
+                    updateActiveGroup(FIXED_GROUP[0]);
+                }
 
                 getDeviceGroups?.();
                 toast.success(getIntlText('common.message.delete_success'));

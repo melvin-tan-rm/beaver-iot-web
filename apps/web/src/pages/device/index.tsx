@@ -24,17 +24,35 @@ import {
     useBatchAddModal,
 } from './hooks';
 import { AddModal, DeviceGroup, Shrink, ChangeGroupModal, BatchAddModal } from './components';
+import useDeviceStore from './store';
+import { FixedGroupEnum } from './constants';
 import './style.less';
 
 export default () => {
     const navigate = useNavigate();
     const { getIntlText } = useI18n();
     const { hasPermission } = useUserPermissions();
+    const { activeGroup } = useDeviceStore();
 
     // ---------- list data related to ----------
     const [keyword, setKeyword] = useState<string>();
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const [selectedIds, setSelectedIds] = useState<readonly ApiKey[]>([]);
+
+    const filterGroupParams = useMemo(() => {
+        if (!activeGroup?.id || activeGroup.id === FixedGroupEnum.ALL) return {};
+
+        if (activeGroup.id === FixedGroupEnum.UNGROUPED) {
+            return {
+                filter_not_grouped: true,
+            };
+        }
+
+        return {
+            group_id: activeGroup.id,
+        };
+    }, [activeGroup]);
+
     const {
         data: deviceData,
         loading,
@@ -42,23 +60,24 @@ export default () => {
     } = useRequest(
         async () => {
             const { page, pageSize } = paginationModel;
+
             const [error, resp] = await awaitWrap(
                 deviceAPI.getList({
                     name: keyword,
                     page_size: pageSize,
                     page_number: page + 1,
+                    ...filterGroupParams,
                 }),
             );
             const data = getResponseData(resp);
 
-            // console.log({ error, resp });
             if (error || !data || !isRequestSuccess(resp)) return;
 
             return objectToCamelCase(data);
         },
         {
             debounceWait: 300,
-            refreshDeps: [keyword, paginationModel],
+            refreshDeps: [keyword, paginationModel, filterGroupParams],
         },
     );
 
@@ -139,11 +158,7 @@ export default () => {
                     disabled={!selectedIds.length}
                     sx={{ height: 36, textTransform: 'none' }}
                     startIcon={<DriveFileMoveOutlinedIcon />}
-                    onClick={() =>
-                        batchChangeGroupModal(
-                            (deviceData?.content || []).filter(d => selectedIds.includes(d.id)),
-                        )
-                    }
+                    onClick={() => batchChangeGroupModal(selectedIds as ApiKey[])}
                 >
                     {getIntlText('device.label.change_device_group')}
                 </Button>
@@ -161,14 +176,7 @@ export default () => {
                 </PermissionControlHidden>
             </Stack>
         );
-    }, [
-        getIntlText,
-        handleDeleteConfirm,
-        selectedIds,
-        deviceData,
-        batchChangeGroupModal,
-        openBatchGroupModal,
-    ]);
+    }, [getIntlText, handleDeleteConfirm, selectedIds, batchChangeGroupModal, openBatchGroupModal]);
 
     const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useCallback(
         (type, record) => {
@@ -179,7 +187,7 @@ export default () => {
                     break;
                 }
                 case 'changeGroup': {
-                    singleChangeGroupModal(record);
+                    singleChangeGroupModal(record.id);
                     break;
                 }
                 case 'delete': {
