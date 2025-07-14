@@ -11,7 +11,15 @@ import {
     ErrorIcon,
     DriveFileMoveOutlinedIcon,
 } from '@milesight/shared/src/components';
-import { Breadcrumbs, TablePro, useConfirm, PermissionControlHidden } from '@/components';
+import {
+    Breadcrumbs,
+    TablePro,
+    useConfirm,
+    PermissionControlHidden,
+    type FiltersRecordType,
+    type TableProProps,
+    type FilterValue,
+} from '@/components';
 import { PERMISSIONS } from '@/constants';
 import { useUserPermissions } from '@/hooks';
 import { deviceAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
@@ -38,6 +46,7 @@ export default () => {
     const [keyword, setKeyword] = useState<string>();
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const [selectedIds, setSelectedIds] = useState<readonly ApiKey[]>([]);
+    const [filteredInfo, setFilteredInfo] = useState<FiltersRecordType>({});
 
     const filterGroupParams = useMemo(() => {
         if (!activeGroup?.id || activeGroup.id === FixedGroupEnum.ALL) return {};
@@ -66,6 +75,7 @@ export default () => {
                     name: keyword,
                     page_size: pageSize,
                     page_number: page + 1,
+                    identifier: Reflect.get(filteredInfo, 'identifier')?.[0] as string | undefined,
                     ...filterGroupParams,
                 }),
             );
@@ -77,7 +87,7 @@ export default () => {
         },
         {
             debounceWait: 300,
-            refreshDeps: [keyword, paginationModel, filterGroupParams],
+            refreshDeps: [keyword, paginationModel, filterGroupParams, filteredInfo],
         },
     );
 
@@ -203,6 +213,12 @@ export default () => {
     );
     const columns = useColumns<TableRowDataType>({ onButtonClick: handleTableBtnClick });
 
+    const handleFilterChange: TableProProps<TableRowDataType>['onFilterInfoChange'] = (
+        filters: Record<string, FilterValue | null>,
+    ) => {
+        setFilteredInfo(filters);
+    };
+
     return (
         <div className="ms-main">
             <Breadcrumbs />
@@ -232,6 +248,7 @@ export default () => {
                                 setPaginationModel(model => ({ ...model, page: 0 }));
                             }}
                             onRefreshButtonClick={getDeviceList}
+                            onFilterInfoChange={handleFilterChange}
                         />
                         <Shrink isShrink={isShrink} toggleShrink={toggleShrink} />
                     </div>
