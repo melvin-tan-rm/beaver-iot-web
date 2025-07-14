@@ -4,8 +4,8 @@ import { useI18n } from '@milesight/shared/src/hooks';
 import { CancelIcon, Select } from '@milesight/shared/src/components';
 import { ColumnType, ValueCompType } from '../../../../types';
 import { FILTER_OPERATORS } from '../../../../constants';
-import { useRowCondition } from './hooks';
 import { DynamicValueComp, ValueComponentSlotProps, FilterValueType } from '../value-comp';
+import { useRowCondition } from './hooks';
 
 /**
  * Row conditions
@@ -88,6 +88,7 @@ const RowCondition = <T extends GridValidRowModel>(props: RowConditionProps<T>) 
                     replace(index, {
                         ...item,
                         operator,
+                        value: isNullValueOperator(operator) ? '' : item.value,
                         valueCompType: isNullValueOperator(operator)
                             ? ''
                             : columnInfo[item.column].valueCompType!,

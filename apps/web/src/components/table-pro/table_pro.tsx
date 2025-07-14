@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { isArray, isObject, isUndefined } from 'lodash-es';
+import { useDebounceEffect } from 'ahooks';
 import { OutlinedInput, InputAdornment } from '@mui/material';
 import { DataGrid, type GridValidRowModel, useGridApiRef } from '@mui/x-data-grid';
 import { useI18n, useTheme } from '@milesight/shared/src/hooks';
@@ -66,6 +67,18 @@ const TablePro = <DataType extends GridValidRowModel>({
             paginationModel: { page: 0, pageSize: pageSizeOption[0].value },
         };
     }, [getIntlText, pageSizeOptions]);
+
+    // If the search conditions change (such as advanced filter, fuzzy search, etc.),
+    // the selected ones need to be reset
+    useDebounceEffect(
+        () => {
+            apiRef.current.setRowSelectionModel([]);
+        },
+        [JSON.stringify(props.filterCondition)],
+        {
+            wait: 200,
+        },
+    );
 
     const [resultColumns, setResultColumns] = useState<ColumnSettingProps<DataType>[]>(columns);
     const { pinnedColumnPos, sxFieldClass, sortGroupByFixed } = usePinnedColumn({

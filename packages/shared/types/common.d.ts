@@ -199,6 +199,6 @@ declare type FilterOperatorType =
 declare type AdvancedConditionsType<T> = Partial<{
     [key in keyof T as Uppercase<key & string>]: {
         operator: FilterOperatorType;
-        values: T[key][];
+        values: ApiKey[];
     };
 }>

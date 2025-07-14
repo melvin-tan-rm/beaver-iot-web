@@ -18,6 +18,7 @@ import {
     AdvancedFilterHandler,
     FILTER_OPERATORS,
     ToggleRadio,
+    ColumnSettingProps,
 } from '@/components';
 import { DateRangePickerValueType } from '@/components/date-range-picker';
 import {
@@ -66,19 +67,22 @@ export default () => {
     } = useRequest(
         async () => {
             const { page, pageSize } = paginationModel;
+            const advancedFilter = { ...advancedConditions };
+            advancedFilter['ENTITY_TYPE' as keyof AdvancedConditionsType<TableRowDataType>] = {
+                operator: 'ANY_EQUALS',
+                values: [entityType],
+            };
             const [error, resp] = await awaitWrap(
-                entityAPI.getList({
-                    keyword,
+                entityAPI.advancedSearch({
                     page_size: pageSize,
                     page_number: page + 1,
-                    entity_type: [entityType],
                     sorts: [
                         {
                             direction: 'ASC',
                             property: 'key',
                         },
                     ],
-                    entity_filter: advancedConditions,
+                    entity_filter: advancedFilter,
                 }),
             );
             const data = getResponseData(resp);
@@ -200,7 +204,12 @@ export default () => {
         advancedFilterRef.current?.insertOrReplaceCondition({
             column: 'entityTags',
             operator: FILTER_OPERATORS.ANY_EQUALS,
-            value: tag?.name || '',
+            value: [
+                {
+                    label: tag?.name || '',
+                    value: tag?.name || '',
+                },
+            ],
             valueCompType: 'select',
         });
     };
@@ -255,6 +264,7 @@ export default () => {
                     value={entityType}
                     onChange={val => {
                         setEntityType(val as ENTITY_TYPE);
+                        setPaginationModel(model => ({ ...model, page: 0 }));
                     }}
                     sx={{ height: 36, width: 'auto' }}
                 />
@@ -305,7 +315,7 @@ export default () => {
         <div className="ms-main">
             <TablePro<TableRowDataType>
                 keepNonExistentRowsSelected
-                filterCondition={[advancedConditions]}
+                filterCondition={[advancedConditions, entityType]}
                 tableName="entity_data"
                 columnSetting
                 checkboxSelection={hasPermission(PERMISSIONS.ENTITY_DATA_EXPORT)}
@@ -324,6 +334,11 @@ export default () => {
                 // onSearch={handleSearch}
                 onRefreshButtonClick={getList}
                 onFilterInfoChange={handleFilterChange}
+                filterSettingColumns={(settingColumns: ColumnSettingProps<TableRowDataType>[]) => {
+                    return entityType !== ENTITY_TYPE.PROPERTY
+                        ? settingColumns.filter(col => col.field !== 'entityLatestValue')
+                        : settingColumns;
+                }}
             />
             {!!detailVisible && !!detail && <Detail onCancel={handleDetailClose} detail={detail} />}
             {!!editVisible && !!detail && (

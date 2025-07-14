@@ -161,6 +161,7 @@ const AdvancedFilter = <T extends GridValidRowModel>(
         resetList([]);
         handleFilterChange([]);
         initDefaultCondition();
+        popupState.close();
     };
 
     /**

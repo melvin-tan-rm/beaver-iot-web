@@ -5,16 +5,12 @@ export type SelectedValueType = OperatorValueOptionType | OperatorValueOptionTyp
 /** The type of filter value selected for each column */
 export type FilterValueType = ApiKey | SelectedValueType;
 
-export interface TextFieldPropsOverrides extends Omit<TextFieldProps, 'onChange'> {
-    onChange: (value: T) => void;
-}
+export type TextFieldPropsOverrides = Omit<TextFieldProps, 'value' | 'onChange'>;
 
-export interface AutocompletePropsOverrides<T> extends Omit<AutocompleteProps<T>, 'onChange'> {
-    /**
-     * The optional list for selection
-     */
-    getFilterValueOptions?: FilterValueOptionsType;
-}
+export type AutocompletePropsOverrides<T> = Omit<
+    AutocompleteProps<T>,
+    'value' | 'onChange' | 'options'
+>;
 
 /**
  * Value components base props
@@ -32,7 +28,7 @@ export interface ValueCompBaseProps<T extends FilterValueType>
 /**
  * All component types used for advanced filtering values
  */
-export type BaseComponentProps = AutocompletePropsOverrides & TextFieldPropsOverrides;
+export type BaseComponentProps = AutocompletePropsOverrides | TextFieldPropsOverrides;
 
 /**
  * The advanced filtering value component props can be passed to the base component or using the column field
@@ -59,7 +55,7 @@ export type ValueComponentSlotProps =
       }>
     | undefined;
 
-export interface OprVirtualSelectProps<T extends SelectedValueType = SelectedValueType>
+export interface VirtualSelectProps<T extends SelectedValueType>
     extends AutocompletePropsOverrides<T> {
     options: OperatorValueOptionType[];
     onItemChange: (value: T) => void;

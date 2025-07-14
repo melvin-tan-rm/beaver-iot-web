@@ -8,7 +8,7 @@ import { AutocompletePropsOverrides } from '../../types';
 /**
  *  A drop-down selection component for advanced filter
  */
-const OprValueSelect = <T extends OperatorValueOptionType>({
+const ValueSelect = <T extends OperatorValueOptionType>({
     value,
     multiple = true,
     noOptionsText,
@@ -98,4 +98,4 @@ const OprValueSelect = <T extends OperatorValueOptionType>({
     );
 };
 
-export default OprValueSelect;
+export default ValueSelect;
