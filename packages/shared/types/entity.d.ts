@@ -148,6 +148,7 @@ declare interface EntityData {
     entity_tags?: {
         id: ApiKey;
         name: string;
+        description?: string;
         color: string;
     }[];
     /** Device group */

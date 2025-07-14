@@ -241,5 +241,7 @@
     "common.label.column_setting_fixed_right": "Right (fixed)",
     "common.label.column_setting_non_fixed_column": "Adaptive columns",
     "common.label.item_selected": "{1} item selected",
-    "common.label.condition_any_equal": "Any Equal"
+    "common.label.condition_any_equal": "Any Equal",
+    "common.label.view_tags": "View tags",
+    "common.label.view_all_tags": "Click to view all tags"
 }

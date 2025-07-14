@@ -145,6 +145,7 @@ export default () => {
                         rows={deviceData?.content}
                         rowCount={deviceData?.total || 0}
                         paginationModel={paginationModel}
+                        pageSizeOptions={[10, 20, 30, 40, 50, 100]}
                         rowSelectionModel={selectedIds}
                         toolbarRender={toolbarRender}
                         onPaginationModelChange={setPaginationModel}

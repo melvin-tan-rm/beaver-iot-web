@@ -52,3 +52,4 @@ export { default as ActionInput } from './action-input';
 export { default as GradientBgContainer } from './gradient-bg-container';
 export { default as ImageAnnotation, type Vector2d } from './image-annotation';
 export { DragContainer, DragCard } from './drag';
+export { default as MultiTag, type MultiTagProps, type MultiTagType } from './multi-tag';

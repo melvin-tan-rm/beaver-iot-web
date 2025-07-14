@@ -184,7 +184,7 @@ const ColumnsSetting = <T extends GridValidRowModel>({
                 (col: ColumnSettingProps<T>) => col.field === column.colDef.field,
             );
             if (resizeColumn) {
-                resizeColumn.width = Math.floor(column.width);
+                resizeColumn.width = parseFloat(column.width.toFixed(1));
                 resizeColumn.flex = column.colDef.flex;
                 updateColumns([...columnsListRef.current]);
             }

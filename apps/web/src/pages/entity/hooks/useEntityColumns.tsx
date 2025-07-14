@@ -1,18 +1,19 @@
 import { useMemo } from 'react';
 import { Stack, IconButton, Chip, type ChipProps } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
-import { ListAltIcon, EditIcon, FilterAltIcon } from '@milesight/shared/src/components';
+import { ListAltIcon, EditIcon } from '@milesight/shared/src/components';
 import {
     Tooltip,
     type ColumnType,
     PermissionControlHidden,
     FILTER_OPERATORS,
     getOperatorsByExclude,
+    MultiTag,
 } from '@/components';
 import { ENTITY_DATA_VALUE_TYPE, PERMISSIONS } from '@/constants';
 import { type EntityAPISchema } from '@/services/http';
 
-type OperationType = 'detail' | 'edit' | 'filter' | 'editTag';
+type OperationType = 'detail' | 'edit' | 'filter';
 
 export type TableRowDataType = ObjectToCamelCase<
     EntityAPISchema['getList']['response']['content'][0]
@@ -29,7 +30,11 @@ export interface UseColumnsProps<T> {
     /**
      * Operation Button click callback
      */
-    onButtonClick: (type: OperationType, record: T, tag?: string) => void;
+    onButtonClick: (
+        type: OperationType,
+        record: T,
+        tag?: NonNullable<TableRowDataType['entityTags']>[0],
+    ) => void;
     /**
      * filtered info
      */
@@ -98,44 +103,22 @@ const useEntityColumns = <T extends TableRowDataType>({
                 flex: 1,
                 minWidth: 280,
                 align: 'left',
-                renderCell({ value }) {
+                renderCell({ row, value }) {
                     return (
-                        <Stack
-                            direction="row"
-                            spacing={1}
-                            sx={{ height: '100%', alignItems: 'center', justifyContent: 'start' }}
-                        >
-                            <Tooltip title="getIntlText(buildbuild)">
-                                <Chip
-                                    label="buildbuildbuildbuild"
-                                    sx={{
-                                        maxWidth: 60,
-                                        borderRadius: 1,
-                                        backgroundColor: 'red',
-                                        '&:hover': {
-                                            backgroundColor: 'red',
-                                        },
-                                    }}
-                                    variant="filled"
-                                    onClick={e => onButtonClick('filter', row, tag)}
-                                />
-                            </Tooltip>
-                            <Tooltip title="build">
-                                <Chip
-                                    sx={{
-                                        maxWidth: 60,
-                                        borderRadius: 1,
-                                        backgroundColor: 'red',
-                                        '&:hover': {
-                                            backgroundColor: 'red',
-                                        },
-                                    }}
-                                    label="build"
-                                    variant="filled"
-                                    onClick={e => onButtonClick('filter', row, tag)}
-                                />
-                            </Tooltip>
-                        </Stack>
+                        <MultiTag<NonNullable<TableRowDataType['entityTags']>[0]>
+                            data={(value || []).map(
+                                (tag: NonNullable<TableRowDataType['entityTags']>[0]) => ({
+                                    ...tag,
+                                    key: tag.id,
+                                    label: tag.name,
+                                    desc: tag.description,
+                                }),
+                            )}
+                            onClick={tag => onButtonClick('filter', row, tag)}
+                            sx={{
+                                height: '24px',
+                            }}
+                        />
                     );
                 },
                 operators: getOperatorsByExclude([

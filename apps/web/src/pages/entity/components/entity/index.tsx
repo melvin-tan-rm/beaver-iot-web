@@ -196,11 +196,11 @@ export default () => {
     };
 
     // Filter by click tag
-    const handleFilterByTag = (tag: any) => {
+    const handleFilterByTag = (tag?: NonNullable<TableRowDataType['entityTags']>[0]) => {
         advancedFilterRef.current?.insertOrReplaceCondition({
             column: 'entityTags',
             operator: FILTER_OPERATORS.ANY_EQUALS,
-            value: tag.name,
+            value: tag?.name || '',
             valueCompType: 'select',
         });
     };
@@ -315,6 +315,7 @@ export default () => {
                 rows={entityData?.content}
                 rowCount={entityData?.total || 0}
                 paginationModel={paginationModel}
+                pageSizeOptions={[10, 20, 30, 40, 50, 100]}
                 rowSelectionModel={selectedIds}
                 // isRowSelectable={({ row }) => row.deletable}
                 toolbarRender={toolbarRender}

@@ -1,22 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { isArray, isUndefined } from 'lodash-es';
+import { isArray, isObject, isUndefined } from 'lodash-es';
 import { OutlinedInput, InputAdornment } from '@mui/material';
 import { DataGrid, type GridValidRowModel, useGridApiRef } from '@mui/x-data-grid';
 import { useI18n, useTheme } from '@milesight/shared/src/hooks';
 import { SearchIcon } from '@milesight/shared/src/components';
 import Tooltip from '../tooltip';
-import {
-    useFilterProps,
-    useHeader,
-    usePinnedColumn,
-    useColumnsCacheKey,
-    useTable,
-    DEFAULT_PAGINATION_MODEL,
-} from './hook';
+import { useFilterProps, useHeader, usePinnedColumn, useColumnsCacheKey } from './hook';
 import { ColumnsSetting, Footer, NoDataOverlay, NoResultsOverlay } from './components';
 import type { TableProProps, ColumnSettingProps } from './types';
 
 import './style.less';
+
+/** The number of options per page is displayed by default */
+const DEFAULT_PAGE_SIZE_OPTIONS = [10, 20, 30, 40, 50];
 
 /**
  * Data form element
@@ -34,6 +30,7 @@ const TablePro = <DataType extends GridValidRowModel>({
     paginationMode = 'server',
     tableName,
     columnSetting = false,
+    pageSizeOptions,
     settingShowOpeColumn = false,
     showSelectedAndTotal = true,
     filterSettingColumns,
@@ -52,10 +49,23 @@ const TablePro = <DataType extends GridValidRowModel>({
         onFilterInfoChange,
         columns,
     });
-    const { pageSizeOptions } = useTable({
-        apiRef,
-        props,
-    });
+
+    const paginationConfig = useMemo(() => {
+        const pageSizeOption = (
+            isObject(pageSizeOptions?.[0])
+                ? pageSizeOptions
+                : ((pageSizeOptions as number[]) || DEFAULT_PAGE_SIZE_OPTIONS).map(
+                      (size: number) => ({
+                          value: size,
+                          label: `${size} / ${getIntlText('common.label.page')}`,
+                      }),
+                  )
+        ) as ReadonlyArray<{ value: number; label: string }>;
+        return {
+            pageSizeOptions: pageSizeOption,
+            paginationModel: { page: 0, pageSize: pageSizeOption[0].value },
+        };
+    }, [getIntlText, pageSizeOptions]);
 
     const [resultColumns, setResultColumns] = useState<ColumnSettingProps<DataType>[]>(columns);
     const { pinnedColumnPos, sxFieldClass, sortGroupByFixed } = usePinnedColumn({
@@ -178,10 +188,10 @@ const TablePro = <DataType extends GridValidRowModel>({
                     columnHeaderHeight={44}
                     rowHeight={48}
                     paginationMode={paginationMode}
-                    pageSizeOptions={pageSizeOptions}
+                    pageSizeOptions={paginationConfig.pageSizeOptions}
                     columns={memoColumns}
                     initialState={{
-                        pagination: { paginationModel: DEFAULT_PAGINATION_MODEL },
+                        pagination: { paginationModel: paginationConfig.paginationModel },
                         ...initialState,
                     }}
                     slots={{
