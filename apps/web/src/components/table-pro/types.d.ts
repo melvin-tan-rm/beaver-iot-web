@@ -127,13 +127,16 @@ export type ColumnType<R extends GridValidRowModel = any, V = any, F = V> = Grid
 
 // ====================== Advanced filter about ======================//
 
-/** Operator option value */
-export type OperatorValueOptionType = {
+/** Operator input value type */
+export type InputValueType = ApiKey;
+
+/** Operator select value type */
+export type SelectValueOptionType = {
     label: string;
     value: ApiKey;
 };
 
-export type FilterValueOptionsType = (keyword?: string) => Promise<OperatorValueOptionType[]>;
+export type FilterValueOptionsType = (keyword?: string) => Promise<SelectValueOptionType[]>;
 
 /**
  * Advanced filter value component type

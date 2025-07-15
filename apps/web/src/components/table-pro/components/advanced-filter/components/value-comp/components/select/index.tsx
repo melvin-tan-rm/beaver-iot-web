@@ -1,39 +1,52 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Autocomplete, Box, TextField } from '@mui/material';
-import { isEqual } from 'lodash-es';
+import { isArray, isEqual } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { OperatorValueOptionType } from '../../../../../../types';
-import { AutocompletePropsOverrides } from '../../types';
+import { SelectValueOptionType } from '../../../../../../types';
+import { AutocompletePropsOverrides, ValueCompBaseProps, VirtualSelectProps } from '../../types';
+import { useOptions, useSelectedValue } from './hooks';
+import { VirtualSelect } from './components';
+
+type IProps<T extends SelectValueOptionType> = AutocompletePropsOverrides & ValueCompBaseProps<T>;
 
 /**
  *  A drop-down selection component for advanced filter
  */
-const ValueSelect = <T extends OperatorValueOptionType>({
+const ValueSelect = <T extends SelectValueOptionType>({
     value,
+    onChange,
     multiple = true,
     onOpen,
     onClose,
+    onInputChange,
     noOptionsText,
     loadingText,
     placeholder,
+    renderOption,
     getFilterValueOptions,
     ...rest
-}: AutocompletePropsOverrides<T>) => {
+}: IProps<T>) => {
     const { getIntlText } = useI18n();
     const [open, setOpen] = useState<boolean>(false);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [options, setOptions] = useState<ReadonlyArray<T>>([]);
+
+    const { options, allOptionsMap, searchLoading, onSearch } = useOptions({
+        getFilterValueOptions,
+    });
+
+    const { selectedMap, onItemChange } = useSelectedValue({
+        value,
+        onChange,
+        optionsMap: allOptionsMap as VirtualSelectProps<T>['optionsMap'],
+        multiple,
+    });
 
     /**
      * Handles opening of the select menu.
      */
     const handleSelectOpen = useCallback(
-        async (event: AutocompletePropsOverrides<T>['onOpen']) => {
+        async (event: AutocompletePropsOverrides['onOpen']) => {
             setOpen(true);
             onOpen?.(event);
-            setLoading(true);
-            setOptions(((await getFilterValueOptions?.()) || []) as unknown as ReadonlyArray<T>);
-            setLoading(false);
         },
         [onOpen],
     );
@@ -42,23 +55,61 @@ const ValueSelect = <T extends OperatorValueOptionType>({
      * Handles closing of the select menu.
      */
     const handleSelectClose = useCallback(
-        (...params: AutocompletePropsOverrides<T>['onClose']) => {
+        (...params: AutocompletePropsOverrides['onClose']) => {
             setOpen(false);
             onClose?.(...params);
         },
         [onClose],
     );
 
+    /**
+     * Handles the input change event.
+     */
+    const handleInputChange = useCallback<AutocompletePropsOverrides['onInputChange']>(
+        (event: React.SyntheticEvent, value: string, reason: string) => {
+            if (reason === 'input') {
+                onSearch?.(value);
+            }
+            if (reason === 'blur' || reason === 'clear') {
+                onSearch?.('');
+            }
+            onInputChange?.(event, value, reason);
+        },
+        [onInputChange, onSearch],
+    );
+
+    const slotProps = useMemo(
+        () => ({
+            listbox: {
+                component: VirtualSelect,
+                options,
+                selectedMap,
+                renderOption,
+                onItemChange: (event: React.SyntheticEvent, option: T) => {
+                    if (!multiple) {
+                        handleSelectClose(event, 'selectOption');
+                    }
+                    onItemChange(option);
+                },
+            },
+        }),
+        [options, selectedMap, multiple, onChange, handleSelectClose],
+    );
+
     return (
         <Autocomplete<T>
-            options={options}
+            options={options as T[]}
+            onChange={(e: React.SyntheticEvent<Element, Event>, value: T | null) => {
+                onChange(value as T);
+            }}
             multiple={multiple}
             open={open}
             onOpen={handleSelectOpen}
             onClose={handleSelectClose}
-            loading={loading}
+            loading={searchLoading}
             isOptionEqualToValue={(option, value) => isEqual(option, value)}
-            getOptionLabel={(option: OperatorValueOptionType) => option.label}
+            getOptionLabel={(option: SelectValueOptionType) => option.label}
+            onInputChange={handleInputChange}
             renderInput={params => {
                 return (
                     <TextField
@@ -68,7 +119,7 @@ const ValueSelect = <T extends OperatorValueOptionType>({
                         }}
                         sx={{ minWidth: '225px' }}
                         placeholder={
-                            (multiple ? !!value?.length : !!value)
+                            (isArray(value) ? value : [value]).length
                                 ? ''
                                 : placeholder || getIntlText('common.placeholder.select')
                         }
@@ -106,8 +157,9 @@ const ValueSelect = <T extends OperatorValueOptionType>({
                     </Box>
                 )
             }
-            {...rest}
             value={value}
+            slotProps={slotProps}
+            {...rest}
         />
     );
 };

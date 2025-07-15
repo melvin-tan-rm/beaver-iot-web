@@ -1,21 +1,17 @@
 import { AutocompleteProps, SelectProps, TextFieldProps } from '@mui/material';
-import { OperatorValueOptionType, FilterValueOptionsType } from '../../../../types';
+import { InputValueType, SelectValueOptionType, FilterValueOptionsType } from '../../../../types';
 
-export type SelectedValueType = OperatorValueOptionType | OperatorValueOptionType[];
 /** The type of filter value selected for each column */
-export type FilterValueType = ApiKey | SelectedValueType;
+export type FilterValueType = InputValueType | SelectValueOptionType | SelectValueOptionType[];
 
 export type TextFieldPropsOverrides = Omit<TextFieldProps, 'value' | 'onChange'>;
 
-export type AutocompletePropsOverrides<T> = Omit<
-    AutocompleteProps<T>,
-    'value' | 'onChange' | 'options'
->;
+export type AutocompletePropsOverrides = Omit<AutocompleteProps, 'value' | 'onChange' | 'options'>;
 
 /**
  * Value components base props
  */
-export interface ValueCompBaseProps<T extends FilterValueType>
+export interface ValueCompBaseProps<T>
     extends Pick<TextFieldProps, 'label' | 'size' | 'sx' | 'disabled' | 'fullWidth'> {
     value: T;
     onChange: (value: T) => void;
@@ -55,8 +51,10 @@ export type ValueComponentSlotProps =
       }>
     | undefined;
 
-export interface VirtualSelectProps<T extends SelectedValueType>
-    extends AutocompletePropsOverrides<T> {
-    options: OperatorValueOptionType[];
-    onItemChange: (value: T) => void;
+export interface VirtualSelectProps<T extends SelectValueOptionType>
+    extends AutocompletePropsOverrides {
+    options: T[];
+    optionsMap: Map<T['value'], T>;
+    selectedMap: Map<T['value'], T>;
+    onItemChange: (event: React.SyntheticEvent, value: T) => void;
 }

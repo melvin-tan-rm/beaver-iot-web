@@ -31,7 +31,7 @@ export interface RowConditionProps<T extends GridValidRowModel> {
     /**
      * Value component attribute slotProps
      */
-    valueCompSlotProps?: ValueComponentSlotProps;
+    compSlotProps?: ValueComponentSlotProps;
     replace: (index: number, item: ConditionProps) => void;
     remove: (index: number) => void;
 }
@@ -49,7 +49,7 @@ export const isNullValueOperator = (operator: FilterOperatorType) => {
  * Advanced filter filter row condition
  */
 const RowCondition = <T extends GridValidRowModel>(props: RowConditionProps<T>) => {
-    const { index, item, columns, conditions, valueCompSlotProps, replace, remove } = props;
+    const { index, item, columns, conditions, compSlotProps, replace, remove } = props;
 
     const { getIntlText } = useI18n();
 
@@ -106,7 +106,7 @@ const RowCondition = <T extends GridValidRowModel>(props: RowConditionProps<T>) 
                 }}
                 getFilterValueOptions={getFilterValueOptions}
                 valueCompType={item.valueCompType}
-                compSlotProps={valueCompSlotProps}
+                compSlotProps={compSlotProps}
             />
             <div className="ms-advanced-filter-content-wrap-item-delete">
                 <IconButton onClick={() => remove(index)}>

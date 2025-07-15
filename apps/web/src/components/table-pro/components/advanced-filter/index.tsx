@@ -60,7 +60,7 @@ export type AdvancedFilterProps<T extends GridValidRowModel> = Omit<ButtonProps,
             }
         }}
      */
-    valueCompSlotProps?: ValueComponentSlotProps;
+    compSlotProps?: ValueComponentSlotProps;
 };
 
 const EMPTY_DATA: ConditionProps = {
@@ -77,7 +77,7 @@ const AdvancedFilter = <T extends GridValidRowModel>(
     props: AdvancedFilterProps<T>,
     ref: React.ForwardedRef<AdvancedFilterHandler>,
 ) => {
-    const { columns, onChange, valueCompSlotProps, className, ...rest } = props;
+    const { columns, onChange, compSlotProps, className, ...rest } = props;
     const { getIntlText } = useI18n();
 
     const popupState = usePopupState({ variant: 'popover', popupId: 'advancedFilter' });
@@ -144,7 +144,7 @@ const AdvancedFilter = <T extends GridValidRowModel>(
             return {
                 ...c,
                 operator: (isNullValueOperator(c.operator) ? '' : c.operator) as FilterOperatorType,
-                value: isArray(c.value) ? [] : '',
+                value: (isArray(c.value) ? [] : '') as FilterValueType,
             };
         });
         conditionsRef.current = newConditions;
@@ -272,7 +272,7 @@ const AdvancedFilter = <T extends GridValidRowModel>(
                                 item={item}
                                 conditions={conditions}
                                 columns={columns}
-                                valueCompSlotProps={valueCompSlotProps}
+                                compSlotProps={compSlotProps}
                                 replace={replace}
                                 remove={remove}
                             />

@@ -38,7 +38,7 @@ const DynamicValueComp = <T extends FilterValueType>({
                 DEFAULT_COMP_PROPS[componentType as keyof ValueComponentSlotProps] ||
                 {}),
             ...(compSlotProps?.[column] || {}),
-        };
+        } as keyof ValueComponentSlotProps;
     }, [compSlotProps, valueCompType, column]);
 
     return renderValueComponent(valueCompType, rest, slotProps);

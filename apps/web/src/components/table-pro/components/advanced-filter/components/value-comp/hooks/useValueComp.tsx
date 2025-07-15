@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { TextField } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { ValueCompType } from '../../../../../types';
+import { SelectValueOptionType, ValueCompType } from '../../../../../types';
 import {
     ValueComponentSlotProps,
     ValueCompBaseProps,
@@ -12,7 +12,7 @@ import {
 import { ValueSelect } from '../components';
 
 type BaseInputProps<T extends FilterValueType> = TextFieldPropsOverrides & ValueCompBaseProps<T>;
-type BaseSelectProps<T extends FilterValueType> = AutocompletePropsOverrides<T> &
+type BaseSelectProps<T extends FilterValueType> = AutocompletePropsOverrides &
     ValueCompBaseProps<T>;
 type BaseEmptyProps = Omit<TextFieldPropsOverrides, 'value' | 'onChange' | 'disabled'>;
 
@@ -29,24 +29,24 @@ const useValueComp = <T extends FilterValueType>() => {
                     placeholder={getIntlText('common.placeholder.input')}
                     {...props}
                     onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                        props?.onChange?.(event?.target?.value as unknown as T);
+                        props?.onChange?.(event?.target?.value as T);
                     }}
                 />
             ),
             select: (props: BaseSelectProps<T>) => {
-                const { value, getFilterValueOptions, ...rest } = props;
+                const { value, multiple, onChange, ...rest } = props;
                 return (
                     <ValueSelect
-                        {...rest}
-                        getFilterValueOptions={getFilterValueOptions}
-                        value={value || (props.multiple ? [] : null)}
-                        onChange={(e: React.SyntheticEvent, value: T) => {
-                            props.onChange(value);
+                        multiple={multiple}
+                        value={(value || (multiple ? [] : null)) as SelectValueOptionType}
+                        onChange={(value: SelectValueOptionType) => {
+                            onChange?.(value as T);
                         }}
+                        {...rest}
                     />
                 );
             },
-            '': (props: BaseEmptyProps) => <TextField disabled {...props} />,
+            '': (props: BaseEmptyProps) => <TextField disabled value="" {...props} />,
         }),
         [getIntlText],
     );
