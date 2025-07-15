@@ -56,6 +56,13 @@ export interface DeviceAPISchema extends APISchema {
                 type: EntityType;
                 value_attribute: Partial<EntityValueAttributeType>;
                 value_type: EntityValueDataType;
+                /** Entity tags */
+                entity_tags?: {
+                    id: ApiKey;
+                    name: string;
+                    description?: string;
+                    color: string;
+                }[];
             }[];
         };
     };

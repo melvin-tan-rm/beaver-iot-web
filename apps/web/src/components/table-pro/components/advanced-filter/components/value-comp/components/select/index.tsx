@@ -11,9 +11,10 @@ import { AutocompletePropsOverrides } from '../../types';
 const ValueSelect = <T extends OperatorValueOptionType>({
     value,
     multiple = true,
-    noOptionsText,
     onOpen,
     onClose,
+    noOptionsText,
+    loadingText,
     placeholder,
     getFilterValueOptions,
     ...rest
@@ -30,8 +31,8 @@ const ValueSelect = <T extends OperatorValueOptionType>({
         async (event: AutocompletePropsOverrides<T>['onOpen']) => {
             setOpen(true);
             onOpen?.(event);
-            setOptions(((await getFilterValueOptions?.()) || []) as unknown as ReadonlyArray<T>);
             setLoading(true);
+            setOptions(((await getFilterValueOptions?.()) || []) as unknown as ReadonlyArray<T>);
             setLoading(false);
         },
         [onOpen],
@@ -43,7 +44,6 @@ const ValueSelect = <T extends OperatorValueOptionType>({
     const handleSelectClose = useCallback(
         (...params: AutocompletePropsOverrides<T>['onClose']) => {
             setOpen(false);
-            setOptions([]);
             onClose?.(...params);
         },
         [onClose],
@@ -76,7 +76,7 @@ const ValueSelect = <T extends OperatorValueOptionType>({
                 );
             }}
             renderTags={value => {
-                return <Box>{getIntlText('common.label.item_selected', { 1: value.length })}</Box>;
+                return getIntlText('common.label.item_selected', { 1: value.length });
             }}
             noOptionsText={
                 noOptionsText || (
@@ -89,6 +89,20 @@ const ValueSelect = <T extends OperatorValueOptionType>({
                         }}
                     >
                         {getIntlText('common.label.no_options')}
+                    </Box>
+                )
+            }
+            loadingText={
+                loadingText || (
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            padding: '10px 8px',
+                        }}
+                    >
+                        {getIntlText('common.label.loading')}
                     </Box>
                 )
             }

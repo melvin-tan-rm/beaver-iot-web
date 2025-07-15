@@ -10,8 +10,9 @@ import {
     getOperatorsByExclude,
     MultiTag,
 } from '@/components';
-import { ENTITY_DATA_VALUE_TYPE, PERMISSIONS } from '@/constants';
+import { PERMISSIONS } from '@/constants';
 import { type EntityAPISchema } from '@/services/http';
+import useAdvancedValues from './useAdvancedValues';
 
 type OperationType = 'detail' | 'edit' | 'filter';
 
@@ -48,6 +49,8 @@ const useEntityColumns = <T extends TableRowDataType>({
     const { getIntlText } = useI18n();
     const { getTimeFormat } = useTime();
 
+    const { advancedValuesMapper } = useAdvancedValues();
+
     const columns: ColumnType<T>[] = useMemo(() => {
         return [
             {
@@ -83,18 +86,7 @@ const useEntityColumns = <T extends TableRowDataType>({
                 minWidth: 180,
                 ellipsis: true,
                 operators: [FILTER_OPERATORS.ANY_EQUALS],
-                getFilterValueOptions: async () => {
-                    return [
-                        {
-                            label: '222',
-                            value: '22222',
-                        },
-                        {
-                            label: '3333',
-                            value: '333344',
-                        },
-                    ];
-                },
+                getFilterValueOptions: advancedValuesMapper.getDeviceGroup,
                 operatorValueCompType: 'select',
             },
             {
@@ -126,16 +118,7 @@ const useEntityColumns = <T extends TableRowDataType>({
                     FILTER_OPERATORS.START_WITH,
                     FILTER_OPERATORS.END_WITH,
                 ]),
-                operatorValues: [
-                    {
-                        label: '222',
-                        value: '22222',
-                    },
-                    {
-                        label: '3333',
-                        value: '333344',
-                    },
-                ],
+                getFilterValueOptions: advancedValuesMapper.getEntityTags,
                 operatorValueCompType: 'select',
             },
             {
@@ -157,12 +140,7 @@ const useEntityColumns = <T extends TableRowDataType>({
                 maxWidth: 100,
                 ellipsis: true,
                 operators: [FILTER_OPERATORS.ANY_EQUALS],
-                getFilterValueOptions: async () => {
-                    return Object.keys(ENTITY_DATA_VALUE_TYPE).map(key => ({
-                        label: key,
-                        value: key,
-                    }));
-                },
+                getFilterValueOptions: advancedValuesMapper.getEntityDataValues,
                 operatorValueCompType: 'select',
             },
             {

@@ -14,6 +14,7 @@ export {
     FILTER_OPERATORS,
     getOperatorsByExclude,
     type AdvancedFilterHandler,
+    type FilterValueOptionsType,
 } from './table-pro';
 export { default as TabPanel } from './tab-panel';
 export { default as Descriptions, type Props as DescriptionsProps } from './descriptions';
