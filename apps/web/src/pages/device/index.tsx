@@ -101,10 +101,13 @@ export default () => {
     } = useChangeGroup(getDeviceList);
     const {
         batchAddModalVisible,
+        batchAddStatus,
+        addList,
+        integration,
+        templateFile,
         hiddenBatchGroupModal,
         batchAddFormSubmit,
         openBatchGroupModal,
-        batchAddStatus,
     } = useBatchAddModal(getDeviceList);
 
     // ---------- Device added related ----------
@@ -273,6 +276,9 @@ export default () => {
                 <BatchAddModal
                     visible={batchAddModalVisible}
                     status={batchAddStatus}
+                    addList={addList}
+                    integration={integration}
+                    templateFile={templateFile}
                     onCancel={hiddenBatchGroupModal}
                     onFormSubmit={batchAddFormSubmit}
                 />

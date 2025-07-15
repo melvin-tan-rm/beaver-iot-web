@@ -52,9 +52,16 @@ export type UploadFile = FileWithPath & {
      * Uploaded file url
      */
     url?: string;
+    /**
+     * original file data
+     */
+    original?: File;
 };
 
-export type FileValueType = Pick<UploadFile, 'name' | 'size' | 'path' | 'key' | 'url' | 'preview'>;
+export type FileValueType = Pick<
+    UploadFile,
+    'name' | 'size' | 'path' | 'key' | 'url' | 'preview' | 'original'
+>;
 
 type Props = UseDropzoneProps & {
     // type?: string;
@@ -100,6 +107,11 @@ type Props = UseDropzoneProps & {
     className?: string;
 
     /**
+     * Whether to upload files automatically
+     */
+    autoUpload?: boolean;
+
+    /**
      * Customize the contents in upload area
      */
     children?: React.ReactNode;
@@ -128,6 +140,7 @@ const Upload: React.FC<Props> = ({
     multiple,
     style,
     className,
+    autoUpload = true,
     children,
     onChange,
     ...props
@@ -225,7 +238,7 @@ const Upload: React.FC<Props> = ({
 
         const result = acceptedFiles.map(file => {
             const newFile: UploadFile = Object.assign(file, {
-                status: UploadStatus.Uploading,
+                status: autoUpload ? UploadStatus.Uploading : UploadStatus.Done,
                 progress: 0,
                 preview: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
                 abortController: new AbortController(),
@@ -235,8 +248,11 @@ const Upload: React.FC<Props> = ({
         });
 
         setFiles(result);
-        uploadFiles(result);
-    }, [acceptedFiles, fileRejections, uploadFiles]);
+
+        if (autoUpload) {
+            uploadFiles(result);
+        }
+    }, [acceptedFiles, fileRejections, uploadFiles, autoUpload]);
 
     // ---------- Handle uploading status ----------
     const [isUploading, setIsUploading] = useState(false);
@@ -264,9 +280,10 @@ const Upload: React.FC<Props> = ({
         const [file, ...rest] = files?.filter(file => file.status === UploadStatus.Done) || [];
 
         if (!file) return result;
+
         result.push(
             <Fragment key={file.path}>
-                <Tooltip autoEllipsis className="name" title={file.name} />
+                <Tooltip autoEllipsis className="name" title={file?.name || file?.url || ''} />
                 {`(${getSizeString(file.size)})`}
             </Fragment>,
         );
@@ -275,7 +292,7 @@ const Upload: React.FC<Props> = ({
             const names = rest
                 .map(file => (
                     <Fragment key={file.path}>
-                        {`${file.url} (${getSizeString(file.size)})`}
+                        {`${file?.url || file?.name || ''} (${getSizeString(file.size)})`}
                     </Fragment>
                 ))
                 .join('\n');
@@ -332,7 +349,14 @@ const Upload: React.FC<Props> = ({
                 })
                 ?.map(file => {
                     const { name, size, path, key, url, preview } = file;
-                    const result: FileValueType = { name, size, path, key, url };
+                    const result: FileValueType = {
+                        name,
+                        size,
+                        path,
+                        key,
+                        url,
+                        original: autoUpload ? undefined : file,
+                    };
 
                     if (!url) {
                         result.preview = preview;
@@ -351,7 +375,7 @@ const Upload: React.FC<Props> = ({
         }
 
         onChange?.(resultValues, resultFiles);
-    }, [files, multiple, onChange]);
+    }, [files, multiple, autoUpload, onChange]);
 
     useEffect(() => {
         if (!value) {

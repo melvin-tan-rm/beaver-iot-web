@@ -5,6 +5,7 @@ export {
     type DeviceDetail,
     type DeviceAPISchema,
     type DeviceGroupItemProps,
+    type AddDeviceProps,
 } from './device';
 
 export { default as entityAPI, type EntityAPISchema } from './entity';

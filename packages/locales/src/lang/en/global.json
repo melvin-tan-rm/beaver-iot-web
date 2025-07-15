@@ -240,5 +240,10 @@
     "common.label.batch_add": "Batch Add",
     "common.label.download_template": "Download Template",
     "common.label.upload_file": "Upload File",
-    "common.tip.maximum_number_reached": "已达到最大数量"
+    "common.tip.maximum_number_reached": "已达到最大数量",
+    "common.button.interrupt": "终止",
+    "common.label.is_adding": "正在添加",
+    "common.label.all_tasks_completed": "全部执行完成",
+    "common.label.tasks_has_been_interrupted": "任务被终止",
+    "common.button.download": "下载"
 }

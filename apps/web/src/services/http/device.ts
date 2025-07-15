@@ -40,6 +40,17 @@ export interface DeviceGroupItemProps {
     name: string;
 }
 
+export interface AddDeviceProps {
+    /** Integration ID */
+    integration: ApiKey;
+    /** name */
+    name?: string;
+    /** device group name */
+    group_name?: string;
+    /** Integrate additional information needed for new devices */
+    param_entities: Record<string, any>;
+}
+
 /**
  * Device related interface definition
  */
@@ -78,16 +89,7 @@ export interface DeviceAPISchema extends APISchema {
 
     /** Add device */
     addDevice: {
-        request: {
-            /** name */
-            name?: string;
-            /** Integration ID */
-            integration: ApiKey;
-            /** Integrate additional information needed for new devices */
-            param_entities: Record<string, any>;
-            /** device group name */
-            group_name?: string;
-        };
+        request: AddDeviceProps;
         response: unknown;
     };
 
@@ -152,16 +154,16 @@ export interface DeviceAPISchema extends APISchema {
         request: {
             integration: string;
         };
-        response: File;
+        response: Blob;
     };
     /** parse device batch template file */
     parseDeviceBatchTemplate: {
         request: {
-            integration: string;
+            integration: ApiKey;
             file: File;
         };
         response: {
-            create_device_requests: any[];
+            create_device_requests: AddDeviceProps[];
         };
     };
     /** generate error file */
@@ -169,9 +171,9 @@ export interface DeviceAPISchema extends APISchema {
         request: {
             integration: string;
             file: File;
-            errors: { id: ApiKey; msg: string }[];
+            errors: string;
         };
-        response: File;
+        response: Blob;
     };
 }
 

@@ -1,18 +1,20 @@
 import { useMemo } from 'react';
 import { type ControllerProps } from 'react-hook-form';
-import { Button, Grid2 as Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 
 import { useI18n } from '@milesight/shared/src/hooks';
-import { Select, DownloadIcon } from '@milesight/shared/src/components';
+import { Select, DownloadIcon, LoadingButton } from '@milesight/shared/src/components';
 import { checkRequired } from '@milesight/shared/src/utils/validators';
 
 import { Upload, type FileValueType } from '@/components';
 import { useGetIntegration } from '../../../hooks';
 import { type BatchAddProps } from '../index';
+import { useGetTemplate } from './useGetTemplate';
 
 export function useFormItems() {
     const { getIntlText } = useI18n();
     const { integrationList, firstIntegrationId, loadingIntegrations } = useGetIntegration();
+    const { getDeviceTemplate, downloadTemplateLoading } = useGetTemplate();
 
     const formItems: ControllerProps<BatchAddProps>[] = useMemo(() => {
         return [
@@ -48,15 +50,16 @@ export function useFormItems() {
                                     alignItems: 'flex-end',
                                 }}
                             >
-                                <Button
+                                <LoadingButton
+                                    loading={downloadTemplateLoading}
                                     variant="outlined"
                                     className="md:d-none"
                                     sx={{ height: 36, textTransform: 'none' }}
                                     startIcon={<DownloadIcon />}
-                                    onClick={() => console.log('download template')}
+                                    onClick={() => getDeviceTemplate(value as string)}
                                 >
                                     {getIntlText('common.label.download_template')}
-                                </Button>
+                                </LoadingButton>
                             </Grid>
                         </Grid>
                     );
@@ -81,12 +84,13 @@ export function useFormItems() {
                                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
                                     ['.xlsx'],
                             }}
+                            autoUpload={false}
                         />
                     );
                 },
             },
         ];
-    }, [getIntlText, integrationList]);
+    }, [getIntlText, integrationList, downloadTemplateLoading, getDeviceTemplate]);
 
     return {
         formItems,
