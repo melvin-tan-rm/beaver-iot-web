@@ -11,6 +11,9 @@ import {
     PieChartIcon,
     PeopleIcon,
     FlagIcon,
+    PieChartIcon,
+    PeopleIcon,
+    FlagIcon,
 } from '@milesight/shared/src/components';
 import { PERMISSIONS } from '@/constants';
 import ErrorBoundaryComponent from './error-boundary';
