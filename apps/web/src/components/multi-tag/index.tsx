@@ -66,32 +66,6 @@ const MultiTag = <T extends Record<string, any>>({
     const wrapRef = useRef<HTMLDivElement>(null);
     const innerRef = useRef<HTMLDivElement>(null);
     const wrapSize = useSize(wrapRef);
-    const innerSize = useSize(innerRef);
-
-    useDebounceEffect(
-        () => {
-            if (wrapSize?.width) {
-                // Recalculate the number that needs to be displayed
-                setShowNumber(estimatingTagNumber(wrapSize?.width));
-            }
-        },
-        [wrapSize?.width, data.length],
-        { wait: 10 },
-    );
-
-    useDebounceEffect(
-        () => {
-            if (innerSize?.width && wrapSize?.width) {
-                if (innerSize?.width > wrapSize?.width) {
-                    !!showNumber && setShowNumber(showNumber - 1);
-                } else {
-                    setActualNumber(showNumber);
-                }
-            }
-        },
-        [wrapSize?.width, innerSize?.width],
-        { wait: 30 },
-    );
 
     const handleShowMore = () => {
         setShowMore(true);
@@ -112,7 +86,7 @@ const MultiTag = <T extends Record<string, any>>({
                             key={tag.key}
                             title={tag.desc}
                             enterDelay={1000}
-                            enterNextDelay={300}
+                            enterNextDelay={500}
                         >
                             <Chip
                                 label={tag.label}
@@ -131,7 +105,12 @@ const MultiTag = <T extends Record<string, any>>({
                     renderRestNode ? (
                         renderRestNode(handleShowMore)
                     ) : (
-                        <Tooltip key="more" title={getIntlText('common.label.view_all_tags')}>
+                        <Tooltip
+                            key="more"
+                            title={getIntlText('common.label.view_all_tags')}
+                            enterDelay={1000}
+                            enterNextDelay={500}
+                        >
                             <Button
                                 variant="outlined"
                                 size="small"
@@ -157,6 +136,34 @@ const MultiTag = <T extends Record<string, any>>({
         return renderTagList(showNumber);
     }, [showNumber]);
 
+    useDebounceEffect(
+        () => {
+            if (wrapSize?.width) {
+                // Recalculate the number that needs to be displayed
+                setShowNumber(estimatingTagNumber(wrapSize?.width));
+            }
+        },
+        [wrapSize?.width, data.length],
+        { wait: 10 },
+    );
+
+    useDebounceEffect(
+        () => {
+            if (wrapRef.current && innerRef.current) {
+                const wrapWidth = wrapRef.current.getBoundingClientRect().width;
+                const innerWidth = innerRef.current.getBoundingClientRect().width;
+
+                if (innerWidth > wrapWidth) {
+                    !!showNumber && setShowNumber(showNumber - 1);
+                } else {
+                    setActualNumber(showNumber);
+                }
+            }
+        },
+        [wrapSize?.width, testTagList],
+        { wait: 10 },
+    );
+
     /**
      * Estimate the optimal number of tags that can be accommodated
      * and calculate with the width of each character being 8
@@ -179,7 +186,7 @@ const MultiTag = <T extends Record<string, any>>({
                     direction="row"
                     spacing="8px"
                     ref={innerRef}
-                    style={{
+                    sx={{
                         opacity: 0,
                     }}
                 >
@@ -204,10 +211,10 @@ const MultiTag = <T extends Record<string, any>>({
                             renderItem(tag)
                         ) : (
                             <Tooltip
-                                key={tag.label}
+                                key={tag.key}
                                 title={tag.desc}
                                 enterDelay={1000}
-                                enterNextDelay={300}
+                                enterNextDelay={500}
                             >
                                 <Chip
                                     label={tag.label}

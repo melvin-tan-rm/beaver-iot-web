@@ -71,7 +71,7 @@ const ValueSelect = <
                     InputProps={{
                         ...params.InputProps,
                     }}
-                    sx={{ minWidth: '225px' }}
+                    sx={{ minWidth: '220px' }}
                     placeholder={
                         (isArray(value) ? value : [value]).length
                             ? ''

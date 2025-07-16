@@ -80,6 +80,21 @@ const TablePro = <DataType extends GridValidRowModel>({
         },
     );
 
+    /**
+     * Column Settings will not be displayed when the window size is less than a certain value
+     */
+    useDebounceEffect(
+        () => {
+            if (matchMobile) {
+                setResultColumns(columns);
+            }
+        },
+        [matchMobile],
+        {
+            wait: 100,
+        },
+    );
+
     const [resultColumns, setResultColumns] = useState<ColumnSettingProps<DataType>[]>(columns);
     const { pinnedColumnPos, sxFieldClass, sortGroupByFixed } = usePinnedColumn({
         apiRef,

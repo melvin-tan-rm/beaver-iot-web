@@ -79,7 +79,7 @@ const RowCondition = <T extends GridValidRowModel>(props: RowConditionProps<T>) 
                 }}
             />
             <Select
-                sx={{ width: 120 }}
+                sx={{ width: 125 }}
                 placeholder={getIntlText('common.placeholder.select')}
                 options={optionsOperators}
                 value={item.operator}
