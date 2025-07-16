@@ -13,8 +13,12 @@ import {
     type AddDeviceProps,
 } from '@/services/http';
 import { type BatchAddProps, type BatchAddStatus } from '../components/batch-add-modal';
+import { type DeviceGroupExposeProps } from '../components/device-group';
 
-export default function useBatchAddModal(getDevices?: () => void) {
+export default function useBatchAddModal(
+    deviceGroupRef: React.RefObject<DeviceGroupExposeProps>,
+    getDevices?: () => void,
+) {
     const { getIntlText } = useI18n();
 
     const [batchAddModalVisible, setBatchAddModalVisible] = useState(false);
@@ -42,6 +46,7 @@ export default function useBatchAddModal(getDevices?: () => void) {
         if (batchAddStatus === 'adding') {
             setBatchAddModalVisible(false);
             getDevices?.();
+            deviceGroupRef?.current?.getDeviceGroups?.();
             callback?.();
             toast.success(getIntlText('common.message.operation_success'));
             return;

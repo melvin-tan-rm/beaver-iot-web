@@ -91,7 +91,7 @@ export default () => {
         },
     );
 
-    const { isShrink, toggleShrink, activeGroupName } = useDevice();
+    const { isShrink, toggleShrink, activeGroupName, deviceGroupRef } = useDevice();
     const {
         selectedDevices,
         groupModalVisible,
@@ -111,7 +111,7 @@ export default () => {
         hiddenBatchGroupModal,
         batchAddFormSubmit,
         openBatchGroupModal,
-    } = useBatchAddModal(getDeviceList);
+    } = useBatchAddModal(deviceGroupRef, getDeviceList);
 
     // ---------- Device added related ----------
     const [modalOpen, setModalOpen] = useState(false);
@@ -230,7 +230,7 @@ export default () => {
             <Breadcrumbs />
             <div className="ms-view ms-view-device">
                 <div className="ms-view__inner">
-                    <DeviceGroup isShrink={isShrink} />
+                    <DeviceGroup ref={deviceGroupRef} isShrink={isShrink} />
 
                     <div className="device-right">
                         <div className="device-right__title">{activeGroupName}</div>

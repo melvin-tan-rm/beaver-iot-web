@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo, useImperativeHandle, forwardRef } from 'react';
 import classNames from 'classnames';
 import { useMemoizedFn } from 'ahooks';
 
@@ -11,11 +11,15 @@ import { useDeviceGroup, useGroupModal } from './hooks';
 
 import './style.less';
 
+export interface DeviceGroupExposeProps {
+    getDeviceGroups: (keyword?: string | undefined) => void;
+}
+
 export interface DeviceGroupProps {
     isShrink: boolean;
 }
 
-const DeviceGroup: React.FC<DeviceGroupProps> = props => {
+const DeviceGroup = forwardRef<DeviceGroupExposeProps, DeviceGroupProps>((props, ref) => {
     const { isShrink } = props;
 
     const { getDeviceGroups, deviceGroups, loading, handleGroupDelete } = useDeviceGroup();
@@ -29,6 +33,13 @@ const DeviceGroup: React.FC<DeviceGroupProps> = props => {
         onFormSubmit,
         editGroupModal,
     } = useGroupModal(getDeviceGroups);
+
+    // An instance that is exposed to the parent component
+    useImperativeHandle(ref, () => {
+        return {
+            getDeviceGroups,
+        };
+    });
 
     const handleGroupOperation = useMemoizedFn(
         (type: MORE_OPERATION, record: DeviceGroupItemProps) => {
@@ -71,6 +82,6 @@ const DeviceGroup: React.FC<DeviceGroupProps> = props => {
             )}
         </div>
     );
-};
+});
 
 export default DeviceGroup;
