@@ -35,4 +35,4 @@ export {
     type CredentialType,
     type CredentialAPISchema,
 } from './credentials';
-export { default as tagAPI, type TagItemProps } from './tag';
+export { default as tagAPI, type TagItemProps, TagOperationEnums } from './tag';

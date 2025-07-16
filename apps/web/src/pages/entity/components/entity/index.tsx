@@ -7,15 +7,17 @@ import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import { genRandomString, objectToCamelCase, xhrDownload } from '@milesight/shared/src/utils/tools';
 import { getCurrentComponentLang } from '@milesight/shared/src/services/i18n';
 import { getAuthorizationToken } from '@milesight/shared/src/utils/request/utils';
-import { IosShareIcon, toast } from '@milesight/shared/src/components';
+import { IosShareIcon, toast, SellOutlinedIcon } from '@milesight/shared/src/components';
 import {
     FiltersRecordType,
     TablePro,
     PermissionControlHidden,
     FilterValue,
     TableProProps,
+    ManageTagsModal,
 } from '@/components';
 import { DateRangePickerValueType } from '@/components/date-range-picker';
+import { useManageTagsModal } from '@/components/manage-tags-modal/hooks';
 import {
     entityAPI,
     awaitWrap,
@@ -88,6 +90,13 @@ export default () => {
             refreshDeps: [keyword, paginationModel, filteredInfo],
         },
     );
+
+    const {
+        manageTagsModalVisible,
+        openManageTagsModalAtEntity,
+        closeManageTagsModal,
+        manageTagsFormSubmit,
+    } = useManageTagsModal();
 
     const handleFilterChange: TableProProps<TableRowDataType>['onFilterInfoChange'] = (
         filters: Record<string, FilterValue | null>,
@@ -207,9 +216,19 @@ export default () => {
                         {getIntlText('common.label.export')}
                     </Button>
                 </PermissionControlHidden>
+                <Button
+                    disabled={!selectedIds.length}
+                    variant="outlined"
+                    className="md:d-none"
+                    sx={{ height: 36, textTransform: 'none' }}
+                    startIcon={<SellOutlinedIcon />}
+                    onClick={() => openManageTagsModalAtEntity(entityData, selectedIds)}
+                >
+                    {getIntlText('tag.label.tags')}
+                </Button>
             </Stack>
         );
-    }, [getIntlText, handleExportConfirm, selectedIds]);
+    }, [getIntlText, handleExportConfirm, selectedIds, openManageTagsModalAtEntity, entityData]);
 
     const handleTableBtnClick: UseColumnsProps<TableRowDataType>['onButtonClick'] = useCallback(
         (type, record) => {
@@ -263,6 +282,16 @@ export default () => {
             )}
             {!!exportVisible && (
                 <ExportModal onCancel={handleCloseExport} onOk={handleExportConfirm} />
+            )}
+            {manageTagsModalVisible && (
+                <ManageTagsModal
+                    visible={manageTagsModalVisible}
+                    onCancel={closeManageTagsModal}
+                    onFormSubmit={manageTagsFormSubmit}
+                    tip={getIntlText('tag.tip.selected_entities_contain_follow_tags', {
+                        1: selectedIds?.length || 0,
+                    })}
+                />
             )}
         </div>
     );

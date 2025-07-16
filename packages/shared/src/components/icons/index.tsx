@@ -146,6 +146,7 @@ export {
     HelpOutlined as HelpOutlinedIcon,
     DriveFileMoveOutlined as DriveFileMoveOutlinedIcon,
     FileDownloadOutlined as FileDownloadOutlinedIcon,
+    SellOutlined as SellOutlinedIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';

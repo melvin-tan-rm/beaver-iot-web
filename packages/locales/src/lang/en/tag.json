@@ -5,5 +5,13 @@
     "tag.title.add_tag": "Add Tag",
     "tag.title.edit_tag": "Edit Tag",
     "tag.tip.single_delete_tag": "删除后所有使用了该标签的实体，都将不再展示该标签。确认删除标签: {1} 吗？",
-    "tag.tip.bulk_delete_tag": "删除后所有使用了这些标签的实体，都将不再展示该标签。确认删除这 {1} 个标签吗？"
+    "tag.tip.bulk_delete_tag": "删除后所有使用了这些标签的实体，都将不再展示该标签。确认删除这 {1} 个标签吗？",
+    "tag.label.tags": "Tags",
+    "tag.tip.not_any_tags": "没有标签",
+    "tag.tip.selected_entities_contain_follow_tags": "{1} entities have been selected, they contain the following tags: ",
+    "tag.title.manage_tags": "Manage Tags",
+    "tag.label.append_tag": "追加所选标签",
+    "tag.label.overwrite_tag": "覆盖所选标签",
+    "tag.label.remove_tag": "移除所选标签",
+    "tag.label.replace_tag": "替换所选标签"
 }

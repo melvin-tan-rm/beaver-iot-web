@@ -10,7 +10,12 @@ export interface TagItemProps {
     created_at: number;
 }
 
-export type TagOperationType = 'ADD' | 'OVERWRITE' | 'REMOVE' | 'REPLACE';
+export enum TagOperationEnums {
+    'ADD' = 'ADD',
+    'OVERWRITE' = 'OVERWRITE',
+    'REMOVE' = 'REMOVE',
+    'REPLACE' = 'REPLACE',
+}
 
 /**
  * Tag Management API
@@ -59,7 +64,7 @@ export interface DashboardAPISchema extends APISchema {
     /** Update entities tags */
     updateEntitiesTags: {
         request: {
-            operation: TagOperationType;
+            operation: TagOperationEnums;
             added_tag_ids?: string[];
             removed_tag_ids?: string[];
             entity_ids: string[];
