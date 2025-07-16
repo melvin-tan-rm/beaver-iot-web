@@ -33,11 +33,9 @@ const useDynamicFormItems = ({ entities }: Props) => {
     const { deviceGroups } = useDeviceStore();
 
     const formItems = useMemo(() => {
-        const result: ControllerProps<FormDataProps>[] = [];
+        if (!entityFormItems?.length) return [];
 
-        if (!entityFormItems?.length) return result;
-
-        const fixedItems: ControllerProps<FormDataProps>[] = [
+        const prefixItems: ControllerProps<FormDataProps>[] = [
             {
                 name: 'name',
                 rules: {
@@ -62,6 +60,9 @@ const useDynamicFormItems = ({ entities }: Props) => {
                     );
                 },
             },
+        ];
+
+        const suffixItems: ControllerProps<FormDataProps>[] = [
             {
                 name: 'group',
                 defaultValue: '',
@@ -95,9 +96,8 @@ const useDynamicFormItems = ({ entities }: Props) => {
                 },
             },
         ];
-        result.push(...fixedItems);
 
-        return [...result, ...entityFormItems];
+        return [...prefixItems, ...entityFormItems, ...suffixItems];
     }, [entityFormItems, getIntlText, deviceGroups]);
 
     return { formItems, decodeFormParams };
