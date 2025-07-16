@@ -60,25 +60,41 @@ export function useProgress(props: BatchAddProgressProps) {
         errorInfosRef.current.push(errorInfo);
     });
 
+    const handleInterrupted = useMemoizedFn((lastIndex?: number) => {
+        /**
+         * Params validate
+         */
+        if (!Array.isArray(addList) || isEmpty(addList) || isNil(lastIndex)) {
+            return;
+        }
+
+        /**
+         * Add already completed
+         */
+        if (successCountRef.current + failedCountRef.current === addList.length) {
+            return;
+        }
+
+        setInterruptPosition(lastIndex + 1);
+
+        Array.from({ length: addList.length - 1 - lastIndex }).forEach((_, index) => {
+            handleFailed({
+                id: lastIndex + index + 1,
+                msg: 'Action has been interrupted.',
+            });
+        });
+
+        setCompletedInterrupt(true);
+        onCompleted?.();
+    });
+
     const handleWhetherAddCompleted = useMemoizedFn((lastIndex?: number) => {
         if (!Array.isArray(addList) || isEmpty(addList)) {
             return;
         }
 
         if (interrupt.current) {
-            if (!isNil(lastIndex)) {
-                setInterruptPosition(lastIndex + 1);
-
-                Array.from({ length: addList.length - 1 - lastIndex }).forEach((_, index) => {
-                    handleFailed({
-                        id: lastIndex + index + 1,
-                        msg: 'Action has been interrupted.',
-                    });
-                });
-            }
-
-            setCompletedInterrupt(true);
-            onCompleted?.();
+            handleInterrupted(lastIndex);
             return;
         }
 
@@ -102,6 +118,7 @@ export function useProgress(props: BatchAddProgressProps) {
             handleWhetherLoopEnd(index);
 
             if (interrupt.current) {
+                handleInterrupted(successCountRef.current + failedCountRef.current - 1);
                 break;
             }
 
