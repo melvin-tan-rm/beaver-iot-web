@@ -6,7 +6,7 @@ import { useI18n } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 
 import { deviceAPI, awaitWrap, isRequestSuccess } from '@/services/http';
-import { type ChangeGroupProps } from '../components/change-group-modal';
+import { GroupTabEnums, type ChangeGroupProps } from '../components/change-group-modal';
 
 export type OperateModalType = 'add' | 'edit';
 
@@ -15,16 +15,26 @@ export default function useGroupModal(getDevices?: () => void) {
 
     const [groupModalVisible, setGroupModalVisible] = useState(false);
     const [selectedDevices, setSelectedDevices] = useState<ApiKey[]>([]);
+    const [currentTab, setCurrentTab] = useState<GroupTabEnums>(GroupTabEnums.GROUP);
+
+    const openGroupModal = useMemoizedFn(() => {
+        setGroupModalVisible(true);
+        setCurrentTab(GroupTabEnums.GROUP);
+    });
 
     const hiddenGroupModal = useMemoizedFn(() => {
         setGroupModalVisible(false);
+    });
+
+    const handleChangeTab = useMemoizedFn((tab: GroupTabEnums) => {
+        setCurrentTab(tab);
     });
 
     /**
      * Change the group to which a single device belongs
      */
     const singleChangeGroupModal = useMemoizedFn((device: ApiKey) => {
-        setGroupModalVisible(true);
+        openGroupModal();
         setSelectedDevices([device]);
     });
 
@@ -32,18 +42,17 @@ export default function useGroupModal(getDevices?: () => void) {
      * Bulk change the group to which a device belongs
      */
     const batchChangeGroupModal = useMemoizedFn((devices: ApiKey[]) => {
-        setGroupModalVisible(true);
+        openGroupModal();
         setSelectedDevices(devices);
     });
 
     const changeGroupFormSubmit = useMemoizedFn(
         async (data: ChangeGroupProps, callback: () => void) => {
-            const groupId = data?.group;
-            if (!groupId || !Array.isArray(selectedDevices) || isEmpty(selectedDevices)) return;
+            if (!Array.isArray(selectedDevices) || isEmpty(selectedDevices)) return;
 
             const [error, resp] = await awaitWrap(
                 deviceAPI.moveDeviceToGroup({
-                    group_id: groupId,
+                    group_id: currentTab === GroupTabEnums.GROUP ? data?.group : undefined,
                     device_id_list: selectedDevices,
                 }),
             );
@@ -59,7 +68,10 @@ export default function useGroupModal(getDevices?: () => void) {
     );
 
     return {
+        selectedDevices,
         groupModalVisible,
+        currentTab,
+        handleChangeTab,
         singleChangeGroupModal,
         batchChangeGroupModal,
         hiddenGroupModal,

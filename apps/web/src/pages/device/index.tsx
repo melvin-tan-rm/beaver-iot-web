@@ -93,7 +93,10 @@ export default () => {
 
     const { isShrink, toggleShrink, activeGroupName } = useDevice();
     const {
+        selectedDevices,
         groupModalVisible,
+        currentTab,
+        handleChangeTab,
         hiddenGroupModal,
         changeGroupFormSubmit,
         singleChangeGroupModal,
@@ -268,6 +271,9 @@ export default () => {
             {groupModalVisible && (
                 <ChangeGroupModal
                     visible={groupModalVisible}
+                    selectedIds={selectedDevices}
+                    currentTab={currentTab}
+                    handleChangeTab={handleChangeTab}
                     onCancel={hiddenGroupModal}
                     onFormSubmit={changeGroupFormSubmit}
                 />

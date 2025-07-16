@@ -18,5 +18,9 @@
     "device.label.change_device_group": "Change Group",
     "device.label.batch_add_device": "Batch Add Device",
     "device.tip.device_add_successful": "{1} 台设备添加成功",
-    "device.tip.device_add_failed": "{1} 台设备添加失败，请下载文件查看详情"
+    "device.tip.device_add_failed": "{1} 台设备添加失败，请下载文件查看详情",
+    "device.tip.move_device_to_group": "已选 {1} 个设备，请选择要放置的分组",
+    "device.tip.move_device_to_ungrouped": "已选 {1} 个设备，标记为未分组后，这 {1} 个设备的原分组信息将会被清空",
+    "device.title.move_device_to_group": "移动到分组",
+    "device.title.mark_device_to_ungrouped": "标记为未分组"
 }

@@ -144,7 +144,7 @@ export interface DeviceAPISchema extends APISchema {
     /** device move to group */
     moveDeviceToGroup: {
         request: {
-            group_id: ApiKey;
+            group_id?: ApiKey;
             device_id_list: ApiKey[];
         };
         response: void;
