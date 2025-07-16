@@ -1,12 +1,12 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useRequest } from 'ahooks';
 import { SelectValueOptionType } from '../../../../../../../types';
-import { ValueCompBaseProps, VirtualSelectProps } from '../../../types';
+import { ValueCompBaseProps, ValueSelectInnerProps } from '../../../types';
 
 type IProps<T extends SelectValueOptionType> = Pick<ValueCompBaseProps<T>, 'getFilterValueOptions'>;
 
 const useOptions = <T extends SelectValueOptionType>({ getFilterValueOptions }: IProps<T>) => {
-    const [allOptionsMap, setAllOptionsMap] = useState<VirtualSelectProps<T>['optionsMap']>(
+    const [allOptionsMap, setAllOptionsMap] = useState<ValueSelectInnerProps<T>['optionsMap']>(
         new Map(),
     );
     const [keyWord, setKeyword] = useState<string>('');
@@ -28,11 +28,11 @@ const useOptions = <T extends SelectValueOptionType>({ getFilterValueOptions }: 
 
     const transForm2Map = (options: T[]) => {
         return (options || []).reduce(
-            (acc: VirtualSelectProps<T>['optionsMap'], option) => {
+            (acc: ValueSelectInnerProps<T>['optionsMap'], option) => {
                 acc.set(option.value, option);
                 return acc;
             },
-            new Map() as VirtualSelectProps<T>['optionsMap'],
+            new Map() as ValueSelectInnerProps<T>['optionsMap'],
         );
     };
 

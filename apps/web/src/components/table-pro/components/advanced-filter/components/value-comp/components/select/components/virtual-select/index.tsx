@@ -1,21 +1,13 @@
 import React, { useRef } from 'react';
 import { useVirtualList } from '@milesight/shared/src/hooks';
-import { VirtualSelectProps } from '../../../../types';
+import { ValueSelectInnerProps } from '../../../../types';
 import { SelectValueOptionType } from '../../../../../../../../types';
 import RowOption from '../row-option';
 
-interface IProps<T extends SelectValueOptionType>
-    extends Pick<VirtualSelectProps<T>, 'options' | 'selectedMap' | 'onItemChange'> {
-    renderOption?: ({
-        option,
-        selected,
-        onChange,
-    }: {
-        option: T;
-        selected: boolean;
-        onChange: (event: React.SyntheticEvent, value: SelectValueOptionType) => void;
-    }) => React.ReactNode;
-}
+type IProps<T extends SelectValueOptionType> = Pick<
+    ValueSelectInnerProps<T>,
+    'options' | 'selectedMap' | 'onItemChange' | 'renderOption'
+>;
 
 const MAX_HEIGHT = 400;
 
@@ -32,18 +24,17 @@ export default React.memo((props: IProps<SelectValueOptionType>) => {
         itemHeight: 30,
         overscan: 10,
     });
-    console.log(options.length);
+
     return (
         <div {...rest} ref={containerRef}>
             <div ref={listRef} style={{ height: MAX_HEIGHT }}>
                 {(virtualList || []).map(({ data: option }) => {
-                    // Only entity drop-down
                     const selected = selectedMap.has(option.value);
                     return renderOption ? (
                         renderOption({
                             option,
                             selected,
-                            onChange: onItemChange,
+                            onClick: onItemChange,
                         })
                     ) : (
                         <RowOption

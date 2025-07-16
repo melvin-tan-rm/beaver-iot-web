@@ -3,14 +3,14 @@ import cls from 'classnames';
 import { CheckIcon } from '@milesight/shared/src/components';
 import Tooltip from '@/components/tooltip';
 import { SelectValueOptionType } from '../../../../../../../../types';
-import { VirtualSelectProps } from '../../../../types';
+import { ValueSelectInnerProps } from '../../../../types';
 
 import './style.less';
 
 interface IProps<T extends SelectValueOptionType> {
     option: T;
     selected?: boolean;
-    onChange: VirtualSelectProps<T>['onItemChange'];
+    onChange: ValueSelectInnerProps<T>['onItemChange'];
 }
 
 export default React.memo(<T extends SelectValueOptionType>(props: IProps<T>) => {

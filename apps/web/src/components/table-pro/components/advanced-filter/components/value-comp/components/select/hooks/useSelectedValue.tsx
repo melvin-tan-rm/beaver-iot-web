@@ -1,28 +1,42 @@
 import { useCallback, useMemo } from 'react';
-import { VirtualSelectProps, ValueCompBaseProps, AutocompletePropsOverrides } from '../../../types';
+import { isNull } from 'lodash-es';
+import { ValueSelectProps, ValueSelectInnerProps } from '../../../types';
 import { SelectValueOptionType } from '../../../../../../../types';
 
-type IProps<T extends SelectValueOptionType> = Pick<VirtualSelectProps<T>, 'optionsMap'> &
-    Pick<ValueCompBaseProps<T>, 'value' | 'onChange'> &
-    Pick<AutocompletePropsOverrides, 'multiple'>;
+interface IProps<
+    Value extends SelectValueOptionType = SelectValueOptionType,
+    Multiple extends boolean | undefined = false,
+    DisableClearable extends boolean | undefined = false,
+> extends Pick<
+        ValueSelectProps<Value, Multiple, DisableClearable>,
+        'value' | 'multiple' | 'onChange'
+    > {
+    optionsMap: ValueSelectInnerProps<Value>['optionsMap'];
+}
 
 /**
  * Select list selected about hooks
  */
-const useSelectedValue = <T extends SelectValueOptionType>(props: IProps<T>) => {
+const useSelectedValue = <
+    V extends SelectValueOptionType = SelectValueOptionType,
+    M extends boolean | undefined = false,
+    D extends boolean | undefined = false,
+>(
+    props: IProps<V, M, D>,
+) => {
     const { value, multiple, optionsMap, onChange } = props;
 
-    const valueList = useMemo<SelectValueOptionType[]>(() => {
-        return Array.isArray(value) ? value : [value];
+    const valueList = useMemo<ValueSelectInnerProps<V>['value']>(() => {
+        return (Array.isArray(value) ? value : [value]).filter(v => !isNull(v));
     }, [value]);
 
     /** Selected value map */
-    const selectedMap: VirtualSelectProps<T>['selectedMap'] = useMemo(() => {
+    const selectedMap: ValueSelectInnerProps<V>['selectedMap'] = useMemo(() => {
         if (!valueList?.length) {
             return new Map();
         }
 
-        return valueList.reduce((acc: VirtualSelectProps<T>['selectedMap'], curr) => {
+        return valueList.reduce((acc: ValueSelectInnerProps<V>['selectedMap'], curr: V) => {
             const option = optionsMap.get(curr.value);
             if (!option) return acc;
 
@@ -33,10 +47,10 @@ const useSelectedValue = <T extends SelectValueOptionType>(props: IProps<T>) => 
 
     /** Select/Cancel selection callback */
     const onItemChange = useCallback(
-        (selectedItem: SelectValueOptionType) => {
+        (selectedItem: V) => {
             if (!multiple) {
                 // single select
-                onChange?.(selectedItem as T);
+                onChange?.(selectedItem as ValueSelectProps<V, M, D>['value']);
                 return;
             }
 
@@ -44,9 +58,9 @@ const useSelectedValue = <T extends SelectValueOptionType>(props: IProps<T>) => 
             if (selectedMap.has(selectedItem.value)) {
                 selectedMap.delete(selectedItem.value);
             } else {
-                selectedMap.set(selectedItem.value, selectedItem as T);
+                selectedMap.set(selectedItem.value, selectedItem);
             }
-            onChange?.(Array.from(selectedMap.values()) as unknown as T);
+            onChange(Array.from(selectedMap.values()) as ValueSelectProps<V, M, D>['value']);
         },
         [multiple, onChange, selectedMap],
     );

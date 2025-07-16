@@ -4,10 +4,6 @@ import { InputValueType, SelectValueOptionType, FilterValueOptionsType } from '.
 /** The type of filter value selected for each column */
 export type FilterValueType = InputValueType | SelectValueOptionType | SelectValueOptionType[];
 
-export type TextFieldPropsOverrides = Omit<TextFieldProps, 'value' | 'onChange'>;
-
-export type AutocompletePropsOverrides = Omit<AutocompleteProps, 'value' | 'onChange' | 'options'>;
-
 /**
  * Value components base props
  */
@@ -21,6 +17,9 @@ export interface ValueCompBaseProps<T>
     getFilterValueOptions?: FilterValueOptionsType;
 }
 
+export type TextFieldPropsOverrides = Omit<TextFieldProps, 'value' | 'onChange'>;
+
+export type AutocompletePropsOverrides = Omit<AutocompleteProps, 'value' | 'onChange' | 'options'>;
 /**
  * All component types used for advanced filtering values
  */
@@ -51,10 +50,49 @@ export type ValueComponentSlotProps =
       }>
     | undefined;
 
-export interface VirtualSelectProps<T extends SelectValueOptionType>
+/**
+ * Select component Value type
+ */
+export type SelectValueType<Value, Multiple, DisableClearable> = Multiple extends true
+    ? Array<Value>
+    : DisableClearable extends true
+      ? NonNullable<Value>
+      : Value | null;
+
+export interface ValueSelectInnerProps<T extends SelectValueOptionType>
     extends AutocompletePropsOverrides {
     options: T[];
     optionsMap: Map<T['value'], T>;
     selectedMap: Map<T['value'], T>;
     onItemChange: (event: React.SyntheticEvent, value: T) => void;
+    renderOption?: ({
+        option,
+        selected,
+        onClick,
+    }: {
+        option: T;
+        selected: boolean;
+        onClick: (event: React.SyntheticEvent, value: SelectValueOptionType) => void;
+    }) => React.ReactNode;
+}
+
+/**
+ * Select component props
+ */
+export interface ValueSelectProps<
+    Value extends SelectValueOptionType = SelectValueOptionType,
+    Multiple extends boolean | undefined = false,
+    DisableClearable extends boolean | undefined = false,
+> extends Pick<TextFieldProps, 'label' | 'required' | 'error' | 'helperText' | 'placeholder'>,
+        Omit<
+            AutocompleteProps<Value, Multiple, DisableClearable, false>,
+            'renderInput' | 'options'
+        >,
+        Pick<ValueCompBaseProps<T>, 'getFilterValueOptions'> {
+    /** Whether multiple selection is enabled */
+    multiple?: Multiple;
+    /** The current value of the select */
+    value: SelectValueType<Value, Multiple, DisableClearable>;
+    /** Callback function when the value changes */
+    onChange: (value: SelectValueType<Value, Multiple, DisableClearable>) => void;
 }

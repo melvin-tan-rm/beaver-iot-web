@@ -1,21 +1,29 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Autocomplete, Box, TextField } from '@mui/material';
+import {
+    Autocomplete,
+    AutocompleteInputChangeReason,
+    AutocompleteProps,
+    Box,
+    TextField,
+} from '@mui/material';
 import { isArray, isEqual } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { SelectValueOptionType } from '../../../../../../types';
-import { AutocompletePropsOverrides, ValueCompBaseProps, VirtualSelectProps } from '../../types';
+import { AutocompletePropsOverrides, ValueSelectInnerProps, ValueSelectProps } from '../../types';
 import { useOptions, useSelectedValue } from './hooks';
 import { VirtualSelect } from './components';
-
-type IProps<T extends SelectValueOptionType> = AutocompletePropsOverrides & ValueCompBaseProps<T>;
 
 /**
  *  A drop-down selection component for advanced filter
  */
-const ValueSelect = <T extends SelectValueOptionType>({
+const ValueSelect = <
+    V extends SelectValueOptionType,
+    M extends boolean | undefined = false,
+    D extends boolean | undefined = false,
+>({
     value,
     onChange,
-    multiple = true,
+    multiple,
     onOpen,
     onClose,
     onInputChange,
@@ -23,9 +31,11 @@ const ValueSelect = <T extends SelectValueOptionType>({
     loadingText,
     placeholder,
     renderOption,
+    getOptionLabel: _getOptionLabel,
+    renderTags: _renderTags,
     getFilterValueOptions,
     ...rest
-}: IProps<T>) => {
+}: ValueSelectProps<V, M, D>) => {
     const { getIntlText } = useI18n();
     const [open, setOpen] = useState<boolean>(false);
 
@@ -36,15 +46,70 @@ const ValueSelect = <T extends SelectValueOptionType>({
     const { selectedMap, onItemChange } = useSelectedValue({
         value,
         onChange,
-        optionsMap: allOptionsMap as VirtualSelectProps<T>['optionsMap'],
+        optionsMap: allOptionsMap as ValueSelectInnerProps<V>['optionsMap'],
         multiple,
     });
+
+    /**
+     * Gets the display text for the input box based on the selected option.
+     */
+    const getOptionLabel = useCallback<NonNullable<ValueSelectProps['getOptionLabel']>>(
+        (option: SelectValueOptionType) => {
+            return option.label || '';
+        },
+        [_getOptionLabel],
+    );
+
+    /**
+     * Renders the input component for the Autocomplete.
+     */
+    const renderInput = useCallback<AutocompleteProps<V, D, M, false>['renderInput']>(
+        params => {
+            return (
+                <TextField
+                    {...params}
+                    InputProps={{
+                        ...params.InputProps,
+                    }}
+                    sx={{ minWidth: '225px' }}
+                    placeholder={
+                        (isArray(value) ? value : [value]).length
+                            ? ''
+                            : placeholder || getIntlText('common.placeholder.select')
+                    }
+                />
+            );
+        },
+        [placeholder, value],
+    );
+
+    /**
+     * Renders the tags for the selected values when multiple selection is enabled.
+     */
+    const renderTags = useCallback<NonNullable<ValueSelectProps<V, M, D>['renderTags']>>(
+        (value, getTagProps, ownerState) => {
+            return _renderTags
+                ? _renderTags(value, getTagProps, ownerState)
+                : getIntlText('common.label.item_selected', { 1: value.length });
+        },
+        [value, multiple],
+    );
+
+    /**
+     * Handles the change event when an option is selected or cleared.
+     */
+    const handleChange = useCallback<NonNullable<AutocompleteProps<V, M, D, false>['onChange']>>(
+        (_event, value) => {
+            onChange?.(value);
+        },
+        [onChange],
+    );
 
     /**
      * Handles opening of the select menu.
      */
     const handleSelectOpen = useCallback(
-        async (event: AutocompletePropsOverrides['onOpen']) => {
+        async (event: React.SyntheticEvent) => {
             setOpen(true);
             onOpen?.(event);
         },
@@ -55,7 +120,7 @@ const ValueSelect = <T extends SelectValueOptionType>({
      * Handles closing of the select menu.
      */
     const handleSelectClose = useCallback(
-        (...params: AutocompletePropsOverrides['onClose']) => {
+        (...params: Parameters<NonNullable<ValueSelectProps<V, M, D>['onClose']>>) => {
             setOpen(false);
             onClose?.(...params);
         },
@@ -66,7 +131,7 @@ const ValueSelect = <T extends SelectValueOptionType>({
      * Handles the input change event.
      */
     const handleInputChange = useCallback<AutocompletePropsOverrides['onInputChange']>(
-        (event: React.SyntheticEvent, value: string, reason: string) => {
+        (event: React.SyntheticEvent, value: string, reason: AutocompleteInputChangeReason) => {
             if (reason === 'input') {
                 onSearch?.(value);
             }
@@ -85,7 +150,7 @@ const ValueSelect = <T extends SelectValueOptionType>({
                 options,
                 selectedMap,
                 renderOption,
-                onItemChange: (event: React.SyntheticEvent, option: T) => {
+                onItemChange: (event: React.SyntheticEvent, option: V) => {
                     if (!multiple) {
                         handleSelectClose(event, 'selectOption');
                     }
@@ -93,42 +158,24 @@ const ValueSelect = <T extends SelectValueOptionType>({
                 },
             },
         }),
-        [options, selectedMap, multiple, onChange, handleSelectClose],
+        [options, selectedMap, multiple, onItemChange, handleSelectClose],
     );
 
     return (
-        <Autocomplete<T>
-            options={options as T[]}
-            onChange={(e: React.SyntheticEvent<Element, Event>, value: T | null) => {
-                onChange(value as T);
-            }}
+        <Autocomplete<V, M, D>
+            value={value}
+            onChange={handleChange}
             multiple={multiple}
+            options={options as V[]}
             open={open}
             onOpen={handleSelectOpen}
             onClose={handleSelectClose}
             loading={searchLoading}
-            isOptionEqualToValue={(option, value) => isEqual(option, value)}
-            getOptionLabel={(option: SelectValueOptionType) => option.label}
+            slotProps={slotProps}
+            getOptionLabel={getOptionLabel}
             onInputChange={handleInputChange}
-            renderInput={params => {
-                return (
-                    <TextField
-                        {...params}
-                        InputProps={{
-                            ...params.InputProps,
-                        }}
-                        sx={{ minWidth: '225px' }}
-                        placeholder={
-                            (isArray(value) ? value : [value]).length
-                                ? ''
-                                : placeholder || getIntlText('common.placeholder.select')
-                        }
-                    />
-                );
-            }}
-            renderTags={value => {
-                return getIntlText('common.label.item_selected', { 1: value.length });
-            }}
+            renderInput={renderInput}
+            renderTags={renderTags}
             noOptionsText={
                 noOptionsText || (
                     <Box
@@ -157,8 +204,6 @@ const ValueSelect = <T extends SelectValueOptionType>({
                     </Box>
                 )
             }
-            value={value}
-            slotProps={slotProps}
             {...rest}
         />
     );

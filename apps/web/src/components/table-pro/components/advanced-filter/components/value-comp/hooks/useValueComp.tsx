@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { TextField } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { SelectValueOptionType, ValueCompType } from '../../../../../types';
+import { ValueCompType } from '../../../../../types';
 import {
     ValueComponentSlotProps,
     ValueCompBaseProps,
@@ -24,24 +24,24 @@ const useValueComp = <T extends FilterValueType>() => {
 
     const components = useMemo(
         () => ({
-            input: (props: BaseInputProps<T>) => (
-                <TextField
-                    placeholder={getIntlText('common.placeholder.input')}
-                    {...props}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                        props?.onChange?.(event?.target?.value as T);
-                    }}
-                />
-            ),
+            input: (props: BaseInputProps<T>) => {
+                const { onChange, ...rest } = props;
+                return (
+                    <TextField
+                        placeholder={getIntlText('common.placeholder.input')}
+                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                            onChange(event?.target?.value as T);
+                        }}
+                        {...rest}
+                    />
+                );
+            },
             select: (props: BaseSelectProps<T>) => {
-                const { value, multiple, onChange, ...rest } = props;
+                const { value, multiple, ...rest } = props;
                 return (
                     <ValueSelect
                         multiple={multiple}
-                        value={(value || (multiple ? [] : null)) as SelectValueOptionType}
-                        onChange={(value: SelectValueOptionType) => {
-                            onChange?.(value as T);
-                        }}
+                        value={value || (multiple ? [] : null)}
                         {...rest}
                     />
                 );
