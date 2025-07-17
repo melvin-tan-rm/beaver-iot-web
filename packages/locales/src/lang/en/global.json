@@ -246,5 +246,6 @@
     "common.label.all_tasks_completed": "全部执行完成",
     "common.label.tasks_has_been_interrupted": "任务被终止",
     "common.button.download": "下载",
-    "common.label.action": "Action"
+    "common.label.action": "Action",
+    "common.label.select_all": "全选"
 }

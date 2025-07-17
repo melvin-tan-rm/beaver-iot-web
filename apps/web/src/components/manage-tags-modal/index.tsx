@@ -13,6 +13,9 @@ import styles from './style.module.less';
 
 export interface ManageTagsProps {
     action: TagOperationEnums;
+    tags: ApiKey[];
+    originalTag: ApiKey;
+    replaceTag: ApiKey;
 }
 
 interface Props extends Omit<ModalProps, 'onOk'> {
@@ -33,8 +36,10 @@ const ManageTagsModal: React.FC<Props> = props => {
     const { visible, selectedEntities, tip, onCancel, onFormSubmit, ...restProps } = props;
 
     const { getIntlText } = useI18n();
-    const { control, formState, handleSubmit, reset } = useForm<ManageTagsProps>();
-    const { formItems } = useFormItems();
+    const { control, formState, handleSubmit, reset, watch } = useForm<ManageTagsProps>();
+    const { formItems } = useFormItems({
+        currentAction: watch('action'),
+    });
 
     const onSubmit: SubmitHandler<ManageTagsProps> = async params => {
         await onFormSubmit(params, () => {

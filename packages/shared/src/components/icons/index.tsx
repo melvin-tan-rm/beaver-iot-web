@@ -147,6 +147,8 @@ export {
     DriveFileMoveOutlined as DriveFileMoveOutlinedIcon,
     FileDownloadOutlined as FileDownloadOutlinedIcon,
     SellOutlined as SellOutlinedIcon,
+    CheckBoxOutlineBlank as CheckBoxOutlineBlankIcon,
+    CheckBox as CheckBoxIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';
