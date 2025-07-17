@@ -10,6 +10,7 @@ import { ColumnType, ValueCompType, FilterValueOptionsType } from '../../../../.
  */
 export interface OperatorColumnInfoType {
     column: ColumnType['field'];
+    headerName: ColumnType['headerName'];
     operators: FilterOperatorType[] | undefined;
     getFilterValueOptions: FilterValueOptionsType | undefined;
     valueCompType: ValueCompType | undefined;
@@ -47,9 +48,10 @@ const useRowCondition = <T extends GridValidRowModel>(props: useRowConditionProp
             (acc: Record<string, OperatorColumnInfoType>, column: ColumnType) => {
                 acc[column.field] = {
                     column: column.field,
+                    headerName: column.headerName,
                     operators: column.operators,
-                    getFilterValueOptions: column.getFilterValueOptions,
                     valueCompType: column.operatorValueCompType,
+                    getFilterValueOptions: column.getFilterValueOptions,
                 };
                 return acc;
             },
@@ -65,7 +67,9 @@ const useRowCondition = <T extends GridValidRowModel>(props: useRowConditionProp
                         currentColumn ? usedColumns.filter(c => c !== currentColumn) : usedColumns
                     ).includes(col),
             )
-            .map(col => ({ label: col, value: col }) as OptionsProps<string>);
+            .map(
+                col => ({ label: columnInfo[col].headerName, value: col }) as OptionsProps<string>,
+            );
     }, [currentColumn, usedColumns, columnInfo]);
 
     const optionsOperators = useMemo(() => {

@@ -337,11 +337,7 @@ const ColumnsSetting = <T extends GridValidRowModel>({
         <DndProvider backend={HTML5Backend}>
             <div className="ms-column-setting-btn">
                 <Tooltip title={getIntlText('common.label.columns_setting')}>
-                    <IconButton
-                        size="medium"
-                        className="ms-column-setting-btn-icon"
-                        {...bindTrigger(popupState)}
-                    >
+                    <IconButton size="medium" {...bindTrigger(popupState)}>
                         <ColumnSettingIcon fontSize="small" />
                     </IconButton>
                 </Tooltip>

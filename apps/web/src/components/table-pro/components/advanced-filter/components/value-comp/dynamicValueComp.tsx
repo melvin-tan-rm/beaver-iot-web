@@ -18,6 +18,16 @@ const DEFAULT_COMP_PROPS = {
         clearOnEscape: false,
         disableCloseOnSelect: true,
     },
+    baseInput: {
+        sx: {
+            maxWidth: '220px',
+        },
+    },
+    '': {
+        sx: {
+            maxWidth: '220px',
+        },
+    },
 };
 
 /**
@@ -32,7 +42,7 @@ const DynamicValueComp = <T extends FilterValueType>({
     const { renderValueComponent } = useValueComp<T>();
 
     const slotProps = useMemo(() => {
-        const componentType = `base${valueCompType.replace(/^./, c => c.toUpperCase())}`;
+        const componentType = `${valueCompType ? `base${valueCompType.replace(/^./, c => c.toUpperCase())}` : ''}`;
         return {
             ...(compSlotProps?.[componentType] ||
                 DEFAULT_COMP_PROPS[componentType as keyof ValueComponentSlotProps] ||

@@ -110,7 +110,7 @@ const RowCondition = <T extends GridValidRowModel>(props: RowConditionProps<T>) 
             />
             <div className="ms-advanced-filter-content-wrap-item-delete">
                 <IconButton onClick={() => remove(index)}>
-                    <CancelIcon />
+                    <CancelIcon sx={{ width: 18, height: 18 }} />
                 </IconButton>
             </div>
         </div>

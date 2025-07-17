@@ -8,7 +8,7 @@ export type FilterValueType = InputValueType | SelectValueOptionType | SelectVal
  * Value components base props
  */
 export interface ValueCompBaseProps<T>
-    extends Pick<TextFieldProps, 'label' | 'size' | 'sx' | 'disabled' | 'fullWidth'> {
+    extends Pick<TextFieldProps, 'label' | 'size' | 'sx' | 'disabled'> {
     value: T;
     onChange: (value: T) => void;
     /**
@@ -19,7 +19,10 @@ export interface ValueCompBaseProps<T>
 
 export type TextFieldPropsOverrides = Omit<TextFieldProps, 'value' | 'onChange'>;
 
-export type AutocompletePropsOverrides = Omit<AutocompleteProps, 'value' | 'onChange' | 'options'>;
+export type AutocompletePropsOverrides = Omit<
+    AutocompleteProps,
+    'value' | 'onChange' | 'options' | 'renderInput'
+>;
 /**
  * All component types used for advanced filtering values
  */
@@ -29,7 +32,9 @@ export type BaseComponentProps = AutocompletePropsOverrides | TextFieldPropsOver
  * The advanced filtering value component props can be passed to the base component or using the column field
  *  @example
  *  valueComponentSlotProps={{
-        baseSelect: AutocompleteProps,
+        baseSelect: {
+            multiple: true
+        },
         entityType: {
             multiple: false
         }
@@ -83,7 +88,7 @@ export interface ValueSelectProps<
     Value extends SelectValueOptionType = SelectValueOptionType,
     Multiple extends boolean | undefined = false,
     DisableClearable extends boolean | undefined = false,
-> extends Pick<TextFieldProps, 'label' | 'required' | 'error' | 'helperText' | 'placeholder'>,
+> extends Pick<TextFieldProps, 'label' | 'size' | 'sx' | 'disabled' | 'placeholder'>,
         Omit<
             AutocompleteProps<Value, Multiple, DisableClearable, false>,
             'renderInput' | 'options'
