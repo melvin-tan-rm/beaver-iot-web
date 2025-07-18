@@ -3,12 +3,19 @@ export { default as Breadcrumbs } from './breadcrumbs';
 export {
     default as TablePro,
     type ColumnType,
-    type Props as TableProProps,
+    type TableProProps,
     type FilterValue,
     type FilterKey,
     type FilterDropdownProps,
     type ColumnFilterItem,
     type FiltersRecordType,
+    type ColumnSettingProps,
+    AdvancedFilter,
+    FILTER_OPERATORS,
+    getOperatorsByExclude,
+    type AdvancedFilterHandler,
+    type FilterValueOptionsType,
+    type SelectValueOptionType,
 } from './table-pro';
 export { default as TabPanel } from './tab-panel';
 export { default as Descriptions, type Props as DescriptionsProps } from './descriptions';
@@ -48,3 +55,5 @@ export { default as GradientBgContainer } from './gradient-bg-container';
 export { default as ImageAnnotation, type Vector2d } from './image-annotation';
 export { default as Tag } from './tag';
 export { default as ManageTagsModal } from './manage-tags-modal';
+export { DragContainer, DragCard } from './drag';
+export { default as MultiTag, type MultiTagProps, type MultiTagType } from './multi-tag';

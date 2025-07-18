@@ -136,7 +136,6 @@ export default () => {
                     if (error || !isRequestSuccess(resp)) return;
 
                     getDeviceList();
-                    setSelectedIds([]);
                     toast.success(getIntlText('common.message.delete_success'));
                 },
             });
@@ -235,12 +234,15 @@ export default () => {
                     <div className="device-right">
                         <div className="device-right__title">{activeGroupName}</div>
                         <TablePro<TableRowDataType>
+                            keepNonExistentRowsSelected
+                            filterCondition={[keyword]}
                             checkboxSelection={hasPermission(PERMISSIONS.DEVICE_DELETE)}
                             loading={loading}
                             columns={columns}
                             rows={deviceData?.content}
                             rowCount={deviceData?.total || 0}
                             paginationModel={paginationModel}
+                            pageSizeOptions={[10, 20, 30, 40, 50, 100]}
                             rowSelectionModel={selectedIds}
                             isRowSelectable={({ row }) => row.deletable}
                             toolbarRender={toolbarRender}

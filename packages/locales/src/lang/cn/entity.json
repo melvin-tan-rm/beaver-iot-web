@@ -24,5 +24,9 @@
     "entity.label.historical_data": "历史数据",
     "entity.label.set_enumeration_items": "设置枚举项",
     "entity.label.set_value": "设置值",
-    "entity.label.value_source": "值来源"
+    "entity.label.device_group": "Device Group",
+    "entity.label.entity_tags": "Entity Tags",
+    "entity.label.latest_value": "Latest Value",
+    "entity.label.filter": "Filters",
+    "entity.label.parent_entity": "Parent Entity"
 }

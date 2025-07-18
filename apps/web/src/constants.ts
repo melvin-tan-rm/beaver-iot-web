@@ -74,8 +74,8 @@ export enum ENTITY_ACCESS_MODE {
 
 // Entity Type
 export enum ENTITY_TYPE {
-    SERVICE = 'SERVICE',
     PROPERTY = 'PROPERTY',
+    SERVICE = 'SERVICE',
     EVENT = 'EVENT',
 }
 

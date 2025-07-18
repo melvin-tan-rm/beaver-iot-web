@@ -232,5 +232,16 @@
     "valid.input.username": "用户名长度最小长度为5。",
     "valid.input.value": "输入值：仅{0}。",
     "valid.input.version": "版本号不符合规范。",
-    "valid.resp.at_least_one": "请至少选择一个{1}。"
+    "valid.resp.at_least_one": "请至少选择一个{1}。",
+    "common.label.page": "页",
+    "common.label.selected_count": "已选择",
+    "common.label.total_count": "总数",
+    "common.label.columns_setting": "列设置",
+    "common.label.column_setting_fixed_left": "左（固定）",
+    "common.label.column_setting_fixed_right": "右（固定）",
+    "common.label.column_setting_non_fixed_column": "自适应列",
+    "common.label.item_selected": "{1} 项选中",
+    "common.label.condition_any_equal": "其中任一",
+    "common.label.view_tags": "查看标签",
+    "common.label.view_all_tags": "点击查看全部标签"
 }

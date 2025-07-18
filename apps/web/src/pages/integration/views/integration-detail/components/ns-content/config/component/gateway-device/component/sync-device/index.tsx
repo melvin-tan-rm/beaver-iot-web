@@ -98,7 +98,6 @@ const SyncedDevice: React.FC<IProps> = props => {
                     getDevicesList();
                     onUpdateSuccess?.();
                     refreshTable();
-                    setSelectedIds([]);
                     toast.success(getIntlText('common.message.delete_success'));
                 },
             });
@@ -144,6 +143,7 @@ const SyncedDevice: React.FC<IProps> = props => {
         <div className="ms-ns-device">
             <div className="ms-ns-device-inner ms-ns-synced-device">
                 <TablePro<TableRowDataType>
+                    filterCondition={[keyword]}
                     checkboxSelection
                     loading={loading}
                     columns={columns}

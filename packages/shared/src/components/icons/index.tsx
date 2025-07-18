@@ -149,6 +149,8 @@ export {
     SellOutlined as SellOutlinedIcon,
     CheckBoxOutlineBlank as CheckBoxOutlineBlankIcon,
     CheckBox as CheckBoxIcon,
+    DragIndicator as DragIndicatorIcon,
+    FilterListOutlined as FilterListOutlinedIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';

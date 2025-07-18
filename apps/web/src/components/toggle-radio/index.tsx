@@ -1,5 +1,5 @@
 import React from 'react';
-import { ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { ToggleButton, ToggleButtonGroup, ToggleButtonGroupProps } from '@mui/material';
 import { useControllableValue } from 'ahooks';
 
 type ValueType = string | number;
@@ -17,12 +17,14 @@ export interface Props {
     disabled?: boolean;
 
     onChange?: (value: ValueType) => void;
+
+    sx?: ToggleButtonGroupProps['sx'];
 }
 
 /**
  * ToggleRadio Component
  */
-const ToggleRadio: React.FC<Props> = ({ options, disabled, ...props }) => {
+const ToggleRadio: React.FC<Props> = ({ options, disabled, sx, ...props }) => {
     const [value, setValue] = useControllableValue<ValueType>(props);
 
     return (
@@ -38,10 +40,10 @@ const ToggleRadio: React.FC<Props> = ({ options, disabled, ...props }) => {
                 if (!val) return;
                 setValue(val);
             }}
-            sx={{ my: 1.5 }}
+            sx={{ my: 1.5, ...sx }}
         >
             {options?.map(({ label, value }) => (
-                <ToggleButton value={value} aria-label={label}>
+                <ToggleButton key={value} value={value} aria-label={label}>
                     {label}
                 </ToggleButton>
             ))}

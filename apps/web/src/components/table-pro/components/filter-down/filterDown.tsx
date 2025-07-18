@@ -14,13 +14,7 @@ import classNames from 'classnames';
 import { isEqual } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { SearchIcon } from '@milesight/shared/src/components';
-import {
-    ColumnFilterItem,
-    ColumnType,
-    FilterKey,
-    FilterState,
-    SelectKeysType,
-} from '../../interface';
+import { ColumnFilterItem, ColumnType, FilterKey, FilterState, SelectKeysType } from '../../types';
 
 interface FilterDropdownProps {
     column: ColumnType;
@@ -179,6 +173,7 @@ const FilterDropdown = (props: FilterDropdownProps) => {
 
             return (
                 <FormControlLabel
+                    key={key}
                     label={item.text}
                     control={
                         <Checkbox

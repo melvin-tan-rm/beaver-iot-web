@@ -152,7 +152,6 @@ const SyncAbleDevice: React.FC<IProps> = props => {
                 getDevicesList();
                 onUpdateSuccess?.();
                 refreshTable();
-                setSelectedIds([]);
                 setModelMap(new Map());
                 toast.success(getIntlText('setting.integration.message.device_sync_success'));
             },
@@ -192,6 +191,7 @@ const SyncAbleDevice: React.FC<IProps> = props => {
             </div>
             <div className="ms-ns-device-inner">
                 <TablePro<TableRowDataType>
+                    filterCondition={[keyword]}
                     checkboxSelection
                     getRowId={(row: TableRowDataType) => row.eui}
                     loading={loading}

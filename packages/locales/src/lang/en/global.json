@@ -247,5 +247,16 @@
     "common.label.tasks_has_been_interrupted": "任务被终止",
     "common.button.download": "下载",
     "common.label.action": "Action",
-    "common.label.select_all": "全选"
+    "common.label.select_all": "全选",
+    "common.label.page": "page",
+    "common.label.selected_count": "Selected",
+    "common.label.total_count": "Total",
+    "common.label.columns_setting": "Column Settings",
+    "common.label.column_setting_fixed_left": "Left (fixed)",
+    "common.label.column_setting_fixed_right": "Right (fixed)",
+    "common.label.column_setting_non_fixed_column": "Adaptive columns",
+    "common.label.item_selected": "{1} item selected",
+    "common.label.condition_any_equal": "Any Equal",
+    "common.label.view_tags": "View tags",
+    "common.label.view_all_tags": "Click to view all tags"
 }
