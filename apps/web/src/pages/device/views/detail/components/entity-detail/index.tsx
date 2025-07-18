@@ -10,6 +10,7 @@ import {
     MultiTag,
     TablePro,
     TableProProps,
+    Tag,
 } from '@/components';
 import {
     entityAPI,
@@ -102,8 +103,17 @@ export default (props: IProps) => {
                             label: tag.name,
                             desc: tag.description,
                         }))}
-                        sx={{
-                            height: '24px',
+                        renderItem={(tag, maxItemWidth) => {
+                            return (
+                                <Tag
+                                    key={tag.id}
+                                    label={tag.name}
+                                    arbitraryColor={tag.color}
+                                    tip={tag.description}
+                                    clickable
+                                    sx={{ maxWidth: maxItemWidth }}
+                                />
+                            );
                         }}
                     />
                 ),

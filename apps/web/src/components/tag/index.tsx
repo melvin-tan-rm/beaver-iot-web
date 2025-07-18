@@ -20,7 +20,7 @@ export interface TagProps extends ChipProps {
  * <Tag label="Tag Name" arbitraryColor="#7B4EFA" tip="hello world" />
  */
 const Tag: React.FC<TagProps> = props => {
-    const { arbitraryColor = '#7B4EFA', tip, ...restProps } = props;
+    const { arbitraryColor = '#7B4EFA', tip, sx, ...restProps } = props;
 
     const getBackgroundColor = useMemo(() => {
         if (!arbitraryColor || !validHex(arbitraryColor)) return {};
@@ -44,6 +44,7 @@ const Tag: React.FC<TagProps> = props => {
                     ? colorMix(0.5, arbitraryColor, 'rgba(0, 0, 0, 0.5)')
                     : undefined,
                 ...getBackgroundColor,
+                ...sx,
             }}
             {...restProps}
         />

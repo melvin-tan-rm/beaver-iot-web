@@ -9,6 +9,7 @@ import {
     FILTER_OPERATORS,
     getOperatorsByExclude,
     MultiTag,
+    Tag,
 } from '@/components';
 import { PERMISSIONS } from '@/constants';
 import { type EntityAPISchema } from '@/services/http';
@@ -106,9 +107,17 @@ const useEntityColumns = <T extends TableRowDataType>({
                                     desc: tag.description,
                                 }),
                             )}
-                            onClick={tag => onButtonClick('filter', row, tag)}
-                            sx={{
-                                height: '24px',
+                            renderItem={(tag, maxItemWidth) => {
+                                return (
+                                    <Tag
+                                        key={tag.id}
+                                        label={tag.name}
+                                        arbitraryColor={tag.color}
+                                        tip={tag.description}
+                                        onClick={() => onButtonClick('filter', row, tag)}
+                                        sx={{ maxWidth: maxItemWidth }}
+                                    />
+                                );
                             }}
                         />
                     );

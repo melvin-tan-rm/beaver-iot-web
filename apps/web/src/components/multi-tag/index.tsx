@@ -130,11 +130,11 @@ const MultiTag = <T extends Record<string, unknown>>({
 
     const tagList = useMemo(() => {
         return renderTagList(actualNumber);
-    }, [actualNumber]);
+    }, [actualNumber, data]);
 
     const testTagList = useMemo(() => {
         return renderTagList(showNumber);
-    }, [showNumber]);
+    }, [showNumber, data]);
 
     useDebounceEffect(
         () => {
@@ -176,7 +176,7 @@ const MultiTag = <T extends Record<string, unknown>>({
         for (; index < data.length && charLen <= containerWidth; index++) {
             charLen += SMALL_CHAR_WIDTH * data[index].label.length;
         }
-        return Math.max(index, 1);
+        return Math.max(index, data.length ? 1 : 0);
     };
 
     return (

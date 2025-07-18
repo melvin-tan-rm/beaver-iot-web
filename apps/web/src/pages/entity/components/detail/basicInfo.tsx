@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useI18n } from '@milesight/shared/src/hooks';
-import { Descriptions, MultiTag } from '@/components';
+import { Descriptions, MultiTag, Tag } from '@/components';
 import { TableRowDataType } from '../../hooks/useColumns';
 
 interface IProps {
@@ -35,8 +35,17 @@ const BasicInfo = ({ data }: IProps) => {
                                 desc: tag.description,
                             }),
                         )}
-                        sx={{
-                            height: '24px',
+                        renderItem={(tag, maxItemWidth) => {
+                            return (
+                                <Tag
+                                    key={tag.id}
+                                    label={tag.name}
+                                    arbitraryColor={tag.color}
+                                    tip={tag.description}
+                                    clickable
+                                    sx={{ maxWidth: maxItemWidth }}
+                                />
+                            );
                         }}
                     />
                 ),

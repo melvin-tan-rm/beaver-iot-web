@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
-import { awaitWrap, deviceAPI, entityAPI, getResponseData } from '@/services/http';
+import { awaitWrap, deviceAPI, getResponseData, tagAPI } from '@/services/http';
 import { ENTITY_DATA_VALUE_TYPE } from '@/constants';
 import { FilterValueOptionsType } from '@/components';
 
@@ -14,7 +14,9 @@ const useAdvancedValues = () => {
                 return objectToCamelCase(
                     getResponseData(
                         (
-                            await awaitWrap(deviceAPI.getList({ page_size: 9999, page_number: 1 }))
+                            await awaitWrap(
+                                tagAPI.getTagList({ keyword, page_size: 9999, page_number: 1 }),
+                            )
                         )[1],
                     ) ?? [],
                 ).content.map(tag => ({
@@ -27,8 +29,8 @@ const useAdvancedValues = () => {
                     getResponseData(
                         (
                             await awaitWrap(
-                                entityAPI.getList({
-                                    keyword,
+                                deviceAPI.getDeviceGroupList({
+                                    name: keyword,
                                     page_size: 9999,
                                     page_number: 1,
                                 }),
@@ -36,8 +38,8 @@ const useAdvancedValues = () => {
                         )[1],
                     ) ?? [],
                 ).content.map(tag => ({
-                    label: tag.entityKey,
-                    value: tag.entityKey,
+                    label: tag.name,
+                    value: tag.name,
                 }));
             },
             getEntityDataValues: async () => {
