@@ -21,7 +21,7 @@ export interface PinnedColumnType<T extends GridValidRowModel> {
     restProps: Partial<DataGridProps>;
 }
 
-type PinnedColumn = ColumnType & {
+type PinnedColumn<T extends GridValidRowModel> = ColumnType<T> & {
     left: string;
     right: string;
     /** field class eg: ms-table-cell-pos-name */
@@ -40,6 +40,9 @@ const CELL_FIXED_LEFT_CLASS = 'ms-table-cell-fix-left';
 const CELL_FIXED_RIGHT_CLASS = 'ms-table-cell-fix-right';
 const POS_PREFIX = 'ms-table-cell-pos-';
 
+/** *
+ * Row checkbox about class
+ */
 const ROW_CHECKBOX_CLASS = [
     '.MuiDataGrid-columnHeader.MuiDataGrid-columnHeaderCheckbox',
     '.MuiDataGrid-cellCheckbox.MuiDataGrid-cell',
@@ -56,10 +59,10 @@ const usePinnedColumn = <T extends GridValidRowModel>(props: PinnedColumnType<T>
     const [scrollYSize, setScrollYSize] = useState<number>(0);
 
     const getCellClassName = (
-        column: PinnedColumn,
-        pinnedLeftLast: ColumnType | undefined,
-        pinnedRightFirst: ColumnType | undefined,
-    ): PinnedColumn => {
+        column: PinnedColumn<T>,
+        pinnedLeftLast: ColumnType<T> | undefined,
+        pinnedRightFirst: ColumnType<T> | undefined,
+    ): PinnedColumn<T> => {
         const headerClassNameList = [
             column.headerClassName as string,
             `${POS_PREFIX}${sanitizeClassName(column.field)}`,
@@ -87,32 +90,32 @@ const usePinnedColumn = <T extends GridValidRowModel>(props: PinnedColumnType<T>
     /**
      *  Calculate the absolute positions of the columns that need to be fixed
      */
-    const pinnedColumnPos: Record<ColumnType['field'], PinnedColumn> = useMemo(() => {
+    const pinnedColumnPos: Record<ColumnType<T>['field'], PinnedColumn<T>> = useMemo(() => {
         if (matchMobile) return {};
         const pinnedColumns = columns
-            .filter((column: ColumnType) => !!column.width || !!column.minWidth)
-            .reduce((groupAcc: any, column: ColumnType) => {
-                const { fixed = '' } = column;
-                if (!groupAcc[fixed]) {
-                    groupAcc[fixed] = [];
-                }
-                // When fixing through column Settings, some columns do not have a clear width,
-                // but they can also be fixed. Modify the width to calculate the absolute position
-                if (!column.width && column.minWidth) {
-                    column.width = column.minWidth;
-                }
-                groupAcc[fixed].push(column);
-                return groupAcc;
-            }, {});
+            .filter((column: ColumnType<T>) => !!column.width || !!column.minWidth)
+            .reduce(
+                (groupAcc: Record<string, ColumnType<T>[]>, column: ColumnType<T>) => {
+                    const { fixed = '' } = column;
+                    if (!groupAcc[fixed]) {
+                        groupAcc[fixed] = [];
+                    }
+                    // When fixing through column Settings, some columns do not have a clear width,
+                    // but they can also be fixed. Modify the width to calculate the absolute position
+                    if (!column.width && column.minWidth) {
+                        column.width = column.minWidth;
+                    }
+                    groupAcc[fixed].push(column);
+                    return groupAcc;
+                },
+                {} as Record<string, ColumnType<T>[]>,
+            );
 
-        const pinnedLeftLast: ColumnType | undefined = (
-            (pinnedColumns.left as ColumnType[]) || []
-        ).at(-1);
-        const pinnedRightFirst: ColumnType | undefined = ((pinnedColumns.right as ColumnType[]) ||
-            [])?.[0];
+        const pinnedLeftLast: ColumnType<T> | undefined = (pinnedColumns.left || []).at(-1);
+        const pinnedRightFirst: ColumnType<T> | undefined = (pinnedColumns.right || [])?.[0];
 
         return [...(pinnedColumns.left || []), ...(pinnedColumns.right || []).reverse()]
-            .reduce((acc: PinnedColumn[], column: ColumnType, index: number) => {
+            .reduce((acc: PinnedColumn<T>[], column: ColumnType<T>, index: number) => {
                 const {
                     left: preLeft = checkboxSelection ? CHECKBOX_SIZE.toString() : '0',
                     right: preRight = '0',
@@ -142,16 +145,19 @@ const usePinnedColumn = <T extends GridValidRowModel>(props: PinnedColumnType<T>
                 );
                 return acc;
             }, [])
-            .reduce((acc: Record<ColumnType['field'], PinnedColumn>, column: PinnedColumn) => {
-                acc[column.field] = column;
-                return acc;
-            }, {});
+            .reduce(
+                (acc: Record<ColumnType<T>['field'], PinnedColumn<T>>, column: PinnedColumn<T>) => {
+                    acc[column.field] = column;
+                    return acc;
+                },
+                {},
+            );
     }, [columns, scrollYSize]);
 
     /**
      *  Generate styles that require fixed columns
      */
-    const sxFieldClass = useMemo(() => {
+    const columnsFixedClass = useMemo(() => {
         const sxProperty = Object.entries(pinnedColumnPos).reduce(
             (acc, [key, value]) => {
                 acc[value.posClassName!] = {
@@ -159,12 +165,12 @@ const usePinnedColumn = <T extends GridValidRowModel>(props: PinnedColumnType<T>
                 };
                 return acc;
             },
-            {} as Record<string, Record<string, any>>,
+            {} as Record<string, Record<string, ApiKey>>,
         );
         // If multiple selections and has left fixed, the checkbox should be fixed left
         if (
             checkboxSelection &&
-            Object.values(pinnedColumnPos).some((v: PinnedColumn) => v.fixed === 'left')
+            Object.values(pinnedColumnPos).some((v: PinnedColumn<T>) => v.fixed === 'left')
         ) {
             ROW_CHECKBOX_CLASS.forEach((value: string) => {
                 sxProperty[value] = {
@@ -210,8 +216,8 @@ const usePinnedColumn = <T extends GridValidRowModel>(props: PinnedColumnType<T>
     return {
         /** Fixed column info */
         pinnedColumnPos,
-        /** Column field class sx */
-        sxFieldClass,
+        /** Column field class */
+        columnsFixedClass,
         /** Sort group by fixed value */
         sortGroupByFixed,
     };

@@ -207,20 +207,11 @@ const ColumnsSetting = <T extends GridValidRowModel>({
 
     // Group by fixed
     const transformColumns = (columns: ColumnSettingProps<T>[]): SettingItemType<T>[] => {
-        const groupColumn = groupBy(columns, item => item.fixed ?? '');
-        return [
-            {
-                fixed: 'left',
-                children: groupColumn.left || [],
-            },
-            {
-                children: groupColumn[''] || [],
-            },
-            {
-                fixed: 'right',
-                children: groupColumn.right || [],
-            },
-        ];
+        const groupColumn = groupBy(columns, ({ fixed }) => fixed ?? '');
+        return (['left', '', 'right'] as const).map(fixed => ({
+            fixed: fixed === '' ? undefined : fixed,
+            children: groupColumn[fixed] || [],
+        }));
     };
 
     useEffect(() => {

@@ -6,14 +6,14 @@ import { Modal } from '@milesight/shared/src/components';
 
 import './style.less';
 
-export type MultiTagType<T extends Record<string, any>> = T & {
+export type MultiTagType<T extends Record<string, unknown>> = T & {
     /** List unique key */
     key: ApiKey;
     label: string;
     desc?: string;
 };
 
-export interface MultiTagProps<T extends Record<string, any>>
+export interface MultiTagProps<T extends Record<string, unknown>>
     extends Pick<ChipProps, 'size' | 'className' | 'color' | 'sx'> {
     /**
      * Data list
@@ -47,7 +47,7 @@ const SMALL_CHAR_WIDTH = 8;
 /**
  * Multi tag show components
  */
-const MultiTag = <T extends Record<string, any>>({
+const MultiTag = <T extends Record<string, unknown>>({
     data,
     renderItem,
     onClick,

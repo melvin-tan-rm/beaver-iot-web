@@ -107,7 +107,6 @@
         .@{prefix}-table-cell-fix-left,
         .@{prefix}-table-header-fix-left {
             z-index: 6;
-            // border-right: 1px solid var(--border-color-base);
             .sticky-class();
 
             .@{mui-prefix}DataGrid-columnSeparator--sideRight {
@@ -118,7 +117,6 @@
         .@{prefix}-table-cell-fix-right,
         .@{prefix}-table-header-fix-right {
             z-index: 6;
-            // border-left: 1px solid var(--border-color-base);
             .sticky-class();
     
             .@{mui-prefix}DataGrid-columnSeparator--sideRight {
@@ -152,7 +150,7 @@
         .@{mui-prefix}DataGrid-scrollbarFiller.@{mui-prefix}DataGrid-scrollbarFiller--header,
         .@{mui-prefix}DataGrid-columnHeader.@{mui-prefix}DataGrid-columnHeaderCheckbox {
             z-index: 40;
-            background-color: var(--gray-1);
+            background-color: var(--gray-color-1);
         }
 
         // cover selected hover style
@@ -186,16 +184,11 @@
             .@{mui-prefix}DataGrid-scrollbarFiller.@{mui-prefix}DataGrid-scrollbarFiller--borderTop,
         .@{mui-prefix}DataGrid-row:hover 
             .@{mui-prefix}DataGrid-scrollbarFiller.@{mui-prefix}DataGrid-scrollbarFiller--header {
-            background-color: var(--gray-1);
+            background-color: var(--gray-color-1);
         }
-
-        // .@{mui-prefix}DataGrid-virtualScrollerContent {
-        //     overflow-y: hidden;
-        // }
-
         .@{mui-prefix}DataGrid-columnHeaders {
             .@{mui-prefix}DataGrid-row--borderBottom {
-                background-color: var(--gray-1);
+                background-color: var(--gray-color-1);
             }
         }
 

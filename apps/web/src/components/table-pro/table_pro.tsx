@@ -96,7 +96,7 @@ const TablePro = <DataType extends GridValidRowModel>({
     );
 
     const [resultColumns, setResultColumns] = useState<ColumnSettingProps<DataType>[]>(columns);
-    const { pinnedColumnPos, sxFieldClass, sortGroupByFixed } = usePinnedColumn({
+    const { pinnedColumnPos, columnsFixedClass, sortGroupByFixed } = usePinnedColumn({
         apiRef,
         columns: resultColumns,
         restProps: props,
@@ -211,7 +211,7 @@ const TablePro = <DataType extends GridValidRowModel>({
                     hideFooterSelectedRowCount
                     sx={{
                         border: 0,
-                        ...sxFieldClass,
+                        ...columnsFixedClass,
                     }}
                     columnHeaderHeight={44}
                     rowHeight={48}
