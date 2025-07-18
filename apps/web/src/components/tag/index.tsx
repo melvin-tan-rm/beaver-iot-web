@@ -33,32 +33,24 @@ const Tag: React.FC<TagProps> = props => {
         };
     }, [arbitraryColor]);
 
-    const TagCore = (
-        <Chip
-            variant="outlined"
-            sx={{
-                height: '24px',
-                borderColor: arbitraryColor,
-                borderRadius: '4px',
-                color: arbitraryColor
-                    ? colorMix(0.5, arbitraryColor, 'rgba(0, 0, 0, 0.5)')
-                    : undefined,
-                ...getBackgroundColor,
-                ...sx,
-            }}
-            {...restProps}
-        />
+    return (
+        <Tooltip title={tip} enterDelay={1000} enterNextDelay={1000}>
+            <Chip
+                variant="outlined"
+                sx={{
+                    height: '24px',
+                    borderColor: arbitraryColor,
+                    borderRadius: '4px',
+                    color: arbitraryColor
+                        ? colorMix(0.5, arbitraryColor, 'rgba(0, 0, 0, 0.5)')
+                        : undefined,
+                    ...getBackgroundColor,
+                    ...sx,
+                }}
+                {...restProps}
+            />
+        </Tooltip>
     );
-
-    if (tip) {
-        return (
-            <Tooltip title={tip} enterDelay={1000} enterNextDelay={1000}>
-                {TagCore}
-            </Tooltip>
-        );
-    }
-
-    return TagCore;
 };
 
 export default Tag;

@@ -183,8 +183,6 @@ const MultiTag = <T extends Record<string, unknown>>({
         <div className="ms-multi-tag" ref={wrapRef}>
             <Stack sx={{ position: 'relative' }}>
                 <Stack
-                    direction="row"
-                    spacing="8px"
                     ref={innerRef}
                     sx={{
                         opacity: 0,
@@ -192,9 +190,7 @@ const MultiTag = <T extends Record<string, unknown>>({
                 >
                     {testTagList}
                 </Stack>
-                <Stack direction="row" spacing="8px">
-                    {tagList}
-                </Stack>
+                <Stack>{tagList}</Stack>
             </Stack>
             <Modal
                 size="lg"

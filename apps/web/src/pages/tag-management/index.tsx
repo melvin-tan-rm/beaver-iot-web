@@ -144,6 +144,7 @@ const TagManagement: React.FC = () => {
                 <div className="ms-view__inner">
                     <TablePro<TableRowDataType>
                         checkboxSelection
+                        filterCondition={[keyword]}
                         loading={loading}
                         columns={columns}
                         getRowId={row => row.id}
