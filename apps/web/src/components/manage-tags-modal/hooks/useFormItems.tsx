@@ -1,6 +1,13 @@
 import { useMemo } from 'react';
 import { type ControllerProps } from 'react-hook-form';
-import { FormControl, Autocomplete } from '@mui/material';
+import {
+    FormControl,
+    Autocomplete,
+    Select as MuiSelect,
+    InputLabel,
+    FormHelperText,
+    MenuItem,
+} from '@mui/material';
 
 import { useI18n } from '@milesight/shared/src/hooks';
 import { checkRequired } from '@milesight/shared/src/utils/validators';
@@ -11,13 +18,18 @@ import { type ManageTagsProps } from '../index';
 import { SelectVirtualizationList } from '../components';
 import { MANAGE_ACTION } from '../constants';
 import { useAutoComplete } from './useAutoComplete';
+import Tag from '../../tag';
 
-export function useFormItems(props: { currentAction: TagOperationEnums }) {
-    const { currentAction = TagOperationEnums.ADD } = props || {};
+export function useFormItems(props: {
+    currentAction: TagOperationEnums;
+    entityOptions: TagProps[];
+}) {
+    const { currentAction = TagOperationEnums.ADD, entityOptions } = props || {};
 
     const { getIntlText } = useI18n();
     const {
-        tagOptions,
+        autoCompleteTagOptions,
+        originalTagOptions,
         transformValue,
         handleChange,
         handleRenderOptions,
@@ -25,8 +37,13 @@ export function useFormItems(props: { currentAction: TagOperationEnums }) {
         handleRenderTag,
         handleIsOptionEqualToValue,
         handleGetOptionDisabled,
+        handleGetOptionLabel,
         handleSlots,
-    } = useAutoComplete(currentAction);
+        renderEmpty,
+    } = useAutoComplete({
+        currentAction,
+        entityOptions,
+    });
 
     const formItems: ControllerProps<ManageTagsProps>[] = useMemo(() => {
         const results: ControllerProps<ManageTagsProps>[] = [];
@@ -71,11 +88,11 @@ export function useFormItems(props: { currentAction: TagOperationEnums }) {
             render({ field: { onChange, value }, fieldState: { error } }) {
                 return (
                     <FormControl fullWidth>
-                        <Autocomplete<OptionsProps, true>
+                        <Autocomplete<TagProps, true>
                             multiple
                             id="manage-tags"
                             size="small"
-                            options={tagOptions}
+                            options={autoCompleteTagOptions}
                             value={transformValue(value as ApiKey[])}
                             onChange={handleChange(onChange)}
                             disableCloseOnSelect
@@ -85,6 +102,7 @@ export function useFormItems(props: { currentAction: TagOperationEnums }) {
                             renderTags={handleRenderTag()}
                             isOptionEqualToValue={handleIsOptionEqualToValue()}
                             getOptionDisabled={handleGetOptionDisabled(value as ApiKey[])}
+                            getOptionLabel={handleGetOptionLabel()}
                             slotProps={{
                                 listbox: {
                                     component: SelectVirtualizationList,
@@ -108,20 +126,40 @@ export function useFormItems(props: { currentAction: TagOperationEnums }) {
                         checkRequired: checkRequired(),
                     },
                 },
+                defaultValue: '',
                 render({ field: { onChange, value }, fieldState: { error } }) {
                     return (
-                        <Select
-                            required
-                            fullWidth
-                            options={Array.from({ length: 3 }).map((_, index) => ({
-                                label: String(index + 1),
-                                value: index + 1,
-                            }))}
-                            label="Original Tag"
-                            error={error}
-                            value={value as ApiKey}
-                            onChange={onChange}
-                        />
+                        <FormControl fullWidth error={!!error}>
+                            <InputLabel required>
+                                {getIntlText('tag.title.original_tag')}
+                            </InputLabel>
+                            <MuiSelect
+                                id="original-tag-select"
+                                value={value}
+                                onChange={onChange}
+                                MenuProps={{
+                                    PaperProps: {
+                                        style: {
+                                            maxHeight: 250,
+                                        },
+                                    },
+                                }}
+                            >
+                                {renderEmpty(entityOptions)}
+                                {entityOptions.map(t => (
+                                    <MenuItem key={t.id} value={t.id}>
+                                        <Tag
+                                            label={t.name}
+                                            arbitraryColor={t.color}
+                                            tip={t.description}
+                                        />
+                                    </MenuItem>
+                                ))}
+                            </MuiSelect>
+                            {!!error && (
+                                <FormHelperText error={!!error}>{error?.message}</FormHelperText>
+                            )}
+                        </FormControl>
                     );
                 },
             },
@@ -132,20 +170,42 @@ export function useFormItems(props: { currentAction: TagOperationEnums }) {
                         checkRequired: checkRequired(),
                     },
                 },
+                defaultValue: '',
                 render({ field: { onChange, value }, fieldState: { error } }) {
                     return (
-                        <Select
-                            required
-                            fullWidth
-                            options={Array.from({ length: 3 }).map((_, index) => ({
-                                label: String(index + 1),
-                                value: index + 1,
-                            }))}
-                            label="Replace Tag"
-                            error={error}
-                            value={value as ApiKey}
-                            onChange={onChange}
-                        />
+                        <FormControl fullWidth error={!!error}>
+                            <InputLabel required>
+                                {getIntlText('tag.title.replace_with')}
+                            </InputLabel>
+                            <MuiSelect
+                                required
+                                id="replace-tag-select"
+                                value={value}
+                                onChange={onChange}
+                                displayEmpty
+                                MenuProps={{
+                                    PaperProps: {
+                                        style: {
+                                            maxHeight: 250,
+                                        },
+                                    },
+                                }}
+                            >
+                                {renderEmpty(originalTagOptions)}
+                                {originalTagOptions.map(t => (
+                                    <MenuItem key={t.id} value={t.id}>
+                                        <Tag
+                                            label={t.name}
+                                            arbitraryColor={t.color}
+                                            tip={t.description}
+                                        />
+                                    </MenuItem>
+                                ))}
+                            </MuiSelect>
+                            {!!error && (
+                                <FormHelperText error={!!error}>{error?.message}</FormHelperText>
+                            )}
+                        </FormControl>
                     );
                 },
             },
@@ -157,7 +217,9 @@ export function useFormItems(props: { currentAction: TagOperationEnums }) {
         return [actionItem, ...results];
     }, [
         getIntlText,
-        tagOptions,
+        autoCompleteTagOptions,
+        originalTagOptions,
+        entityOptions,
         currentAction,
         transformValue,
         handleChange,
@@ -166,7 +228,9 @@ export function useFormItems(props: { currentAction: TagOperationEnums }) {
         handleRenderTag,
         handleIsOptionEqualToValue,
         handleGetOptionDisabled,
+        handleGetOptionLabel,
         handleSlots,
+        renderEmpty,
     ]);
 
     return {

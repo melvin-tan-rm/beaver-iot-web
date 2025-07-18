@@ -65,9 +65,9 @@ export interface DashboardAPISchema extends APISchema {
     updateEntitiesTags: {
         request: {
             operation: TagOperationEnums;
-            added_tag_ids?: string[];
-            removed_tag_ids?: string[];
-            entity_ids: string[];
+            added_tag_ids?: ApiKey[];
+            removed_tag_ids?: ApiKey[];
+            entity_ids: ApiKey[];
         };
         response: void;
     };

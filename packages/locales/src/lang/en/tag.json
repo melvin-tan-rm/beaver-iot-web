@@ -13,5 +13,7 @@
     "tag.label.append_tag": "追加所选标签",
     "tag.label.overwrite_tag": "覆盖所选标签",
     "tag.label.remove_tag": "移除所选标签",
-    "tag.label.replace_tag": "替换所选标签"
+    "tag.label.replace_tag": "替换所选标签",
+    "tag.title.original_tag": "Original Tag",
+    "tag.title.replace_with": "Replace With"
 }

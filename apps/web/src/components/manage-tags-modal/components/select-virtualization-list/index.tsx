@@ -34,13 +34,13 @@ function renderRow(props: ListChildComponentProps) {
     }
 
     const { key, ...optionProps } = dataSet[0];
-    const option = dataSet[1] as OptionsProps;
+    const option = dataSet[1] as TagProps;
     const state = dataSet[2] as AutocompleteRenderOptionState & {
         multiple: boolean;
         allIsIndeterminate: boolean;
     };
-    const optionLabel = option?.label || '';
-    const isAllOption = option?.value === ALL_OPTION.value;
+    const optionLabel = option?.name || '';
+    const isAllOption = option?.id === ALL_OPTION.value;
 
     return (
         <Typography key={key} component="div" {...optionProps} noWrap style={inlineStyle}>
@@ -56,7 +56,11 @@ function renderRow(props: ListChildComponentProps) {
                     }}
                 />
             )}
-            {isAllOption ? optionLabel : <Tag label={optionLabel} />}
+            {isAllOption ? (
+                optionLabel
+            ) : (
+                <Tag label={optionLabel} arbitraryColor={option.color} tip={option.description} />
+            )}
         </Typography>
     );
 }

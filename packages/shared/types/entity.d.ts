@@ -140,6 +140,8 @@ declare interface EntityData {
     identifier: string;
     /** Entity Parent Name */
     entity_parent_name?: string;
+    /** Entity tag data */
+    entity_tags?: TagProps[];
 }
 
 /**

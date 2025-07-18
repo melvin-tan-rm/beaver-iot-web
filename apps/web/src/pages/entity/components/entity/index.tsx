@@ -96,7 +96,7 @@ export default () => {
         openManageTagsModalAtEntity,
         closeManageTagsModal,
         manageTagsFormSubmit,
-    } = useManageTagsModal();
+    } = useManageTagsModal(getList);
 
     const handleFilterChange: TableProProps<TableRowDataType>['onFilterInfoChange'] = (
         filters: Record<string, FilterValue | null>,

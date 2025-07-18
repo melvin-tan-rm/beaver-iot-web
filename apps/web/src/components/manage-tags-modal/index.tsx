@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
 import { useMemoizedFn } from 'ahooks';
 import classNames from 'classnames';
+import { isEmpty } from 'lodash-es';
 
 import { Modal, type ModalProps } from '@milesight/shared/src/components';
 import { useI18n } from '@milesight/shared/src/hooks';
 
 import { TagOperationEnums } from '@/services/http';
-import { useFormItems } from './hooks';
+import { useFormItems, useEntityOptions } from './hooks';
+import Tag from '../tag';
 
 import styles from './style.module.less';
 
@@ -36,10 +38,29 @@ const ManageTagsModal: React.FC<Props> = props => {
     const { visible, selectedEntities, tip, onCancel, onFormSubmit, ...restProps } = props;
 
     const { getIntlText } = useI18n();
-    const { control, formState, handleSubmit, reset, watch } = useForm<ManageTagsProps>();
+    const { control, formState, handleSubmit, reset, watch, setValue } = useForm<ManageTagsProps>();
+    const { entityOptions } = useEntityOptions(selectedEntities);
+
+    const currentAction = watch('action');
+
     const { formItems } = useFormItems({
-        currentAction: watch('action'),
+        currentAction,
+        entityOptions,
     });
+
+    /**
+     * When action changed
+     * initial value
+     */
+    useEffect(() => {
+        if (!currentAction) {
+            return;
+        }
+
+        setValue('tags', []);
+        setValue('originalTag', '');
+        setValue('replaceTag', '');
+    }, [currentAction, setValue]);
 
     const onSubmit: SubmitHandler<ManageTagsProps> = async params => {
         await onFormSubmit(params, () => {
@@ -51,6 +72,16 @@ const ManageTagsModal: React.FC<Props> = props => {
         reset();
         onCancel?.();
     });
+
+    const renderTags = () => {
+        if (!Array.isArray(entityOptions) || isEmpty(entityOptions)) {
+            return <div className={styles.tags}>{getIntlText('tag.tip.not_any_tags')}</div>;
+        }
+
+        return entityOptions.map(tag => (
+            <Tag key={tag.id} label={tag.name} arbitraryColor={tag.color} tip={tag.description} />
+        ));
+    };
 
     return (
         <Modal
@@ -64,7 +95,7 @@ const ManageTagsModal: React.FC<Props> = props => {
         >
             <div className={styles.alert}>
                 {tip && <div className={styles.msg}>{tip}</div>}
-                <div className={styles.tags}>{getIntlText('tag.tip.not_any_tags')}</div>
+                {renderTags()}
             </div>
 
             {formItems.map(item => (

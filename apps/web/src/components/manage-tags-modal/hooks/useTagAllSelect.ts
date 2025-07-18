@@ -11,7 +11,7 @@ import { ALL_OPTION } from '../constants';
 export function useTagAllSelect() {
     const [allIsIndeterminate, setAllIsIndeterminate] = useState(false);
 
-    const convertTagsValue = useMemoizedFn((values: ApiKey[], options: OptionsProps[]) => {
+    const convertTagsValue = useMemoizedFn((values: ApiKey[], options: TagProps[]) => {
         if (
             !Array.isArray(values) ||
             isEmpty(values) ||
@@ -22,7 +22,7 @@ export function useTagAllSelect() {
         }
 
         /** Remove ALL_OPTION */
-        const pureOptions = options.filter(o => o.value !== ALL_OPTION.value);
+        const pureOptions = options.filter(o => o.id !== ALL_OPTION.value);
 
         /**
          * If selected all option then
@@ -38,9 +38,9 @@ export function useTagAllSelect() {
     const convertTagsOnChangeValue = useMemoizedFn(
         (
             newValues: ApiKey[],
-            options: OptionsProps[],
+            options: TagProps[],
             reason: AutocompleteChangeReason,
-            details?: AutocompleteChangeDetails<OptionsProps>,
+            details?: AutocompleteChangeDetails<TagProps>,
         ) => {
             if (
                 !Array.isArray(newValues) ||
@@ -53,14 +53,14 @@ export function useTagAllSelect() {
             }
 
             /** Remove ALL_OPTION */
-            const pureOptions = options.filter(o => o.value !== ALL_OPTION.value);
+            const pureOptions = options.filter(o => o.id !== ALL_OPTION.value);
 
             /**
              * If selected is ALL_OPTION
              * and ALL_OPTION status is indeterminate
              * then clear all option
              */
-            if (allIsIndeterminate && details?.option?.value === ALL_OPTION.value) {
+            if (allIsIndeterminate && details?.option?.id === ALL_OPTION.value) {
                 setAllIsIndeterminate(false);
                 return [];
             }
@@ -73,7 +73,7 @@ export function useTagAllSelect() {
             if (
                 !allIsIndeterminate &&
                 reason === 'removeOption' &&
-                details?.option?.value === ALL_OPTION.value
+                details?.option?.id === ALL_OPTION.value
             ) {
                 return [];
             }
@@ -82,12 +82,9 @@ export function useTagAllSelect() {
              * If selected is ALL_OPTION
              * then return all option expect ALL_OPTION
              */
-            if (
-                newValues.includes(ALL_OPTION.value) &&
-                details?.option?.value === ALL_OPTION.value
-            ) {
+            if (newValues.includes(ALL_OPTION.value) && details?.option?.id === ALL_OPTION.value) {
                 setAllIsIndeterminate(false);
-                return pureOptions.map(o => o.value);
+                return pureOptions.map(o => o.id);
             }
 
             /** Remove ALL_OPTION */
