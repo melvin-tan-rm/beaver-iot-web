@@ -43,38 +43,50 @@ export function useManageTagsModal(refreshList?: () => void) {
         },
     );
 
+    const handleTagsParams = useMemoizedFn((data: ManageTagsProps) => {
+        const { tags, originalTag, replaceTag, action } = data || {};
+        const result: { newTags?: ApiKey[]; removeTags?: ApiKey[] } = {};
+
+        if (action === TagOperationEnums.REPLACE && originalTag && replaceTag) {
+            result.newTags = [replaceTag];
+            result.removeTags = [originalTag];
+            return result;
+        }
+
+        if (!Array.isArray(tags) || isEmpty(tags)) {
+            return result;
+        }
+
+        if (action === TagOperationEnums.REMOVE) {
+            result.removeTags = tags;
+            return result;
+        }
+
+        result.newTags = tags;
+        return result;
+    });
+
     const manageTagsFormSubmit = useMemoizedFn(
         async (data: ManageTagsProps, callback: () => void) => {
-            const newTags: ApiKey[] = [];
-            const removeTags: ApiKey[] = [];
+            const tags = handleTagsParams(data);
             const entityIds = (selectedEntities || [])
                 .map(entity => entity.entityId)
                 .filter(Boolean);
 
-            const { tags, originalTag, replaceTag, action } = data || {};
-            if (action === TagOperationEnums.REPLACE && originalTag && replaceTag) {
-                newTags.push(originalTag);
-                removeTags.push(replaceTag);
-            } else if (Array.isArray(tags) && !isEmpty(tags)) {
-                newTags.push(...tags);
-            }
-
             if (
-                !action ||
-                !Array.isArray(newTags) ||
-                isEmpty(newTags) ||
+                !data?.action ||
                 !Array.isArray(entityIds) ||
-                isEmpty(entityIds)
+                isEmpty(entityIds) ||
+                (!tags?.newTags && !tags?.removeTags)
             ) {
                 return;
             }
 
             const [error, resp] = await awaitWrap(
                 tagAPI.updateEntitiesTags({
-                    operation: action,
-                    added_tag_ids: newTags,
-                    removed_tag_ids:
-                        Array.isArray(removeTags) && !isEmpty(removeTags) ? removeTags : undefined,
+                    operation: data.action,
+                    added_tag_ids: tags?.newTags,
+                    removed_tag_ids: tags?.removeTags,
                     entity_ids: entityIds,
                 }),
             );

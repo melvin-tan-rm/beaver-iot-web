@@ -78,9 +78,18 @@ const ManageTagsModal: React.FC<Props> = props => {
             return <div className={styles.tags}>{getIntlText('tag.tip.not_any_tags')}</div>;
         }
 
-        return entityOptions.map(tag => (
-            <Tag key={tag.id} label={tag.name} arbitraryColor={tag.color} tip={tag.description} />
-        ));
+        return (
+            <div className={styles['entity-tags-wrapper']}>
+                {entityOptions.map(tag => (
+                    <Tag
+                        key={tag.id}
+                        label={tag.name}
+                        arbitraryColor={tag.color}
+                        tip={tag.description}
+                    />
+                ))}
+            </div>
+        );
     };
 
     return (

@@ -371,6 +371,9 @@ export default () => {
                     visible={manageTagsModalVisible}
                     onCancel={closeManageTagsModal}
                     onFormSubmit={manageTagsFormSubmit}
+                    selectedEntities={(entityData?.content || []).filter(entity =>
+                        selectedIds.includes(entity.entityId),
+                    )}
                     tip={getIntlText('tag.tip.selected_entities_contain_follow_tags', {
                         1: selectedIds?.length || 0,
                     })}
