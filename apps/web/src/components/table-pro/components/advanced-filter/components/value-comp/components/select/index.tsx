@@ -33,14 +33,14 @@ const ValueSelect = <
     renderOption,
     getOptionLabel: _getOptionLabel,
     renderTags: _renderTags,
-    getFilterValueOptions,
+    operatorValues,
     ...rest
 }: ValueSelectProps<V, M, D>) => {
     const { getIntlText } = useI18n();
     const [open, setOpen] = useState<boolean>(false);
 
     const { options, allOptionsMap, searchLoading, onSearch } = useOptions({
-        getFilterValueOptions,
+        operatorValues,
     });
 
     const { selectedMap, onItemChange } = useSelectedValue({
@@ -48,6 +48,7 @@ const ValueSelect = <
         onChange,
         optionsMap: allOptionsMap as ValueSelectInnerProps<V>['optionsMap'],
         multiple,
+        onSearch,
     });
 
     /**

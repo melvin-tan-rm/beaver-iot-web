@@ -87,9 +87,9 @@ const useEntityColumns = <T extends TableRowDataType>({
                 minWidth: 180,
                 ellipsis: true,
                 operators: [FILTER_OPERATORS.ANY_EQUALS],
-                getFilterValueOptions: advancedValuesMapper.getDeviceGroup,
+                operatorValues: advancedValuesMapper.getDeviceGroup,
                 operatorValueCompType: 'select',
-                renderCell({ value }: { value: TableRowDataType['deviceGroup'] }) {
+                renderCell({ value }) {
                     return value?.name || '-';
                 },
             },
@@ -130,7 +130,7 @@ const useEntityColumns = <T extends TableRowDataType>({
                     FILTER_OPERATORS.START_WITH,
                     FILTER_OPERATORS.END_WITH,
                 ]),
-                getFilterValueOptions: advancedValuesMapper.getEntityTags,
+                operatorValues: advancedValuesMapper.getEntityTags,
                 operatorValueCompType: 'select',
             },
             {
@@ -152,7 +152,7 @@ const useEntityColumns = <T extends TableRowDataType>({
                 maxWidth: 100,
                 ellipsis: true,
                 operators: [FILTER_OPERATORS.ANY_EQUALS],
-                getFilterValueOptions: advancedValuesMapper.getEntityDataValues,
+                operatorValues: advancedValuesMapper.getEntityDataValues,
                 operatorValueCompType: 'select',
             },
             {

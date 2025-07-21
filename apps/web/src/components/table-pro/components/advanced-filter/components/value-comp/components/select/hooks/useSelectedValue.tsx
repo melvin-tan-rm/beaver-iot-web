@@ -3,16 +3,14 @@ import { isNull } from 'lodash-es';
 import { ValueSelectProps, ValueSelectInnerProps } from '../../../types';
 import { SelectValueOptionType } from '../../../../../../../types';
 
-interface IProps<
+type IProps<
     Value extends SelectValueOptionType = SelectValueOptionType,
     Multiple extends boolean | undefined = false,
     DisableClearable extends boolean | undefined = false,
-> extends Pick<
-        ValueSelectProps<Value, Multiple, DisableClearable>,
-        'value' | 'multiple' | 'onChange'
-    > {
-    optionsMap: ValueSelectInnerProps<Value>['optionsMap'];
-}
+> = Pick<
+    ValueSelectInnerProps<Value, Multiple, DisableClearable>,
+    'value' | 'multiple' | 'onChange' | 'optionsMap' | 'onSearch'
+>;
 
 /**
  * Select list selected about hooks
@@ -24,9 +22,9 @@ const useSelectedValue = <
 >(
     props: IProps<V, M, D>,
 ) => {
-    const { value, multiple, optionsMap, onChange } = props;
+    const { value, multiple, optionsMap, onChange, onSearch } = props;
 
-    const valueList = useMemo<ValueSelectInnerProps<V>['value']>(() => {
+    const valueList = useMemo<V[]>(() => {
         return (Array.isArray(value) ? value : [value]).filter(v => !isNull(v));
     }, [value]);
 
@@ -48,6 +46,8 @@ const useSelectedValue = <
     /** Select/Cancel selection callback */
     const onItemChange = useCallback(
         (selectedItem: V) => {
+            // When elected, clear the search content
+            onSearch?.('');
             if (!multiple) {
                 // single select
                 onChange?.(selectedItem as ValueSelectProps<V, M, D>['value']);

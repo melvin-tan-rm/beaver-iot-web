@@ -44,7 +44,7 @@ const DynamicValueComp = <T extends FilterValueType>({
 
     const rest = useMemo(() => {
         if (valueCompType !== ('select' as ValueCompType)) {
-            return omit(props, 'getFilterValueOptions');
+            return omit(props, 'operatorValues');
         }
         return props;
     }, [props]);
