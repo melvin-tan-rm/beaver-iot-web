@@ -89,6 +89,9 @@ const useEntityColumns = <T extends TableRowDataType>({
                 operators: [FILTER_OPERATORS.ANY_EQUALS],
                 getFilterValueOptions: advancedValuesMapper.getDeviceGroup,
                 operatorValueCompType: 'select',
+                renderCell({ value }: { value: TableRowDataType['deviceGroup'] }) {
+                    return value?.name || '-';
+                },
             },
             {
                 field: 'entityTags',

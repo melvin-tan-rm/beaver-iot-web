@@ -77,7 +77,7 @@ const CustomPagination: React.FC<PaginationProps> = ({
                 }}
                 sx={{
                     ml: 1,
-                    height: 28,
+                    height: 29,
                 }}
                 value={pageSize}
                 onChange={event => {
