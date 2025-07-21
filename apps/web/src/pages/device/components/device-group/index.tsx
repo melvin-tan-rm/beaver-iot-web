@@ -22,7 +22,8 @@ export interface DeviceGroupProps {
 const DeviceGroup = forwardRef<DeviceGroupExposeProps, DeviceGroupProps>((props, ref) => {
     const { isShrink } = props;
 
-    const { getDeviceGroups, deviceGroups, loading, handleGroupDelete } = useDeviceGroup();
+    const { getDeviceGroups, deviceGroups, loading, handleGroupDelete, keyword, changeKeyword } =
+        useDeviceGroup();
 
     const {
         groupModalVisible,
@@ -69,7 +70,7 @@ const DeviceGroup = forwardRef<DeviceGroupExposeProps, DeviceGroupProps>((props,
 
     return (
         <div className={groupCls}>
-            <Header onSearch={getDeviceGroups} onAdd={addGroupModal} />
+            <Header onAdd={addGroupModal} keyword={keyword} changeKeyword={changeKeyword} />
             {renderDeviceGroupBody()}
             {groupModalVisible && (
                 <OperateGroupModal

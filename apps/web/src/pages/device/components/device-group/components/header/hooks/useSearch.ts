@@ -1,9 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { useClickAway, useMemoizedFn } from 'ahooks';
 
-export function useSearch(onSearch?: (keyword: string) => void) {
+export function useSearch(props: { keyword: string; changeKeyword: (keyword: string) => void }) {
+    const { keyword, changeKeyword } = props || {};
+
     const [showSearch, setShowSearch] = useState(false);
-    const [keyword, setKeyword] = useState('');
 
     const inputRef = useRef<HTMLInputElement>();
     const textFieldRef = useRef(null);
@@ -22,9 +23,7 @@ export function useSearch(onSearch?: (keyword: string) => void) {
 
     const handleChange = useMemoizedFn(
         (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-            const newValue = e?.target?.value || '';
-            setKeyword(newValue);
-            onSearch?.(newValue);
+            changeKeyword(e?.target?.value || '');
         },
     );
 
@@ -46,8 +45,6 @@ export function useSearch(onSearch?: (keyword: string) => void) {
     return {
         /** Whether show the search input */
         showSearch,
-        /** the search keyword */
-        keyword,
         textFieldRef,
         inputRef,
         handleChange,

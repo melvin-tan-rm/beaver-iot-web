@@ -12,26 +12,22 @@ import { useSearch } from './hooks/useSearch';
 import styles from './style.module.less';
 
 export interface HeaderProps {
-    /** Handle the search input value keyword change */
-    onSearch?: (keyword: string) => void;
+    keyword: string;
+    changeKeyword: (keyword: string) => void;
     /** add new group */
     onAdd?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = props => {
-    const { onSearch, onAdd } = props;
+    const { keyword, changeKeyword, onAdd } = props;
 
     const { getIntlText } = useI18n();
 
-    const {
-        showSearch,
-        textFieldRef,
-        inputRef,
-        keyword,
-        handleChange,
-        handleMouseEnter,
-        handleMouseLeave,
-    } = useSearch(onSearch);
+    const { showSearch, textFieldRef, inputRef, handleChange, handleMouseEnter, handleMouseLeave } =
+        useSearch({
+            keyword,
+            changeKeyword,
+        });
 
     const textFieldSx = useMemo(() => {
         const result = {

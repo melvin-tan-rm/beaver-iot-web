@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useRequest, useMemoizedFn } from 'ahooks';
 
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -22,12 +23,18 @@ export function useDeviceGroup() {
     const confirm = useConfirm();
     const { activeGroup, updateActiveGroup, updateDeviceGroups } = useDeviceStore();
 
+    const [keyword, setKeyword] = useState('');
+
+    const changeKeyword = useMemoizedFn((keyword: string) => {
+        setKeyword(keyword);
+    });
+
     const {
         run: getDeviceGroups,
         data: deviceGroups,
         loading,
     } = useRequest(
-        async (keyword?: string) => {
+        async () => {
             const [error, resp] = await awaitWrap(
                 deviceAPI.getDeviceGroupList({
                     page_number: 1,
@@ -46,6 +53,7 @@ export function useDeviceGroup() {
         },
         {
             debounceWait: 300,
+            refreshDeps: [keyword],
         },
     );
 
@@ -90,6 +98,8 @@ export function useDeviceGroup() {
     return {
         loading,
         deviceGroups,
+        keyword,
+        changeKeyword,
         getDeviceGroups,
         handleGroupDelete,
     };
