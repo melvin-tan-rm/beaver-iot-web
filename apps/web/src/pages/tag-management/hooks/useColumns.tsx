@@ -26,10 +26,10 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 field: 'name',
                 headerName: getIntlText('tag.title.tag_name'),
                 flex: 1,
-                minWidth: 150,
+                minWidth: 350,
                 ellipsis: false,
                 renderCell({ row }) {
-                    return <Tag label={row.name} arbitraryColor={row.color} title={row.name} />;
+                    return <Tag label={row.name} arbitraryColor={row.color} />;
                 },
             },
             {
@@ -63,6 +63,7 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 width: 120,
                 align: 'left',
                 headerAlign: 'left',
+                fixed: 'right',
                 renderCell({ row }) {
                     return (
                         <Stack
