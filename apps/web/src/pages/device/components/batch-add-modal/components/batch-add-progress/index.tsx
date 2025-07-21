@@ -1,5 +1,5 @@
 import React from 'react';
-import { LinearProgress, linearProgressClasses } from '@mui/material';
+import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 
 import { useI18n } from '@milesight/shared/src/hooks';
 import {
