@@ -3,9 +3,9 @@ import { useRequest } from 'ahooks';
 import { SelectValueOptionType } from '../../../../../../../types';
 import { ValueCompBaseProps, ValueSelectInnerProps } from '../../../types';
 
-type IProps<T extends SelectValueOptionType> = Pick<ValueCompBaseProps<T>, 'getFilterValueOptions'>;
+type IProps<T extends SelectValueOptionType> = Pick<ValueCompBaseProps<T>, 'operatorValues'>;
 
-const useOptions = <T extends SelectValueOptionType>({ getFilterValueOptions }: IProps<T>) => {
+const useOptions = <T extends SelectValueOptionType>({ operatorValues }: IProps<T>) => {
     const [allOptionsMap, setAllOptionsMap] = useState<ValueSelectInnerProps<T>['optionsMap']>(
         new Map(),
     );
@@ -14,14 +14,14 @@ const useOptions = <T extends SelectValueOptionType>({ getFilterValueOptions }: 
     /** Get the corresponding drop-down rendering options */
     const { data: options, loading: searchLoading } = useRequest(
         async () => {
-            const optionList = (await getFilterValueOptions?.(keyWord)) || [];
+            const optionList = (await operatorValues?.(keyWord)) || [];
             if (!keyWord) {
                 setAllOptionsMap(transForm2Map(optionList as T[]));
             }
             return optionList;
         },
         {
-            refreshDeps: [getFilterValueOptions, keyWord],
+            refreshDeps: [operatorValues, keyWord],
             debounceWait: 300,
         },
     );

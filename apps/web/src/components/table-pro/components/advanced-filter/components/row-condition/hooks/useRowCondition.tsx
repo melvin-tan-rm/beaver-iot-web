@@ -3,7 +3,7 @@ import { useI18n } from '@milesight/shared/src/hooks';
 import { GridValidRowModel } from '@mui/x-data-grid';
 import { FILTER_OPERATOR } from '../../../../../constants';
 import { isOperationColumn } from '../../../../../utils';
-import { ColumnType, ValueCompType, FilterValueOptionsType } from '../../../../../types';
+import { ColumnType, ValueCompType, OperatorValuesType } from '../../../../../types';
 
 /**
  * Column filtering information objects
@@ -11,9 +11,9 @@ import { ColumnType, ValueCompType, FilterValueOptionsType } from '../../../../.
 export interface OperatorColumnInfoType {
     column: ColumnType['field'];
     headerName: ColumnType['headerName'];
-    operators: FilterOperatorType[] | undefined;
-    getFilterValueOptions: FilterValueOptionsType | undefined;
-    valueCompType: ValueCompType | undefined;
+    operators?: FilterOperatorType[];
+    operatorValues?: OperatorValuesType;
+    valueCompType?: ValueCompType;
 }
 
 export interface useRowConditionProps<T extends GridValidRowModel> {
@@ -51,7 +51,7 @@ const useRowCondition = <T extends GridValidRowModel>(props: useRowConditionProp
                     headerName: column.headerName,
                     operators: column.operators,
                     valueCompType: column.operatorValueCompType,
-                    getFilterValueOptions: column.getFilterValueOptions,
+                    operatorValues: column.operatorValues,
                 };
                 return acc;
             },
@@ -81,8 +81,8 @@ const useRowCondition = <T extends GridValidRowModel>(props: useRowConditionProp
         });
     }, [currentColumn, columnInfo, getIntlText]);
 
-    const getFilterValueOptions = useMemo(() => {
-        return columnInfo[currentColumn]?.getFilterValueOptions;
+    const operatorValues = useMemo(() => {
+        return columnInfo[currentColumn]?.operatorValues;
     }, [currentColumn, columnInfo]);
 
     /**
@@ -112,7 +112,7 @@ const useRowCondition = <T extends GridValidRowModel>(props: useRowConditionProp
         columnInfo,
         optionsColumns,
         optionsOperators,
-        getFilterValueOptions,
+        operatorValues,
         getAutoFillRule,
     };
 };

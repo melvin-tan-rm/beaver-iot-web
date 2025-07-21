@@ -1,5 +1,5 @@
 import { AutocompleteProps, SelectProps, TextFieldProps } from '@mui/material';
-import { InputValueType, SelectValueOptionType, FilterValueOptionsType } from '../../../../types';
+import { InputValueType, SelectValueOptionType, OperatorValuesType } from '../../../../types';
 
 /** The type of filter value selected for each column */
 export type FilterValueType = InputValueType | SelectValueOptionType | SelectValueOptionType[];
@@ -14,7 +14,7 @@ export interface ValueCompBaseProps<T>
     /**
      * The optional list for selection
      */
-    getFilterValueOptions?: FilterValueOptionsType;
+    operatorValues?: OperatorValuesType;
 }
 
 export type TextFieldPropsOverrides = Omit<TextFieldProps, 'value' | 'onChange'>;
@@ -64,23 +64,6 @@ export type SelectValueType<Value, Multiple, DisableClearable> = Multiple extend
       ? NonNullable<Value>
       : Value | null;
 
-export interface ValueSelectInnerProps<T extends SelectValueOptionType>
-    extends AutocompletePropsOverrides {
-    options: T[];
-    optionsMap: Map<T['value'], T>;
-    selectedMap: Map<T['value'], T>;
-    onItemChange: (event: React.SyntheticEvent, value: T) => void;
-    renderOption?: ({
-        option,
-        selected,
-        onClick,
-    }: {
-        option: T;
-        selected: boolean;
-        onClick: (event: React.SyntheticEvent, value: SelectValueOptionType) => void;
-    }) => React.ReactNode;
-}
-
 /**
  * Select component props
  */
@@ -93,11 +76,35 @@ export interface ValueSelectProps<
             AutocompleteProps<Value, Multiple, DisableClearable, false>,
             'renderInput' | 'options'
         >,
-        Pick<ValueCompBaseProps<T>, 'getFilterValueOptions'> {
+        Pick<ValueCompBaseProps<T>, 'operatorValues'> {
     /** Whether multiple selection is enabled */
     multiple?: Multiple;
     /** The current value of the select */
     value: SelectValueType<Value, Multiple, DisableClearable>;
     /** Callback function when the value changes */
     onChange: (value: SelectValueType<Value, Multiple, DisableClearable>) => void;
+    renderOption?: ({
+        option,
+        selected,
+        onClick,
+    }: {
+        option: T;
+        selected: boolean;
+        onClick: (event: React.SyntheticEvent, value: SelectValueOptionType) => void;
+    }) => React.ReactNode;
+}
+
+export interface ValueSelectInnerProps<
+    Value extends SelectValueOptionType = SelectValueOptionType,
+    Multiple extends boolean | undefined = false,
+    DisableClearable extends boolean | undefined = false,
+> extends ValueSelectProps<Value, Multiple, DisableClearable> {
+    options: T[];
+    optionsMap: Map<T['value'], T>;
+    selectedMap: Map<T['value'], T>;
+    onItemChange: (event: React.SyntheticEvent, value: T) => void;
+    /**
+     * Callback function when the search input changes
+     */
+    onSearch?: (value: string) => void;
 }

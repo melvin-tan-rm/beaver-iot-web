@@ -14,7 +14,11 @@ import { ValueSelect } from '../components';
 type BaseInputProps<T extends FilterValueType> = TextFieldPropsOverrides & ValueCompBaseProps<T>;
 type BaseSelectProps<T extends FilterValueType> = AutocompletePropsOverrides &
     ValueCompBaseProps<T>;
-type BaseEmptyProps = Omit<TextFieldPropsOverrides, 'value' | 'onChange' | 'disabled'>;
+type BaseEmptyProps<T extends FilterValueType> = Omit<
+    TextFieldPropsOverrides,
+    'value' | 'onChange' | 'disabled'
+> &
+    ValueCompBaseProps<T>;
 
 /**
  * Row condition hook
@@ -46,7 +50,10 @@ const useValueComp = <T extends FilterValueType>() => {
                     />
                 );
             },
-            '': (props: BaseEmptyProps) => <TextField disabled value="" {...props} />,
+            '': (props: BaseEmptyProps<T>) => {
+                const { value, onChange, ...rest } = props;
+                return <TextField disabled {...rest} />;
+            },
         }),
         [getIntlText],
     );

@@ -2,14 +2,14 @@ import { useCallback, useMemo } from 'react';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
 import { awaitWrap, deviceAPI, getResponseData, tagAPI } from '@/services/http';
 import { ENTITY_DATA_VALUE_TYPE } from '@/constants';
-import { FilterValueOptionsType } from '@/components';
+import { OperatorValuesType } from '@/components';
 
 /**
  * For advanced filtering of the values of related columns, the options function can be selected
  */
 const useAdvancedValues = () => {
     const advancedValuesMapper = useMemo(
-        (): Record<string, FilterValueOptionsType> => ({
+        (): Record<string, OperatorValuesType> => ({
             getEntityTags: async (keyword?: string) => {
                 return objectToCamelCase(
                     getResponseData(
@@ -42,11 +42,15 @@ const useAdvancedValues = () => {
                     value: tag.name,
                 }));
             },
-            getEntityDataValues: async () => {
-                return Object.keys(ENTITY_DATA_VALUE_TYPE).map(key => ({
-                    label: key,
-                    value: key,
-                }));
+            getEntityDataValues: async (keyword?: string) => {
+                return Object.keys(ENTITY_DATA_VALUE_TYPE)
+                    .filter(key =>
+                        keyword ? key.toLowerCase().includes(keyword.toLowerCase()) : true,
+                    )
+                    .map(key => ({
+                        label: key,
+                        value: key,
+                    }));
             },
         }),
         [],

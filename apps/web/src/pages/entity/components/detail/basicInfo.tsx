@@ -42,7 +42,6 @@ const BasicInfo = ({ data }: IProps) => {
                                     label={tag.name}
                                     arbitraryColor={tag.color}
                                     tip={tag.description}
-                                    clickable
                                     sx={{ maxWidth: maxItemWidth }}
                                 />
                             );

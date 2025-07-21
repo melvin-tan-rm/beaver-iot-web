@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { omit } from 'lodash-es';
 import { ValueCompType } from '../../../../types';
 import { ValueComponentSlotProps, ValueCompBaseProps, FilterValueType } from './types';
 import { useValueComp } from './hooks';
@@ -37,9 +38,16 @@ const DynamicValueComp = <T extends FilterValueType>({
     column,
     valueCompType,
     compSlotProps,
-    ...rest
+    ...props
 }: DynamicValueCompProps<T>) => {
     const { renderValueComponent } = useValueComp<T>();
+
+    const rest = useMemo(() => {
+        if (valueCompType !== ('select' as ValueCompType)) {
+            return omit(props, 'operatorValues');
+        }
+        return props;
+    }, [props]);
 
     const slotProps = useMemo(() => {
         const componentType = `${valueCompType ? `base${valueCompType.replace(/^./, c => c.toUpperCase())}` : ''}`;

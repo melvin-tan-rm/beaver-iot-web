@@ -53,7 +53,7 @@ const RowCondition = <T extends GridValidRowModel>(props: RowConditionProps<T>) 
 
     const { getIntlText } = useI18n();
 
-    const { columnInfo, optionsColumns, optionsOperators, getFilterValueOptions, getAutoFillRule } =
+    const { columnInfo, optionsColumns, optionsOperators, operatorValues, getAutoFillRule } =
         useRowCondition({
             currentColumn: item.column,
             columns,
@@ -104,7 +104,7 @@ const RowCondition = <T extends GridValidRowModel>(props: RowConditionProps<T>) 
                         value,
                     });
                 }}
-                getFilterValueOptions={getFilterValueOptions}
+                operatorValues={operatorValues}
                 valueCompType={item.valueCompType}
                 compSlotProps={compSlotProps}
             />
