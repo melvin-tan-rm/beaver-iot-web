@@ -9,7 +9,16 @@ import React, {
 } from 'react';
 import { isArray, isObject } from 'lodash-es';
 import classNames from 'classnames';
-import { Badge, Box, Button, ButtonProps, IconButton, Popover, Typography } from '@mui/material';
+import {
+    Badge,
+    Box,
+    Button,
+    ButtonProps,
+    IconButton,
+    Popover,
+    Tooltip,
+    Typography,
+} from '@mui/material';
 import { bindPopover, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { GridValidRowModel } from '@mui/x-data-grid';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -82,7 +91,6 @@ const AdvancedFilter = <T extends GridValidRowModel>(
 
     const popupState = usePopupState({ variant: 'popover', popupId: 'advancedFilter' });
     const [isHover, setIsHover] = useState<boolean>(false);
-    const conditionsRef = useRef<any>([]);
 
     const {
         list: conditions,
@@ -116,10 +124,6 @@ const AdvancedFilter = <T extends GridValidRowModel>(
         }
     }, [popupState.isOpen]);
 
-    useEffect(() => {
-        conditionsRef.current = conditions;
-    }, [conditions]);
-
     /**
      * Display one default condition
      */
@@ -147,7 +151,6 @@ const AdvancedFilter = <T extends GridValidRowModel>(
                 value: (isArray(c.value) ? [] : '') as FilterValueType,
             };
         });
-        conditionsRef.current = newConditions;
         handleFilterChange(resetList(newConditions));
         setIsHover(false);
     };
@@ -158,8 +161,7 @@ const AdvancedFilter = <T extends GridValidRowModel>(
     };
 
     const resetFilter = () => {
-        resetList([]);
-        handleFilterChange([]);
+        handleFilterChange(resetList([]));
         initDefaultCondition();
         popupState.close();
     };
@@ -236,7 +238,13 @@ const AdvancedFilter = <T extends GridValidRowModel>(
                             >
                                 <Typography variant="subtitle2">
                                     <Box sx={{ width: 20, height: 20 }}>
-                                        <CancelIcon color="primary" />
+                                        <Tooltip
+                                            title={getIntlText(
+                                                'common.label.clear_filter_condition',
+                                            )}
+                                        >
+                                            <CancelIcon color="primary" />
+                                        </Tooltip>
                                     </Box>
                                 </Typography>
                             </Badge>
