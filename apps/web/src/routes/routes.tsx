@@ -206,6 +206,7 @@ const routes: RouteObjectType[] = [
                 return intl.get('tag.title.tag_management');
             },
             icon: <SellIcon fontSize="small" />,
+            permissions: PERMISSIONS.TAG_MODULE,
         },
         async lazy() {
             const { default: Component } = await import('@/pages/tag-management');

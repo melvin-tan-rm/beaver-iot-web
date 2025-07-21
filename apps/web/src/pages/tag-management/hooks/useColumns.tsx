@@ -2,8 +2,9 @@ import { useMemo } from 'react';
 import { Stack, IconButton } from '@mui/material';
 import { useI18n, useTime } from '@milesight/shared/src/hooks';
 import { DeleteOutlineIcon, EditIcon } from '@milesight/shared/src/components';
-import { Tooltip, type ColumnType, Tag } from '@/components';
+import { Tooltip, type ColumnType, Tag, PermissionControlDisabled } from '@/components';
 import { type TagItemProps } from '@/services/http';
+import { PERMISSIONS } from '@/constants';
 
 type OperationType = 'edit' | 'delete';
 
@@ -71,26 +72,30 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                             spacing="4px"
                             sx={{ height: '100%', alignItems: 'center', justifyContent: 'end' }}
                         >
-                            <Tooltip title={getIntlText('common.button.edit')}>
-                                <IconButton
-                                    sx={{ width: 30, height: 30 }}
-                                    onClick={() => onButtonClick('edit', row)}
-                                >
-                                    <EditIcon sx={{ width: 20, height: 20 }} />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title={getIntlText('common.label.delete')}>
-                                <IconButton
-                                    sx={{
-                                        width: 30,
-                                        height: 30,
-                                        color: 'text.secondary',
-                                    }}
-                                    onClick={() => onButtonClick('delete', row)}
-                                >
-                                    <DeleteOutlineIcon sx={{ width: 20, height: 20 }} />
-                                </IconButton>
-                            </Tooltip>
+                            <PermissionControlDisabled permissions={PERMISSIONS.TAG_MODULE_EDIT}>
+                                <Tooltip title={getIntlText('common.button.edit')}>
+                                    <IconButton
+                                        sx={{ width: 30, height: 30 }}
+                                        onClick={() => onButtonClick('edit', row)}
+                                    >
+                                        <EditIcon sx={{ width: 20, height: 20 }} />
+                                    </IconButton>
+                                </Tooltip>
+                            </PermissionControlDisabled>
+                            <PermissionControlDisabled permissions={PERMISSIONS.TAG_MODULE_EDIT}>
+                                <Tooltip title={getIntlText('common.label.delete')}>
+                                    <IconButton
+                                        sx={{
+                                            width: 30,
+                                            height: 30,
+                                            color: 'text.secondary',
+                                        }}
+                                        onClick={() => onButtonClick('delete', row)}
+                                    >
+                                        <DeleteOutlineIcon sx={{ width: 20, height: 20 }} />
+                                    </IconButton>
+                                </Tooltip>
+                            </PermissionControlDisabled>
                         </Stack>
                     );
                 },

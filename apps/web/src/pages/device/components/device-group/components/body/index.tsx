@@ -6,6 +6,8 @@ import { Typography } from '@mui/material';
 import { PerfectScrollbar } from '@milesight/shared/src/components';
 
 import { type DeviceGroupItemProps } from '@/services/http/device';
+import { PermissionControlHidden } from '@/components';
+import { PERMISSIONS } from '@/constants';
 import MoreDropdown, { MORE_OPERATION } from '../more-dropdown';
 import { useBody } from './hooks/useBody';
 
@@ -45,12 +47,14 @@ const Body: React.FC<BodyProps> = props => {
                     </Typography>
                 </div>
 
-                {!hiddenMore(item.id) && (
-                    <MoreDropdown
-                        isActive={item.id === activeGroup?.id}
-                        onOperation={operation => onOperation?.(operation, item)}
-                    />
-                )}
+                <PermissionControlHidden permissions={PERMISSIONS.DEVICE_GROUP_MANAGE}>
+                    {!hiddenMore(item.id) && (
+                        <MoreDropdown
+                            isActive={item.id === activeGroup?.id}
+                            onOperation={operation => onOperation?.(operation, item)}
+                        />
+                    )}
+                </PermissionControlHidden>
             </div>
         );
     };

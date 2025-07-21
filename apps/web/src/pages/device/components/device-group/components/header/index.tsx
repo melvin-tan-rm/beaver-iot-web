@@ -5,7 +5,8 @@ import { omit, pick } from 'lodash-es';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { AddIcon, SearchIcon } from '@milesight/shared/src/components';
 
-import { Tooltip } from '@/components';
+import { Tooltip, PermissionControlHidden } from '@/components';
+import { PERMISSIONS } from '@/constants';
 import { useSearch } from './hooks/useSearch';
 
 import styles from './style.module.less';
@@ -51,16 +52,18 @@ const Header: React.FC<HeaderProps> = props => {
     return (
         <div className={styles.header}>
             <div className={styles.left}>{getIntlText('device.label.device_group')}</div>
-            <div
-                className={styles.right}
-                onClick={() => {
-                    onAdd?.();
-                }}
-            >
-                <Tooltip title={getIntlText('device.label.add_device_group')}>
-                    <AddIcon />
-                </Tooltip>
-            </div>
+            <PermissionControlHidden permissions={PERMISSIONS.DEVICE_GROUP_MANAGE}>
+                <div
+                    className={styles.right}
+                    onClick={() => {
+                        onAdd?.();
+                    }}
+                >
+                    <Tooltip title={getIntlText('device.label.add_device_group')}>
+                        <AddIcon />
+                    </Tooltip>
+                </div>
+            </PermissionControlHidden>
             <div className={styles.search}>
                 <TextField
                     ref={textFieldRef}

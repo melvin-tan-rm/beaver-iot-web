@@ -91,15 +91,17 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                                     <ListAltIcon sx={{ width: 20, height: 20 }} />
                                 </IconButton>
                             </Tooltip>
-                            <Tooltip title={getIntlText('device.label.change_device_group')}>
-                                <IconButton
-                                    sx={{ width: 30, height: 30 }}
-                                    onDoubleClick={e => e.stopPropagation()}
-                                    onClick={() => onButtonClick('changeGroup', row)}
-                                >
-                                    <DriveFileMoveOutlinedIcon sx={{ width: 20, height: 20 }} />
-                                </IconButton>
-                            </Tooltip>
+                            <PermissionControlHidden permissions={PERMISSIONS.DEVICE_EDIT}>
+                                <Tooltip title={getIntlText('device.label.change_device_group')}>
+                                    <IconButton
+                                        sx={{ width: 30, height: 30 }}
+                                        onDoubleClick={e => e.stopPropagation()}
+                                        onClick={() => onButtonClick('changeGroup', row)}
+                                    >
+                                        <DriveFileMoveOutlinedIcon sx={{ width: 20, height: 20 }} />
+                                    </IconButton>
+                                </Tooltip>
+                            </PermissionControlHidden>
                             <PermissionControlHidden permissions={PERMISSIONS.DEVICE_DELETE}>
                                 <Tooltip title={getIntlText('common.label.delete')}>
                                     <IconButton

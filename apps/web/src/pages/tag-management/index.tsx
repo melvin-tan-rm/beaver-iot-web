@@ -5,8 +5,9 @@ import { Button, Stack } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
 import { AddIcon, RemoveCircleOutlineIcon } from '@milesight/shared/src/components';
-import { TablePro, Breadcrumbs, Tooltip } from '@/components';
+import { TablePro, Breadcrumbs, Tooltip, PermissionControlHidden } from '@/components';
 import { tagAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
+import { PERMISSIONS } from '@/constants';
 import { OperateTagModal } from './components';
 
 import {
@@ -81,38 +82,44 @@ const TagManagement: React.FC = () => {
         const isAddedExceed = addedTagCount >= USER_MAX_TAGS;
         return (
             <Stack className="ms-operations-btns" direction="row" spacing="12px">
-                <Tooltip
-                    title={isAddedExceed ? getIntlText('common.tip.maximum_number_reached') : null}
-                >
-                    <div className="tag-add__wrapper">
-                        <Button
-                            disabled={isAddedExceed}
-                            variant="contained"
-                            className="md:d-none"
-                            sx={{ height: 36, textTransform: 'none' }}
-                            startIcon={<AddIcon />}
-                            onClick={openAddTag}
-                        >
-                            {getIntlText('common.label.add')}
-                        </Button>
-                    </div>
-                </Tooltip>
-                <Button
-                    variant="outlined"
-                    className="md:d-none"
-                    disabled={!selectedIds.length}
-                    sx={{ height: 36, textTransform: 'none' }}
-                    startIcon={<RemoveCircleOutlineIcon />}
-                    onClick={() => {
-                        handleDeleteTag(
-                            (allTags?.content || []).filter(t =>
-                                Boolean(selectedIds?.includes(t.id)),
-                            ),
-                        );
-                    }}
-                >
-                    {getIntlText('common.label.delete')}
-                </Button>
+                <PermissionControlHidden permissions={PERMISSIONS.TAG_MODULE_EDIT}>
+                    <Tooltip
+                        title={
+                            isAddedExceed ? getIntlText('common.tip.maximum_number_reached') : null
+                        }
+                    >
+                        <div className="tag-add__wrapper">
+                            <Button
+                                disabled={isAddedExceed}
+                                variant="contained"
+                                className="md:d-none"
+                                sx={{ height: 36, textTransform: 'none' }}
+                                startIcon={<AddIcon />}
+                                onClick={openAddTag}
+                            >
+                                {getIntlText('common.label.add')}
+                            </Button>
+                        </div>
+                    </Tooltip>
+                </PermissionControlHidden>
+                <PermissionControlHidden permissions={PERMISSIONS.TAG_MODULE_EDIT}>
+                    <Button
+                        variant="outlined"
+                        className="md:d-none"
+                        disabled={!selectedIds.length}
+                        sx={{ height: 36, textTransform: 'none' }}
+                        startIcon={<RemoveCircleOutlineIcon />}
+                        onClick={() => {
+                            handleDeleteTag(
+                                (allTags?.content || []).filter(t =>
+                                    Boolean(selectedIds?.includes(t.id)),
+                                ),
+                            );
+                        }}
+                    >
+                        {getIntlText('common.label.delete')}
+                    </Button>
+                </PermissionControlHidden>
             </Stack>
         );
     }, [getIntlText, selectedIds, openAddTag, handleDeleteTag, allTags, addedTagCount]);

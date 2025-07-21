@@ -286,16 +286,18 @@ export default () => {
                         backgroundColor: 'var(--gray-color-2)',
                     }}
                 />
-                <Button
-                    disabled={!selectedIds.length}
-                    variant="outlined"
-                    className="md:d-none"
-                    sx={{ height: 36, textTransform: 'none' }}
-                    startIcon={<SellOutlinedIcon />}
-                    onClick={() => openManageTagsModalAtEntity(entityData, selectedIds)}
-                >
-                    {getIntlText('tag.label.tags')}
-                </Button>
+                <PermissionControlHidden permissions={PERMISSIONS.ENTITY_DATA_EDIT}>
+                    <Button
+                        disabled={!selectedIds.length}
+                        variant="outlined"
+                        className="md:d-none"
+                        sx={{ height: 36, textTransform: 'none' }}
+                        startIcon={<SellOutlinedIcon />}
+                        onClick={() => openManageTagsModalAtEntity(entityData, selectedIds)}
+                    >
+                        {getIntlText('tag.label.tags')}
+                    </Button>
+                </PermissionControlHidden>
                 <PermissionControlHidden permissions={PERMISSIONS.ENTITY_DATA_EXPORT}>
                     <Button
                         variant="outlined"

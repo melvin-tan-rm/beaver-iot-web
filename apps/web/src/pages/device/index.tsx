@@ -158,25 +158,29 @@ export default () => {
                         {getIntlText('common.label.add')}
                     </Button>
                 </PermissionControlHidden>
-                <Button
-                    variant="outlined"
-                    className="md:d-none"
-                    sx={{ height: 36, textTransform: 'none' }}
-                    startIcon={<AddIcon />}
-                    onClick={openBatchGroupModal}
-                >
-                    {getIntlText('common.label.batch_add')}
-                </Button>
-                <Button
-                    variant="outlined"
-                    className="md:d-none"
-                    disabled={!selectedIds.length}
-                    sx={{ height: 36, textTransform: 'none' }}
-                    startIcon={<DriveFileMoveOutlinedIcon />}
-                    onClick={() => batchChangeGroupModal(selectedIds as ApiKey[])}
-                >
-                    {getIntlText('device.label.change_device_group')}
-                </Button>
+                <PermissionControlHidden permissions={PERMISSIONS.DEVICE_ADD}>
+                    <Button
+                        variant="outlined"
+                        className="md:d-none"
+                        sx={{ height: 36, textTransform: 'none' }}
+                        startIcon={<AddIcon />}
+                        onClick={openBatchGroupModal}
+                    >
+                        {getIntlText('common.label.batch_add')}
+                    </Button>
+                </PermissionControlHidden>
+                <PermissionControlHidden permissions={PERMISSIONS.DEVICE_EDIT}>
+                    <Button
+                        variant="outlined"
+                        className="md:d-none"
+                        disabled={!selectedIds.length}
+                        sx={{ height: 36, textTransform: 'none' }}
+                        startIcon={<DriveFileMoveOutlinedIcon />}
+                        onClick={() => batchChangeGroupModal(selectedIds as ApiKey[])}
+                    >
+                        {getIntlText('device.label.change_device_group')}
+                    </Button>
+                </PermissionControlHidden>
                 <PermissionControlHidden permissions={PERMISSIONS.DEVICE_DELETE}>
                     <Button
                         variant="outlined"
