@@ -298,14 +298,14 @@ const AdvancedFilter = <T extends GridValidRowModel>(
                                 insert(conditions.length, EMPTY_DATA);
                             }}
                         >
-                            {getIntlText('common.label.add')}
+                            {getIntlText('workflow.editor.form_button_add_condition')}
                         </Button>
                         <div>
                             <Button variant="outlined" sx={{ mr: 1.5 }} onClick={resetFilter}>
                                 {getIntlText('common.button.reset')}
                             </Button>
                             <Button variant="contained" onClick={confirmFilter}>
-                                {getIntlText('common.button.confirm')}
+                                {getIntlText('common.label.search')}
                             </Button>
                         </div>
                     </div>

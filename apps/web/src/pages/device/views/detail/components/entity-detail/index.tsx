@@ -94,7 +94,7 @@ export default (props: IProps) => {
             },
             {
                 key: 'entityTags',
-                label: getIntlText('common.label.label'),
+                label: getIntlText('tag.label.tags'),
                 content: (
                     <MultiTag<EntityTagType>
                         data={(detail.entityTags || []).map((tag: EntityTagType) => ({
