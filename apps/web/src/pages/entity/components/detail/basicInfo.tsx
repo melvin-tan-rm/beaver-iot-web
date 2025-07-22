@@ -24,7 +24,7 @@ const BasicInfo = ({ data }: IProps) => {
             },
             {
                 key: 'entityTags',
-                label: getIntlText('common.label.label'),
+                label: getIntlText('tag.label.tags'),
                 content: (
                     <MultiTag<NonNullable<TableRowDataType['entityTags']>[0]>
                         data={(data.entityTags || []).map(

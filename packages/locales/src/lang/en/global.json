@@ -252,12 +252,12 @@
     "common.label.selected_count": "Selected",
     "common.label.total_count": "Total",
     "common.label.columns_setting": "Column Settings",
-    "common.label.column_setting_fixed_left": "Left (fixed)",
-    "common.label.column_setting_fixed_right": "Right (fixed)",
-    "common.label.column_setting_non_fixed_column": "Adaptive columns",
-    "common.label.item_selected": "{1} item selected",
+    "common.label.column_setting_fixed_left": "Left (Fixed)",
+    "common.label.column_setting_fixed_right": "Right (Fixed)",
+    "common.label.column_setting_non_fixed_column": "Adaptive Columns",
+    "common.label.item_selected": "{1} Item Selected",
     "common.label.condition_any_equal": "Any Equal",
-    "common.label.view_tags": "View tags",
-    "common.label.view_all_tags": "Click to view all tags",
+    "common.label.view_tags": "View Tags",
+    "common.label.view_all_tags": "Click To View All Tags",
     "common.label.clear_filter_condition": "Clear Search Criteria"
 }
