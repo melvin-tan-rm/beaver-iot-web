@@ -9,7 +9,7 @@ import { type OperateGroupProps } from '../components/operate-group-modal';
 
 export type OperateModalType = 'add' | 'edit';
 
-export function useGroupModal(getAllGroups?: () => void) {
+export function useGroupModal(getAllGroups?: () => void, getDeviceGroupCount?: () => void) {
     const { getIntlText } = useI18n();
 
     const [groupModalVisible, setGroupModalVisible] = useState(false);
@@ -44,6 +44,7 @@ export function useGroupModal(getAllGroups?: () => void) {
         }
 
         getAllGroups?.();
+        getDeviceGroupCount?.();
         setGroupModalVisible(false);
         toast.success(getIntlText('common.message.add_success'));
         callback?.();

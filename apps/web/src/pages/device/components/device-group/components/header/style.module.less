@@ -15,6 +15,17 @@
         display: flex;
         align-items: center;
 
+        &.disabled {
+            :global(svg) {
+                color: var(--text-color-disable);
+                cursor: default;
+
+                &:hover {
+                    color: var(--text-color-disable);
+                }
+            }
+        }
+
         :global {
             .@{prefix}-tooltip {
                 display: flex;

@@ -118,7 +118,7 @@ export interface DeviceAPISchema extends APISchema {
         response: unknown;
     };
 
-    /** get device group search list */
+    /** Get device group search list */
     getDeviceGroupList: {
         request: SearchRequestType & {
             /** Name (Fuzzy search) */
@@ -126,14 +126,14 @@ export interface DeviceAPISchema extends APISchema {
         };
         response: SearchResponseType<DeviceGroupItemProps[]>;
     };
-    /** add device group */
+    /** Add device group */
     addDeviceGroup: {
         request: {
             name: string;
         };
         response: void;
     };
-    /** update device group */
+    /** Update device group */
     updateDeviceGroup: {
         request: {
             id: ApiKey;
@@ -141,14 +141,21 @@ export interface DeviceAPISchema extends APISchema {
         };
         response: void;
     };
-    /** delete device group */
+    /** Delete device group */
     deleteDeviceGroup: {
         request: {
             id: ApiKey;
         };
         response: void;
     };
-    /** device move to group */
+    /** Get device-group count */
+    getDeviceGroupCount: {
+        request: void;
+        response: {
+            number: number;
+        };
+    };
+    /** Device move to group */
     moveDeviceToGroup: {
         request: {
             group_id?: ApiKey;
@@ -156,14 +163,14 @@ export interface DeviceAPISchema extends APISchema {
         };
         response: void;
     };
-    /** get device batch add template file */
+    /** Get device batch add template file */
     getDeviceBatchTemplate: {
         request: {
             integration: string;
         };
         response: Blob;
     };
-    /** parse device batch template file */
+    /** Parse device batch template file */
     parseDeviceBatchTemplate: {
         request: {
             integration: ApiKey;
@@ -173,7 +180,7 @@ export interface DeviceAPISchema extends APISchema {
             create_device_requests: AddDeviceProps[];
         };
     };
-    /** generate error file */
+    /** Generate error file */
     generateDeviceAddErrorFile: {
         request: {
             integration: string;
@@ -198,6 +205,7 @@ export default attachAPI<DeviceAPISchema>(client, {
         addDeviceGroup: `POST ${API_PREFIX}/device-group`,
         updateDeviceGroup: `PUT ${API_PREFIX}/device-group/:id`,
         deleteDeviceGroup: `DELETE ${API_PREFIX}/device-group/:id`,
+        getDeviceGroupCount: `GET ${API_PREFIX}/device-group/number`,
         moveDeviceToGroup: `POST ${API_PREFIX}/device/move-to-group`,
         getDeviceBatchTemplate: `POST ${API_PREFIX}/device-batch/template`,
         parseDeviceBatchTemplate: {

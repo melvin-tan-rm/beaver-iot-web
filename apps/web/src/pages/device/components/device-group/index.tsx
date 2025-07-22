@@ -7,7 +7,7 @@ import { LoadingWrapper } from '@milesight/shared/src/components';
 import { type DeviceGroupItemProps } from '@/services/http/device';
 import { Header, Body, OperateGroupModal } from './components';
 import { MORE_OPERATION } from './components/more-dropdown';
-import { useDeviceGroup, useGroupModal } from './hooks';
+import { useDeviceGroup, useGroupModal, useGroupCount } from './hooks';
 
 import './style.less';
 
@@ -22,8 +22,10 @@ export interface DeviceGroupProps {
 const DeviceGroup = forwardRef<DeviceGroupExposeProps, DeviceGroupProps>((props, ref) => {
     const { isShrink } = props;
 
+    const { groupCount, getDeviceGroupCount } = useGroupCount();
+
     const { getDeviceGroups, deviceGroups, loading, handleGroupDelete, keyword, changeKeyword } =
-        useDeviceGroup();
+        useDeviceGroup(getDeviceGroupCount);
 
     const {
         groupModalVisible,
@@ -33,7 +35,7 @@ const DeviceGroup = forwardRef<DeviceGroupExposeProps, DeviceGroupProps>((props,
         hiddenGroupModal,
         onFormSubmit,
         editGroupModal,
-    } = useGroupModal(getDeviceGroups);
+    } = useGroupModal(getDeviceGroups, getDeviceGroupCount);
 
     // An instance that is exposed to the parent component
     useImperativeHandle(ref, () => {
@@ -70,7 +72,12 @@ const DeviceGroup = forwardRef<DeviceGroupExposeProps, DeviceGroupProps>((props,
 
     return (
         <div className={groupCls}>
-            <Header onAdd={addGroupModal} keyword={keyword} changeKeyword={changeKeyword} />
+            <Header
+                onAdd={addGroupModal}
+                keyword={keyword}
+                changeKeyword={changeKeyword}
+                groupCount={groupCount}
+            />
             {renderDeviceGroupBody()}
             {groupModalVisible && (
                 <OperateGroupModal

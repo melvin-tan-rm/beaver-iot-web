@@ -18,7 +18,7 @@ import { FIXED_GROUP } from '@/pages/device/constants';
 /**
  * Handle device group many operation
  */
-export function useDeviceGroup() {
+export function useDeviceGroup(getDeviceGroupCount: () => void) {
     const { getIntlText } = useI18n();
     const confirm = useConfirm();
     const { activeGroup, updateActiveGroup, updateDeviceGroups } = useDeviceStore();
@@ -90,6 +90,7 @@ export function useDeviceGroup() {
                 }
 
                 getDeviceGroups?.();
+                getDeviceGroupCount?.();
                 toast.success(getIntlText('common.message.delete_success'));
             },
         });

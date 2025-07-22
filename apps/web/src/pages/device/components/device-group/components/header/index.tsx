@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { TextField } from '@mui/material';
 import { omit, pick } from 'lodash-es';
+import cls from 'classnames';
 
 import { useI18n } from '@milesight/shared/src/hooks';
 import { AddIcon, SearchIcon } from '@milesight/shared/src/components';
@@ -11,15 +12,18 @@ import { useSearch } from './hooks/useSearch';
 
 import styles from './style.module.less';
 
+const MAX_DEVICE_GROUP = 50;
+
 export interface HeaderProps {
     keyword: string;
+    groupCount?: number;
     changeKeyword: (keyword: string) => void;
     /** add new group */
     onAdd?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = props => {
-    const { keyword, changeKeyword, onAdd } = props;
+    const { keyword, groupCount = 0, changeKeyword, onAdd } = props;
 
     const { getIntlText } = useI18n();
 
@@ -28,6 +32,10 @@ const Header: React.FC<HeaderProps> = props => {
             keyword,
             changeKeyword,
         });
+
+    const isDisabledAdd = useMemo(() => {
+        return groupCount >= MAX_DEVICE_GROUP;
+    }, [groupCount]);
 
     const textFieldSx = useMemo(() => {
         const result = {
@@ -50,12 +58,22 @@ const Header: React.FC<HeaderProps> = props => {
             <div className={styles.left}>{getIntlText('device.label.device_group')}</div>
             <PermissionControlHidden permissions={PERMISSIONS.DEVICE_GROUP_MANAGE}>
                 <div
-                    className={styles.right}
+                    className={cls(styles.right, {
+                        [styles.disabled]: isDisabledAdd,
+                    })}
                     onClick={() => {
+                        if (isDisabledAdd) return;
+
                         onAdd?.();
                     }}
                 >
-                    <Tooltip title={getIntlText('device.label.add_device_group')}>
+                    <Tooltip
+                        title={
+                            isDisabledAdd
+                                ? getIntlText('common.tip.maximum_number_reached')
+                                : getIntlText('device.label.add_device_group')
+                        }
+                    >
                         <AddIcon />
                     </Tooltip>
                 </div>
