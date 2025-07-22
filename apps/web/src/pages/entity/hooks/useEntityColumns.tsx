@@ -71,7 +71,7 @@ const useEntityColumns = <T extends TableRowDataType>({
                 field: 'deviceName',
                 headerName: getIntlText('common.label.device'),
                 flex: 1,
-                minWidth: 120,
+                minWidth: 140,
                 ellipsis: true,
                 operators: getOperatorsByExclude([
                     FILTER_OPERATORS.IS_EMPTY,
@@ -138,7 +138,7 @@ const useEntityColumns = <T extends TableRowDataType>({
                 headerName: getIntlText('entity.label.parent_entity'),
                 align: 'left',
                 flex: 1,
-                minWidth: 180,
+                minWidth: 200,
                 ellipsis: true,
                 operators: getOperatorsByExclude([FILTER_OPERATORS.ANY_EQUALS]),
                 operatorValueCompType: 'input',
@@ -161,6 +161,10 @@ const useEntityColumns = <T extends TableRowDataType>({
                 flex: 1,
                 minWidth: 120,
                 ellipsis: true,
+                renderCell({ row, value }) {
+                    const { entityValueAttribute: attr } = row;
+                    return value ? `${value}${attr?.unit || ''}` : '-';
+                },
             },
             {
                 field: 'integrationName',
@@ -193,7 +197,6 @@ const useEntityColumns = <T extends TableRowDataType>({
                 field: '$operation',
                 headerName: getIntlText('common.label.operation'),
                 width: 120,
-                flex: 0,
                 display: 'flex',
                 align: 'left',
                 fixed: 'right',

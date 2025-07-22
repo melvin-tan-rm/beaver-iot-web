@@ -7,7 +7,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { isArray, isObject } from 'lodash-es';
+import { isArray, isObject, unionBy } from 'lodash-es';
 import classNames from 'classnames';
 import {
     Badge,
@@ -42,8 +42,8 @@ import { useSyncDynamic } from './hooks';
 import './style.less';
 
 export interface AdvancedFilterHandler {
-    // Insert one condition
-    insertOrReplaceCondition: (condition: ConditionProps) => void;
+    // Additional condition value
+    appendConditionValue: (condition: ConditionProps) => void;
     // Delete conditions
     deleteConditions: (columns: string[]) => void;
     // Reset all condition
@@ -102,10 +102,20 @@ const AdvancedFilter = <T extends GridValidRowModel>(
     } = useSyncDynamic<ConditionProps>([]);
 
     useImperativeHandle(ref, () => ({
-        insertOrReplaceCondition: (condition: ConditionProps) => {
+        appendConditionValue: (condition: ConditionProps) => {
             const index = conditions.findIndex(c => c.column === condition.column);
             if (index >= 0) {
-                handleFilterChange(replace(index, condition));
+                const { value, operator } = conditions[index];
+                handleFilterChange(
+                    replace(index, {
+                        ...condition,
+                        operator: isNullValueOperator(operator) ? condition.operator : operator,
+                        value:
+                            isArray(value) && isArray(condition.value)
+                                ? unionBy(value, condition.value, 'value')
+                                : condition.value,
+                    }),
+                );
             } else {
                 handleFilterChange(insert(conditions.length, condition));
             }
