@@ -1,13 +1,6 @@
 import { useMemo } from 'react';
 import { type ControllerProps } from 'react-hook-form';
-import {
-    FormControl,
-    Autocomplete,
-    Select as MuiSelect,
-    InputLabel,
-    FormHelperText,
-    MenuItem,
-} from '@mui/material';
+import { FormControl, Autocomplete } from '@mui/material';
 
 import { useI18n } from '@milesight/shared/src/hooks';
 import { checkRequired } from '@milesight/shared/src/utils/validators';
@@ -18,7 +11,7 @@ import { type ManageTagsProps } from '../index';
 import { SelectVirtualizationList } from '../components';
 import { MANAGE_ACTION } from '../constants';
 import { useAutoComplete } from './useAutoComplete';
-import Tag from '../../tag';
+import { useReplaceSelect } from './useReplaceSelect';
 
 export function useFormItems(props: {
     currentAction: TagOperationEnums;
@@ -30,6 +23,7 @@ export function useFormItems(props: {
     const {
         autoCompleteTagOptions,
         originalTagOptions,
+        tagsLoading,
         transformValue,
         handleChange,
         handleRenderOptions,
@@ -39,10 +33,23 @@ export function useFormItems(props: {
         handleGetOptionDisabled,
         handleGetOptionLabel,
         handleSlots,
-        renderEmpty,
     } = useAutoComplete({
         currentAction,
         entityOptions,
+    });
+
+    const {
+        replaceTransformValue,
+        handleReplaceChange,
+        replaceRenderOptions,
+        replaceRenderInput,
+        replaceIsOptionEqualToValue,
+        replaceGetOptionLabel,
+        replaceFilterOptions,
+        replaceSlots,
+    } = useReplaceSelect({
+        tagOptions: originalTagOptions,
+        tagsLoading,
     });
 
     const formItems: ControllerProps<ManageTagsProps>[] = useMemo(() => {
@@ -129,36 +136,29 @@ export function useFormItems(props: {
                 defaultValue: '',
                 render({ field: { onChange, value }, fieldState: { error } }) {
                     return (
-                        <FormControl fullWidth error={!!error}>
-                            <InputLabel required>
-                                {getIntlText('tag.title.original_tag')}
-                            </InputLabel>
-                            <MuiSelect
+                        <FormControl fullWidth>
+                            <Autocomplete<TagProps, false>
                                 id="original-tag-select"
-                                value={value}
-                                onChange={onChange}
-                                MenuProps={{
-                                    PaperProps: {
-                                        style: {
-                                            maxHeight: 250,
-                                        },
+                                size="small"
+                                options={entityOptions}
+                                value={replaceTransformValue(value as ApiKey)}
+                                onChange={handleReplaceChange(onChange)}
+                                disableListWrap
+                                renderOption={replaceRenderOptions()}
+                                renderInput={replaceRenderInput(
+                                    value as ApiKey,
+                                    getIntlText('tag.title.original_tag'),
+                                    error,
+                                )}
+                                isOptionEqualToValue={replaceIsOptionEqualToValue()}
+                                getOptionLabel={replaceGetOptionLabel()}
+                                filterOptions={replaceFilterOptions()}
+                                slotProps={{
+                                    listbox: {
+                                        component: SelectVirtualizationList,
                                     },
                                 }}
-                            >
-                                {renderEmpty(entityOptions)}
-                                {entityOptions.map(t => (
-                                    <MenuItem key={t.id} value={t.id}>
-                                        <Tag
-                                            label={t.name}
-                                            arbitraryColor={t.color}
-                                            tip={t.description}
-                                        />
-                                    </MenuItem>
-                                ))}
-                            </MuiSelect>
-                            {!!error && (
-                                <FormHelperText error={!!error}>{error?.message}</FormHelperText>
-                            )}
+                            />
                         </FormControl>
                     );
                 },
@@ -173,38 +173,30 @@ export function useFormItems(props: {
                 defaultValue: '',
                 render({ field: { onChange, value }, fieldState: { error } }) {
                     return (
-                        <FormControl fullWidth error={!!error}>
-                            <InputLabel required>
-                                {getIntlText('tag.title.replace_with')}
-                            </InputLabel>
-                            <MuiSelect
-                                required
+                        <FormControl fullWidth>
+                            <Autocomplete<TagProps, false>
                                 id="replace-tag-select"
-                                value={value}
-                                onChange={onChange}
-                                displayEmpty
-                                MenuProps={{
-                                    PaperProps: {
-                                        style: {
-                                            maxHeight: 250,
-                                        },
+                                size="small"
+                                options={originalTagOptions}
+                                value={replaceTransformValue(value as ApiKey)}
+                                onChange={handleReplaceChange(onChange)}
+                                disableListWrap
+                                renderOption={replaceRenderOptions()}
+                                renderInput={replaceRenderInput(
+                                    value as ApiKey,
+                                    getIntlText('tag.title.replace_with'),
+                                    error,
+                                )}
+                                isOptionEqualToValue={replaceIsOptionEqualToValue()}
+                                getOptionLabel={replaceGetOptionLabel()}
+                                filterOptions={replaceFilterOptions()}
+                                slotProps={{
+                                    listbox: {
+                                        component: SelectVirtualizationList,
                                     },
                                 }}
-                            >
-                                {renderEmpty(originalTagOptions)}
-                                {originalTagOptions.map(t => (
-                                    <MenuItem key={t.id} value={t.id}>
-                                        <Tag
-                                            label={t.name}
-                                            arbitraryColor={t.color}
-                                            tip={t.description}
-                                        />
-                                    </MenuItem>
-                                ))}
-                            </MuiSelect>
-                            {!!error && (
-                                <FormHelperText error={!!error}>{error?.message}</FormHelperText>
-                            )}
+                                slots={replaceSlots()}
+                            />
                         </FormControl>
                     );
                 },
@@ -218,8 +210,8 @@ export function useFormItems(props: {
     }, [
         getIntlText,
         autoCompleteTagOptions,
-        originalTagOptions,
         entityOptions,
+        originalTagOptions,
         currentAction,
         transformValue,
         handleChange,
@@ -230,7 +222,14 @@ export function useFormItems(props: {
         handleGetOptionDisabled,
         handleGetOptionLabel,
         handleSlots,
-        renderEmpty,
+        replaceTransformValue,
+        handleReplaceChange,
+        replaceRenderOptions,
+        replaceRenderInput,
+        replaceIsOptionEqualToValue,
+        replaceGetOptionLabel,
+        replaceFilterOptions,
+        replaceSlots,
     ]);
 
     return {

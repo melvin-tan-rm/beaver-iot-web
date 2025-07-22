@@ -193,6 +193,7 @@ export function useAutoComplete(props: {
     return {
         autoCompleteTagOptions,
         originalTagOptions,
+        tagsLoading,
         transformValue,
         handleChange,
         handleRenderOptions,
