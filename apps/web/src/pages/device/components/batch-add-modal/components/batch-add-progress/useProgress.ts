@@ -80,7 +80,7 @@ export function useProgress(props: BatchAddProgressProps) {
         Array.from({ length: addList.length - 1 - lastIndex }).forEach((_, index) => {
             handleFailed({
                 id: lastIndex + index + 1,
-                msg: 'Action has been interrupted.',
+                msg: getIntlText('common.label.tasks_has_been_interrupted'),
             });
         });
 

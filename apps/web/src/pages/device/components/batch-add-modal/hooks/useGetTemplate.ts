@@ -31,7 +31,10 @@ export function useGetTemplate() {
             const data = getResponseData(resp);
             if (!data) return;
 
-            linkDownload(data, `${dayjs().format('YYYY_MM_DD_HH_mm_ss')}_device_template.xlsx`);
+            linkDownload(
+                data,
+                `${dayjs().format('YYYY_MM_DD_HH_mm_ss')}_devices_import_template.xlsx`,
+            );
             toast.success(getIntlText('common.message.operation_success'));
         },
         {

@@ -85,20 +85,24 @@ const BatchAddProgress: React.FC<BatchAddProgressProps> = props => {
                     })}
                 </div>
             </div>
-            <div className={styles.result}>
-                <CancelIcon color="error" />
-                <div className={styles.text}>
-                    {getIntlText('device.tip.device_add_failed', {
-                        1: failedCount,
-                    })}
-                </div>
-                <LoadingWrapper size={20} loading={downloading}>
-                    <div className={styles.download} onClick={handleDownloadFailedDevice}>
-                        <FileDownloadOutlinedIcon color="inherit" />
-                        <div className={styles.text}>{getIntlText('common.button.download')}</div>
+            {failedCount ? (
+                <div className={styles.result}>
+                    <CancelIcon color="error" />
+                    <div className={styles.text}>
+                        {getIntlText('device.tip.device_add_failed', {
+                            1: failedCount,
+                        })}
                     </div>
-                </LoadingWrapper>
-            </div>
+                    <LoadingWrapper size={20} loading={downloading}>
+                        <div className={styles.download} onClick={handleDownloadFailedDevice}>
+                            <FileDownloadOutlinedIcon color="inherit" />
+                            <div className={styles.text}>
+                                {getIntlText('common.button.download')}
+                            </div>
+                        </div>
+                    </LoadingWrapper>
+                </div>
+            ) : null}
         </div>
     );
 };
