@@ -5,7 +5,11 @@ import { isEmpty, omit } from 'lodash-es';
 import { tagAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 
 export function useTagOptions() {
-    const { loading: tagsLoading, data: tagData } = useRequest(async () => {
+    const {
+        loading: tagsLoading,
+        data: tagData,
+        run: getTagList,
+    } = useRequest(async () => {
         const [error, resp] = await awaitWrap(
             tagAPI.getTagList({
                 page_number: 1,
@@ -41,5 +45,9 @@ export function useTagOptions() {
          * Get tag detail by id
          */
         getTagById,
+        /**
+         * Get tag list
+         */
+        getTagList,
     };
 }

@@ -7,18 +7,11 @@ import { isEmpty } from 'lodash-es';
 import { Modal, type ModalProps } from '@milesight/shared/src/components';
 import { useI18n } from '@milesight/shared/src/hooks';
 
-import { TagOperationEnums } from '@/services/http';
-import { useFormItems, useEntityOptions } from './hooks';
+import { useFormItems, useEntityOptions, useTagOptions } from './hooks';
 import Tag from '../tag';
+import type { ManageTagsProps, ManageTagsFormSubmitProps } from './interface';
 
 import styles from './style.module.less';
-
-export interface ManageTagsProps {
-    action: TagOperationEnums;
-    tags: ApiKey[];
-    originalTag: ApiKey;
-    replaceTag: ApiKey;
-}
 
 interface Props extends Omit<ModalProps, 'onOk'> {
     /**
@@ -28,7 +21,7 @@ interface Props extends Omit<ModalProps, 'onOk'> {
     /** tip info */
     tip?: string;
     /** on form submit */
-    onFormSubmit: (params: ManageTagsProps, callback: () => void) => Promise<void>;
+    onFormSubmit: (props: ManageTagsFormSubmitProps) => Promise<void>;
 }
 
 /**
@@ -40,12 +33,21 @@ const ManageTagsModal: React.FC<Props> = props => {
     const { getIntlText } = useI18n();
     const { control, formState, handleSubmit, reset, watch, setValue } = useForm<ManageTagsProps>();
     const { entityOptions } = useEntityOptions(selectedEntities);
+    const { tagsLoading, tagOptions, getTagList } = useTagOptions();
 
     const currentAction = watch('action');
 
     const { formItems } = useFormItems({
         currentAction,
         entityOptions,
+        tagsLoading,
+        originalTagOptions: tagOptions,
+    });
+
+    const resetTagForm = useMemoizedFn(() => {
+        setValue('tags', []);
+        setValue('originalTag', '');
+        setValue('replaceTag', '');
     });
 
     /**
@@ -57,14 +59,15 @@ const ManageTagsModal: React.FC<Props> = props => {
             return;
         }
 
-        setValue('tags', []);
-        setValue('originalTag', '');
-        setValue('replaceTag', '');
-    }, [currentAction, setValue]);
+        resetTagForm();
+    }, [currentAction, resetTagForm]);
 
     const onSubmit: SubmitHandler<ManageTagsProps> = async params => {
-        await onFormSubmit(params, () => {
-            reset();
+        await onFormSubmit({
+            params,
+            reset,
+            resetTagForm,
+            getTagList,
         });
     };
 

@@ -7,7 +7,7 @@ import { checkRequired } from '@milesight/shared/src/utils/validators';
 import { Select } from '@milesight/shared/src/components';
 
 import { TagOperationEnums } from '@/services/http';
-import { type ManageTagsProps } from '../index';
+import type { ManageTagsProps } from '../interface';
 import { SelectVirtualizationList } from '../components';
 import { MANAGE_ACTION } from '../constants';
 import { useAutoComplete } from './useAutoComplete';
@@ -16,14 +16,19 @@ import { useReplaceSelect } from './useReplaceSelect';
 export function useFormItems(props: {
     currentAction: TagOperationEnums;
     entityOptions: TagProps[];
+    tagsLoading?: boolean;
+    originalTagOptions: TagProps[];
 }) {
-    const { currentAction = TagOperationEnums.ADD, entityOptions } = props || {};
+    const {
+        currentAction = TagOperationEnums.ADD,
+        entityOptions,
+        tagsLoading = false,
+        originalTagOptions,
+    } = props || {};
 
     const { getIntlText } = useI18n();
     const {
         autoCompleteTagOptions,
-        originalTagOptions,
-        tagsLoading,
         transformValue,
         handleChange,
         handleRenderOptions,
@@ -36,6 +41,8 @@ export function useFormItems(props: {
     } = useAutoComplete({
         currentAction,
         entityOptions,
+        tagsLoading,
+        originalTagOptions,
     });
 
     const {

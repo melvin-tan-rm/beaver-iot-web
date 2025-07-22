@@ -18,20 +18,20 @@ import { TagOperationEnums } from '@/services/http';
 import Tag from '@/components/tag';
 import { useTagAllSelect } from './useTagAllSelect';
 import { ALL_OPTION } from '../constants';
-import { useTagOptions } from './useTagOptions';
 
 import styles from '../style.module.less';
 
 export function useAutoComplete(props: {
     currentAction: TagOperationEnums;
     entityOptions: TagProps[];
+    tagsLoading?: boolean;
+    originalTagOptions: TagProps[];
 }) {
-    const { currentAction, entityOptions } = props || {};
+    const { currentAction, entityOptions, tagsLoading, originalTagOptions } = props || {};
 
     const { getIntlText } = useI18n();
 
     const { allIsIndeterminate, convertTagsValue, convertTagsOnChangeValue } = useTagAllSelect();
-    const { tagsLoading, tagOptions: originalTagOptions } = useTagOptions();
 
     const autoCompleteTagOptions = useMemo((): TagProps[] => {
         const allOption: TagProps = {
@@ -192,8 +192,6 @@ export function useAutoComplete(props: {
 
     return {
         autoCompleteTagOptions,
-        originalTagOptions,
-        tagsLoading,
         transformValue,
         handleChange,
         handleRenderOptions,

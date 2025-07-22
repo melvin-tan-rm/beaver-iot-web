@@ -6,7 +6,7 @@ import { useI18n } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 
 import { tagAPI, awaitWrap, isRequestSuccess, TagOperationEnums } from '@/services/http';
-import { type ManageTagsProps } from '../index';
+import type { ManageTagsProps, ManageTagsFormSubmitProps } from '../interface';
 
 /**
  * Operate the manage tags modal
@@ -66,41 +66,46 @@ export function useManageTagsModal(refreshList?: () => void) {
         return result;
     });
 
-    const manageTagsFormSubmit = useMemoizedFn(
-        async (data: ManageTagsProps, callback: () => void) => {
-            const tags = handleTagsParams(data);
-            const entityIds = (selectedEntities || [])
-                .map(entity => entity.entityId)
-                .filter(Boolean);
+    const manageTagsFormSubmit = useMemoizedFn(async (props: ManageTagsFormSubmitProps) => {
+        const { params, reset, resetTagForm, getTagList } = props || {};
 
-            if (
-                !data?.action ||
-                !Array.isArray(entityIds) ||
-                isEmpty(entityIds) ||
-                (!tags?.newTags && !tags?.removeTags)
-            ) {
-                return;
+        const tags = handleTagsParams(params);
+        const entityIds = (selectedEntities || []).map(entity => entity.entityId).filter(Boolean);
+
+        if (
+            !params?.action ||
+            !Array.isArray(entityIds) ||
+            isEmpty(entityIds) ||
+            (!tags?.newTags && !tags?.removeTags)
+        ) {
+            return;
+        }
+
+        const [error, resp] = await awaitWrap(
+            tagAPI.updateEntitiesTags({
+                operation: params.action,
+                added_tag_ids: tags?.newTags,
+                removed_tag_ids: tags?.removeTags,
+                entity_ids: entityIds,
+            }),
+        );
+
+        if (error || !isRequestSuccess(resp)) {
+            const errorCode = (error?.response?.data as ApiResponse)?.error_code;
+            if (errorCode === 'entity_tag_not_found') {
+                refreshList?.();
+                getTagList?.();
+                resetTagForm?.();
             }
 
-            const [error, resp] = await awaitWrap(
-                tagAPI.updateEntitiesTags({
-                    operation: data.action,
-                    added_tag_ids: tags?.newTags,
-                    removed_tag_ids: tags?.removeTags,
-                    entity_ids: entityIds,
-                }),
-            );
+            return;
+        }
 
-            if (error || !isRequestSuccess(resp)) {
-                return;
-            }
-
-            refreshList?.();
-            setManageTagsModalVisible(false);
-            toast.success(getIntlText('common.message.operation_success'));
-            callback?.();
-        },
-    );
+        refreshList?.();
+        setManageTagsModalVisible(false);
+        toast.success(getIntlText('common.message.operation_success'));
+        reset?.();
+    });
 
     return {
         manageTagsModalVisible,
