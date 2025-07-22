@@ -2,13 +2,14 @@ import React, { useMemo } from 'react';
 import { useForm, Controller, type SubmitHandler, type ControllerProps } from 'react-hook-form';
 import { useMemoizedFn } from 'ahooks';
 import classNames from 'classnames';
-import { Tab, Tabs, Box, Alert } from '@mui/material';
+import { Tab, Tabs, Box, Alert, FormControl, Autocomplete } from '@mui/material';
 
-import { Modal, type ModalProps, Select, InfoIcon } from '@milesight/shared/src/components';
+import { Modal, type ModalProps, InfoIcon } from '@milesight/shared/src/components';
 import { checkRequired } from '@milesight/shared/src/utils/validators';
 import { useI18n } from '@milesight/shared/src/hooks';
 
-import useDeviceStore from '../../store';
+import { useAutocomplete } from './useAutocomplete';
+
 import styles from './style.module.less';
 
 export enum GroupTabEnums {
@@ -51,7 +52,13 @@ const ChangeGroupModal: React.FC<Props> = props => {
 
     const { getIntlText } = useI18n();
     const { control, formState, handleSubmit, reset } = useForm<ChangeGroupProps>();
-    const { deviceGroups } = useDeviceStore();
+    const {
+        options,
+        handleChange,
+        handleIsOptionEqualToValue,
+        handleRenderInput,
+        handleTransformValue,
+    } = useAutocomplete();
 
     const formItems: ControllerProps<ChangeGroupProps>[] = useMemo(() => {
         return [
@@ -65,23 +72,33 @@ const ChangeGroupModal: React.FC<Props> = props => {
                 defaultValue: '',
                 render({ field: { onChange, value }, fieldState: { error } }) {
                     return (
-                        <Select
-                            required
-                            fullWidth
-                            options={(deviceGroups || []).map(d => ({
-                                label: d.name,
-                                value: d.id,
-                            }))}
-                            label={getIntlText('device.label.device_group')}
-                            error={error}
-                            value={value}
-                            onChange={onChange}
-                        />
+                        <FormControl fullWidth>
+                            <Autocomplete<OptionsProps, false>
+                                id="replace-tag-select"
+                                size="small"
+                                options={options}
+                                value={handleTransformValue(value as ApiKey)}
+                                onChange={handleChange(onChange)}
+                                disableListWrap
+                                renderInput={handleRenderInput(
+                                    getIntlText('device.label.device_group'),
+                                    error,
+                                )}
+                                isOptionEqualToValue={handleIsOptionEqualToValue()}
+                            />
+                        </FormControl>
                     );
                 },
             },
         ];
-    }, [getIntlText, deviceGroups]);
+    }, [
+        getIntlText,
+        options,
+        handleChange,
+        handleIsOptionEqualToValue,
+        handleRenderInput,
+        handleTransformValue,
+    ]);
 
     const onSubmit: SubmitHandler<ChangeGroupProps> = async params => {
         await onFormSubmit(params, () => {
