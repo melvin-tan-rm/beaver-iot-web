@@ -22,6 +22,24 @@ declare type ApiResponse<T = any> = {
 };
 
 /**
+ * Common API Base Error Data type
+ */
+declare type ApiErrorData = {
+    error_code: string;
+    error_message: string;
+    args: Record<string, any>;
+};
+
+/**
+ * Common API Multiple Error Data type
+ */
+declare type ApiMultiErrorData = {
+    error_code: string;
+    error_message: string;
+    args: ApiErrorData[];
+};
+
+/**
  * API basic type definition
  */
 declare type APISchema = Record<

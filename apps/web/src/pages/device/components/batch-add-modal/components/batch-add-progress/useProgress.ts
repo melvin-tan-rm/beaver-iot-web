@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { linkDownload } from '@milesight/shared/src/utils/tools';
 import { toast } from '@milesight/shared/src/components';
+import { getApiErrorInfos } from '@milesight/shared/src/utils/parseApiErrorData';
 
 import {
     type AddDeviceProps,
@@ -154,8 +155,7 @@ export function useProgress(props: BatchAddProgressProps) {
                             handleFailed({
                                 id: newIndexList[newIndex],
                                 msg:
-                                    resp?.reason?.response?.data?.error_message ||
-                                    resp?.reason?.response?.data?.error_code ||
+                                    getApiErrorInfos(resp?.reason?.response?.data).join('; \n') ||
                                     'unknown',
                             });
                         }

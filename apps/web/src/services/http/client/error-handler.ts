@@ -14,6 +14,10 @@ import {
     TOKEN_CACHE_KEY,
     REGISTERED_KEY,
 } from '@milesight/shared/src/utils/storage';
+import {
+    MultiErrorDataEnums,
+    getApiErrorInfos,
+} from '@milesight/shared/src/utils/parseApiErrorData';
 import type { RequestFunctionOptions } from '@milesight/shared/src/utils/request/types';
 
 type ErrorHandlerConfig = {
@@ -52,6 +56,20 @@ const handlerConfigs: ErrorHandlerConfig[] = [
                 },
             });
             iotLocalStorage.removeItem(TOKEN_CACHE_KEY);
+        },
+    },
+    /**
+     * Handle API Multiple error and Event_bus execution error
+     */
+    {
+        errCodes: [MultiErrorDataEnums.MULTIPLE, MultiErrorDataEnums.EVENT_BUS],
+        handler(errCode, resp) {
+            const errorInfos = getApiErrorInfos(resp?.data);
+
+            toast.error({
+                key: errCode,
+                content: errorInfos?.[0] || errCode || '',
+            });
         },
     },
 ];
