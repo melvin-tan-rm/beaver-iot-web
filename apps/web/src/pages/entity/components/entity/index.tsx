@@ -210,7 +210,7 @@ export default () => {
 
     // Filter by click tag
     const handleFilterByTag = (tag?: NonNullable<TableRowDataType['entityTags']>[0]) => {
-        advancedFilterRef.current?.insertOrReplaceCondition({
+        advancedFilterRef.current?.appendConditionValue({
             column: 'entityTags',
             operator: FILTER_OPERATORS.ANY_EQUALS,
             value: [

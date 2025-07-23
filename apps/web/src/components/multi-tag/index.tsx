@@ -72,12 +72,12 @@ const MultiTag = <T extends Record<string, unknown>>({
     };
 
     const renderTagList = useCallback(
-        (showIndex: number) => {
+        (number: number) => {
             if (!data.length) {
                 return emptySlot;
             }
             const tags = data
-                .filter((item, index) => index <= showIndex - 1)
+                .filter((item, index) => index <= number - 1)
                 .map(tag => {
                     return renderItem ? (
                         renderItem(tag, maxItemWidth)
@@ -100,7 +100,7 @@ const MultiTag = <T extends Record<string, unknown>>({
                     );
                 });
 
-            if (tags.length && showIndex < data.length) {
+            if (tags.length && number < data.length) {
                 tags.push(
                     renderRestNode ? (
                         renderRestNode(handleShowMore)
