@@ -6,7 +6,7 @@ import cls from 'classnames';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { AddIcon, SearchIcon } from '@milesight/shared/src/components';
 
-import { Tooltip, PermissionControlHidden } from '@/components';
+import { Tooltip, PermissionControlDisabled } from '@/components';
 import { PERMISSIONS } from '@/constants';
 import { useSearch } from './hooks/useSearch';
 
@@ -56,7 +56,7 @@ const Header: React.FC<HeaderProps> = props => {
     return (
         <div className={styles.header}>
             <div className={styles.left}>{getIntlText('device.label.device_group')}</div>
-            <PermissionControlHidden permissions={PERMISSIONS.DEVICE_GROUP_MANAGE}>
+            <PermissionControlDisabled permissions={PERMISSIONS.DEVICE_GROUP_MANAGE}>
                 <div
                     className={cls(styles.right, {
                         [styles.disabled]: isDisabledAdd,
@@ -77,7 +77,7 @@ const Header: React.FC<HeaderProps> = props => {
                         <AddIcon />
                     </Tooltip>
                 </div>
-            </PermissionControlHidden>
+            </PermissionControlDisabled>
             <div className={styles.search}>
                 <TextField
                     ref={textFieldRef}

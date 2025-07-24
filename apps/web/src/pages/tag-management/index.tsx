@@ -92,7 +92,6 @@ const TagManagement: React.FC = () => {
                             <Button
                                 disabled={isAddedExceed}
                                 variant="contained"
-                                className="md:d-none"
                                 sx={{ height: 36, textTransform: 'none' }}
                                 startIcon={<AddIcon />}
                                 onClick={openAddTag}

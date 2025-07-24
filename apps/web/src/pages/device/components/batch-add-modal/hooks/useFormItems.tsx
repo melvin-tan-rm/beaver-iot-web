@@ -53,7 +53,6 @@ export function useFormItems() {
                                 <LoadingButton
                                     loading={downloadTemplateLoading}
                                     variant="outlined"
-                                    className="md:d-none"
                                     sx={{ height: 36, textTransform: 'none' }}
                                     startIcon={<DownloadIcon />}
                                     onClick={() => getDeviceTemplate(value as string)}
