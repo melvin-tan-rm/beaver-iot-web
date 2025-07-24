@@ -233,7 +233,11 @@ export default () => {
             <Breadcrumbs />
             <div className="ms-view ms-view-device">
                 <div className="ms-view__inner">
-                    <DeviceGroup ref={deviceGroupRef} isShrink={isShrink} />
+                    <DeviceGroup
+                        ref={deviceGroupRef}
+                        isShrink={isShrink}
+                        refreshDeviceList={getDeviceList}
+                    />
 
                     <div className="device-right">
                         <div className="device-right__title">{activeGroupName}</div>

@@ -9,7 +9,13 @@ import { type OperateGroupProps } from '../components/operate-group-modal';
 
 export type OperateModalType = 'add' | 'edit';
 
-export function useGroupModal(getAllGroups?: () => void, getDeviceGroupCount?: () => void) {
+export function useGroupModal(props: {
+    getDeviceGroups?: () => void;
+    getDeviceGroupCount?: () => void;
+    refreshDeviceList?: () => void;
+}) {
+    const { getDeviceGroups, getDeviceGroupCount, refreshDeviceList } = props || {};
+
     const { getIntlText } = useI18n();
 
     const [groupModalVisible, setGroupModalVisible] = useState(false);
@@ -37,20 +43,20 @@ export function useGroupModal(getAllGroups?: () => void, getDeviceGroupCount?: (
         setCurrentGroup(record);
     });
 
-    const handleAddModel = useMemoizedFn(async (data: OperateGroupProps, callback: () => void) => {
+    const handleAddGroup = useMemoizedFn(async (data: OperateGroupProps, callback: () => void) => {
         const [error, resp] = await awaitWrap(deviceAPI.addDeviceGroup(data));
         if (error || !isRequestSuccess(resp)) {
             return;
         }
 
-        getAllGroups?.();
+        getDeviceGroups?.();
         getDeviceGroupCount?.();
         setGroupModalVisible(false);
         toast.success(getIntlText('common.message.add_success'));
         callback?.();
     });
 
-    const handleEditModel = useMemoizedFn(async (data: OperateGroupProps, callback: () => void) => {
+    const handleEditGroup = useMemoizedFn(async (data: OperateGroupProps, callback: () => void) => {
         if (!currentGroup?.id) return;
 
         const [error, resp] = await awaitWrap(
@@ -63,7 +69,8 @@ export function useGroupModal(getAllGroups?: () => void, getDeviceGroupCount?: (
             return;
         }
 
-        getAllGroups?.();
+        getDeviceGroups?.();
+        refreshDeviceList?.();
         setGroupModalVisible(false);
         toast.success(getIntlText('common.message.operation_success'));
         callback?.();
@@ -73,11 +80,11 @@ export function useGroupModal(getAllGroups?: () => void, getDeviceGroupCount?: (
         if (!data) return;
 
         if (operateType === 'add') {
-            await handleAddModel(data, callback);
+            await handleAddGroup(data, callback);
             return;
         }
 
-        await handleEditModel(data, callback);
+        await handleEditGroup(data, callback);
     });
 
     return {

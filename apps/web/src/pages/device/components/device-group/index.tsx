@@ -17,15 +17,19 @@ export interface DeviceGroupExposeProps {
 
 export interface DeviceGroupProps {
     isShrink: boolean;
+    /**
+     * Refresh device list
+     */
+    refreshDeviceList?: () => void;
 }
 
 const DeviceGroup = forwardRef<DeviceGroupExposeProps, DeviceGroupProps>((props, ref) => {
-    const { isShrink } = props;
+    const { isShrink, refreshDeviceList } = props;
 
     const { groupCount, getDeviceGroupCount } = useGroupCount();
 
     const { getDeviceGroups, deviceGroups, loading, handleGroupDelete, keyword, changeKeyword } =
-        useDeviceGroup(getDeviceGroupCount);
+        useDeviceGroup(getDeviceGroupCount, refreshDeviceList);
 
     const {
         groupModalVisible,
@@ -35,7 +39,11 @@ const DeviceGroup = forwardRef<DeviceGroupExposeProps, DeviceGroupProps>((props,
         hiddenGroupModal,
         onFormSubmit,
         editGroupModal,
-    } = useGroupModal(getDeviceGroups, getDeviceGroupCount);
+    } = useGroupModal({
+        getDeviceGroups,
+        getDeviceGroupCount,
+        refreshDeviceList,
+    });
 
     // An instance that is exposed to the parent component
     useImperativeHandle(ref, () => {

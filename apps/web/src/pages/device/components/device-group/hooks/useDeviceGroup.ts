@@ -18,7 +18,7 @@ import { FIXED_GROUP } from '@/pages/device/constants';
 /**
  * Handle device group many operation
  */
-export function useDeviceGroup(getDeviceGroupCount: () => void) {
+export function useDeviceGroup(getDeviceGroupCount: () => void, refreshDeviceList?: () => void) {
     const { getIntlText } = useI18n();
     const confirm = useConfirm();
     const { activeGroup, updateActiveGroup, updateDeviceGroups } = useDeviceStore();
@@ -82,7 +82,7 @@ export function useDeviceGroup(getDeviceGroupCount: () => void) {
                 }
 
                 /**
-                 * if the active group is deleted, the first group
+                 * If the active group is deleted, the first group
                  * will be selected by default
                  */
                 if (record.id === activeGroup?.id) {
@@ -91,6 +91,7 @@ export function useDeviceGroup(getDeviceGroupCount: () => void) {
 
                 getDeviceGroups?.();
                 getDeviceGroupCount?.();
+                refreshDeviceList?.();
                 toast.success(getIntlText('common.message.delete_success'));
             },
         });
