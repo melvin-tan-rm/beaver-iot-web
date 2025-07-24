@@ -21,9 +21,16 @@ export interface UseColumnsProps<T> {
      * Operation Button click callback
      */
     onButtonClick: (type: OperationType, record: T) => void;
+    /**
+     * filtered info
+     */
+    filteredInfo: Record<string, any>;
 }
 
-const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsProps<T>) => {
+const useColumns = <T extends TableRowDataType>({
+    onButtonClick,
+    filteredInfo,
+}: UseColumnsProps<T>) => {
     const { getIntlText } = useI18n();
     const { getTimeFormat } = useTime();
 
@@ -43,6 +50,7 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 ellipsis: true,
                 flex: 1,
                 minWidth: 250,
+                filteredValue: filteredInfo?.identifier,
                 filterSearchType: 'search',
             },
             {
@@ -124,7 +132,7 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                 },
             },
         ];
-    }, [getIntlText, getTimeFormat, onButtonClick]);
+    }, [getIntlText, getTimeFormat, onButtonClick, filteredInfo]);
 
     return columns;
 };

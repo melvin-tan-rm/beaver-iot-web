@@ -115,7 +115,7 @@ const TablePro = <DataType extends GridValidRowModel>({
 
     const memoColumns = useMemo(() => {
         const result = (
-            columnSettingEnable ? resultColumns.filter(col => col.checked) : resultColumns
+            columnSettingEnable ? resultColumns.filter(col => col.checked) : columns
         ).map((column, index) => {
             const filterDropdown = column.filterSearchType
                 ? getColumnFilterProps(column.filterSearchType)
@@ -166,7 +166,7 @@ const TablePro = <DataType extends GridValidRowModel>({
         });
 
         return sortGroupByFixed(result);
-    }, [resultColumns, pinnedColumnPos]);
+    }, [columns, resultColumns, pinnedColumnPos]);
 
     return (
         <div className="ms-table-pro">
