@@ -32,13 +32,10 @@ export function useManageTagsModal(refreshList?: () => void) {
     });
 
     const openManageTagsModalAtEntity = useMemoizedFn(
-        (
-            entities?: ObjectToCamelCase<SearchResponseType<EntityData[]>>,
-            entityIds?: readonly ApiKey[],
-        ) => {
+        (entities?: ObjectToCamelCase<EntityData[]>, entityIds?: readonly ApiKey[]) => {
             openManageTagsModal();
             setSelectedEntities(
-                (entities?.content || []).filter(e => (entityIds || []).includes(e.entityId)),
+                (entities || []).filter(e => (entityIds || []).includes(e.entityId)),
             );
         },
     );

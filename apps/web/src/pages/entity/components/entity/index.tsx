@@ -61,6 +61,7 @@ export default () => {
     const [detailVisible, setDetailVisible] = useState<boolean>(false);
     const [editVisible, setEditVisible] = useState<boolean>(false);
     const [filteredInfo, setFilteredInfo] = useState<FiltersRecordType>({});
+    const [allEntities, setAllEntities] = useState<Record<ApiKey, TableRowDataType>>({});
 
     const {
         data: entityData,
@@ -91,7 +92,11 @@ export default () => {
 
             if (error || !data || !isRequestSuccess(resp)) return;
 
-            return objectToCamelCase(data);
+            const result = objectToCamelCase(data);
+            result.content.forEach(entity => {
+                allEntities[entity.entityId] = entity;
+            });
+            return result;
         },
         {
             debounceWait: 300,
@@ -104,6 +109,7 @@ export default () => {
         openManageTagsModalAtEntity,
         closeManageTagsModal,
         manageTagsFormSubmit,
+        selectedEntities,
     } = useManageTagsModal(getList);
 
     const handleFilterChange: TableProProps<TableRowDataType>['onFilterInfoChange'] = (
@@ -293,7 +299,9 @@ export default () => {
                         className="md:d-none"
                         sx={{ height: 36, textTransform: 'none' }}
                         startIcon={<SellOutlinedIcon />}
-                        onClick={() => openManageTagsModalAtEntity(entityData, selectedIds)}
+                        onClick={() =>
+                            openManageTagsModalAtEntity(Object.values(allEntities), selectedIds)
+                        }
                     >
                         {getIntlText('tag.label.tags')}
                     </Button>
@@ -373,9 +381,7 @@ export default () => {
                     visible={manageTagsModalVisible}
                     onCancel={closeManageTagsModal}
                     onFormSubmit={manageTagsFormSubmit}
-                    selectedEntities={(entityData?.content || []).filter(entity =>
-                        selectedIds.includes(entity.entityId),
-                    )}
+                    selectedEntities={selectedEntities}
                     tip={getIntlText('tag.tip.selected_entities_contain_follow_tags', {
                         1: selectedIds?.length || 0,
                     })}

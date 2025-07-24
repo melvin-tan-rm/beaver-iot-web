@@ -30,6 +30,7 @@ import {
     FilterListOutlinedIcon,
 } from '@milesight/shared/src/components';
 import { ColumnType } from '../../types';
+import { isOperationColumn } from '../../utils';
 import {
     RowCondition,
     ConditionProps,
@@ -225,7 +226,7 @@ const AdvancedFilter = <T extends GridValidRowModel>(
     }, [conditions]);
 
     const disabledAdd = useMemo(() => {
-        return conditions.length > columns.length;
+        return conditions.length >= columns.filter(c => !isOperationColumn(c.field)).length;
     }, [columns.length, conditions.length]);
 
     return (
