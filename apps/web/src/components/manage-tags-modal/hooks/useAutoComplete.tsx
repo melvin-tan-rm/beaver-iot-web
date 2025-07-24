@@ -45,6 +45,10 @@ export function useAutoComplete(props: {
                 return [];
             }
 
+            if (entityOptions?.length === 1) {
+                return entityOptions;
+            }
+
             return [allOption, ...entityOptions];
         }
 
