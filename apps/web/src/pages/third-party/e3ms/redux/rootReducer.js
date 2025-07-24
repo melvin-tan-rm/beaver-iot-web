@@ -40,10 +40,10 @@ import coreApp from "@coremodules/store"
 // import equipmenthistory from "@src/views/modules/core/equipmentreport/equipmenthistory/store"
 // import equipmentdowntime from "@src/views/modules/core/equipmentreport/equipmentdowntime/store"
 // import report from "@coremodules/report/store"
-// import dashboardprofile from "@coremodules/dashboard/profile/setup/store"
-// import dashboardtab from "@coremodules/dashboard/tab/setup/store"
-// import dashboardchart from "@coremodules/dashboard/chart/setup/store"
-// import dashboardpoint from "@coremodules/dashboard/point/setup/store"
+ import dashboardprofile from "@coremodules/dashboard/profile/setup/store"
+ import dashboardtab from "@coremodules/dashboard/tab/setup/store"
+ import dashboardchart from "@coremodules/dashboard/chart/setup/store"
+ import dashboardpoint from "@coremodules/dashboard/point/setup/store"
 // import invoiceelectricity from "@e3msmodules/invoice-electricity/config/store"
 // import invoicepoint from "@e3msmodules/invoice-electricity/point-mapping/store"
 
@@ -183,10 +183,10 @@ const rootReducer = {
   // workforceattendance,
   // report,
   // //E3MS
-  // dashboardprofile,
-  // dashboardtab,
-  // dashboardchart,
-  // dashboardpoint,
+   dashboardprofile,
+   dashboardtab,
+   dashboardchart,
+   dashboardpoint,
   // invoiceelectricity,
   // invoicepoint,
   // e3msSetting,

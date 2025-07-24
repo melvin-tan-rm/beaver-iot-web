@@ -1,6 +1,6 @@
 // ** React Imports
 import { useContext } from "react"
-import { AbilityContext } from "@src/utility/context/Can"
+import { AbilityContext } from "@e3msmodules/utility/context/Can"
 
 /**
  * Return which component to render based on it's data/context

@@ -10,10 +10,7 @@ import {
     SettingsIcon,
     PieChartIcon,
     PeopleIcon,
-    FlagIcon,
-    PieChartIcon,
-    PeopleIcon,
-    FlagIcon,
+    FlagIcon
 } from '@milesight/shared/src/components';
 import { PERMISSIONS } from '@/constants';
 import ErrorBoundaryComponent from './error-boundary';
@@ -74,7 +71,7 @@ const routes: RouteObjectType[] = [
         ErrorBoundary,
     },
     {
-        path: '/e3ms/dashboard',
+        path: '/e3ms/dashboard/tab/view/:id/:chartId',
         handle: {
             get title() {
                 return intl.get('third-party.label.e3ms.dashboard');
@@ -83,7 +80,7 @@ const routes: RouteObjectType[] = [
             permissions: PERMISSIONS.DASHBOARD_MODULE,
         },
         async lazy() {
-            const { default: Component } = await import('@/pages/third-party/e3ms/app/dashboard');
+            const { default: Component } = await import('@/pages/third-party/e3ms/app/dashboard/tab');
             return { Component };
         },
         ErrorBoundary,

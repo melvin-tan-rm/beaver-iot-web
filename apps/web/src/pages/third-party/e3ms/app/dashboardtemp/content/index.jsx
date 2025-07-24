@@ -252,8 +252,8 @@ const DashboardTemp = () => {
       // year to date monthly consumption
       if (IdArray === undefined) return
       const responseTotal = await axios.get(
-        //`/api/point/getcharts?id=${id}&DefaultInterval=${intervals}${dateRange}` //&FromDate=2024-01-01`
-        `/api/point/getcharts?id=${IdArray[0]}&DefaultInterval=Monthly&FromDate=${totalStartingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalStartingDate.getMonth() + 1)}-01 00:00:00&ToDate=${totalEndingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalEndingDate.getMonth() + 1)}-${FormatIntBelow10With0Infront(totalEndingDate.getDate())} 23:59:59` //&FromDate=2024-01-01`
+        //`http://localhost:5099/api/point/getcharts?id=${id}&DefaultInterval=${intervals}${dateRange}` //&FromDate=2024-01-01`
+        `http://localhost:5099/api/point/getcharts?id=${IdArray[0]}&DefaultInterval=Monthly&FromDate=${totalStartingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalStartingDate.getMonth() + 1)}-01 00:00:00&ToDate=${totalEndingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalEndingDate.getMonth() + 1)}-${FormatIntBelow10With0Infront(totalEndingDate.getDate())} 23:59:59` //&FromDate=2024-01-01`
       )
       if (responseTotal === undefined) return
       const dataA = responseTotal.data.charts[0].data
@@ -294,8 +294,8 @@ const DashboardTemp = () => {
       if (selectedDate.month === "NA") {
         // site total energy consumption - year
         reponseMonthly = await axios.get(
-          //`/api/point/getcharts?id=${id}&DefaultInterval=${intervals}${dateRange}` //&FromDate=2024-01-01`
-          `/api/point/getcharts?id=${IdArray[1]}&FromDate=${totalStartingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalStartingDate.getMonth() + 1)}-01 00:00:00&ToDate=${totalEndingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalEndingDate.getMonth() + 1)}-${FormatIntBelow10With0Infront(totalEndingDate.getDate())} 23:59:59` //&FromDate=2024-01-01`
+          //`http://localhost:5099/api/point/getcharts?id=${id}&DefaultInterval=${intervals}${dateRange}` //&FromDate=2024-01-01`
+          `http://localhost:5099/api/point/getcharts?id=${IdArray[1]}&FromDate=${totalStartingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalStartingDate.getMonth() + 1)}-01 00:00:00&ToDate=${totalEndingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalEndingDate.getMonth() + 1)}-${FormatIntBelow10With0Infront(totalEndingDate.getDate())} 23:59:59` //&FromDate=2024-01-01`
         )
         newChartArray.push(
           reponseMonthly.data.charts[0].data.map((x) =>
@@ -305,8 +305,8 @@ const DashboardTemp = () => {
       } else {
         // site total energy consumption - month year
         reponseMonthly = await axios.get(
-          //`/api/point/getcharts?id=${id}&DefaultInterval=${intervals}${dateRange}` //&FromDate=2024-01-01`
-          `/api/point/getcharts?id=${IdArray[2]}&FromDate=${monthlyStartingDate.getFullYear()}-${FormatIntBelow10With0Infront(monthlyStartingDate.getMonth() + 1)}-01 00:00:00&ToDate=${monthlyEndingDate.getFullYear()}-${FormatIntBelow10With0Infront(monthlyEndingDate.getMonth() + 1)}-${FormatIntBelow10With0Infront(monthlyEndingDate.getDate())} 23:59:59` //&FromDate=2024-01-01`
+          //`http://localhost:5099/api/point/getcharts?id=${id}&DefaultInterval=${intervals}${dateRange}` //&FromDate=2024-01-01`
+          `http://localhost:5099/api/point/getcharts?id=${IdArray[2]}&FromDate=${monthlyStartingDate.getFullYear()}-${FormatIntBelow10With0Infront(monthlyStartingDate.getMonth() + 1)}-01 00:00:00&ToDate=${monthlyEndingDate.getFullYear()}-${FormatIntBelow10With0Infront(monthlyEndingDate.getMonth() + 1)}-${FormatIntBelow10With0Infront(monthlyEndingDate.getDate())} 23:59:59` //&FromDate=2024-01-01`
         )
         newChartArray.push(
           reponseMonthly.data.charts[0].data.map((x) =>
@@ -318,12 +318,12 @@ const DashboardTemp = () => {
       if (compareDate.year !== "NA") {
         let newArrayTemp = []
         let responseCompare = await axios.get(
-          //`/api/point/getcharts?id=${id}&DefaultInterval=${intervals}${dateRange}` //&FromDate=2024-01-01`
-          `/api/point/getcharts?id=${IdArray[3]}&FromDate=${totalStartingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalStartingDate.getMonth() + 1)}-01 00:00:00&ToDate=${totalEndingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalEndingDate.getMonth() + 1)}-${FormatIntBelow10With0Infront(totalEndingDate.getDate())} 23:59:59` //&FromDate=2024-01-01`
+          //`http://localhost:5099/api/point/getcharts?id=${id}&DefaultInterval=${intervals}${dateRange}` //&FromDate=2024-01-01`
+          `http://localhost:5099/api/point/getcharts?id=${IdArray[3]}&FromDate=${totalStartingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalStartingDate.getMonth() + 1)}-01 00:00:00&ToDate=${totalEndingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalEndingDate.getMonth() + 1)}-${FormatIntBelow10With0Infront(totalEndingDate.getDate())} 23:59:59` //&FromDate=2024-01-01`
         )
         let responseCompare2 = await axios.get(
-          //`/api/point/getcharts?id=${id}&DefaultInterval=${intervals}${dateRange}` //&FromDate=2024-01-01`
-          `/api/point/getcharts?id=${IdArray[3]}&FromDate=${compareStartingDate.getFullYear()}-${FormatIntBelow10With0Infront(compareStartingDate.getMonth() + 1)}-01 00:00:00&ToDate=${compareEndingDate.getFullYear()}-${FormatIntBelow10With0Infront(compareEndingDate.getMonth() + 1)}-${FormatIntBelow10With0Infront(compareEndingDate.getDate())} 23:59:59` //&FromDate=2024-01-01`
+          //`http://localhost:5099/api/point/getcharts?id=${id}&DefaultInterval=${intervals}${dateRange}` //&FromDate=2024-01-01`
+          `http://localhost:5099/api/point/getcharts?id=${IdArray[3]}&FromDate=${compareStartingDate.getFullYear()}-${FormatIntBelow10With0Infront(compareStartingDate.getMonth() + 1)}-01 00:00:00&ToDate=${compareEndingDate.getFullYear()}-${FormatIntBelow10With0Infront(compareEndingDate.getMonth() + 1)}-${FormatIntBelow10With0Infront(compareEndingDate.getDate())} 23:59:59` //&FromDate=2024-01-01`
         )
         let newArrayTempChild = []
         for (let i = 0; i < 5; ++i) {
@@ -342,12 +342,12 @@ const DashboardTemp = () => {
         newArrayTemp.push([...newArrayTempChild])
         newArrayTempChild = []
         responseCompare = await axios.get(
-          //`/api/point/getcharts?id=${id}&DefaultInterval=${intervals}${dateRange}` //&FromDate=2024-01-01`
-          `/api/point/getcharts?id=${IdArray[4]}&FromDate=${totalStartingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalStartingDate.getMonth() + 1)}-01 00:00:00&ToDate=${totalEndingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalEndingDate.getMonth() + 1)}-${FormatIntBelow10With0Infront(totalEndingDate.getDate())} 23:59:59` //&FromDate=2024-01-01`
+          //`http://localhost:5099/api/point/getcharts?id=${id}&DefaultInterval=${intervals}${dateRange}` //&FromDate=2024-01-01`
+          `http://localhost:5099/api/point/getcharts?id=${IdArray[4]}&FromDate=${totalStartingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalStartingDate.getMonth() + 1)}-01 00:00:00&ToDate=${totalEndingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalEndingDate.getMonth() + 1)}-${FormatIntBelow10With0Infront(totalEndingDate.getDate())} 23:59:59` //&FromDate=2024-01-01`
         )
         responseCompare2 = await axios.get(
-          //`/api/point/getcharts?id=${id}&DefaultInterval=${intervals}${dateRange}` //&FromDate=2024-01-01`
-          `/api/point/getcharts?id=${IdArray[4]}&FromDate=${compareStartingDate.getFullYear()}-${FormatIntBelow10With0Infront(compareStartingDate.getMonth() + 1)}-01 00:00:00&ToDate=${compareEndingDate.getFullYear()}-${FormatIntBelow10With0Infront(compareEndingDate.getMonth() + 1)}-${FormatIntBelow10With0Infront(compareEndingDate.getDate())} 23:59:59` //&FromDate=2024-01-01`
+          //`http://localhost:5099/api/point/getcharts?id=${id}&DefaultInterval=${intervals}${dateRange}` //&FromDate=2024-01-01`
+          `http://localhost:5099/api/point/getcharts?id=${IdArray[4]}&FromDate=${compareStartingDate.getFullYear()}-${FormatIntBelow10With0Infront(compareStartingDate.getMonth() + 1)}-01 00:00:00&ToDate=${compareEndingDate.getFullYear()}-${FormatIntBelow10With0Infront(compareEndingDate.getMonth() + 1)}-${FormatIntBelow10With0Infront(compareEndingDate.getDate())} 23:59:59` //&FromDate=2024-01-01`
         )
         newArrayTempChild = []
         for (let i = 0; i < responseCompare.data.charts[0].data.length; ++i) {
@@ -366,12 +366,12 @@ const DashboardTemp = () => {
         newArrayTemp.push([...newArrayTempChild])
         newArrayTempChild = []
         responseCompare = await axios.get(
-          //`/api/point/getcharts?id=${id}&DefaultInterval=${intervals}${dateRange}` //&FromDate=2024-01-01`
-          `/api/point/getcharts?id=${IdArray[5]}&FromDate=${totalStartingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalStartingDate.getMonth() + 1)}-01 00:00:00&ToDate=${totalEndingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalEndingDate.getMonth() + 1)}-${FormatIntBelow10With0Infront(totalEndingDate.getDate())} 23:59:59` //&FromDate=2024-01-01`
+          //`http://localhost:5099/api/point/getcharts?id=${id}&DefaultInterval=${intervals}${dateRange}` //&FromDate=2024-01-01`
+          `http://localhost:5099/api/point/getcharts?id=${IdArray[5]}&FromDate=${totalStartingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalStartingDate.getMonth() + 1)}-01 00:00:00&ToDate=${totalEndingDate.getFullYear()}-${FormatIntBelow10With0Infront(totalEndingDate.getMonth() + 1)}-${FormatIntBelow10With0Infront(totalEndingDate.getDate())} 23:59:59` //&FromDate=2024-01-01`
         )
         responseCompare2 = await axios.get(
-          //`/api/point/getcharts?id=${id}&DefaultInterval=${intervals}${dateRange}` //&FromDate=2024-01-01`
-          `/api/point/getcharts?id=${IdArray[5]}&FromDate=${compareStartingDate.getFullYear()}-${FormatIntBelow10With0Infront(compareStartingDate.getMonth() + 1)}-01 00:00:00&ToDate=${compareEndingDate.getFullYear()}-${FormatIntBelow10With0Infront(compareEndingDate.getMonth() + 1)}-${FormatIntBelow10With0Infront(compareEndingDate.getDate())} 23:59:59` //&FromDate=2024-01-01`
+          //`http://localhost:5099/api/point/getcharts?id=${id}&DefaultInterval=${intervals}${dateRange}` //&FromDate=2024-01-01`
+          `http://localhost:5099/api/point/getcharts?id=${IdArray[5]}&FromDate=${compareStartingDate.getFullYear()}-${FormatIntBelow10With0Infront(compareStartingDate.getMonth() + 1)}-01 00:00:00&ToDate=${compareEndingDate.getFullYear()}-${FormatIntBelow10With0Infront(compareEndingDate.getMonth() + 1)}-${FormatIntBelow10With0Infront(compareEndingDate.getDate())} 23:59:59` //&FromDate=2024-01-01`
         )
         newArrayTempChild = []
         for (let i = 0; i < responseCompare.data.charts[0].data.length; ++i) {

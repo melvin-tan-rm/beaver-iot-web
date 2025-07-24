@@ -181,6 +181,7 @@ export default attachAPI<EntityAPISchema>(client, {
     apis: {
         getList: `POST ${API_PREFIX}/entity/search`,
         getHistory: `POST ${API_PREFIX}/entity/history/search`,
+        getUtilityHistory: `POST ${API_PREFIX}/entity/history/search`,
         getAggregateHistory: `POST ${API_PREFIX}/entity/history/aggregate`,
         getMeta: `GET ${API_PREFIX}/entity/:id/meta`,
         getApiDoc: `POST ${API_PREFIX}/entity/form`,
