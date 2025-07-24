@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { useMemoizedFn } from 'ahooks';
+import React, { useMemo, useRef } from 'react';
+import { useMemoizedFn, useClickAway } from 'ahooks';
 import { IconButton, MenuItem, ListItemIcon } from '@mui/material';
 import { type InjectedProps } from 'material-ui-popup-state';
 import { bindHover, bindMenu, usePopupState } from 'material-ui-popup-state/hooks';
@@ -31,6 +31,13 @@ const MoreDropdown: React.FC<MoreDropdownProps> = props => {
     const { bindTriggerLeave, bindPopoverEnter } = usePopoverCloseDelay({
         popupState,
     });
+
+    const triggerWrapperRef = useRef<HTMLDivElement>(null);
+    useClickAway(() => {
+        if (popupState.isOpen) {
+            popupState.close();
+        }
+    }, triggerWrapperRef);
 
     const options: {
         label: string;
@@ -79,6 +86,7 @@ const MoreDropdown: React.FC<MoreDropdownProps> = props => {
 
     return (
         <div
+            ref={triggerWrapperRef}
             className="more-dropdown__wrapper"
             style={popupState.isOpen ? { visibility: 'visible' } : undefined}
         >
