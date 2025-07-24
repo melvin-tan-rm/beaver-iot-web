@@ -220,7 +220,10 @@ export default () => {
         },
         [navigate, handleDeleteConfirm, singleChangeGroupModal],
     );
-    const columns = useColumns<TableRowDataType>({ onButtonClick: handleTableBtnClick });
+    const columns = useColumns<TableRowDataType>({
+        onButtonClick: handleTableBtnClick,
+        filteredInfo,
+    });
 
     const handleFilterChange: TableProProps<TableRowDataType>['onFilterInfoChange'] = (
         filters: Record<string, FilterValue | null>,
