@@ -32,8 +32,8 @@ const ManageTagsModal: React.FC<Props> = props => {
 
     const { getIntlText } = useI18n();
     const { control, formState, handleSubmit, reset, watch, setValue } = useForm<ManageTagsProps>();
-    const { entityOptions } = useEntityOptions(selectedEntities);
     const { tagsLoading, tagOptions, getTagList } = useTagOptions();
+    const { entityOptions } = useEntityOptions(tagOptions, selectedEntities);
 
     const currentAction = watch('action');
 
