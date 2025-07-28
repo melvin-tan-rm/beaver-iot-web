@@ -24,6 +24,7 @@
     "entity.label.historical_data": "Historical Data",
     "entity.label.set_enumeration_items": "Set Enumeration Items",
     "entity.label.set_value": "Set Value",
+    "entity.label.value_source": "Value Source",
     "entity.label.device_group": "Device Group",
     "entity.label.entity_tags": "Entity Tags",
     "entity.label.latest_value": "Latest Value",
