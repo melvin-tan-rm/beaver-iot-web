@@ -8,6 +8,7 @@ import { AddIcon, RemoveCircleOutlineIcon } from '@milesight/shared/src/componen
 import { TablePro, Breadcrumbs, Tooltip, PermissionControlHidden } from '@/components';
 import { tagAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import { PERMISSIONS } from '@/constants';
+import { useUserPermissions } from '@/hooks';
 import { OperateTagModal } from './components';
 
 import {
@@ -27,6 +28,7 @@ const USER_MAX_TAGS = 300;
 
 const TagManagement: React.FC = () => {
     const { getIntlText } = useI18n();
+    const { hasPermission } = useUserPermissions();
 
     // ---------- Tag list ----------
     const [keyword, setKeyword] = useState<string>('');
@@ -149,7 +151,7 @@ const TagManagement: React.FC = () => {
             <div className="ms-view ms-view-tag">
                 <div className="ms-view__inner">
                     <TablePro<TableRowDataType>
-                        checkboxSelection
+                        checkboxSelection={hasPermission(PERMISSIONS.TAG_MODULE_EDIT)}
                         filterCondition={[keyword]}
                         loading={loading}
                         columns={columns}
