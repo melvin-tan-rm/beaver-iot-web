@@ -249,7 +249,6 @@
     "common.label.action": "Action",
     "common.label.select_all": "全选",
     "common.label.page": "page",
-    "common.label.selected_count": "Selected",
     "common.label.total_count": "Total",
     "common.label.columns_setting": "Column Settings",
     "common.label.column_setting_fixed_left": "Left (Fixed)",

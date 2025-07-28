@@ -154,7 +154,7 @@ const CustomFooter: React.FC<CustomFooterProps> = ({
                     <Box sx={{ ml: 1, display: 'flex', alignItems: 'center' }}>
                         {!!selectedCount && (
                             <Typography variant="body2" sx={{ ml: 1 }}>
-                                {getIntlText('common.label.selected_count')}: {selectedCount} ,
+                                {getIntlText('common.label.selected')}: {selectedCount} ,
                             </Typography>
                         )}
                         <Typography variant="body2" sx={{ ml: 1 }}>

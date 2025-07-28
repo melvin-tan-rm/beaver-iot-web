@@ -234,7 +234,6 @@
     "valid.input.version": "版本号不符合规范。",
     "valid.resp.at_least_one": "请至少选择一个{1}。",
     "common.label.page": "页",
-    "common.label.selected_count": "已选择",
     "common.label.total_count": "总数",
     "common.label.columns_setting": "列设置",
     "common.label.column_setting_fixed_left": "左（固定）",
