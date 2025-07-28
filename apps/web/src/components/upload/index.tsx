@@ -348,14 +348,14 @@ const Upload: React.FC<Props> = ({
                     return file.status !== UploadStatus.Canceled;
                 })
                 ?.map(file => {
-                    const { name, size, path, key, url, preview } = file;
+                    const { name, size, path, key, url, preview, original } = file;
                     const result: FileValueType = {
                         name,
                         size,
                         path,
                         key,
                         url,
-                        original: autoUpload ? undefined : file,
+                        original: autoUpload ? undefined : original || file,
                     };
 
                     if (!url) {

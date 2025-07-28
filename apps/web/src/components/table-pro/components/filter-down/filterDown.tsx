@@ -279,7 +279,7 @@ const FilterDropdown = (props: FilterDropdownProps) => {
 
     return (
         <div className="ms-table-pro-columns-header">
-            <div className="'ms-table-pro-columns-header-label">{column.headerName}</div>
+            <div className="ms-table-pro-columns-header-label">{column.headerName}</div>
             <div
                 onClick={() => {
                     triggerVisible(true);
