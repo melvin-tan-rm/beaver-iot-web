@@ -247,7 +247,10 @@ export default () => {
                         <TablePro<TableRowDataType>
                             keepNonExistentRowsSelected
                             filterCondition={[keyword]}
-                            checkboxSelection={hasPermission(PERMISSIONS.DEVICE_DELETE)}
+                            checkboxSelection={hasPermission([
+                                PERMISSIONS.DEVICE_DELETE,
+                                PERMISSIONS.DEVICE_EDIT,
+                            ])}
                             loading={loading}
                             columns={columns}
                             rows={deviceData?.content}

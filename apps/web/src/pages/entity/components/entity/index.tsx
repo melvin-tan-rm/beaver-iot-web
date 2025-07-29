@@ -318,15 +318,19 @@ export default () => {
                         {getIntlText('common.label.export')}
                     </Button>
                 </PermissionControlHidden>
-                <Divider
-                    orientation="vertical"
-                    flexItem
-                    className="md:d-none"
-                    sx={{
-                        width: '1px',
-                        backgroundColor: 'var(--gray-color-2)',
-                    }}
-                />
+                <PermissionControlHidden
+                    permissions={[PERMISSIONS.ENTITY_DATA_EXPORT, PERMISSIONS.ENTITY_DATA_EDIT]}
+                >
+                    <Divider
+                        orientation="vertical"
+                        flexItem
+                        className="md:d-none"
+                        sx={{
+                            width: '1px',
+                            backgroundColor: 'var(--gray-color-2)',
+                        }}
+                    />
+                </PermissionControlHidden>
                 <AdvancedFilter<TableRowDataType>
                     ref={advancedFilterRef}
                     columns={columns}
@@ -347,7 +351,10 @@ export default () => {
                 filterCondition={[advancedConditions, entityType]}
                 tableName="entity_data"
                 columnSetting
-                checkboxSelection={hasPermission(PERMISSIONS.ENTITY_DATA_EXPORT)}
+                checkboxSelection={hasPermission([
+                    PERMISSIONS.ENTITY_DATA_EXPORT,
+                    PERMISSIONS.ENTITY_DATA_EDIT,
+                ])}
                 loading={loading}
                 columns={columns}
                 getRowId={record => record.entityId}
