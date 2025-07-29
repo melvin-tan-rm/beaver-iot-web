@@ -149,7 +149,7 @@ export function useProgress(props: BatchAddProgressProps) {
                         } else if (resp.status === 'fulfilled') {
                             handleFailed({
                                 id: newIndexList[newIndex],
-                                msg: 'unknown',
+                                msg: getApiErrorInfos(resp?.value?.data).join('; \n') || 'unknown',
                             });
                         } else if (resp.status === 'rejected') {
                             handleFailed({

@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash-es';
+import { isEmpty, isPlainObject } from 'lodash-es';
 import intl from 'react-intl-universal';
 
 import { HTTP_ERROR_CODE_PREFIX } from '@milesight/locales';
@@ -16,9 +16,7 @@ export interface ParseApiErrorDataResult {
 /**
  * Parse multi Error data type to flat array
  */
-export const parseApiErrorData = (
-    response?: ApiResponse<(ApiErrorData | ApiMultiErrorData)[] | undefined>,
-): ParseApiErrorDataResult[] => {
+export const parseApiErrorData = (response?: ApiResponse): ParseApiErrorDataResult[] => {
     const result: ParseApiErrorDataResult[] = [];
     if (!response || !response?.error_code) {
         return result;
@@ -31,6 +29,7 @@ export const parseApiErrorData = (
             "request_id": "REQUEST_ID",
             "error_code": "${error_code}",
             "error_message": "${error_message}"
+            "data"?: Record<string, any>,
         }
      */
     if (
@@ -40,6 +39,9 @@ export const parseApiErrorData = (
     ) {
         result.push({
             errorCode: response.error_code,
+            args: isPlainObject(response?.data)
+                ? (response.data as Record<string, any>)
+                : undefined,
         });
 
         return result;
@@ -142,9 +144,7 @@ export const parseApiErrorData = (
  * Get error infos
  * @returns eg: ['Dashboard name already exists', 'Current user has no privileges']
  */
-export const getApiErrorInfos = (
-    response?: ApiResponse<(ApiErrorData | ApiMultiErrorData)[] | undefined>,
-): string[] => {
+export const getApiErrorInfos = (response?: ApiResponse): string[] => {
     const result: string[] = [];
 
     const errorData: ParseApiErrorDataResult[] = parseApiErrorData(response);

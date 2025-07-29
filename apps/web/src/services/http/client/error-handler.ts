@@ -4,7 +4,7 @@
  * Error codes in the blacklist are processed globally, and no additional processing logic is required
  */
 import type { AxiosResponse } from 'axios';
-import { noop } from 'lodash-es';
+import { noop, isPlainObject } from 'lodash-es';
 import intl from 'react-intl-universal';
 import { toast } from '@milesight/shared/src/components';
 import { isRequestSuccess } from '@milesight/shared/src/utils/request';
@@ -128,7 +128,10 @@ const handler: ErrorHandlerConfig['handler'] = (errCode, resp) => {
 
     if (!config) {
         const intlKey = getHttpErrorKey(errCode);
-        const message = intl.get(intlKey) || intl.get(serverErrorKey);
+        const errorArgs = isPlainObject(resp?.data?.data)
+            ? (resp.data.data as Record<string, any>)
+            : undefined;
+        const message = intl.get(intlKey, errorArgs) || intl.get(serverErrorKey);
 
         toast.error({ key: errCode, content: message });
         return;
