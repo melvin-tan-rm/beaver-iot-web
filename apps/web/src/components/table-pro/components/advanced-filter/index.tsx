@@ -226,8 +226,8 @@ const AdvancedFilter = <T extends GridValidRowModel>(
     }, [conditions]);
 
     const disabledAdd = useMemo(() => {
-        return conditions.length >= columns.filter(c => !isOperationColumn(c.field)).length;
-    }, [columns.length, conditions.length]);
+        return conditions.length >= columns.filter(c => !!c.operators).length;
+    }, [columns, conditions.length]);
 
     return (
         <div className="ms-advanced-filter">

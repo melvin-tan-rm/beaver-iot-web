@@ -22,11 +22,13 @@ const DEFAULT_COMP_PROPS = {
     baseInput: {
         sx: {
             maxWidth: '220px',
+            minWidth: '220px',
         },
     },
     '': {
         sx: {
             maxWidth: '220px',
+            minWidth: '220px',
         },
     },
 };
