@@ -135,13 +135,18 @@ export default () => {
                     // console.log({ error, resp });
                     if (error || !isRequestSuccess(resp)) return;
 
-                    getDeviceList();
+                    refreshDeviceList(idsToDelete);
                     toast.success(getIntlText('common.message.delete_success'));
                 },
             });
         },
         [confirm, getIntlText, getDeviceList, selectedIds],
     );
+
+    const refreshDeviceList = (ids: ApiKey[]) => {
+        setSelectedIds(selectedIds.filter(id => !ids.includes(id)));
+        getDeviceList();
+    };
 
     // ---------- Table rendering related to ----------
     const toolbarRender = useMemo(() => {
