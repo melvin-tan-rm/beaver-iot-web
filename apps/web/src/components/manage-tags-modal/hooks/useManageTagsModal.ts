@@ -11,7 +11,7 @@ import type { ManageTagsProps, ManageTagsFormSubmitProps } from '../interface';
 /**
  * Operate the manage tags modal
  */
-export function useManageTagsModal(refreshList?: () => void) {
+export function useManageTagsModal(refreshList?: () => void, changeTagsCb?: () => void) {
     const { getIntlText } = useI18n();
 
     const [manageTagsModalVisible, setManageTagsModalVisible] = useState(false);
@@ -99,6 +99,7 @@ export function useManageTagsModal(refreshList?: () => void) {
         }
 
         refreshList?.();
+        changeTagsCb?.();
         setManageTagsModalVisible(false);
         toast.success(getIntlText('common.message.operation_success'));
         reset?.();

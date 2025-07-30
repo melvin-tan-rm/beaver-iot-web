@@ -200,6 +200,7 @@ const useEntityColumns = <T extends TableRowDataType>({
                 display: 'flex',
                 align: 'left',
                 fixed: 'right',
+                headerAlign: 'left',
                 renderCell({ row }) {
                     return (
                         <Stack

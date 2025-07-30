@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Stack } from '@mui/material';
 import { useRequest } from 'ahooks';
@@ -60,6 +60,10 @@ export default () => {
         return {
             group_id: activeGroup.id,
         };
+    }, [activeGroup]);
+
+    useEffect(() => {
+        setSelectedIds([]);
     }, [activeGroup]);
 
     const {
@@ -296,6 +300,9 @@ export default () => {
                     currentTab={currentTab}
                     handleChangeTab={handleChangeTab}
                     onCancel={hiddenGroupModal}
+                    onSuccess={() => {
+                        setSelectedIds([]);
+                    }}
                     onFormSubmit={changeGroupFormSubmit}
                 />
             )}

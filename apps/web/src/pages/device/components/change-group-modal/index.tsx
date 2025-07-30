@@ -34,6 +34,7 @@ interface Props extends Omit<ModalProps, 'onOk'> {
     handleChangeTab: (tab: GroupTabEnums) => void;
     /** on form submit */
     onFormSubmit: (params: ChangeGroupProps, callback: () => void) => Promise<void>;
+    onSuccess?: () => void;
 }
 
 /**
@@ -47,6 +48,7 @@ const ChangeGroupModal: React.FC<Props> = props => {
         handleChangeTab,
         onCancel,
         onFormSubmit,
+        onSuccess,
         ...restProps
     } = props;
 
@@ -103,6 +105,7 @@ const ChangeGroupModal: React.FC<Props> = props => {
     const onSubmit: SubmitHandler<ChangeGroupProps> = async params => {
         await onFormSubmit(params, () => {
             reset();
+            onSuccess?.();
         });
     };
 

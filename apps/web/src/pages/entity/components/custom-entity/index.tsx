@@ -223,6 +223,9 @@ export default () => {
                     onSuccess={() => {
                         getList();
                         setModalOpen(false);
+                        if (detail) {
+                            setSelectedIds([]);
+                        }
                     }}
                 />
             )}

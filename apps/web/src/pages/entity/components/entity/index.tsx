@@ -110,7 +110,9 @@ export default () => {
         closeManageTagsModal,
         manageTagsFormSubmit,
         selectedEntities,
-    } = useManageTagsModal(getList);
+    } = useManageTagsModal(getList, () => {
+        setSelectedIds([]);
+    });
 
     const handleFilterChange: TableProProps<TableRowDataType>['onFilterInfoChange'] = (
         filters: Record<string, FilterValue | null>,
@@ -159,7 +161,7 @@ export default () => {
             },
         })
             .then(() => {
-                getList();
+                refreshListByOperator();
                 handleCloseExport();
                 toast.success(getIntlText('common.message.operation_success'));
             })
@@ -201,6 +203,12 @@ export default () => {
         setDetail(null);
     };
 
+    // Operator then reset selected
+    const refreshListByOperator = () => {
+        getList();
+        setSelectedIds([]);
+    };
+
     const handleEdit = async (name: string) => {
         const [error, resp] = await awaitWrap(
             entityAPI.editEntity({ name, id: detail?.entityId || '' }),
@@ -209,7 +217,7 @@ export default () => {
         if (error || !isRequestSuccess(resp)) return;
 
         setEditVisible(false);
-        getList();
+        refreshListByOperator();
         setDetail(null);
         toast.success(getIntlText('common.message.operation_success'));
     };
