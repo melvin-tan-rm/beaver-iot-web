@@ -5,6 +5,7 @@ import { useI18n } from '@milesight/shared/src/hooks';
 import { toast } from '@milesight/shared/src/components';
 
 import { type DeviceGroupItemProps, deviceAPI, isRequestSuccess, awaitWrap } from '@/services/http';
+import useDeviceStore from '@/pages/device/store';
 import { type OperateGroupProps } from '../components/operate-group-modal';
 
 export type OperateModalType = 'add' | 'edit';
@@ -17,6 +18,7 @@ export function useGroupModal(props: {
     const { getDeviceGroups, getDeviceGroupCount, refreshDeviceList } = props || {};
 
     const { getIntlText } = useI18n();
+    const { activeGroup, updateActiveGroup } = useDeviceStore();
 
     const [groupModalVisible, setGroupModalVisible] = useState(false);
     const [groupModalTitle, setGroupModalTitle] = useState(
@@ -67,6 +69,17 @@ export function useGroupModal(props: {
         );
         if (error || !isRequestSuccess(resp)) {
             return;
+        }
+
+        /**
+         * Edit group name is completed
+         * update active group basic info
+         */
+        if (activeGroup?.id && data.name && currentGroup.id === activeGroup.id) {
+            updateActiveGroup({
+                ...activeGroup,
+                name: data.name,
+            });
         }
 
         getDeviceGroups?.();
