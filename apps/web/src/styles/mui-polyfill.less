@@ -201,7 +201,7 @@ input.@{mui-prefix}InputBase-input {
 .@{mui-prefix}Checkbox-root.@{mui-prefix}-disabled {
     color: var(--border-color-gray);
 
-    &:not(.@{mui-prefix}-checked) {
+    &:not(.@{mui-prefix}-checked):not(.@{mui-prefix}Checkbox-indeterminate) {
         color: var(--border-color-gray);
 
         &::after {
@@ -213,7 +213,8 @@ input.@{mui-prefix}InputBase-input {
         }
     }
 
-    &.@{mui-prefix}-checked {
+    &.@{mui-prefix}-checked,
+    &.@{mui-prefix}Checkbox-indeterminate {
         color: var(--border-color-gray);
     }
 }
