@@ -59,8 +59,10 @@ export enum PERMISSIONS {
     INTEGRATION_VIEW = 'integration.view',
 
     /**
+     * Setting module
      * Credentials module
      */
+    SETTING_MODULE = 'settings',
     CREDENTIAL_MODULE = 'credentials',
     CREDENTIAL_MODULE_VIEW = 'credentials.view',
     CREDENTIAL_MODULE_EDIT = 'credentials.edit',
@@ -70,7 +72,7 @@ export enum PERMISSIONS {
      */
     TAG_MODULE = 'tag',
     TAG_MODULE_VIEW = 'entity_tag.view',
-    TAG_MODULE_EDIT = 'entity_tag.edit',
+    TAG_MODULE_MANAGE = 'entity_tag.manage',
 }
 
 // Entity Pattern

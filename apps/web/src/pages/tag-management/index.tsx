@@ -84,7 +84,7 @@ const TagManagement: React.FC = () => {
         const isAddedExceed = addedTagCount >= USER_MAX_TAGS;
         return (
             <Stack className="ms-operations-btns" direction="row" spacing="12px">
-                <PermissionControlHidden permissions={PERMISSIONS.TAG_MODULE_EDIT}>
+                <PermissionControlHidden permissions={PERMISSIONS.TAG_MODULE_MANAGE}>
                     <Tooltip
                         title={
                             isAddedExceed ? getIntlText('common.tip.maximum_number_reached') : null
@@ -103,7 +103,7 @@ const TagManagement: React.FC = () => {
                         </div>
                     </Tooltip>
                 </PermissionControlHidden>
-                <PermissionControlHidden permissions={PERMISSIONS.TAG_MODULE_EDIT}>
+                <PermissionControlHidden permissions={PERMISSIONS.TAG_MODULE_MANAGE}>
                     <Button
                         variant="outlined"
                         className="md:d-none"
@@ -151,7 +151,7 @@ const TagManagement: React.FC = () => {
             <div className="ms-view ms-view-tag">
                 <div className="ms-view__inner">
                     <TablePro<TableRowDataType>
-                        checkboxSelection={hasPermission(PERMISSIONS.TAG_MODULE_EDIT)}
+                        checkboxSelection={hasPermission(PERMISSIONS.TAG_MODULE_MANAGE)}
                         filterCondition={[keyword]}
                         loading={loading}
                         columns={columns}

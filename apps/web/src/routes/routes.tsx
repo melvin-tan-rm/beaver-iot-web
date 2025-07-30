@@ -236,7 +236,7 @@ const routes: RouteObjectType[] = [
                 return intl.get('common.label.setting');
             },
             icon: <SettingsIcon fontSize="small" />,
-            permissions: PERMISSIONS.CREDENTIAL_MODULE,
+            permissions: PERMISSIONS.SETTING_MODULE,
         },
         async lazy() {
             const { default: Component } = await import('@/pages/credentials');

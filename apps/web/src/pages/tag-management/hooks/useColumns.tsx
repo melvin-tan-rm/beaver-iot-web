@@ -72,7 +72,7 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                             spacing="4px"
                             sx={{ height: '100%', alignItems: 'center', justifyContent: 'end' }}
                         >
-                            <PermissionControlDisabled permissions={PERMISSIONS.TAG_MODULE_EDIT}>
+                            <PermissionControlDisabled permissions={PERMISSIONS.TAG_MODULE_MANAGE}>
                                 <Tooltip title={getIntlText('common.button.edit')}>
                                     <IconButton
                                         sx={{ width: 30, height: 30 }}
@@ -82,7 +82,7 @@ const useColumns = <T extends TableRowDataType>({ onButtonClick }: UseColumnsPro
                                     </IconButton>
                                 </Tooltip>
                             </PermissionControlDisabled>
-                            <PermissionControlDisabled permissions={PERMISSIONS.TAG_MODULE_EDIT}>
+                            <PermissionControlDisabled permissions={PERMISSIONS.TAG_MODULE_MANAGE}>
                                 <Tooltip title={getIntlText('common.label.delete')}>
                                     <IconButton
                                         sx={{
