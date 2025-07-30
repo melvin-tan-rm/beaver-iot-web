@@ -39,6 +39,16 @@ export default function useTagModal(getAllTags?: () => void, getAddedTag?: () =>
 
         const [error, resp] = await awaitWrap(tagAPI.addTag(data));
         if (error || !isRequestSuccess(resp)) {
+            const errorCode = (error?.response?.data as ApiResponse)?.error_code;
+            const respErrorCode = resp?.data?.error_code;
+            const tagNumExceededCode = 'number_of_entity_tags_exceeded';
+            if (errorCode === tagNumExceededCode || respErrorCode === tagNumExceededCode) {
+                getAllTags?.();
+                getAddedTag?.();
+                setTagModalVisible(false);
+                callback?.();
+            }
+
             return;
         }
 
