@@ -88,7 +88,7 @@ const useDynamicFormItems = ({ entities }: Props) => {
                                     />
                                 )}
                                 value={innerValue || null}
-                                onChange={(_, option) => onChange(option?.value)}
+                                onChange={(_, option) => onChange(option?.value || null)}
                             />
                             {!!error && <FormHelperText error>{error.message}</FormHelperText>}
                         </FormControl>
