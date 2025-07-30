@@ -15,5 +15,6 @@
     "tag.title.replace_with": "Replace with",
     "tag.title.tag_management": "Tag Management",
     "tag.title.tag_name": "Tag Name",
-    "tag.title.tagged_entities": "Tagged Entities"
+    "tag.title.tagged_entities": "Tagged Entities",
+    "tag.tip.edit_tag_info": "If you modify the information in this tag, all entities that use this tag will synchronize the modification."
 }

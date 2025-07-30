@@ -15,5 +15,6 @@
     "tag.title.replace_with": "替换",
     "tag.title.tag_management": "标签管理",
     "tag.title.tag_name": "标签名称",
-    "tag.title.tagged_entities": "关联的实体"
+    "tag.title.tagged_entities": "关联的实体",
+    "tag.tip.edit_tag_info": "如果您修改了该标签的信息，所有使用该标签的实体，都会同步该修改。"
 }

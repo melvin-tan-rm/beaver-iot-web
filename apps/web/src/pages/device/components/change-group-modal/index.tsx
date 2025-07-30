@@ -166,15 +166,23 @@ const ChangeGroupModal: React.FC<Props> = props => {
                         '.MuiAlert-message': {
                             color: 'var(--text-color-primary)',
                         },
+                        margin: 0,
                     }}
                 >
                     {alertMsg}
                 </Alert>
 
-                {currentTab === GroupTabEnums.GROUP &&
-                    formItems.map(item => (
-                        <Controller<ChangeGroupProps> {...item} key={item.name} control={control} />
-                    ))}
+                {currentTab === GroupTabEnums.GROUP && (
+                    <div className={styles.items}>
+                        {formItems.map(item => (
+                            <Controller<ChangeGroupProps>
+                                {...item}
+                                key={item.name}
+                                control={control}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
         </Modal>
     );
