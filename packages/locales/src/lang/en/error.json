@@ -38,7 +38,7 @@
     "error.http.gateway_no_application": "No applications have been created in the gateway.",
     "error.http.gateway_no_device_profile": "No device profiles have been added to the gateway.",
     "error.http.gateway_request_timeout": "Gateway request timed out.",
-    "error.http.gateway_respond_error": "The gateway returned an error message.",
+    "error.http.gateway_respond_error": "Gateway returned error: {error}",
     "error.http.json_validate_error": "JSON validation error.",
     "error.http.method_not_allowed": "Disallowed Http Methods",
     "error.http.msc_another_task_running": "There is a task in progress.",

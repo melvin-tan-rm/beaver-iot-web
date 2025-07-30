@@ -38,7 +38,7 @@
     "error.http.gateway_no_application": "网关中未创建任何application。",
     "error.http.gateway_no_device_profile": "网关未添加任何设备profile。",
     "error.http.gateway_request_timeout": "网关请求超时。",
-    "error.http.gateway_respond_error": "网关返回了错误信息。",
+    "error.http.gateway_respond_error": "网关返回错误: {error}",
     "error.http.json_validate_error": "JSON 检验错误。",
     "error.http.method_not_allowed": "不允许的HTTP方法",
     "error.http.msc_another_task_running": "存在一个执行中的任务。",
