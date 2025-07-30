@@ -9,8 +9,6 @@ type IProps<T extends SelectValueOptionType> = Pick<
     'options' | 'selectedMap' | 'onItemChange' | 'renderOption'
 >;
 
-const MAX_HEIGHT = 400;
-
 export default React.memo((props: IProps<SelectValueOptionType>) => {
     const { options, selectedMap, onItemChange, renderOption, ...rest } = props;
 
@@ -21,13 +19,13 @@ export default React.memo((props: IProps<SelectValueOptionType>) => {
     const [virtualList] = useVirtualList(options, {
         containerTarget: containerRef,
         wrapperTarget: listRef,
-        itemHeight: 30,
+        itemHeight: 38,
         overscan: 10,
     });
 
     return (
         <div {...rest} ref={containerRef}>
-            <div ref={listRef} style={{ height: MAX_HEIGHT }}>
+            <div ref={listRef}>
                 {(virtualList || []).map(({ data: option }) => {
                     const selected = selectedMap.has(option.value);
                     return renderOption ? (

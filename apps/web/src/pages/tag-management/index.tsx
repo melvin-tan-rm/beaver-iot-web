@@ -173,6 +173,9 @@ const TagManagement: React.FC = () => {
                             operateType={operateType}
                             visible={tagModalVisible}
                             onCancel={hideModal}
+                            onSuccess={operateType => {
+                                operateType !== 'add' && setSelectedIds([]);
+                            }}
                             onFormSubmit={onFormSubmit}
                         />
                     )}

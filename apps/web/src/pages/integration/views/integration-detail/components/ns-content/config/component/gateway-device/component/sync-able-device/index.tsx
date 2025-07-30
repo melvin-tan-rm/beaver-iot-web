@@ -153,6 +153,7 @@ const SyncAbleDevice: React.FC<IProps> = props => {
                 onUpdateSuccess?.();
                 refreshTable();
                 setModelMap(new Map());
+                setSelectedIds([]);
                 toast.success(getIntlText('setting.integration.message.device_sync_success'));
             },
         });

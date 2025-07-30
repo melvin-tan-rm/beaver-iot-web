@@ -197,6 +197,9 @@ const Users: React.FC = () => {
                 title={modalTitle}
                 visible={userModalVisible}
                 onCancel={handleModalCancel}
+                onSuccess={operateType => {
+                    operateType !== 'add' && setSelectedIds([]);
+                }}
                 onFormSubmit={handleUserFormSubmit}
                 data={editModalData}
             />
