@@ -86,7 +86,10 @@ export function useDeviceGroup(getDeviceGroupCount: () => void, refreshDeviceLis
                  * will be selected by default
                  */
                 if (record.id === activeGroup?.id) {
-                    updateActiveGroup(FIXED_GROUP[0]);
+                    updateActiveGroup({
+                        id: FIXED_GROUP[0].id,
+                        name: getIntlText(FIXED_GROUP[0].name),
+                    });
                 }
 
                 getDeviceGroups?.();

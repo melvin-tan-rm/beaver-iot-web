@@ -102,6 +102,7 @@ const AddModal: React.FC<Props> = ({ visible, onCancel, onError, onSuccess, ...p
         }
 
         reset();
+        setValue('group', null);
         setInteID('');
         onSuccess?.();
         toast.success(getIntlText('common.message.add_success'));

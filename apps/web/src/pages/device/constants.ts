@@ -1,5 +1,3 @@
-import intl from 'react-intl-universal';
-
 export enum FixedGroupEnum {
     /** All device */
     ALL = 'ALL',
@@ -10,10 +8,10 @@ export enum FixedGroupEnum {
 export const FIXED_GROUP = [
     {
         id: FixedGroupEnum.ALL,
-        name: intl.get('device.label.all_devices').d('device.label.all_devices'),
+        name: 'device.label.all_devices',
     },
     {
         id: FixedGroupEnum.UNGROUPED,
-        name: intl.get('device.label.ungrouped_devices').d('device.label.ungrouped_devices'),
+        name: 'device.label.ungrouped_devices',
     },
 ];

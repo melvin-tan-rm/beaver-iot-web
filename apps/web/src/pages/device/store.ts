@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
 import { type DeviceGroupItemProps } from '@/services/http/device';
-import { FIXED_GROUP } from './constants';
 
 interface DeviceStore {
     /** Current selected group */
@@ -20,7 +19,6 @@ interface DeviceStore {
  */
 const useDeviceStore = create(
     immer<DeviceStore>(set => ({
-        activeGroup: FIXED_GROUP[0],
         deviceGroups: [],
         updateActiveGroup(group) {
             set(state => {
