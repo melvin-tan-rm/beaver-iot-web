@@ -84,6 +84,21 @@ export function useFormItems() {
                                     ['.xlsx'],
                             }}
                             autoUpload={false}
+                            errorInterceptor={error => {
+                                if (error?.code === 'file_invalid_type') {
+                                    return {
+                                        ...error,
+                                        message: `${getIntlText(
+                                            'common.message.upload_error_file_invalid_type',
+                                            {
+                                                1: '.xlsx',
+                                            },
+                                        )}`,
+                                    };
+                                }
+
+                                return error;
+                            }}
                         />
                     );
                 },
