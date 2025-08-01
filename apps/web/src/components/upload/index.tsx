@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, Fragment } from 'react';
 import cls from 'classnames';
-import { useRequest, useUpdateEffect } from 'ahooks';
+import { useRequest, useUpdateEffect, useMemoizedFn } from 'ahooks';
 import { FieldError } from 'react-hook-form';
 import { Button, IconButton, CircularProgress } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -121,6 +121,14 @@ type Props = UseDropzoneProps & {
      * @param files Uploaded file(s)
      */
     onChange?: (data: Props['value'], files?: null | UploadFile | UploadFile[]) => void;
+
+    /**
+     * Customize the inner error
+     *
+     * Note: The error interceptor can only intercept and modify the error prompt,
+     * and cannot prevent the error.
+     */
+    errorInterceptor?: (error: FileError) => FileError | null;
 };
 
 const Upload: React.FC<Props> = ({
@@ -143,6 +151,7 @@ const Upload: React.FC<Props> = ({
     autoUpload = true,
     children,
     onChange,
+    errorInterceptor = error => error,
     ...props
 }) => {
     const { getIntlText } = useI18n();
@@ -166,6 +175,7 @@ const Upload: React.FC<Props> = ({
     // ---------- Upload files to server ----------
     const [files, setFiles] = useState<UploadFile[]>();
     const [fileError, setFileError] = useState<FileError | null>();
+    const memoErrorInterceptor = useMemoizedFn(errorInterceptor);
     const { run: uploadFiles } = useRequest(
         async (files: UploadFile[]) => {
             const limit = pLimit<{ key: string; resource: string } | undefined>(parallel);
@@ -229,7 +239,7 @@ const Upload: React.FC<Props> = ({
         if (fileRejections?.length) {
             const firstError = fileRejections[0].errors[0];
 
-            setFileError(firstError);
+            setFileError(memoErrorInterceptor(firstError));
             return;
         }
 
@@ -252,7 +262,7 @@ const Upload: React.FC<Props> = ({
         if (autoUpload) {
             uploadFiles(result);
         }
-    }, [acceptedFiles, fileRejections, uploadFiles, autoUpload]);
+    }, [autoUpload, acceptedFiles, fileRejections, uploadFiles, memoErrorInterceptor]);
 
     // ---------- Handle uploading status ----------
     const [isUploading, setIsUploading] = useState(false);
@@ -318,10 +328,13 @@ const Upload: React.FC<Props> = ({
         const hasError = error || files?.some(file => file.status === UploadStatus.Error);
 
         if (hasError) {
-            setFileError({
-                code: SERVER_ERROR,
-                message: helperText || error?.message || getIntlText(errorIntlKey[SERVER_ERROR]),
-            });
+            setFileError(
+                memoErrorInterceptor({
+                    code: SERVER_ERROR,
+                    message:
+                        helperText || error?.message || getIntlText(errorIntlKey[SERVER_ERROR]),
+                }),
+            );
             setIsUploading(false);
             setIsAllDone(false);
             return;
@@ -335,7 +348,7 @@ const Upload: React.FC<Props> = ({
         setFileError(null);
         setIsUploading(uploading);
         setIsAllDone(isAllDone);
-    }, [files, error, helperText, getIntlText]);
+    }, [files, error, helperText, getIntlText, memoErrorInterceptor]);
 
     // Trigger callback when files change
     useUpdateEffect(() => {
