@@ -4,7 +4,7 @@
     "device.label.add_device_group": "Create a Device Group",
     "device.label.all_devices": "All Devices",
     "device.label.batch_add_device": "Bulk Add Devices",
-    "device.label.change_device_group": "Change Device Group",
+    "device.label.change_device_group": "Change Group",
     "device.label.device_group": "Device Group",
     "device.label.edit_device_group": "Edit Device Group",
     "device.label.param_device_id": "Device ID",
