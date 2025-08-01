@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Stack } from '@mui/material';
 import { useRequest } from 'ahooks';
+import classNames from 'classnames';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
 import {
@@ -240,11 +241,17 @@ export default () => {
         setFilteredInfo(filters);
     };
 
+    const deviceViewCls = useMemo(() => {
+        return classNames('ms-view__inner', {
+            shrink: isShrink,
+        });
+    }, [isShrink]);
+
     return (
         <div className="ms-main">
             <Breadcrumbs />
             <div className="ms-view ms-view-device">
-                <div className="ms-view__inner">
+                <div className={deviceViewCls}>
                     <DeviceGroup
                         ref={deviceGroupRef}
                         isShrink={isShrink}
