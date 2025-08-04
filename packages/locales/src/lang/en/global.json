@@ -223,7 +223,6 @@
     "valid.input.image": "Please choose an image with .jpg, .png or .jpeg file format.",
     "valid.input.integer_positive_negative_zero": "Please enter a positive/negative integer, or zero.",
     "valid.input.integer_positive_zero": "Please enter a positive integer (Includes Zero).",
-    "valid.input.integer_positive": "Please enter a positive integer.",
     "valid.input.ip_address": "Please enter your IP address in the following format: XXX.XXX.XXX.XXX. XXX should be 1-255.",
     "valid.input.ip_or_domain": "Please enter a valid IP address or domain name.",
     "valid.input.ipv6_address": "Please enter your IP address in this format: XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX (XXXX is 0000-FFFF).",

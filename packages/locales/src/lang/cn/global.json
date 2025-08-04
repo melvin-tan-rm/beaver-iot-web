@@ -223,7 +223,6 @@
     "valid.input.image": "请选择.jpg、.png或.jpeg格式的图片。",
     "valid.input.integer_positive_negative_zero": "请输入正整数/负整数或零。",
     "valid.input.integer_positive_zero": "请输入正整数（包括零）。",
-    "valid.input.integer_positive": "请输入正整数。",
     "valid.input.ip_address": "请输入IP地址，格式为XXX.XXX.XXX.XXX，XXX应为1-255。",
     "valid.input.ip_or_domain": "请输入有效的IP地址或域名。",
     "valid.input.ipv6_address": "请输入IP地址，格式为XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX（XXXX为0000-FFFF）。",
