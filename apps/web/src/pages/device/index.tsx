@@ -113,6 +113,7 @@ export default () => {
         addList,
         integration,
         templateFile,
+        rowIds,
         hiddenBatchGroupModal,
         batchAddFormSubmit,
         openBatchGroupModal,
@@ -320,6 +321,7 @@ export default () => {
                     addList={addList}
                     integration={integration}
                     templateFile={templateFile}
+                    rowIds={rowIds}
                     onCancel={hiddenBatchGroupModal}
                     onFormSubmit={batchAddFormSubmit}
                 />

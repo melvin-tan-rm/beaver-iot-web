@@ -26,6 +26,7 @@ export default function useBatchAddModal(
     const [addList, setAddList] = useState<AddDeviceProps[]>([]);
     const [integration, setIntegration] = useState<ApiKey>();
     const [templateFile, setTemplateFile] = useState<File>();
+    const [rowIds, setRowIds] = useState<ApiKey[]>([]);
 
     const openBatchGroupModal = useMemoizedFn(() => {
         setBatchAddModalVisible(true);
@@ -82,6 +83,7 @@ export default function useBatchAddModal(
         setIntegration(integration);
         setTemplateFile(original);
         setAddList(result?.create_device_requests || []);
+        setRowIds(result?.row_id || []);
         setBatchAddStatus('adding');
     });
 
@@ -91,6 +93,7 @@ export default function useBatchAddModal(
         addList,
         integration,
         templateFile,
+        rowIds,
         openBatchGroupModal,
         hiddenBatchGroupModal,
         batchAddFormSubmit,

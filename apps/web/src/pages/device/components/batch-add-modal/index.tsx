@@ -35,6 +35,10 @@ interface Props extends Omit<ModalProps, 'onOk'> {
      * Device template file
      */
     templateFile?: File;
+    /**
+     * Add List Real Row ids
+     */
+    rowIds?: ApiKey[];
     /** on form submit */
     onFormSubmit: (params: BatchAddProps, callback: () => void) => Promise<void>;
 }
@@ -51,6 +55,7 @@ const BatchAddModal: React.FC<Props> = props => {
         addList,
         integration,
         templateFile,
+        rowIds,
         ...restProps
     } = props;
 
@@ -104,6 +109,7 @@ const BatchAddModal: React.FC<Props> = props => {
                     addList={addList}
                     integration={integration}
                     templateFile={templateFile}
+                    rowIds={rowIds}
                     interrupt={interrupt}
                     onLoopEnd={handleAddLoopEnd}
                     onCompleted={handleAddCompleted}

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { useMemoizedFn } from 'ahooks';
-import { isEmpty, cloneDeep, isNil } from 'lodash-es';
+import { isEmpty, cloneDeep, isNil, get } from 'lodash-es';
 import dayjs from 'dayjs';
 
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -23,7 +23,8 @@ interface DeviceErrorInfoProps {
 }
 
 export function useProgress(props: BatchAddProgressProps) {
-    const { interrupt, addList, onLoopEnd, onCompleted, templateFile, integration } = props || {};
+    const { interrupt, addList, onLoopEnd, onCompleted, templateFile, integration, rowIds } =
+        props || {};
 
     const { getIntlText } = useI18n();
 
@@ -58,7 +59,10 @@ export function useProgress(props: BatchAddProgressProps) {
         failedCountRef.current += 1;
         setFailedCount(failedCountRef.current);
 
-        errorInfosRef.current.push(errorInfo);
+        errorInfosRef.current.push({
+            ...errorInfo,
+            id: get(rowIds, errorInfo.id, errorInfo.id),
+        });
     });
 
     const handleInterrupted = useMemoizedFn((lastIndex?: number) => {

@@ -31,6 +31,10 @@ export interface BatchAddProgressProps {
      * Device template file
      */
     templateFile?: File;
+    /**
+     * Add List Real Row ids
+     */
+    rowIds?: ApiKey[];
 
     /** On add list loop end callback */
     onLoopEnd?: () => void;

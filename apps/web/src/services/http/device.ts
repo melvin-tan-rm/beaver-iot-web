@@ -178,6 +178,7 @@ export interface DeviceAPISchema extends APISchema {
         };
         response: {
             create_device_requests: AddDeviceProps[];
+            row_id: ApiKey[];
         };
     };
     /** Generate error file */
