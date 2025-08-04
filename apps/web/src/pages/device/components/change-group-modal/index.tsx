@@ -87,6 +87,11 @@ const ChangeGroupModal: React.FC<Props> = props => {
                                     error,
                                 )}
                                 isOptionEqualToValue={handleIsOptionEqualToValue()}
+                                ListboxProps={{
+                                    sx: {
+                                        height: '240px',
+                                    },
+                                }}
                             />
                         </FormControl>
                     );
@@ -145,7 +150,7 @@ const ChangeGroupModal: React.FC<Props> = props => {
             }}
             {...restProps}
         >
-            <Box sx={{ borderBottom: 1, borderColor: 'divider', padding: '0 16px' }}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider', padding: '0 24px' }}>
                 <Tabs value={currentTab} onChange={(_, newTab) => handleChangeTab(newTab)}>
                     <Tab
                         label={getIntlText('device.title.move_device_to_group')}

@@ -89,6 +89,11 @@ const useDynamicFormItems = ({ entities }: Props) => {
                                 )}
                                 value={innerValue || null}
                                 onChange={(_, option) => onChange(option?.value || null)}
+                                ListboxProps={{
+                                    sx: {
+                                        height: '240px',
+                                    },
+                                }}
                             />
                             {!!error && <FormHelperText error>{error.message}</FormHelperText>}
                         </FormControl>

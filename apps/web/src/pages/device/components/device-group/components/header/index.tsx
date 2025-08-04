@@ -4,7 +4,7 @@ import { omit, pick } from 'lodash-es';
 import cls from 'classnames';
 
 import { useI18n } from '@milesight/shared/src/hooks';
-import { AddIcon, SearchIcon } from '@milesight/shared/src/components';
+import { AddIcon, SearchIcon, CancelIcon } from '@milesight/shared/src/components';
 
 import { Tooltip, PermissionControlDisabled } from '@/components';
 import { PERMISSIONS } from '@/constants';
@@ -90,7 +90,19 @@ const Header: React.FC<HeaderProps> = props => {
                     onMouseLeave={handleMouseLeave}
                     slotProps={{
                         input: {
-                            endAdornment: <SearchIcon color={showSearch ? 'disabled' : 'action'} />,
+                            endAdornment: keyword ? (
+                                <CancelIcon
+                                    sx={{ color: 'var(--gray-4)' }}
+                                    onClick={e => {
+                                        e?.preventDefault();
+                                        e?.stopPropagation();
+
+                                        changeKeyword('');
+                                    }}
+                                />
+                            ) : (
+                                <SearchIcon color={showSearch ? 'disabled' : 'action'} />
+                            ),
                         },
                     }}
                     sx={{

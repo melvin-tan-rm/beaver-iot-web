@@ -4,7 +4,7 @@ import { useRequest, useMemoizedFn } from 'ahooks';
 import { Button, Stack } from '@mui/material';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
-import { AddIcon, RemoveCircleOutlineIcon } from '@milesight/shared/src/components';
+import { AddIcon, DeleteOutlineIcon } from '@milesight/shared/src/components';
 import { TablePro, Breadcrumbs, Tooltip, PermissionControlHidden } from '@/components';
 import { tagAPI, awaitWrap, getResponseData, isRequestSuccess } from '@/services/http';
 import { PERMISSIONS } from '@/constants';
@@ -109,7 +109,7 @@ const TagManagement: React.FC = () => {
                         className="md:d-none"
                         disabled={!selectedIds.length}
                         sx={{ height: 36, textTransform: 'none' }}
-                        startIcon={<RemoveCircleOutlineIcon />}
+                        startIcon={<DeleteOutlineIcon />}
                         onClick={() => {
                             handleDeleteTag(
                                 (allTags?.content || []).filter(t =>

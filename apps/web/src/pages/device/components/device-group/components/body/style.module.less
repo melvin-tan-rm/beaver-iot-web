@@ -10,14 +10,21 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: @padding-xxs @padding-sm;
+        padding: @padding-xxs @padding-xs;
         margin-bottom: @margin-xxs;
         border-radius: @border-radius-base;
         cursor: pointer;
         transition: background-color 0.1s ease;
 
-        :global(.more-dropdown__wrapper) {
-            visibility: hidden;
+        :global {
+            .more-dropdown__wrapper {
+                visibility: hidden;
+
+                &:hover {
+                    background-color: var(--icon-hover-background);
+                    border-radius: @border-radius-xxl;
+                }
+            }
         }
 
         &:hover {
@@ -29,6 +36,7 @@
         }
 
         &.active {
+            font-weight: @font-weight-medium;
             color: var(--text-color-main);
             background-color: var(--primary-color-1);
 

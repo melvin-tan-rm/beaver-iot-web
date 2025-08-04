@@ -3,13 +3,14 @@ import { TextField, FormControl, InputLabel, FormHelperText } from '@mui/materia
 import { type ControllerProps } from 'react-hook-form';
 
 import { checkRequired } from '@milesight/shared/src/utils/validators';
-import { useI18n } from '@milesight/shared/src/hooks';
+import { useI18n, useTheme } from '@milesight/shared/src/hooks';
 import IconColorSelect from '@/plugin/components/icon-color-select';
 
 import { type OperateTagProps } from '../index';
 
 export function useFormItems() {
     const { getIntlText } = useI18n();
+    const { getCSSVariableValue } = useTheme();
 
     const formItems = useMemo((): (ControllerProps<OperateTagProps> & { wrapCol: number })[] => {
         return [
@@ -56,7 +57,7 @@ export function useFormItems() {
                         checkRequired: checkRequired(),
                     },
                 },
-                defaultValue: '#B0B0B0',
+                defaultValue: getCSSVariableValue('--gray-7'),
                 render({ field: { onChange, value }, fieldState: { error } }) {
                     return (
                         <FormControl
@@ -123,7 +124,7 @@ export function useFormItems() {
                 },
             },
         ];
-    }, [getIntlText]);
+    }, [getIntlText, getCSSVariableValue]);
 
     return {
         formItems,

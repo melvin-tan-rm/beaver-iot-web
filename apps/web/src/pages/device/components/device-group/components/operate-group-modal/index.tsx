@@ -87,6 +87,7 @@ const OperateGroupModal: React.FC<Props> = props => {
 
     return (
         <Modal
+            size="lg"
             visible={visible}
             title={getIntlText('common.label.add')}
             className={classNames({ loading: formState.isSubmitting })}
