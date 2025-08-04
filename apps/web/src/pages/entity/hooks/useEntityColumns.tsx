@@ -58,7 +58,7 @@ const useEntityColumns = <T extends TableRowDataType>({
                 field: 'entityName',
                 headerName: getIntlText('device.label.param_entity_name'),
                 flex: 1,
-                minWidth: 250,
+                minWidth: 200,
                 ellipsis: true,
                 operators: getOperatorsByExclude([
                     FILTER_OPERATORS.IS_EMPTY,
@@ -71,7 +71,7 @@ const useEntityColumns = <T extends TableRowDataType>({
                 field: 'deviceName',
                 headerName: getIntlText('common.label.device'),
                 flex: 1,
-                minWidth: 140,
+                minWidth: 160,
                 ellipsis: true,
                 operators: getOperatorsByExclude([
                     FILTER_OPERATORS.IS_EMPTY,
@@ -138,7 +138,7 @@ const useEntityColumns = <T extends TableRowDataType>({
                 headerName: getIntlText('entity.label.parent_entity'),
                 align: 'left',
                 flex: 1,
-                minWidth: 200,
+                minWidth: 180,
                 ellipsis: true,
                 operators: getOperatorsByExclude([FILTER_OPERATORS.ANY_EQUALS]),
                 operatorValueCompType: 'input',
