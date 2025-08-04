@@ -297,7 +297,7 @@ export default () => {
                     className="md:d-none"
                     sx={{
                         width: '1px',
-                        backgroundColor: 'var(--gray-color-2)',
+                        borderColor: 'var(--gray-color-3)',
                     }}
                 />
                 <PermissionControlHidden permissions={PERMISSIONS.ENTITY_DATA_EDIT}>
@@ -335,7 +335,7 @@ export default () => {
                         className="md:d-none"
                         sx={{
                             width: '1px',
-                            backgroundColor: 'var(--gray-color-2)',
+                            borderColor: 'var(--gray-color-3)',
                         }}
                     />
                 </PermissionControlHidden>

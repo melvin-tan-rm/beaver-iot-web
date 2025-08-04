@@ -57,6 +57,7 @@ const usePinnedColumn = <T extends GridValidRowModel>(props: PinnedColumnType<T>
     const { checkboxSelection } = restProps;
 
     const [scrollYSize, setScrollYSize] = useState<number>(0);
+    const [fixedEnable, setFixedEnable] = useState<boolean>(false);
 
     const getCellClassName = (
         column: PinnedColumn<T>,
@@ -91,7 +92,7 @@ const usePinnedColumn = <T extends GridValidRowModel>(props: PinnedColumnType<T>
      *  Calculate the absolute positions of the columns that need to be fixed
      */
     const pinnedColumnPos: Record<ColumnType<T>['field'], PinnedColumn<T>> = useMemo(() => {
-        if (matchMobile) return {};
+        if (matchMobile || !fixedEnable) return {};
         const pinnedColumns = columns
             .filter((column: ColumnType<T>) => !!column.width || !!column.minWidth)
             .reduce(
@@ -152,7 +153,7 @@ const usePinnedColumn = <T extends GridValidRowModel>(props: PinnedColumnType<T>
                 },
                 {},
             );
-    }, [columns, scrollYSize]);
+    }, [columns, scrollYSize, fixedEnable]);
 
     /**
      *  Generate styles that require fixed columns
@@ -181,7 +182,7 @@ const usePinnedColumn = <T extends GridValidRowModel>(props: PinnedColumnType<T>
             });
         }
         return sxProperty;
-    }, [pinnedColumnPos, scrollYSize]);
+    }, [pinnedColumnPos, scrollYSize, fixedEnable]);
 
     useEffect(() => {
         if (!columns.some(column => !!column.fixed)) {
@@ -191,6 +192,7 @@ const usePinnedColumn = <T extends GridValidRowModel>(props: PinnedColumnType<T>
         apiRef.current?.unstable_setColumnVirtualization(false);
         apiRef.current.subscribeEvent('stateChange', state => {
             setScrollYSize(state.dimensions.hasScrollY ? state.dimensions.scrollbarSize : 0);
+            setFixedEnable(state.dimensions.hasScrollX);
         });
     }, [apiRef.current, columns]);
 

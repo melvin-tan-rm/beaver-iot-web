@@ -85,6 +85,10 @@ const SyncAbleDevice: React.FC<IProps> = props => {
     }, [devicesData, keyword]);
 
     useEffect(() => {
+        setSelectedIds([]);
+    }, [paginationModel.page]);
+
+    useEffect(() => {
         initModelOption();
     }, []);
 

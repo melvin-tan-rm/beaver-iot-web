@@ -72,6 +72,10 @@ const Config: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
         });
     }, [gatewaysData, keyword]);
 
+    useEffect(() => {
+        setSelectedIds([]);
+    }, [paginationModel.page]);
+
     // ---------- Data Deletion related ----------
     const handleDeleteConfirm = useCallback(
         (ids?: ApiKey[]) => {

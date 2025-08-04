@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Stack } from '@mui/material';
 import { useRequest } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
@@ -69,6 +69,10 @@ const SyncedDevice: React.FC<IProps> = props => {
             },
         });
     }, [devicesData, keyword]);
+
+    useEffect(() => {
+        setSelectedIds([]);
+    }, [paginationModel.page]);
 
     // ---------- Data Deletion related ----------
     const confirm = useConfirm();
