@@ -46,12 +46,11 @@ const SyncAbleDevice: React.FC<IProps> = props => {
     const [modelMap, setModelMap] = useState<Map<string, string>>(new Map());
 
     const {
-        data: deviceData,
+        data: devicesData,
         loading,
         run: getDevicesList,
     } = useRequest(
         async () => {
-            const { page, pageSize } = paginationModel;
             const [error, resp] = await awaitWrap(
                 embeddedNSApi.getSyncAbleDevices({ eui: gatewayInfo.eui }),
             );
@@ -59,29 +58,31 @@ const SyncAbleDevice: React.FC<IProps> = props => {
             if (error || !data || !isRequestSuccess(resp)) {
                 return;
             }
-            const pageData = paginationList({
-                dataList: data,
-                search: keyword,
-                pageSize,
-                pageNumber: page + 1,
-                filterCondition: (item, search: string) => {
-                    return [item?.name, item.eui]
-                        .map(v => v?.toLocaleLowerCase() || '')
-                        .filter(i => !!i)
-                        .some(value => value.includes(search.toLocaleLowerCase()));
-                },
-            });
             // not search to update top bar count
             if (!keyword) {
-                deviceCountChange(pageData.total);
+                deviceCountChange(data.length);
             }
-            return objectToCamelCase(pageData);
+            return objectToCamelCase(data);
         },
         {
             debounceWait: 300,
-            refreshDeps: [keyword, paginationModel],
         },
     );
+
+    const deviceData = useMemo(() => {
+        return paginationList({
+            dataList: devicesData || [],
+            search: keyword,
+            pageSize: 9999,
+            pageNumber: 1,
+            filterCondition: (item, search: string) => {
+                return [item?.name, item.eui]
+                    .map(v => v?.toLocaleLowerCase() || '')
+                    .filter(Boolean)
+                    .some(value => value.includes(search.toLocaleLowerCase()));
+            },
+        });
+    }, [devicesData, keyword]);
 
     useEffect(() => {
         initModelOption();
@@ -192,6 +193,7 @@ const SyncAbleDevice: React.FC<IProps> = props => {
             </div>
             <div className="ms-ns-device-inner">
                 <TablePro<TableRowDataType>
+                    paginationMode="client"
                     filterCondition={[keyword]}
                     checkboxSelection
                     getRowId={(row: TableRowDataType) => row.eui}

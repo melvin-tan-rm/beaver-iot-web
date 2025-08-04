@@ -40,36 +40,37 @@ const Config: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
     const [codecOpen, setCodecOpen] = useState<boolean>(false);
 
     const {
-        data: nsData,
+        data: gatewaysData,
         loading,
         run: getGatewayList,
     } = useRequest(
         async () => {
-            const { page, pageSize } = paginationModel;
             const [error, resp] = await awaitWrap(embeddedNSApi.getList());
             const data = getResponseData(resp);
             if (error || !data || !isRequestSuccess(resp)) {
                 return;
             }
-            const pageData = paginationList({
-                dataList: data.gateways,
-                search: keyword,
-                pageSize,
-                pageNumber: page + 1,
-                filterCondition: (item, search: string) => {
-                    return [item?.name]
-                        .map(v => v?.toLocaleLowerCase() || '')
-                        .filter(i => !!i)
-                        .some(value => value.includes(search.toLocaleLowerCase()));
-                },
-            });
-            return objectToCamelCase(pageData);
+            return objectToCamelCase(data);
         },
         {
             debounceWait: 300,
-            refreshDeps: [keyword, paginationModel],
         },
     );
+
+    const nsData = useMemo(() => {
+        return paginationList({
+            dataList: gatewaysData?.gateways || [],
+            search: keyword,
+            pageSize: 9999,
+            pageNumber: 1,
+            filterCondition: (item, search: string) => {
+                return [item?.name]
+                    .map(v => v?.toLocaleLowerCase() || '')
+                    .filter(Boolean)
+                    .some(value => value.includes(search.toLocaleLowerCase()));
+            },
+        });
+    }, [gatewaysData, keyword]);
 
     // ---------- Data Deletion related ----------
     const handleDeleteConfirm = useCallback(
@@ -180,6 +181,7 @@ const Config: React.FC<IProps> = ({ entities, onUpdateSuccess }) => {
         <div className="ms-view ms-view-ns">
             <div className="ms-view-inner">
                 <TablePro<TableRowDataType>
+                    paginationMode="client"
                     filterCondition={[keyword]}
                     checkboxSelection
                     getRowId={(row: TableRowDataType) => row.eui}

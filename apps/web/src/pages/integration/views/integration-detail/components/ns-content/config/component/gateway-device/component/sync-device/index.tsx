@@ -36,12 +36,11 @@ const SyncedDevice: React.FC<IProps> = props => {
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const [selectedIds, setSelectedIds] = useState<readonly ApiKey[]>([]);
     const {
-        data: deviceData,
+        data: devicesData,
         loading,
         run: getDevicesList,
     } = useRequest(
         async () => {
-            const { page, pageSize } = paginationModel;
             const [error, resp] = await awaitWrap(
                 embeddedNSApi.getSyncedDevices({ eui: gatewayInfo.eui }),
             );
@@ -49,25 +48,27 @@ const SyncedDevice: React.FC<IProps> = props => {
             if (error || !data || !isRequestSuccess(resp)) {
                 return;
             }
-            const pageData = paginationList({
-                dataList: data,
-                search: keyword,
-                pageSize,
-                pageNumber: page + 1,
-                filterCondition: (item, search: string) => {
-                    return [item?.name, item.eui]
-                        .map(v => v?.toLocaleLowerCase() || '')
-                        .filter(i => !!i)
-                        .some(value => value.includes(search.toLocaleLowerCase()));
-                },
-            });
-            return objectToCamelCase(pageData);
+            return objectToCamelCase(data);
         },
         {
             debounceWait: 300,
-            refreshDeps: [keyword, paginationModel],
         },
     );
+
+    const deviceData = useMemo(() => {
+        return paginationList({
+            dataList: devicesData || [],
+            search: keyword,
+            pageSize: 9999,
+            pageNumber: 1,
+            filterCondition: (item, search: string) => {
+                return [item?.name, item.eui]
+                    .map(v => v?.toLocaleLowerCase() || '')
+                    .filter(Boolean)
+                    .some(value => value.includes(search.toLocaleLowerCase()));
+            },
+        });
+    }, [devicesData, keyword]);
 
     // ---------- Data Deletion related ----------
     const confirm = useConfirm();
@@ -143,6 +144,7 @@ const SyncedDevice: React.FC<IProps> = props => {
         <div className="ms-ns-device">
             <div className="ms-ns-device-inner ms-ns-synced-device">
                 <TablePro<TableRowDataType>
+                    paginationMode="client"
                     filterCondition={[keyword]}
                     checkboxSelection
                     loading={loading}
