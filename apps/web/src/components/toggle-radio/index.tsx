@@ -40,11 +40,16 @@ const ToggleRadio: React.FC<Props> = ({ options, disabled, sx, ...props }) => {
                 if (!val) return;
                 setValue(val);
             }}
-            sx={{ my: 1.5, ...sx }}
+            sx={{ my: 1.5, lineHeight: 1, ...sx }}
         >
-            {options?.map(({ label, value }) => (
-                <ToggleButton key={value} value={value} aria-label={label}>
-                    {label}
+            {options?.map(option => (
+                <ToggleButton
+                    key={option.value}
+                    value={option.value}
+                    aria-label={option.label}
+                    sx={{ fontWeight: value === option.value ? 500 : 400 }}
+                >
+                    {option.label}
                 </ToggleButton>
             ))}
         </ToggleButtonGroup>
