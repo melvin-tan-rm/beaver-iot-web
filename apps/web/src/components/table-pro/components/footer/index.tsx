@@ -54,7 +54,11 @@ const CustomPagination: React.FC<PaginationProps> = ({
                 page={page + 1}
                 count={pageCount}
                 renderItem={props => {
-                    return renderItem ? renderItem(props) : <PaginationItem {...props} />;
+                    return renderItem ? (
+                        renderItem(props)
+                    ) : (
+                        <PaginationItem {...props} page={<span>{props.page}</span>} />
+                    );
                 }}
                 onChange={(event, value) => {
                     apiRef.current.setPage(value - 1);
