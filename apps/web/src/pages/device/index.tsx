@@ -65,6 +65,7 @@ export default () => {
 
     useEffect(() => {
         setSelectedIds([]);
+        setPaginationModel({ page: 0, pageSize: 10 });
     }, [activeGroup]);
 
     const {
