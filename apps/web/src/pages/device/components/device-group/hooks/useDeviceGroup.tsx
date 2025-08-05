@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useRequest, useMemoizedFn } from 'ahooks';
 
 import { useI18n } from '@milesight/shared/src/hooks';
-import { toast } from '@milesight/shared/src/components';
+import { toast, ErrorIcon } from '@milesight/shared/src/components';
 
 import { useConfirm } from '@/components';
 import {
@@ -66,9 +66,7 @@ export function useDeviceGroup(getDeviceGroupCount: () => void, refreshDeviceLis
                 1: record.name,
             }),
             confirmButtonText: getIntlText('common.label.delete'),
-            confirmButtonProps: {
-                color: 'error',
-            },
+            icon: <ErrorIcon sx={{ color: 'var(--orange-base)' }} />,
             onConfirm: async () => {
                 if (!record?.id) return;
 
