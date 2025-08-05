@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Stack } from '@mui/material';
-import { useRequest } from 'ahooks';
+import { useDebounceEffect, useRequest } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
 import { DeleteOutlineIcon, toast } from '@milesight/shared/src/components';
@@ -12,6 +12,7 @@ import {
     getResponseData,
     GatewayDetailType,
     deviceAPI,
+    SyncedDeviceType,
 } from '@/services/http';
 import { paginationList } from '../../../../utils/utils';
 import useColumns, { TableRowDataType, UseColumnsProps } from './hook/useColumn';
@@ -23,36 +24,30 @@ interface IProps {
     onUpdateSuccess?: () => void;
     // refresh table
     refreshTable: () => void;
+    devicesData: ObjectToCamelCase<SyncedDeviceType>[];
+    loading: boolean;
+    getDevicesList: () => void;
 }
 
 /**
  * synced device component
  */
 const SyncedDevice: React.FC<IProps> = props => {
-    const { gatewayInfo, onUpdateSuccess, refreshTable } = props;
+    const { gatewayInfo, onUpdateSuccess, refreshTable, devicesData, loading, getDevicesList } =
+        props;
     const { getIntlText } = useI18n();
+
     // ---------- list data related to ----------
     const [keyword, setKeyword] = useState<string>();
     const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 10 });
     const [selectedIds, setSelectedIds] = useState<readonly ApiKey[]>([]);
-    const {
-        data: devicesData,
-        loading,
-        run: getDevicesList,
-    } = useRequest(
-        async () => {
-            const [error, resp] = await awaitWrap(
-                embeddedNSApi.getSyncedDevices({ eui: gatewayInfo.eui }),
-            );
-            const data = getResponseData(resp);
-            if (error || !data || !isRequestSuccess(resp)) {
-                return;
-            }
-            return objectToCamelCase(data);
+
+    useDebounceEffect(
+        () => {
+            getDevicesList();
         },
-        {
-            debounceWait: 300,
-        },
+        [],
+        { wait: 300 },
     );
 
     const deviceData = useMemo(() => {

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Stack, Alert } from '@mui/material';
-import { useRequest } from 'ahooks';
+import { useDebounceEffect, useRequest } from 'ahooks';
 import { useI18n } from '@milesight/shared/src/hooks';
 import { objectToCamelCase } from '@milesight/shared/src/utils/tools';
 import { TablePro, useConfirm } from '@/components';
@@ -11,8 +11,9 @@ import {
     embeddedNSApi,
     getResponseData,
     GatewayDetailType,
+    SyncAbleDeviceType,
+    DeviceModelItem,
 } from '@/services/http';
-import { DeviceModelItem } from '@/services/http/embedded-ns';
 import { paginationList } from '../../../../utils/utils';
 import useColumns, { TableRowDataType } from './hook/useColumn';
 
@@ -21,19 +22,21 @@ import './style.less';
 interface IProps {
     // gateway detail
     gatewayInfo: ObjectToCamelCase<GatewayDetailType>;
-    // device count change event
-    deviceCountChange: (count: number) => void;
     // update event
     onUpdateSuccess?: () => void;
     // refresh table
     refreshTable: () => void;
+    devicesData: ObjectToCamelCase<SyncAbleDeviceType>[];
+    loading: boolean;
+    getDevicesList: () => void;
 }
 
 /**
  * syncAble device component
  */
 const SyncAbleDevice: React.FC<IProps> = props => {
-    const { gatewayInfo, deviceCountChange, onUpdateSuccess, refreshTable } = props;
+    const { gatewayInfo, onUpdateSuccess, refreshTable, devicesData, loading, getDevicesList } =
+        props;
     const { getIntlText } = useI18n();
 
     // ---------- list data related to ----------
@@ -44,30 +47,6 @@ const SyncAbleDevice: React.FC<IProps> = props => {
 
     // select device model map
     const [modelMap, setModelMap] = useState<Map<string, string>>(new Map());
-
-    const {
-        data: devicesData,
-        loading,
-        run: getDevicesList,
-    } = useRequest(
-        async () => {
-            const [error, resp] = await awaitWrap(
-                embeddedNSApi.getSyncAbleDevices({ eui: gatewayInfo.eui }),
-            );
-            const data = getResponseData(resp);
-            if (error || !data || !isRequestSuccess(resp)) {
-                return;
-            }
-            // not search to update top bar count
-            if (!keyword) {
-                deviceCountChange(data.length);
-            }
-            return objectToCamelCase(data);
-        },
-        {
-            debounceWait: 300,
-        },
-    );
 
     const deviceData = useMemo(() => {
         return paginationList({
@@ -83,6 +62,14 @@ const SyncAbleDevice: React.FC<IProps> = props => {
             },
         });
     }, [devicesData, keyword]);
+
+    useDebounceEffect(
+        () => {
+            getDevicesList();
+        },
+        [],
+        { wait: 300 },
+    );
 
     useEffect(() => {
         setSelectedIds([]);

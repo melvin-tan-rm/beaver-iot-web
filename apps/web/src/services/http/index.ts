@@ -27,7 +27,13 @@ export {
     type RoleResourceType,
 } from './user';
 
-export { default as embeddedNSApi, type GatewayDetailType } from './embedded-ns';
+export {
+    default as embeddedNSApi,
+    type SyncedDeviceType,
+    type SyncAbleDeviceType,
+    type DeviceModelItem,
+    type GatewayDetailType,
+} from './embedded-ns';
 export {
     default as credentialsApi,
     type CredentialsAdditionalData,
