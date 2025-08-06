@@ -84,7 +84,7 @@ const SyncAbleDevice: React.FC<IProps> = props => {
             }
         });
         setModelMap(modelMapTmp);
-    }, deviceData?.content);
+    }, [deviceData?.content]);
 
     // get model option
     const initModelOption = async () => {
