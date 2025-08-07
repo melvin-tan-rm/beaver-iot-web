@@ -144,7 +144,7 @@ const SyncedDevice: React.FC<IProps> = props => {
                     checkboxSelection
                     loading={loading}
                     columns={columns}
-                    getRowId={record => record.eui}
+                    getRowId={record => record.id}
                     rows={deviceData?.content}
                     rowCount={deviceData?.total || 0}
                     paginationModel={paginationModel}
