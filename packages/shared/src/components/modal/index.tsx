@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import useI18n from '../../hooks/useI18n';
 import useTheme from '../../hooks/useTheme';
-import LoadingButton from '../loading-button';
+import LoadingButton, { type LoadingButtonProps } from '../loading-button';
 import { CloseIcon } from '../icons';
 import './style.less';
 
@@ -96,7 +96,7 @@ export interface ModalProps {
     /**
      * Cancel button props
      */
-    cancelButtonProps?: ButtonProps;
+    cancelButtonProps?: LoadingButtonProps;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -196,7 +196,7 @@ const Modal: React.FC<ModalProps> = ({
             <DialogContent className="ms-modal-content">{children}</DialogContent>
             {footer === undefined ? (
                 <DialogActions className="ms-modal-footer">
-                    <Button
+                    <LoadingButton
                         {...cancelButtonProps}
                         variant="outlined"
                         disabled={loading}
@@ -204,7 +204,7 @@ const Modal: React.FC<ModalProps> = ({
                         sx={{ mr: 0.5, '&:last-child': { mr: 0 } }}
                     >
                         {onCancelText || getIntlText('common.button.cancel')}
-                    </Button>
+                    </LoadingButton>
                     <LoadingButton
                         {...okButtonProps}
                         variant="contained"

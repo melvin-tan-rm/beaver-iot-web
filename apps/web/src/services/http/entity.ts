@@ -24,6 +24,22 @@ export interface EntityAPISchema extends APISchema {
             not_scan_key?: boolean;
             /** Whether it is a custom entity */
             customized?: boolean;
+            /** Advanced filter */
+            entity_filter?: AdvancedConditionsType<EntityData>;
+        };
+        response: SearchResponseType<EntityData[]>;
+    };
+    /** Advanced search entity */
+    advancedSearch: {
+        request: SearchRequestType & {
+            /** Advanced filter */
+            entity_filter?: AdvancedConditionsType<EntityData>;
+            sorts?: [
+                {
+                    direction: 'ASC' | 'DESC';
+                    property: string;
+                },
+            ];
         };
         response: SearchResponseType<EntityData[]>;
     };
@@ -126,7 +142,19 @@ export interface EntityAPISchema extends APISchema {
         request: {
             id: ApiKey;
         };
-        response: unknown;
+        response: {
+            device_name?: string;
+            integration_name?: string;
+            entity_id: ApiKey;
+            entity_key: ApiKey;
+            entity_name: string;
+            entity_type: EntityType;
+            entity_value_type: EntityValueDataType;
+            entity_access_mod: EntityAccessMode;
+            entity_value_attribute?: EntityValueAttributeType;
+            entity_created_at: number;
+            entity_parent_name: string;
+        }[];
     };
 
     /** Delete entity */
@@ -180,6 +208,7 @@ export interface EntityAPISchema extends APISchema {
 export default attachAPI<EntityAPISchema>(client, {
     apis: {
         getList: `POST ${API_PREFIX}/entity/search`,
+        advancedSearch: `POST ${API_PREFIX}/entity/advanced-search`,
         getHistory: `POST ${API_PREFIX}/entity/history/search`,
         getUtilityHistory: `POST ${API_PREFIX}/entity/history/search`,
         getAggregateHistory: `POST ${API_PREFIX}/entity/history/aggregate`,

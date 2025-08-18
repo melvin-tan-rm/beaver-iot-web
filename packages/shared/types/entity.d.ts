@@ -75,7 +75,7 @@ declare interface EntitySchema {
     value_type: string;
 
     /** Creation Time (ms) */
-    create_at: number;
+    created_at: number;
 
     /** Update Time (ms) */
     update_at: number;
@@ -140,6 +140,17 @@ declare interface EntityData {
     identifier: string;
     /** Entity Parent Name */
     entity_parent_name?: string;
+    /** Entity tag data */
+    entity_tags?: TagProps[];
+    /** Name of the affiliated device */
+    device_name?: string;
+    /** Latest value */
+    entity_latest_value?: ApiKey;
+    /** Device group */
+    device_group?: {
+        id: ApiKey;
+        name: string;
+    };
 }
 
 /**

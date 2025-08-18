@@ -139,6 +139,18 @@ export {
     // ImageOutlined as ImageOutlinedIcon,
     StarOutline as StarOutlinedIcon,
     Star as StarIcon,
+    Sell as SellIcon,
+    ArrowBackIos as ArrowBackIosIcon,
+    FolderOpenOutlined as FolderOpenOutlinedIcon,
+    Dashboard as DashboardIcon,
+    HelpOutlined as HelpOutlinedIcon,
+    DriveFileMoveOutlined as DriveFileMoveOutlinedIcon,
+    FileDownloadOutlined as FileDownloadOutlinedIcon,
+    SellOutlined as SellOutlinedIcon,
+    CheckBoxOutlineBlank as CheckBoxOutlineBlankIcon,
+    CheckBox as CheckBoxIcon,
+    DragIndicator as DragIndicatorIcon,
+    FilterListOutlined as FilterListOutlinedIcon,
 } from '@mui/icons-material';
 
 export * from './iot-icons';

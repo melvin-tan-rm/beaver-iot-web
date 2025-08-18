@@ -10,7 +10,8 @@ import {
     SettingsIcon,
     PieChartIcon,
     PeopleIcon,
-    FlagIcon
+    FlagIcon,
+    SellIcon
 } from '@milesight/shared/src/components';
 import { PERMISSIONS } from '@/constants';
 import ErrorBoundaryComponent from './error-boundary';
@@ -262,6 +263,21 @@ const routes: RouteObjectType[] = [
         ],
     },
     {
+        path: '/tag',
+        handle: {
+            get title() {
+                return intl.get('tag.title.tag_management');
+            },
+            icon: <SellIcon fontSize="small" />,
+            permissions: PERMISSIONS.TAG_MODULE,
+        },
+        async lazy() {
+            const { default: Component } = await import('@/pages/tag-management');
+            return { Component };
+        },
+        ErrorBoundary,
+    },
+    {
         path: '/user-role',
         handle: {
             get title() {
@@ -283,7 +299,7 @@ const routes: RouteObjectType[] = [
                 return intl.get('common.label.setting');
             },
             icon: <SettingsIcon fontSize="small" />,
-            permissions: PERMISSIONS.CREDENTIAL_MODULE,
+            permissions: PERMISSIONS.SETTING_MODULE,
         },
         async lazy() {
             const { default: Component } = await import('@/pages/credentials');
